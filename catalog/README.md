@@ -27,7 +27,7 @@ Rule for every record: **unknown = `null`, never guessed.** Each record lists it
   - medium: 150–600 W
   - large: 600–2500 W
   - huge: ≥ 2500 W
-- **Best for rigging**: the 3 lightest fixtures (head weight) in each size class.
+- **Best for rigging**: 3 fixtures per size class. Mat and inflatable lights come first, then the lightest by head weight.
 - **Weather sealed**: IP rating with water digit ≥ 4 (IPx4, IP54, IP65…). Fixture and power supply are checked separately.
 
 ## Sources to extract
@@ -42,4 +42,4 @@ Rule for every record: **unknown = `null`, never guessed.** Each record lists it
 | Nanlite | https://cdn-aliyun.nanlite.com/release/1784539206097-287704-112412124152153530517-202605_NANLITE%E4%BA%A7%E5%93%81%E5%86%8C_A4_%E8%8B%B1%E6%96%87%E9%98%85%E8%AF%BB%E7%89%88_%E4%B8%8D%E5%8F%AF%E7%BC%96%E8%BE%91RGB_%E5%B7%B2%E5%8E%8B%E7%BC%A9.pdf |
 | Nanlite (web) | https://www.nanlite.com/product?model=fs#/en |
 
-Stands: no sources yet.
+Stands: later. Start with Godox and other light makers' own stands, then Avenger, Matthews, Kupo, Manfrotto. Lights come first.

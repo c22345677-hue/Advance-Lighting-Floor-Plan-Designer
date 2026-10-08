@@ -6,6 +6,7 @@ export type FixtureFamily =
   | 'cob' // point source with reflector/bowens mount (e.g. LS 600d, Evoke)
   | 'panel' // soft panel (e.g. Nova, Litemat-style rigid panels)
   | 'mat' // flexible mat
+  | 'inflatable' // balloon / inflatable soft light
   | 'tube'
   | 'bulb'
   | 'fresnel'

@@ -77,3 +77,13 @@ it('bestBatteryOutputPct', () => {
     ),
   ).toBe(100);
 });
+
+it('riggingPicks ranks mats and inflatables ahead of lighter fixtures', () => {
+  const list = [
+    fx('cob', 300, 2),
+    fx('mat', 300, 3.5, { family: 'mat' }),
+    fx('balloon', 400, 4, { family: 'inflatable' }),
+    fx('panel', 300, 2.2, { family: 'panel' }),
+  ];
+  expect([...riggingPicks(list, 3)].sort()).toEqual(['balloon', 'cob', 'mat']);
+});

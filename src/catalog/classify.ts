@@ -41,9 +41,12 @@ export const isWeatherSealed = (ip: string | null): boolean => (parseIp(ip)?.wat
 export const isFullyWeatherSealed = (f: Fixture): boolean =>
   isWeatherSealed(f.ipRating) && (!f.psu.external || isWeatherSealed(f.psu.ipRating));
 
+/** Mats and inflatables rig most easily, so they rank ahead of everything else. */
+export const RIGGING_PRIORITY_FAMILIES: ReadonlySet<Fixture['family']> = new Set(['mat', 'inflatable']);
+
 /**
- * "Best for rigging": the lightest `perClass` fixtures (by head weight) in each size class.
- * Fixtures with unknown weight or class are never picked.
+ * "Best for rigging": `perClass` fixtures per size class, mats and inflatables first, then
+ * the lightest by head weight. Fixtures with unknown weight or class are never picked.
  */
 export function riggingPicks(fixtures: Fixture[], perClass = 3): Set<string> {
   const byClass = new Map<SizeClass, Fixture[]>();
@@ -55,7 +58,11 @@ export function riggingPicks(fixtures: Fixture[], perClass = 3): Set<string> {
   const picks = new Set<string>();
   for (const list of byClass.values()) {
     list
-      .sort((a, b) => a.weightKg! - b.weightKg!)
+      .sort(
+        (a, b) =>
+          Number(RIGGING_PRIORITY_FAMILIES.has(b.family)) - Number(RIGGING_PRIORITY_FAMILIES.has(a.family)) ||
+          a.weightKg! - b.weightKg!,
+      )
       .slice(0, perClass)
       .forEach((f) => picks.add(f.id));
   }
