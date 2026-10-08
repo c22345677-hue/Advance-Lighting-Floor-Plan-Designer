@@ -1,1 +1,1490 @@
-[]
+[
+  {
+    "id": "nanlite.forza-60b-ii",
+    "brand": "Nanlite",
+    "model": "Forza 60B II",
+    "family": "cob",
+    "mount": "fm",
+    "powerW": 72,
+    "weightKg": 0.7,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 20.0,
+      "w": 10.8,
+      "h": 8.4
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–14.8 V",
+        "maxOutputPct": 100
+      },
+      {
+        "type": "2× NP-F 7.4 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.2",
+      "NANLITE Catalogue 2026-05, p.5"
+    ],
+    "notes": "Power adapter 15 V/6 A. Battery grip BT-BG-FZ60 included."
+  },
+  {
+    "id": "nanlite.forza-60c",
+    "brand": "Nanlite",
+    "model": "Forza 60C",
+    "family": "cob",
+    "mount": "fm",
+    "powerW": 88,
+    "weightKg": 1.08,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 22.4,
+      "w": 11.0,
+      "h": 8.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–14.8 V",
+        "maxOutputPct": 100
+      },
+      {
+        "type": "2× NP-F 7.4 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.3",
+      "NANLITE Catalogue 2026-05, p.6"
+    ],
+    "notes": "Power adapter 15 V/6 A. Battery grip BT-BG-FZ60 included."
+  },
+  {
+    "id": "nanlite.forza-60cr",
+    "brand": "Nanlite",
+    "model": "Forza 60CR",
+    "family": "cob",
+    "mount": "fm",
+    "powerW": 88,
+    "weightKg": 1.16,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 22.4,
+      "w": 11.0,
+      "h": 8.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–14.8 V",
+        "maxOutputPct": 100
+      },
+      {
+        "type": "2× NP-F 7.4 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.3",
+      "NANLITE Catalogue 2026-05, p.6"
+    ],
+    "notes": "Power adapter 15 V/6 A. Battery grip BT-BG-FZ60 included."
+  },
+  {
+    "id": "nanlite.forza-150b",
+    "brand": "Nanlite",
+    "model": "Forza 150B",
+    "family": "cob",
+    "mount": "fm",
+    "powerW": 170,
+    "weightKg": 1.56,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 24.7,
+      "w": 13.3,
+      "h": 11.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–14.8 V",
+        "maxOutputPct": 75
+      },
+      {
+        "type": "1× V-mount 26 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.4",
+      "NANLITE Catalogue 2026-05, p.5"
+    ],
+    "notes": "Power adapter 24 V/7.5 A."
+  },
+  {
+    "id": "nanlite.forza-300b-ii",
+    "brand": "Nanlite",
+    "model": "Forza 300B II",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 350,
+    "weightKg": 2.9,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 33.0,
+      "w": 22.8,
+      "h": 12.3
+    },
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–14.8 V",
+        "maxOutputPct": 45
+      },
+      {
+        "type": "2× V-mount 14.4–14.8 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.7",
+      "NANLITE Catalogue 2026-05, p.9"
+    ],
+    "notes": "Separate control unit with built-in power adapter and dual V-mount plates (weight not stated). DC connection cable 3 m."
+  },
+  {
+    "id": "nanlite.forza-500b-ii",
+    "brand": "Nanlite",
+    "model": "Forza 500B II",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 580,
+    "weightKg": 4.34,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 40.0,
+      "w": 23.0,
+      "h": 14.2
+    },
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× V-mount 14.4–14.8 V",
+        "maxOutputPct": 60
+      },
+      {
+        "type": "2× V-mount 26 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.7",
+      "NANLITE Catalogue 2026-05, p.9"
+    ],
+    "notes": "Separate control unit with built-in power adapter and dual V-mount plates (weight not stated). DC connection cable 3 m."
+  },
+  {
+    "id": "nanlite.forza-720b",
+    "brand": "Nanlite",
+    "model": "Forza 720B",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 800,
+    "weightKg": 5.3,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 51.8,
+      "w": 22.8,
+      "h": 14.2
+    },
+    "headCableM": 5,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× V-mount 14.4–14.8 V",
+        "maxOutputPct": 40
+      },
+      {
+        "type": "2× V-mount 26 V",
+        "maxOutputPct": 70,
+        "note": "65–70%"
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.8",
+      "NANLITE Catalogue 2026-05, p.10"
+    ],
+    "notes": "Separate control unit (weight not stated). DC 48 V/16.67 A. DC connection cable 5 m."
+  },
+  {
+    "id": "nanlite.fc-60b",
+    "brand": "Nanlite",
+    "model": "FC-60B",
+    "family": "cob",
+    "mount": "fm",
+    "powerW": 78,
+    "weightKg": 0.7,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 16.9,
+      "w": 10.6,
+      "h": 18.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "PD charger / power bank ≥100 W",
+        "maxOutputPct": 100,
+        "note": "30 W: 30%, 45 W: 50%, 60–65 W: 65%"
+      },
+      {
+        "type": "Battery grip BT-BG-FZ60 (included)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.14",
+      "NANLITE Catalogue 2026-05, p.18"
+    ],
+    "notes": "Power adapter 15 V/6 A."
+  },
+  {
+    "id": "nanlite.fc-120b",
+    "brand": "Nanlite",
+    "model": "FC-120B",
+    "family": "cob",
+    "mount": "fm",
+    "powerW": 145,
+    "weightKg": 0.98,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 19.1,
+      "w": 11.5,
+      "h": 19.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "PD charger / power bank ≥140 W",
+        "maxOutputPct": 100,
+        "note": "≥100 W: 60%, 60–65 W: 35%, 45 W: 25%, 30 W: 15%"
+      },
+      {
+        "type": "V-mount grip BT-BG-XLR4II (in 2-kit)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.14",
+      "NANLITE Catalogue 2026-05, p.18",
+      "NANLITE Catalogue 2026-05, p.19"
+    ],
+    "notes": "Power adapter 24 V/6.25 A."
+  },
+  {
+    "id": "nanlite.fc-120c",
+    "brand": "Nanlite",
+    "model": "FC-120C",
+    "family": "cob",
+    "mount": "fm",
+    "powerW": 145,
+    "weightKg": 1.13,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 19.1,
+      "w": 11.5,
+      "h": 19.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "PD charger / power bank ≥140 W",
+        "maxOutputPct": 100,
+        "note": "≥100 W: 60%, 60–65 W: 35%, 45 W: 25%, 30 W: 15%"
+      },
+      {
+        "type": "V-mount grip BT-BG-XLR4II (in 2-kit)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.14",
+      "NANLITE Catalogue 2026-05, p.18",
+      "NANLITE Catalogue 2026-05, p.19"
+    ],
+    "notes": "Power adapter 24 V/6.25 A."
+  },
+  {
+    "id": "nanlite.fc-300b",
+    "brand": "Nanlite",
+    "model": "FC-300B",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 350,
+    "weightKg": 2.6,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 36.0,
+      "w": 24.6,
+      "h": 13.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "14.8 V 160 Wh V-mount via FC Power Controller (1.61 kg)",
+        "maxOutputPct": 45,
+        "note": "≈1.3 h"
+      },
+      {
+        "type": "26 V 270 Wh V-mount via FC Power Controller (1.61 kg)",
+        "maxOutputPct": 75,
+        "note": "≈1.8 h"
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.15",
+      "NANLITE Catalogue 2026-05, p.17",
+      "NANLITE Catalogue 2026-05, p.20"
+    ],
+    "notes": "External power supply 48 V/6.6 A."
+  },
+  {
+    "id": "nanlite.fc-500b",
+    "brand": "Nanlite",
+    "model": "FC-500B",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 520,
+    "weightKg": 3.16,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 37.3,
+      "w": 24.6,
+      "h": 14.9
+    },
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "14.8 V 160 Wh V-mount via FC Power Controller (1.61 kg)",
+        "maxOutputPct": 30,
+        "note": "≈1.1 h"
+      },
+      {
+        "type": "26 V 270 Wh V-mount via FC Power Controller (1.61 kg)",
+        "maxOutputPct": 50,
+        "note": "≈1 h"
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.15",
+      "NANLITE Catalogue 2026-05, p.17",
+      "NANLITE Catalogue 2026-05, p.20"
+    ],
+    "notes": "External power supply 48 V/10.4 A. DC connection cable 3 m."
+  },
+  {
+    "id": "nanlite.fc-500c",
+    "brand": "Nanlite",
+    "model": "FC-500C",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 520,
+    "weightKg": 3.91,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 37.3,
+      "w": 24.6,
+      "h": 14.9
+    },
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "14.8 V 160 Wh V-mount via FC Power Controller (1.61 kg)",
+        "maxOutputPct": 30,
+        "note": "≈1.2 h"
+      },
+      {
+        "type": "26 V 270 Wh V-mount via FC Power Controller (1.61 kg)",
+        "maxOutputPct": 50,
+        "note": "≈1 h"
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.15",
+      "NANLITE Catalogue 2026-05, p.17",
+      "NANLITE Catalogue 2026-05, p.21"
+    ],
+    "notes": "External power supply 48 V/10.8 A. DC connection cable 3 m."
+  },
+  {
+    "id": "nanlite.fc-720b",
+    "brand": "Nanlite",
+    "model": "FC-720B",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 750,
+    "weightKg": 4.32,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 33.0,
+      "w": 24.2,
+      "h": 16.4
+    },
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": null,
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.16",
+      "NANLITE Catalogue 2026-05, p.22"
+    ],
+    "notes": "External power supply, DC 45 V/7.8 A ×2. DC connection cable 3 m."
+  },
+  {
+    "id": "nanlite.fc-720c",
+    "brand": "Nanlite",
+    "model": "FC-720C",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 750,
+    "weightKg": 4.43,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 33.0,
+      "w": 24.2,
+      "h": 16.4
+    },
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": null,
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.16",
+      "NANLITE Catalogue 2026-05, p.22"
+    ],
+    "notes": "External power supply, DC 45 V/7.8 A ×2. DC connection cable 3 m."
+  },
+  {
+    "id": "nanlite.fs-60b",
+    "brand": "Nanlite",
+    "model": "FS-60B",
+    "family": "cob",
+    "mount": "fm",
+    "powerW": 70,
+    "weightKg": 0.85,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 24.7,
+      "w": 13.4,
+      "h": 8.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.25",
+      "NANLITE Catalogue 2026-05, p.27"
+    ],
+    "notes": "All-in-one, AC 100–240 V only."
+  },
+  {
+    "id": "nanlite.fs-150b",
+    "brand": "Nanlite",
+    "model": "FS-150B",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 175,
+    "weightKg": 2.3,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 35.6,
+      "w": 21.3,
+      "h": 11.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.25",
+      "NANLITE Catalogue 2026-05, p.28"
+    ],
+    "notes": "All-in-one, AC 100–240 V only."
+  },
+  {
+    "id": "nanlite.fs-200b",
+    "brand": "Nanlite",
+    "model": "FS-200B",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 220,
+    "weightKg": 2.6,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30.9,
+      "w": 23.2,
+      "h": 12.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.25",
+      "NANLITE Catalogue 2026-05, p.28"
+    ],
+    "notes": "All-in-one, AC 100–240 V only."
+  },
+  {
+    "id": "nanlite.fs-300b",
+    "brand": "Nanlite",
+    "model": "FS-300B",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 350,
+    "weightKg": 3.03,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 34.2,
+      "w": 23.2,
+      "h": 12.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.25",
+      "NANLITE Catalogue 2026-05, p.29"
+    ],
+    "notes": "All-in-one, AC 100–240 V only."
+  },
+  {
+    "id": "nanlite.fs-300c",
+    "brand": "Nanlite",
+    "model": "FS-300C",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 300,
+    "weightKg": 3.23,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 34.6,
+      "w": 23.3,
+      "h": 12.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.25",
+      "NANLITE Catalogue 2026-05, p.29"
+    ],
+    "notes": "All-in-one, AC 100–240 V only."
+  },
+  {
+    "id": "nanlite.pavoslim-60b",
+    "brand": "Nanlite",
+    "model": "PavoSlim 60B",
+    "family": "panel",
+    "mount": null,
+    "powerW": 72,
+    "weightKg": 0.91,
+    "psu": {
+      "external": true,
+      "weightKg": 1.37,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30.6,
+      "w": 30.1,
+      "h": 1.9
+    },
+    "headCableM": 2.6,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–14.8 V",
+        "maxOutputPct": 100
+      },
+      {
+        "type": "2× NP-F 7.4 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.38",
+      "NANLITE Catalogue 2026-05, p.42"
+    ],
+    "notes": "Separate control unit 146×111×175 mm."
+  },
+  {
+    "id": "nanlite.pavoslim-60c",
+    "brand": "Nanlite",
+    "model": "PavoSlim 60C",
+    "family": "panel",
+    "mount": null,
+    "powerW": 72,
+    "weightKg": 0.94,
+    "psu": {
+      "external": true,
+      "weightKg": 1.37,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30.6,
+      "w": 30.1,
+      "h": 1.9
+    },
+    "headCableM": 2.6,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–14.8 V",
+        "maxOutputPct": 100
+      },
+      {
+        "type": "2× NP-F 7.4 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.39",
+      "NANLITE Catalogue 2026-05, p.42"
+    ],
+    "notes": "Separate control unit 146×111×175 mm."
+  },
+  {
+    "id": "nanlite.pavoslim-60cl",
+    "brand": "Nanlite",
+    "model": "PavoSlim 60CL",
+    "family": "panel",
+    "mount": null,
+    "powerW": 72,
+    "weightKg": 0.98,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 60.2,
+      "w": 15.2,
+      "h": 1.9
+    },
+    "headCableM": 2.6,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–14.8 V",
+        "maxOutputPct": 100
+      },
+      {
+        "type": "2× NP-F 7.4 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.39",
+      "NANLITE Catalogue 2026-05, p.43"
+    ],
+    "notes": "Separate control unit 146×111×175 mm (weight not stated)."
+  },
+  {
+    "id": "nanlite.pavoslim-120b",
+    "brand": "Nanlite",
+    "model": "PavoSlim 120B",
+    "family": "panel",
+    "mount": null,
+    "powerW": 150,
+    "weightKg": 1.65,
+    "psu": {
+      "external": true,
+      "weightKg": 1.84,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 60.2,
+      "w": 30.6,
+      "h": 1.9
+    },
+    "headCableM": 2.6,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–26 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.38",
+      "NANLITE Catalogue 2026-05, p.39",
+      "NANLITE Catalogue 2026-05, p.44"
+    ],
+    "notes": "Separate control unit 140×111×203 mm. DC 24 V."
+  },
+  {
+    "id": "nanlite.pavoslim-120c",
+    "brand": "Nanlite",
+    "model": "PavoSlim 120C",
+    "family": "panel",
+    "mount": null,
+    "powerW": 150,
+    "weightKg": 1.76,
+    "psu": {
+      "external": true,
+      "weightKg": 1.84,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 60.2,
+      "w": 30.6,
+      "h": 1.9
+    },
+    "headCableM": 2.6,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–26 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.38",
+      "NANLITE Catalogue 2026-05, p.39",
+      "NANLITE Catalogue 2026-05, p.44"
+    ],
+    "notes": "Separate control unit 140×111×203 mm. DC 24 V."
+  },
+  {
+    "id": "nanlite.pavoslim-240b",
+    "brand": "Nanlite",
+    "model": "PavoSlim 240B",
+    "family": "panel",
+    "mount": null,
+    "powerW": 260,
+    "weightKg": 3.44,
+    "psu": {
+      "external": true,
+      "weightKg": 2.65,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 60.9,
+      "w": 60.2,
+      "h": 2.9
+    },
+    "headCableM": 5,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–14.8 V",
+        "maxOutputPct": 50
+      },
+      {
+        "type": "1× V-mount 26 V",
+        "maxOutputPct": 80
+      },
+      {
+        "type": "2× V-mount (or 14.8 V + 26 V)",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.38",
+      "NANLITE Catalogue 2026-05, p.39",
+      "NANLITE Catalogue 2026-05, p.45"
+    ],
+    "notes": "Separate control unit 153×112×283 mm. Folds to 318×602 mm."
+  },
+  {
+    "id": "nanlite.pavoslim-240c",
+    "brand": "Nanlite",
+    "model": "PavoSlim 240C",
+    "family": "panel",
+    "mount": null,
+    "powerW": 260,
+    "weightKg": 3.65,
+    "psu": {
+      "external": true,
+      "weightKg": 2.76,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 60.9,
+      "w": 60.2,
+      "h": 2.9
+    },
+    "headCableM": 5,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–14.8 V",
+        "maxOutputPct": 50
+      },
+      {
+        "type": "1× V-mount 26 V",
+        "maxOutputPct": 80
+      },
+      {
+        "type": "2× V-mount (or 14.8 V + 26 V)",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.38",
+      "NANLITE Catalogue 2026-05, p.39",
+      "NANLITE Catalogue 2026-05, p.45"
+    ],
+    "notes": "Separate control unit 153×112×283 mm. Folds to 318×602 mm."
+  },
+  {
+    "id": "nanlite.pavoslim-240cl",
+    "brand": "Nanlite",
+    "model": "PavoSlim 240CL",
+    "family": "panel",
+    "mount": null,
+    "powerW": 260,
+    "weightKg": 3.62,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 120.5,
+      "w": 30.7,
+      "h": 2.0
+    },
+    "headCableM": 5,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–14.8 V",
+        "maxOutputPct": 50
+      },
+      {
+        "type": "1× V-mount 26 V",
+        "maxOutputPct": 80
+      },
+      {
+        "type": "2× V-mount (or 14.8 V + 26 V)",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.39",
+      "NANLITE Catalogue 2026-05, p.43"
+    ],
+    "notes": "Separate control unit 153×112×283 mm (weight not stated)."
+  },
+  {
+    "id": "nanlite.pavoslim-360c",
+    "brand": "Nanlite",
+    "model": "PavoSlim 360C",
+    "family": "panel",
+    "mount": null,
+    "powerW": 370,
+    "weightKg": 5.73,
+    "psu": {
+      "external": true,
+      "weightKg": 3.28,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 120.3,
+      "w": 60.6,
+      "h": 2.0
+    },
+    "headCableM": 7.5,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× 14.4–14.8 V V-mount",
+        "maxOutputPct": 35
+      },
+      {
+        "type": "2× 14.4–14.8 V V-mount",
+        "maxOutputPct": 75
+      },
+      {
+        "type": "1× 26/28.8 V V-mount",
+        "maxOutputPct": 65
+      },
+      {
+        "type": "2× 26/28.8 V (or 14.8 V + 26 V)",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.40",
+      "NANLITE Catalogue 2026-05, p.46"
+    ],
+    "notes": "Separate control unit 153×111×303 mm. DC 48 V/8 A."
+  },
+  {
+    "id": "nanlite.alien-150c",
+    "brand": "Nanlite",
+    "model": "Alien 150C",
+    "family": "panel",
+    "mount": null,
+    "powerW": 175,
+    "weightKg": 3.6,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": "IP20"
+    },
+    "sizeCm": {
+      "l": 39.2,
+      "w": 37.0,
+      "h": 9.5
+    },
+    "headCableM": 3,
+    "ipRating": "IP55",
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–28 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.49",
+      "NANLITE Catalogue 2026-05, p.50"
+    ],
+    "notes": "Control unit IP20 (rain cover included); weight not stated. DC 24 V."
+  },
+  {
+    "id": "nanlite.alien-300c",
+    "brand": "Nanlite",
+    "model": "Alien 300C",
+    "family": "panel",
+    "mount": null,
+    "powerW": 260,
+    "weightKg": 6.6,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": "IP20"
+    },
+    "sizeCm": {
+      "l": 51.4,
+      "w": 45.4,
+      "h": 9.9
+    },
+    "headCableM": 3,
+    "ipRating": "IP55",
+    "batteries": [
+      {
+        "type": "1× 26–28 V V-mount",
+        "maxOutputPct": 75
+      },
+      {
+        "type": "2× V-mount (or 14.8 V + 26 V)",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.49",
+      "NANLITE Catalogue 2026-05, p.50"
+    ],
+    "notes": "Control unit IP20 (rain cover included); weight not stated. DC 48 V/5.6 A."
+  },
+  {
+    "id": "nanlite.pavotube-ii-6xr",
+    "brand": "Nanlite",
+    "model": "PavoTube II 6XR",
+    "family": "tube",
+    "mount": null,
+    "powerW": 16,
+    "weightKg": 0.27,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 25.0,
+      "w": 4.1,
+      "h": 4.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈53 min at 100%"
+      },
+      {
+        "type": "NP-F550 grip BT-BG-F550",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.52",
+      "NANLITE Catalogue 2026-05, p.55"
+    ],
+    "notes": "USB-C PD 20 W min."
+  },
+  {
+    "id": "nanlite.pavotube-ii-15x",
+    "brand": "Nanlite",
+    "model": "PavoTube II 15X",
+    "family": "tube",
+    "mount": null,
+    "powerW": 35,
+    "weightKg": 0.82,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 60.0,
+      "w": 4.3,
+      "h": 4.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈1.5 h at 100%"
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.53",
+      "NANLITE Catalogue 2026-05, p.55"
+    ],
+    "notes": "Power adapter 15 V/2 A. Optional IP68 waterproof housing AS-WT-PTIIX (fixture itself not rated)."
+  },
+  {
+    "id": "nanlite.pavotube-ii-15xr",
+    "brand": "Nanlite",
+    "model": "PavoTube II 15XR",
+    "family": "tube",
+    "mount": null,
+    "powerW": 35,
+    "weightKg": 0.82,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 60.0,
+      "w": 4.3,
+      "h": 4.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈1.5 h at 100%"
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.53",
+      "NANLITE Catalogue 2026-05, p.55"
+    ],
+    "notes": "Power adapter 15 V/2 A. Optional IP68 waterproof housing AS-WT-PTIIX (fixture itself not rated)."
+  },
+  {
+    "id": "nanlite.pavotube-ii-30x",
+    "brand": "Nanlite",
+    "model": "PavoTube II 30X",
+    "family": "tube",
+    "mount": null,
+    "powerW": 70,
+    "weightKg": 1.58,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 114.5,
+      "w": 4.3,
+      "h": 4.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈2.2 h at 100%"
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.53",
+      "NANLITE Catalogue 2026-05, p.55"
+    ],
+    "notes": "Power adapter 15 V/4 A. Optional IP68 waterproof housing AS-WT-PTIIX (fixture itself not rated)."
+  },
+  {
+    "id": "nanlite.pavotube-ii-30xr",
+    "brand": "Nanlite",
+    "model": "PavoTube II 30XR",
+    "family": "tube",
+    "mount": null,
+    "powerW": 70,
+    "weightKg": 1.58,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 114.5,
+      "w": 4.3,
+      "h": 4.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈2.2 h at 100%"
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.53",
+      "NANLITE Catalogue 2026-05, p.55"
+    ],
+    "notes": "Power adapter 15 V/4 A. Optional IP68 waterproof housing AS-WT-PTIIX (fixture itself not rated)."
+  },
+  {
+    "id": "nanlite.pavotube-ii-60x",
+    "brand": "Nanlite",
+    "model": "PavoTube II 60X",
+    "family": "tube",
+    "mount": null,
+    "powerW": 106,
+    "weightKg": 2.9,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 222.0,
+      "w": 4.3,
+      "h": 4.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈2 h at 100%"
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.53",
+      "NANLITE Catalogue 2026-05, p.55"
+    ],
+    "notes": "Power adapter 15 V/6.5 A. Optional IP68 waterproof housing AS-WT-PTIIX (fixture itself not rated)."
+  },
+  {
+    "id": "nanlite.pavotube-ii-60xr",
+    "brand": "Nanlite",
+    "model": "PavoTube II 60XR",
+    "family": "tube",
+    "mount": null,
+    "powerW": 106,
+    "weightKg": 2.9,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 222.0,
+      "w": 4.3,
+      "h": 4.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈2 h at 100%"
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.53",
+      "NANLITE Catalogue 2026-05, p.55"
+    ],
+    "notes": "Power adapter 15 V/6.5 A. Optional IP68 waterproof housing AS-WT-PTIIX (fixture itself not rated)."
+  },
+  {
+    "id": "nanlite.pavotube-t8-7x",
+    "brand": "Nanlite",
+    "model": "PavoTube T8-7X",
+    "family": "tube",
+    "mount": null,
+    "powerW": 8,
+    "weightKg": 0.28,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 100.2,
+      "w": 3.9,
+      "h": 3.9
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈1 h at 100%"
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.54",
+      "NANLITE Catalogue 2026-05, p.56"
+    ],
+    "notes": "DC 5 V/2 A (USB-C)."
+  },
+  {
+    "id": "nanlite.pavotube-ii-6cp",
+    "brand": "Nanlite",
+    "model": "PavoTube II 6CP",
+    "family": "tube",
+    "mount": null,
+    "powerW": 10,
+    "weightKg": 0.267,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 25.0,
+      "w": 4.1,
+      "h": 4.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈1.3 h at 100%"
+      },
+      {
+        "type": "NP-F550 grip BT-BG-F550",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.57",
+      "NANLITE Catalogue 2026-05, p.61"
+    ],
+    "notes": "DC 5 V/2 A."
+  },
+  {
+    "id": "nanlite.pavotube-ii-6c",
+    "brand": "Nanlite",
+    "model": "PavoTube II 6C",
+    "family": "tube",
+    "mount": null,
+    "powerW": 11,
+    "weightKg": 0.26,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 25.0,
+      "w": 4.1,
+      "h": 4.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈1 h at 100%"
+      },
+      {
+        "type": "NP-F550 grip BT-BG-F550",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.58",
+      "NANLITE Catalogue 2026-05, p.61"
+    ],
+    "notes": "DC 5 V/2 A."
+  },
+  {
+    "id": "nanlite.pavotube-ii-15c",
+    "brand": "Nanlite",
+    "model": "PavoTube II 15C",
+    "family": "tube",
+    "mount": null,
+    "powerW": 30,
+    "weightKg": 0.85,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 77.0,
+      "w": 4.8,
+      "h": 4.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈2 h at 100%"
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.59",
+      "NANLITE Catalogue 2026-05, p.61"
+    ],
+    "notes": "Power adapter 15 V/2 A; also USB-C PD."
+  },
+  {
+    "id": "nanlite.pavotube-ii-30c",
+    "brand": "Nanlite",
+    "model": "PavoTube II 30C",
+    "family": "tube",
+    "mount": null,
+    "powerW": 60,
+    "weightKg": 1.4,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 117.0,
+      "w": 4.8,
+      "h": 4.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈2.5 h at 100%"
+      }
+    ],
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.59",
+      "NANLITE Catalogue 2026-05, p.61"
+    ],
+    "notes": "Power adapter 15 V/4 A; also USB-C PD."
+  }
+]

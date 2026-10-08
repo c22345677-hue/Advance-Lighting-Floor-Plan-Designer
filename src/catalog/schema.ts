@@ -36,19 +36,21 @@ export interface Fixture {
   model: string;
   aliases?: string[]; // names crews use, e.g. "600d", "S60"
   family: FixtureFamily;
-  /** Maximum power draw, W. */
+  /** Accessory mount on the head (e.g. "bowens", "nl", "g-mount", "fm"); null = not stated. */
+  mount: string | null;
+  /** Maximum power draw, W. When the source only gives an input rating, V × A (see notes). */
   powerW: number | null;
   /** Main fixture (head) weight only, without power supply or accessories. The key number. */
   weightKg: number | null;
   psu: PowerSupply;
   /** Size when deployed (as used), cm: length × width × height. */
-  sizeCm: { l: number; w: number; h: number } | null;
+  sizeCm: { l: number | null; w: number | null; h: number | null } | null;
   /** Cable length from power supply to fixture, m. */
   headCableM: number | null;
   /** Fixture IP rating, e.g. "IP65"; null = not rated / unknown. */
   ipRating: string | null;
-  /** Empty when the fixture can only run on mains. */
-  batteries: BatteryOption[];
+  /** Battery options; [] = mains only; null = not stated by the source. */
+  batteries: BatteryOption[] | null;
   /** Where each number came from (catalogue page, spec URL). */
   sources: string[];
   notes?: string;
@@ -63,6 +65,37 @@ export interface Stand {
   /** Closed (minimum) and fully extended (maximum) height, cm. */
   minHeightCm: number | null;
   maxHeightCm: number | null;
+  sources: string[];
+  notes?: string;
+}
+
+export type ModifierType =
+  | 'reflector'
+  | 'fresnel'
+  | 'projection'
+  | 'parallel-beam'
+  | 'softbox'
+  | 'lantern'
+  | 'dome'
+  | 'grid'
+  | 'skirt'
+  | 'barndoors'
+  | 'diffusion'
+  | 'adapter'
+  | 'other';
+
+/** Light modifier. It fits a fixture by mount, or by an explicit fixture list. */
+export interface Modifier {
+  id: string;
+  brand: string;
+  model: string;
+  type: ModifierType;
+  /** Mounts it attaches to (matches Fixture.mount). */
+  mounts: string[];
+  /** Fixtures it is made for, when it is model-specific. */
+  fitsFixtureIds: string[];
+  weightKg: number | null;
+  sizeCm: { l: number | null; w: number | null; h: number | null } | null;
   sources: string[];
   notes?: string;
 }

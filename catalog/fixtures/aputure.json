@@ -1,1 +1,1070 @@
-[]
+[
+  {
+    "id": "aputure.accent-b7c",
+    "brand": "Aputure",
+    "model": "Accent B7c",
+    "family": "bulb",
+    "mount": null,
+    "powerW": 7,
+    "weightKg": 0.24,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 7.0,
+      "w": 7.0,
+      "h": 11.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 7.4 V 1300 mAh",
+        "maxOutputPct": 100,
+        "note": "70+ min at max"
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/accent-b7c"
+    ],
+    "notes": "E26/E27 smart bulb."
+  },
+  {
+    "id": "aputure.electro-storm-cs15",
+    "brand": "Aputure",
+    "model": "Electro Storm CS15",
+    "family": "cob",
+    "mount": "aputure-mount",
+    "powerW": 2200,
+    "weightKg": 18,
+    "psu": {
+      "external": true,
+      "weightKg": 19,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 45.7,
+      "w": 35.2,
+      "h": 28.1
+    },
+    "headCableM": 15,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "https://aputure.com/en-US/products/electro-storm-cs15"
+    ],
+    "notes": "1585 W output. Head weight without yoke (yoke 3.2 kg). Head cable 15 m. 48 V DC inputs on control box."
+  },
+  {
+    "id": "aputure.electro-storm-xt26",
+    "brand": "Aputure",
+    "model": "Electro Storm XT26",
+    "family": "cob",
+    "mount": "aputure-mount",
+    "powerW": 3500,
+    "weightKg": 18,
+    "psu": {
+      "external": true,
+      "weightKg": 20.5,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 45.7,
+      "w": 35.2,
+      "h": 28.1
+    },
+    "headCableM": 15,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "https://aputure.com/en-US/products/electro-storm-xt26"
+    ],
+    "notes": "2600 W output. Head weight without yoke (yoke 3.2 kg). Head cable 15 m. 48 V DC inputs on control box."
+  },
+  {
+    "id": "aputure.infinibar-pb3",
+    "brand": "Aputure",
+    "model": "INFINIBAR PB3",
+    "family": "tube",
+    "mount": null,
+    "powerW": 10,
+    "weightKg": 0.6,
+    "psu": {
+      "external": true,
+      "weightKg": 0.49,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30.4,
+      "w": 4.5,
+      "h": 4.3
+    },
+    "headCableM": null,
+    "ipRating": "IP20",
+    "batteries": [
+      {
+        "type": "Built-in 7.4 V 14.8 Wh",
+        "maxOutputPct": 100,
+        "note": "≈80 min at max"
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/infinibar-pb3"
+    ],
+    "notes": "Pixel bar. powerW = power supply max consumption."
+  },
+  {
+    "id": "aputure.infinibar-pb6",
+    "brand": "Aputure",
+    "model": "INFINIBAR PB6",
+    "family": "tube",
+    "mount": null,
+    "powerW": 20,
+    "weightKg": 1.0,
+    "psu": {
+      "external": true,
+      "weightKg": 0.49,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 60.4,
+      "w": 4.5,
+      "h": 4.3
+    },
+    "headCableM": null,
+    "ipRating": "IP20",
+    "batteries": [
+      {
+        "type": "Built-in 7.4 V 29.6 Wh",
+        "maxOutputPct": 100,
+        "note": "≈100 min at max"
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/infinibar-pb6"
+    ],
+    "notes": "Pixel bar. powerW = power supply max consumption."
+  },
+  {
+    "id": "aputure.infinibar-pb12",
+    "brand": "Aputure",
+    "model": "INFINIBAR PB12",
+    "family": "tube",
+    "mount": null,
+    "powerW": 40,
+    "weightKg": 1.96,
+    "psu": {
+      "external": true,
+      "weightKg": 0.49,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 120.4,
+      "w": 4.5,
+      "h": 4.3
+    },
+    "headCableM": null,
+    "ipRating": "IP20",
+    "batteries": [
+      {
+        "type": "Built-in 7.4 V 59.2 Wh",
+        "maxOutputPct": 100,
+        "note": "≈80 min at max"
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/infinibar-pb12"
+    ],
+    "notes": "Pixel bar. powerW = power supply max consumption."
+  },
+  {
+    "id": "aputure.infinimat-1x2",
+    "brand": "Aputure",
+    "model": "INFINIMAT 1x2",
+    "family": "mat",
+    "mount": null,
+    "powerW": 111,
+    "weightKg": 1.0,
+    "psu": {
+      "external": true,
+      "weightKg": 7.2,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 66,
+      "w": 34,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [
+      {
+        "type": "Dual V-mount / Gold mount on control box (12–16.8 V or 22–33.6 V)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-1x2-with-clear-softbox"
+    ],
+    "notes": "Mat with inflatable clear softbox (air pump). Control Box 400W."
+  },
+  {
+    "id": "aputure.infinimat-1x4",
+    "brand": "Aputure",
+    "model": "INFINIMAT 1x4",
+    "family": "mat",
+    "mount": null,
+    "powerW": 201,
+    "weightKg": 2.4,
+    "psu": {
+      "external": true,
+      "weightKg": 7.2,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 124,
+      "w": 34,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [
+      {
+        "type": "Dual V-mount / Gold mount on control box (12–16.8 V or 22–33.6 V)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-1x4-with-clear-softbox"
+    ],
+    "notes": "Mat with inflatable clear softbox (air pump). Control Box 400W."
+  },
+  {
+    "id": "aputure.infinimat-2x4",
+    "brand": "Aputure",
+    "model": "INFINIMAT 2x4",
+    "family": "mat",
+    "mount": null,
+    "powerW": 400,
+    "weightKg": 4.8,
+    "psu": {
+      "external": true,
+      "weightKg": 7.2,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 122,
+      "w": 63.5,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [
+      {
+        "type": "Dual V-mount / Gold mount on control box (12–16.8 V or 22–33.6 V)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-2x4-with-clear-softbox"
+    ],
+    "notes": "Mat with inflatable clear softbox (air pump). Control Box 400W."
+  },
+  {
+    "id": "aputure.infinimat-4x4",
+    "brand": "Aputure",
+    "model": "INFINIMAT 4x4",
+    "family": "mat",
+    "mount": null,
+    "powerW": 800,
+    "weightKg": 8.36,
+    "psu": {
+      "external": true,
+      "weightKg": 19.38,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 121,
+      "w": 121,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [
+      {
+        "type": "Dual V-mount / Gold mount on control box (12–16.8 V or 22–33.6 V)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-4x4-with-clear-softbox"
+    ],
+    "notes": "Mat with inflatable clear softbox (air pump). Control Box 1600W."
+  },
+  {
+    "id": "aputure.infinimat-8x8",
+    "brand": "Aputure",
+    "model": "INFINIMAT 8x8",
+    "family": "mat",
+    "mount": null,
+    "powerW": 2000,
+    "weightKg": 32.0,
+    "psu": {
+      "external": true,
+      "weightKg": 19.38,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 239,
+      "w": 239,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [
+      {
+        "type": "Dual V-mount / Gold mount on control box (12–16.8 V or 22–33.6 V)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-8x8-with-clear-softbox"
+    ],
+    "notes": "Mat with inflatable clear softbox (air pump). Control Box 1600W."
+  },
+  {
+    "id": "aputure.infinimat-20x20",
+    "brand": "Aputure",
+    "model": "INFINIMAT 20x20",
+    "family": "mat",
+    "mount": null,
+    "powerW": 8000,
+    "weightKg": 128.0,
+    "psu": {
+      "external": true,
+      "weightKg": 19.38,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 478,
+      "w": 478,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [
+      {
+        "type": "Dual V-mount / Gold mount on control box (12–16.8 V or 22–33.6 V)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-20x20-with-clear-softbox"
+    ],
+    "notes": "Mat with inflatable clear softbox (air pump). Control Box 1600W. 20x20 = four 8x8 mats."
+  },
+  {
+    "id": "aputure.ls-1200d-pro",
+    "brand": "Aputure",
+    "model": "LS 1200d Pro",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 1440,
+    "weightKg": 7.57,
+    "psu": {
+      "external": true,
+      "weightKg": 5.8,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 33.23,
+      "w": 23.16,
+      "h": 21.63
+    },
+    "headCableM": 7.5,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "48 V via 3-pin XLR (battery packs)",
+        "maxOutputPct": 100,
+        "note": "one input = half (720 W), two inputs = full"
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/ls-1200d-pro"
+    ],
+    "notes": "Head without yoke; with yoke 8.95 kg. 7-pin weatherproof head cable 7.5 m."
+  },
+  {
+    "id": "aputure.ls-300d-ii",
+    "brand": "Aputure",
+    "model": "LS 300d II",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 350,
+    "weightKg": 3.2,
+    "psu": {
+      "external": true,
+      "weightKg": 2.04,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 29.84,
+      "w": 21.56,
+      "h": 34.45
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount / Gold mount 14.4–14.8 V ≥15 A",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/ls-300d-ii"
+    ],
+    "notes": "Head weight includes yoke."
+  },
+  {
+    "id": "aputure.ls-300x",
+    "brand": "Aputure",
+    "model": "LS 300x",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 350,
+    "weightKg": null,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 29.84,
+      "w": 21.56,
+      "h": 34.45
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "14.4–14.8 V ≥15 A",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/ls-300x"
+    ],
+    "notes": "Only net (kit) weight 7.315 kg given."
+  },
+  {
+    "id": "aputure.ls-600c-pro-ii",
+    "brand": "Aputure",
+    "model": "LS 600c Pro II",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 720,
+    "weightKg": 5.9,
+    "psu": {
+      "external": true,
+      "weightKg": 5.4,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 45.2,
+      "w": 26.7,
+      "h": 15.0
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [
+      {
+        "type": "2× V-mount 12–33.6 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/ls-600c-pro-ii"
+    ],
+    "notes": "Head weight includes yoke. DC 48 V/15 A."
+  },
+  {
+    "id": "aputure.ls-600d",
+    "brand": "Aputure",
+    "model": "LS 600d",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 720,
+    "weightKg": 4.69,
+    "psu": {
+      "external": true,
+      "weightKg": 3.24,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30.8,
+      "w": 15.61,
+      "h": 15.01
+    },
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× V-mount / Gold mount",
+        "maxOutputPct": 50,
+        "note": "half output"
+      },
+      {
+        "type": "48 V via 3-pin XLR",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/ls-600d"
+    ],
+    "notes": "Head weight includes yoke. Head cable 3 m (max 7.5 m)."
+  },
+  {
+    "id": "aputure.ls-600d-pro",
+    "brand": "Aputure",
+    "model": "LS 600d Pro",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 720,
+    "weightKg": 4.64,
+    "psu": {
+      "external": true,
+      "weightKg": 5.8,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30.8,
+      "w": 15.61,
+      "h": 15.01
+    },
+    "headCableM": 6,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× V-mount 14.4 V",
+        "maxOutputPct": 50,
+        "note": "half output"
+      },
+      {
+        "type": "2× V-mount 26/28.8 V",
+        "maxOutputPct": 100
+      },
+      {
+        "type": "48 V via 3-pin XLR",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/ls-600d-pro"
+    ],
+    "notes": "Head weight includes yoke. Max head cable length 6 m. Power draw given as 8 A; 720 W used (600 W class)."
+  },
+  {
+    "id": "aputure.ls-600x-pro",
+    "brand": "Aputure",
+    "model": "LS 600x Pro",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 720,
+    "weightKg": 5.16,
+    "psu": {
+      "external": true,
+      "weightKg": 4.89,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30.2,
+      "w": 14.7,
+      "h": 14.9
+    },
+    "headCableM": 7.5,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× V-mount 14.4 V",
+        "maxOutputPct": 50,
+        "note": "half output"
+      },
+      {
+        "type": "2× V-mount 26/28.8 V",
+        "maxOutputPct": 100
+      },
+      {
+        "type": "48 V via 3-pin XLR",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/ls-600x-pro"
+    ],
+    "notes": "Head weight includes yoke. Max head cable length 7.5 m. Power draw given as 8 A; 720 W used (600 W class)."
+  },
+  {
+    "id": "aputure.ls-60d",
+    "brand": "Aputure",
+    "model": "LS 60d",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 90,
+    "weightKg": 1.8,
+    "psu": {
+      "external": true,
+      "weightKg": 0.37,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 20.9,
+      "w": 11.6,
+      "h": 11.6
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× NP-F",
+        "maxOutputPct": null,
+        "note": "single 6–8.4 V"
+      },
+      {
+        "type": "2× NP-F / D-Tap 12–16.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/ls-60d"
+    ],
+    "notes": "Focusing COB (15–45°/120 mm). AC cable 4 m."
+  },
+  {
+    "id": "aputure.ls-60x",
+    "brand": "Aputure",
+    "model": "LS 60x",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 90,
+    "weightKg": 1.8,
+    "psu": {
+      "external": true,
+      "weightKg": 0.37,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 20.9,
+      "w": 11.6,
+      "h": 11.6
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× NP-F",
+        "maxOutputPct": null,
+        "note": "single 6–8.4 V"
+      },
+      {
+        "type": "2× NP-F / D-Tap 12–16.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/ls-60x"
+    ],
+    "notes": "Focusing COB (15–45°/120 mm). AC cable 4 m."
+  },
+  {
+    "id": "aputure.mc-pro",
+    "brand": "Aputure",
+    "model": "MC Pro",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 7,
+    "weightKg": 0.247,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 10.8,
+      "w": 7.0,
+      "h": 2.5
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [
+      {
+        "type": "Built-in 15.5 Wh",
+        "maxOutputPct": 100,
+        "note": "≈120 min at max"
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/mc-pro"
+    ]
+  },
+  {
+    "id": "aputure.mt-pro",
+    "brand": "Aputure",
+    "model": "MT Pro",
+    "family": "tube",
+    "mount": null,
+    "powerW": 9,
+    "weightKg": 0.391,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30.0,
+      "w": 4.0,
+      "h": 3.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 15.5 Wh",
+        "maxOutputPct": 100,
+        "note": "≈120 min at max"
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/mt-pro"
+    ]
+  },
+  {
+    "id": "aputure.nova-ii-1x1",
+    "brand": "Aputure",
+    "model": "NOVA II 1x1",
+    "family": "panel",
+    "mount": null,
+    "powerW": 650,
+    "weightKg": 9.55,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 39.1,
+      "w": 40.8,
+      "h": 14.3
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "https://aputure.com/en-US/products/nova-ii-1x1"
+    ],
+    "notes": "Integrated AC, 6 m AC cable. Head without yoke (yoke 1.8–2.4 kg)."
+  },
+  {
+    "id": "aputure.nova-ii-2x1",
+    "brand": "Aputure",
+    "model": "NOVA II 2x1",
+    "family": "panel",
+    "mount": null,
+    "powerW": 1250,
+    "weightKg": 16.25,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 69.1,
+      "w": 38.8,
+      "h": 13.6
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "https://aputure.com/en-US/products/nova-ii-2x1"
+    ],
+    "notes": "Integrated AC, 6 m AC cable. Head without yoke (yoke 1.8–2.4 kg)."
+  },
+  {
+    "id": "aputure.nova-9-2x1",
+    "brand": "Aputure",
+    "model": "NOVA 9 2x1",
+    "family": "panel",
+    "mount": null,
+    "powerW": 800,
+    "weightKg": 17.25,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 69.1,
+      "w": 38.8,
+      "h": 13.6
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "https://aputure.com/en-US/products/nova-9-2x1"
+    ],
+    "notes": "Integrated AC, 6 m AC cable. Head without yoke (yoke 1.8–2.4 kg)."
+  },
+  {
+    "id": "aputure.nova-p300c",
+    "brand": "Aputure",
+    "model": "NOVA P300c",
+    "family": "panel",
+    "mount": null,
+    "powerW": 360,
+    "weightKg": 10.35,
+    "psu": {
+      "external": true,
+      "weightKg": 0.45,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 56.19,
+      "w": 45.7,
+      "h": 16.6
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://aputure.com/en-US/products/nova-p300c"
+    ],
+    "notes": "Weight as listed (likely with yoke)."
+  },
+  {
+    "id": "aputure.nova-p600c",
+    "brand": "Aputure",
+    "model": "NOVA P600c",
+    "family": "panel",
+    "mount": null,
+    "powerW": 720,
+    "weightKg": null,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "48 V DC input",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/nova-p600c"
+    ],
+    "notes": "Head weight not listed (total 27.87 kg). 5-pin XLR head cable 3 m."
+  },
+  {
+    "id": "aputure.storm-80c",
+    "brand": "Aputure",
+    "model": "STORM 80c",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 100,
+    "weightKg": 1.01,
+    "psu": {
+      "external": true,
+      "weightKg": 0.405,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 10.1,
+      "w": 10.4,
+      "h": 14.7
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [
+      {
+        "type": "V-mount 14.4 V via handheld bracket",
+        "maxOutputPct": null
+      },
+      {
+        "type": "USB-C PD 100 W power bank",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/storm-80c"
+    ],
+    "notes": "Head without yoke; with yoke 1.35 kg."
+  },
+  {
+    "id": "aputure.storm-400x",
+    "brand": "Aputure",
+    "model": "STORM 400x",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 500,
+    "weightKg": 3.95,
+    "psu": {
+      "external": true,
+      "weightKg": 3.0,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 23.9,
+      "w": 25.3,
+      "h": 42.4
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [
+      {
+        "type": "V-mount 14.4 V on control box",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/storm-400x"
+    ],
+    "notes": "Head weight includes yoke. Head cable 0.51 kg."
+  },
+  {
+    "id": "aputure.storm-700x",
+    "brand": "Aputure",
+    "model": "STORM 700x",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 880,
+    "weightKg": 5.15,
+    "psu": {
+      "external": true,
+      "weightKg": 4.1,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 27.4,
+      "w": 27.2,
+      "h": 50.3
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "https://aputure.com/en-US/products/storm-700x"
+    ],
+    "notes": "Head weight includes yoke."
+  },
+  {
+    "id": "aputure.storm-1000c",
+    "brand": "Aputure",
+    "model": "STORM 1000c",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 1440,
+    "weightKg": 9.66,
+    "psu": {
+      "external": true,
+      "weightKg": 6.12,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 33.5,
+      "w": 23.2,
+      "h": 25.1
+    },
+    "headCableM": 7.5,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "https://aputure.com/en-US/products/storm-1000c"
+    ],
+    "notes": "Head weight includes yoke. Head cable 7.5 m."
+  },
+  {
+    "id": "aputure.storm-1200x",
+    "brand": "Aputure",
+    "model": "STORM 1200x",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 1550,
+    "weightKg": 9.5,
+    "psu": {
+      "external": true,
+      "weightKg": 5.92,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 33.4,
+      "w": 33.6,
+      "h": 25.0
+    },
+    "headCableM": 7.5,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "https://aputure.com/en-US/products/storm-1200x"
+    ],
+    "notes": "Head weight includes yoke. 8-pin weatherproof head cable 7.5 m (1.81 kg)."
+  },
+  {
+    "id": "aputure.storm-cs32",
+    "brand": "Aputure",
+    "model": "STORM CS32",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 3200,
+    "weightKg": 16.8,
+    "psu": {
+      "external": true,
+      "weightKg": 10.8,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 37.2,
+      "w": 38.3,
+      "h": 35.8
+    },
+    "headCableM": 7.5,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "https://aputure.com/en-US/products/storm-cs32"
+    ],
+    "notes": "Head without yoke; with yoke 19.8 kg. 2600 W output. Head cable 7.5 m (daisy chain up to 45 m)."
+  },
+  {
+    "id": "aputure.storm-xt52",
+    "brand": "Aputure",
+    "model": "STORM XT52",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 6000,
+    "weightKg": 27.8,
+    "psu": {
+      "external": true,
+      "weightKg": 13.4,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 55.0,
+      "w": 35.3,
+      "h": 36.2
+    },
+    "headCableM": 7.5,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "https://aputure.com/en-US/products/storm-xt52"
+    ],
+    "notes": "5600 W standard / 6000 W extended-cable mode at 180–240 V; 3200 W at 100–179 V. 4800 W LED output. Head without yoke; with yoke 31.3 kg. Head cable 7.5 or 15 m."
+  }
+]

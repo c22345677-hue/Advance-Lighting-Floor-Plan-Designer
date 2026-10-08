@@ -7,6 +7,7 @@ const fx = (id: string, powerW: number | null, weightKg: number | null, extra: P
   brand: 'Test',
   model: id,
   family: 'cob',
+  mount: null,
   powerW,
   weightKg,
   psu: { external: true, weightKg: null, ipRating: null },

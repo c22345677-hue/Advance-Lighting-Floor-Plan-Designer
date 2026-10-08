@@ -1,7 +1,8 @@
 # Gear catalogue
 
-Data files: `fixtures/<brand>.json` (array of `Fixture`) and `stands/<brand>.json` (array of
-`Stand`). Types: `src/catalog/schema.ts`. Rules: `src/catalog/classify.ts`.
+Data files: `fixtures/<brand>.json` (array of `Fixture`), `modifiers/modifiers.json` (array of
+`Modifier`) and later `stands/<brand>.json` (array of `Stand`). Review sheet: `fixtures.csv`
+(regenerate with `npx vite-node scripts/export-catalog.ts`). Types: `src/catalog/schema.ts`. Rules: `src/catalog/classify.ts`.
 
 Rule for every record: **unknown = `null`, never guessed.** Each record lists its `sources`.
 
@@ -15,7 +16,12 @@ Rule for every record: **unknown = `null`, never guessed.** Each record lists it
 | `sizeCm` | Size when deployed (l × w × h) |
 | `headCableM` | Cable length, power supply → fixture |
 | `ipRating` | Fixture IP rating (weather sealing) |
-| `batteries[]` | Battery types it runs on and **max output % on each** |
+| `batteries` | Battery types it runs on and **max output % on each**. `[]` = mains only, `null` = not stated |
+| `mount` | Accessory mount (bowens, nl, fm, fe, be, g-mount, aputure-mount); `null` = not stated |
+
+## Modifier fields
+`type`, `weightKg`, `sizeCm`, `mounts` (fits any light with that mount) and `fitsFixtureIds`
+(fits only those models). A light's **rig weight** = head weight + attached modifiers.
 
 ## Stand fields
 `weightKg`, `loadCapacityKg`, `minHeightCm` (closed), `maxHeightCm` (fully extended).

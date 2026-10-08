@@ -1,1 +1,266 @@
-[]
+[
+  {
+    "id": "nanlux.evoke-5c",
+    "brand": "Nanlux",
+    "model": "Evoke 5C",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 6,
+    "weightKg": 0.16,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 5.6,
+      "w": 4.4,
+      "h": 4.5
+    },
+    "headCableM": null,
+    "ipRating": "IP67",
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "50 min at 100%; 2 h 36 min at 1%"
+      },
+      {
+        "type": "Magnetic battery grip BT-BG-EV5C",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.2",
+      "NANLUX Catalogue NL202608-1, p.4"
+    ],
+    "notes": "DC 5 V/2 A (USB-C). Also E27/B22 socket adapters. Magnetic yoke 62 g."
+  },
+  {
+    "id": "nanlux.evoke-150c",
+    "brand": "Nanlux",
+    "model": "Evoke 150C",
+    "family": "cob",
+    "mount": "fe",
+    "powerW": 150,
+    "weightKg": 2.11,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 20.9,
+      "w": 14.7,
+      "h": 12.7
+    },
+    "headCableM": null,
+    "ipRating": "IP66",
+    "batteries": [
+      {
+        "type": "V-mount 14.8 V",
+        "maxOutputPct": 100,
+        "note": "133 Wh: 14 min at 100% / 45 min at 75%; 155.4 Wh: 52 min at 100%"
+      },
+      {
+        "type": "V-mount 26 V 270 Wh",
+        "maxOutputPct": 100,
+        "note": "88 min at 100%"
+      }
+    ],
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.5",
+      "NANLUX Catalogue NL202608-1, p.7"
+    ],
+    "notes": "All-in-one: AC 100–240 V or DC 14.4–28 V / USB-C PD 60 W min. Yoke 0.54 kg (2.65 kg with yoke). AC cable 4.5 m."
+  },
+  {
+    "id": "nanlux.evoke-600c",
+    "brand": "Nanlux",
+    "model": "Evoke 600C",
+    "family": "cob",
+    "mount": "be",
+    "powerW": 600,
+    "weightKg": 7.26,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 35.8,
+      "w": 24.6,
+      "h": 20.5
+    },
+    "headCableM": null,
+    "ipRating": "IP66",
+    "batteries": [],
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.8",
+      "NANLUX Catalogue NL202608-1, p.10"
+    ],
+    "notes": "All-in-one: AC 100–240 V or DC 48 V/12.5 A. Yoke 1.02 kg (8.28 kg with yoke). AC cable 6 m. V-mount battery power station available as accessory."
+  },
+  {
+    "id": "nanlux.evoke-900c",
+    "brand": "Nanlux",
+    "model": "Evoke 900C",
+    "family": "cob",
+    "mount": "nl",
+    "powerW": 940,
+    "weightKg": 7.7,
+    "psu": {
+      "external": true,
+      "weightKg": 4.5,
+      "ipRating": "IP55"
+    },
+    "sizeCm": {
+      "l": 33.0,
+      "w": 24.1,
+      "h": 21.0
+    },
+    "headCableM": 7.5,
+    "ipRating": "IP55",
+    "batteries": [],
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.11",
+      "NANLUX Catalogue NL202608-1, p.12"
+    ],
+    "notes": "DC 48 V/18.75 A or AC. Size without COB protective cap. Power supply 146×125×344 mm. DC connection cable 7.5 m, AC cable 6 m."
+  },
+  {
+    "id": "nanlux.evoke-1200b",
+    "brand": "Nanlux",
+    "model": "Evoke 1200B",
+    "family": "cob",
+    "mount": "nl",
+    "powerW": 1200,
+    "weightKg": 7.75,
+    "psu": {
+      "external": true,
+      "weightKg": 10.5,
+      "ipRating": "IP54"
+    },
+    "sizeCm": {
+      "l": 50.3,
+      "w": 37.0,
+      "h": 21.0
+    },
+    "headCableM": 7.5,
+    "ipRating": "IP54",
+    "batteries": [],
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.13",
+      "NANLUX Catalogue NL202608-1, p.14"
+    ],
+    "notes": "DC 48 V/25 A or AC. Light fixture weight; yoke 1.84 kg; size includes yoke. DC cable 7.5 m, AC cable 6 m."
+  },
+  {
+    "id": "nanlux.evoke-2400b",
+    "brand": "Nanlux",
+    "model": "Evoke 2400B",
+    "family": "cob",
+    "mount": "nl",
+    "powerW": 2400,
+    "weightKg": 15,
+    "psu": {
+      "external": true,
+      "weightKg": 11.58,
+      "ipRating": "IP55"
+    },
+    "sizeCm": {
+      "l": 42.7,
+      "w": 31.6,
+      "h": 26.5
+    },
+    "headCableM": 7.5,
+    "ipRating": "IP55",
+    "batteries": [],
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.15",
+      "NANLUX Catalogue NL202608-1, p.16"
+    ],
+    "notes": "DC 48 V/26 A ×2 or AC 26 A max. Size/weight without COB protective cap. DC cable 7.5 m."
+  },
+  {
+    "id": "nanlux.evoke-5000b",
+    "brand": "Nanlux",
+    "model": "Evoke 5000B",
+    "family": "cob",
+    "mount": "nl",
+    "powerW": 5200,
+    "weightKg": 43.12,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 55.7,
+      "w": 45.7,
+      "h": 42.1
+    },
+    "headCableM": null,
+    "ipRating": "IP66",
+    "batteries": [],
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.17",
+      "NANLUX Catalogue NL202608-1, p.18"
+    ],
+    "notes": "All-in-one (head, control and PSU integrated). 5000 W at 200–240 V, 5200 W at 100–125 V; AC 52 A max. Yoke 3.35 kg. AC cable 2 m (EU) / 7.5 m (US)."
+  },
+  {
+    "id": "nanlux.matrix-2500b",
+    "brand": "Nanlux",
+    "model": "Matrix 2500B",
+    "family": "cob",
+    "mount": null,
+    "powerW": 2500,
+    "weightKg": 17,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 39.9,
+      "w": 39.9,
+      "h": 23.4
+    },
+    "headCableM": null,
+    "ipRating": "IP66",
+    "batteries": [],
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.32",
+      "NANLUX Catalogue NL202608-1, p.33"
+    ],
+    "notes": "Four-head all-in-one, AC 28 A. Yoke 2.25 kg. Motorized Fresnel FL-MT25 (4.6 kg) included. AC cable 7.5 m."
+  },
+  {
+    "id": "nanlux.matrix-2500c",
+    "brand": "Nanlux",
+    "model": "Matrix 2500C",
+    "family": "cob",
+    "mount": null,
+    "powerW": 2500,
+    "weightKg": 18.5,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 39.9,
+      "w": 39.9,
+      "h": 23.4
+    },
+    "headCableM": null,
+    "ipRating": "IP66",
+    "batteries": [],
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.32",
+      "NANLUX Catalogue NL202608-1, p.33"
+    ],
+    "notes": "Four-head all-in-one, AC 28 A. Yoke 2.25 kg. Motorized Fresnel FL-MT25 (4.6 kg) included. AC cable 7.5 m."
+  }
+]

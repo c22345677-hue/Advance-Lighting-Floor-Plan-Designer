@@ -1,0 +1,1071 @@
+[
+  {
+    "id": "nanlux.rf-fe-pb-fe30-parallel-beam-reflector",
+    "brand": "Nanlux",
+    "model": "RF-FE-PB FE30 Parallel Beam Reflector",
+    "type": "parallel-beam",
+    "mounts": [
+      "fe",
+      "fm"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.38,
+    "sizeCm": {
+      "l": 33.0,
+      "w": 33.0,
+      "h": 33.6
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.21"
+    ],
+    "notes": "8° beam, IP66."
+  },
+  {
+    "id": "nanlux.fl-12-fresnel-lens",
+    "brand": "Nanlux",
+    "model": "FL-12 Fresnel Lens",
+    "type": "fresnel",
+    "mounts": [
+      "fe",
+      "fm"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.38,
+    "sizeCm": {
+      "l": 15.4,
+      "w": 15.4,
+      "h": 6.4
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.21"
+    ],
+    "notes": "15–30°, IP66."
+  },
+  {
+    "id": "nanlux.fl-12e-motorized-fresnel-15-35",
+    "brand": "Nanlux",
+    "model": "FL-12E Motorized Fresnel 15–35°",
+    "type": "fresnel",
+    "mounts": [
+      "fe"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.01,
+    "sizeCm": {
+      "l": 15.1,
+      "w": 17.8,
+      "h": 18.4
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.22"
+    ],
+    "notes": "IP66."
+  },
+  {
+    "id": "nanlux.md-db-fe15-diffusion-ball-15cm",
+    "brand": "Nanlux",
+    "model": "MD-DB-FE15 Diffusion Ball 15cm",
+    "type": "dome",
+    "mounts": [
+      "fe",
+      "fm"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.13,
+    "sizeCm": {
+      "l": 15.1,
+      "w": 15.1,
+      "h": 16.0
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.22"
+    ]
+  },
+  {
+    "id": "nanlux.md-db-be20-diffusion-ball-20cm",
+    "brand": "Nanlux",
+    "model": "MD-DB-BE20 Diffusion Ball 20cm",
+    "type": "dome",
+    "mounts": [
+      "be",
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.23,
+    "sizeCm": {
+      "l": 20.0,
+      "w": 20.0,
+      "h": 23.3
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.22"
+    ]
+  },
+  {
+    "id": "nanlux.rf-be-pb-be55-parallel-beam-reflector",
+    "brand": "Nanlux",
+    "model": "RF-BE-PB BE55 Parallel Beam Reflector",
+    "type": "parallel-beam",
+    "mounts": [
+      "be",
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 5.56,
+    "sizeCm": {
+      "l": 60.3,
+      "w": 60.3,
+      "h": 47.1
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.23"
+    ],
+    "notes": "8° beam, IP66. For fixtures ≤800 W."
+  },
+  {
+    "id": "nanlux.as-nla-be-nl-to-be-mount-adapter",
+    "brand": "Nanlux",
+    "model": "AS-NLA-BE NL to BE Mount Adapter",
+    "type": "adapter",
+    "mounts": [
+      "be",
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.44,
+    "sizeCm": {
+      "l": 22.4,
+      "w": 18.5,
+      "h": 6.0
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.23"
+    ],
+    "notes": "Lets BE/Bowens fixtures take NL-mount modifiers."
+  },
+  {
+    "id": "nanlux.fl-22e-motorized-fresnel-15-50",
+    "brand": "Nanlux",
+    "model": "FL-22E Motorized Fresnel 15–50°",
+    "type": "fresnel",
+    "mounts": [
+      "be",
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 3.94,
+    "sizeCm": {
+      "l": 31.1,
+      "w": 29.6,
+      "h": 26.5
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.24"
+    ],
+    "notes": "IP66. For fixtures ≤800 W."
+  },
+  {
+    "id": "nanlux.fl-35yk-fresnel-lens-11-45",
+    "brand": "Nanlux",
+    "model": "FL-35YK Fresnel Lens 11–45°",
+    "type": "fresnel",
+    "mounts": [
+      "nl"
+    ],
+    "fitsFixtureIds": [
+      "nanlux.evoke-900c",
+      "nanlux.evoke-1200b"
+    ],
+    "weightKg": 10.84,
+    "sizeCm": {
+      "l": 57.1,
+      "w": 31.0,
+      "h": 71.7
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.19",
+      "NANLUX Catalogue NL202608-1, p.25"
+    ],
+    "notes": "With centre-mounted yoke."
+  },
+  {
+    "id": "nanlux.fl-35-po-pole-operated-fresnel",
+    "brand": "Nanlux",
+    "model": "FL-35-PO Pole-Operated Fresnel",
+    "type": "fresnel",
+    "mounts": [
+      "nl"
+    ],
+    "fitsFixtureIds": [
+      "nanlux.evoke-900c",
+      "nanlux.evoke-1200b"
+    ],
+    "weightKg": 16.14,
+    "sizeCm": {
+      "l": 84.8,
+      "w": 54.4,
+      "h": 33.7
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.19",
+      "NANLUX Catalogue NL202608-1, p.25"
+    ]
+  },
+  {
+    "id": "nanlux.fl-28-fresnel-lens-17-43",
+    "brand": "Nanlux",
+    "model": "FL-28 Fresnel Lens 17–43°",
+    "type": "fresnel",
+    "mounts": [
+      "nl"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 3.86,
+    "sizeCm": {
+      "l": 42.2,
+      "w": 36.1,
+      "h": 22.6
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.19",
+      "NANLUX Catalogue NL202608-1, p.26"
+    ],
+    "notes": "Evoke 2400B/5000B limited to ~1200 W with this lens."
+  },
+  {
+    "id": "nanlux.fl-35e-motorized-fresnel-15-46",
+    "brand": "Nanlux",
+    "model": "FL-35E Motorized Fresnel 15–46°",
+    "type": "fresnel",
+    "mounts": [
+      "nl"
+    ],
+    "fitsFixtureIds": [
+      "nanlux.evoke-2400b",
+      "nanlux.evoke-5000b"
+    ],
+    "weightKg": 10.0,
+    "sizeCm": {
+      "l": 43.0,
+      "w": 49.0,
+      "h": 33.0
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.19",
+      "NANLUX Catalogue NL202608-1, p.27"
+    ],
+    "notes": "IP55. Evoke 5000B up to 2400 W."
+  },
+  {
+    "id": "nanlux.fl-45e-motorized-fresnel-16-50",
+    "brand": "Nanlux",
+    "model": "FL-45E Motorized Fresnel 16–50°",
+    "type": "fresnel",
+    "mounts": [
+      "nl"
+    ],
+    "fitsFixtureIds": [
+      "nanlux.evoke-5000b"
+    ],
+    "weightKg": 12.25,
+    "sizeCm": {
+      "l": 56.3,
+      "w": 57.8,
+      "h": 34.2
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.19",
+      "NANLUX Catalogue NL202608-1, p.27"
+    ],
+    "notes": "IP55."
+  },
+  {
+    "id": "nanlux.pj-nlm-15-30-projection-attachment",
+    "brand": "Nanlux",
+    "model": "PJ-NLM-15-30 Projection Attachment",
+    "type": "projection",
+    "mounts": [
+      "nl"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 11.85,
+    "sizeCm": {
+      "l": 63.0,
+      "w": 39.2,
+      "h": 51.5
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.19",
+      "NANLUX Catalogue NL202608-1, p.28"
+    ],
+    "notes": "Size extended at 15°; 451.5 mm long at 30°."
+  },
+  {
+    "id": "nanlux.rf-nl-pb-nl70-parallel-beam-reflector",
+    "brand": "Nanlux",
+    "model": "RF-NL-PB NL70 Parallel Beam Reflector",
+    "type": "parallel-beam",
+    "mounts": [
+      "nl"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 9.37,
+    "sizeCm": {
+      "l": 77.4,
+      "w": 77.4,
+      "h": 71.1
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.19",
+      "NANLUX Catalogue NL202608-1, p.28"
+    ],
+    "notes": "~6° beam."
+  },
+  {
+    "id": "nanlux.as-pja-ev-projection-adapter",
+    "brand": "Nanlux",
+    "model": "AS-PJA-EV Projection Adapter",
+    "type": "adapter",
+    "mounts": [
+      "nl"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 4.724,
+    "sizeCm": {
+      "l": 44.7,
+      "w": 14.9,
+      "h": 52.4
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.29"
+    ],
+    "notes": "ETC barrel/lens compatibility."
+  },
+  {
+    "id": "nanlux.fl-mt25-motorized-fresnel-16-48",
+    "brand": "Nanlux",
+    "model": "FL-MT25 Motorized Fresnel 16–48°",
+    "type": "fresnel",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "nanlux.matrix-2500b",
+      "nanlux.matrix-2500c"
+    ],
+    "weightKg": 4.6,
+    "sizeCm": {
+      "l": 40.0,
+      "w": 40.0,
+      "h": 18.5
+    },
+    "sources": [
+      "NANLUX Catalogue NL202608-1, p.34"
+    ],
+    "notes": "Included with Matrix 2500. IP66."
+  },
+  {
+    "id": "nanlite.pj-fmm-18-36-projection-attachment",
+    "brand": "Nanlite",
+    "model": "PJ-FMM-18-36 Projection Attachment",
+    "type": "projection",
+    "mounts": [
+      "fm"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 4.18,
+    "sizeCm": {
+      "l": 38.5,
+      "w": 19.1,
+      "h": 19.2
+    },
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.32"
+    ]
+  },
+  {
+    "id": "nanlite.pj-fmm-projection-attachment-no-lens",
+    "brand": "Nanlite",
+    "model": "PJ-FMM Projection Attachment (no lens)",
+    "type": "projection",
+    "mounts": [
+      "fm"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.89,
+    "sizeCm": {
+      "l": 21.5,
+      "w": 16.0,
+      "h": 23.5
+    },
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.33"
+    ],
+    "notes": "Lenses: 10° 1.93 kg, 19° 0.64 kg, 36° 0.69 kg, 50° 0.68 kg."
+  },
+  {
+    "id": "nanlite.pj-bm-25-45-projection-attachment",
+    "brand": "Nanlite",
+    "model": "PJ-BM-25-45 Projection Attachment",
+    "type": "projection",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 2.68,
+    "sizeCm": {
+      "l": 38.4,
+      "w": 17.2,
+      "h": 13.8
+    },
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.34"
+    ],
+    "notes": "For Bowens fixtures below 800 W."
+  },
+  {
+    "id": "nanlite.pj-bm-projection-attachment-no-lens",
+    "brand": "Nanlite",
+    "model": "PJ-BM Projection Attachment (no lens)",
+    "type": "projection",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 4.2,
+    "sizeCm": {
+      "l": 31.4,
+      "w": 26.7,
+      "h": 44.1
+    },
+    "sources": [
+      "NANLITE Catalogue 2026-05, p.35"
+    ],
+    "notes": "Lenses: 19° 3.8 kg, 36° 3.1 kg. For fixtures below 800 W."
+  },
+  {
+    "id": "godox.gp19k-projection-attachment",
+    "brand": "Godox",
+    "model": "GP19K Projection Attachment",
+    "type": "projection",
+    "mounts": [
+      "g-mount"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 11.6,
+    "sizeCm": {
+      "l": 41.8,
+      "w": 64.7,
+      "h": 72.7
+    },
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.115"
+    ],
+    "notes": "Excluding lens. Lenses: 19° 9.94 kg, 26° 8.41 kg, 36° 8.23 kg."
+  },
+  {
+    "id": "godox.bp-19k-projection-attachment",
+    "brand": "Godox",
+    "model": "BP-19K Projection Attachment",
+    "type": "projection",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 5.4,
+    "sizeCm": {
+      "l": 30.3,
+      "w": 22.7,
+      "h": 20.7
+    },
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.116"
+    ],
+    "notes": "Excluding lens. Lenses: 19° 1.9 kg, 26° 1.7 kg, 36° 2 kg."
+  },
+  {
+    "id": "godox.bf10-fresnel-lens-10-35",
+    "brand": "Godox",
+    "model": "BF10 Fresnel Lens 10–35°",
+    "type": "fresnel",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 3.1,
+    "sizeCm": {
+      "l": 29.6,
+      "w": 29.6,
+      "h": 14.5
+    },
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.119"
+    ]
+  },
+  {
+    "id": "godox.bf12-fresnel-lens-15-50",
+    "brand": "Godox",
+    "model": "BF12 Fresnel Lens 15–50°",
+    "type": "fresnel",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 3.95,
+    "sizeCm": {
+      "l": 33.0,
+      "w": 38.0,
+      "h": 8.0
+    },
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.119"
+    ]
+  },
+  {
+    "id": "godox.gf14-fresnel-lens-15-45",
+    "brand": "Godox",
+    "model": "GF14 Fresnel Lens 15–45°",
+    "type": "fresnel",
+    "mounts": [
+      "g-mount"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 9.68,
+    "sizeCm": {
+      "l": 47.1,
+      "w": 42.6,
+      "h": 23.5
+    },
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.119"
+    ]
+  },
+  {
+    "id": "godox.gf18m-motorized-fresnel-15-60",
+    "brand": "Godox",
+    "model": "GF18M Motorized Fresnel 15–60°",
+    "type": "fresnel",
+    "mounts": [
+      "g-mount"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 17.3,
+    "sizeCm": {
+      "l": 59.7,
+      "w": 60.6,
+      "h": 37.6
+    },
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.118"
+    ],
+    "notes": "Without U-bracket and barndoor (barndoor 5.1 kg). IPX5."
+  },
+  {
+    "id": "godox.beamlight-b60",
+    "brand": "Godox",
+    "model": "BeamLight B60",
+    "type": "parallel-beam",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 9.8,
+    "sizeCm": {
+      "l": 60,
+      "w": 60,
+      "h": 50
+    },
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.112"
+    ],
+    "notes": "5° parallel beam. Size from catalogue drawing (23.6 × 19.7 in)."
+  },
+  {
+    "id": "godox.beamlight-max60",
+    "brand": "Godox",
+    "model": "BeamLight Max60",
+    "type": "parallel-beam",
+    "mounts": [
+      "g-mount"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 9.8,
+    "sizeCm": {
+      "l": 60,
+      "w": 60,
+      "h": 50
+    },
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.112"
+    ],
+    "notes": "5° parallel beam. Size from catalogue drawing."
+  },
+  {
+    "id": "aputure.aputure-mount-20-reflector",
+    "brand": "Aputure",
+    "model": "Aputure Mount 20° Reflector",
+    "type": "reflector",
+    "mounts": [
+      "aputure-mount"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 3.8,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/electro-storm-cs15"
+    ]
+  },
+  {
+    "id": "aputure.aputure-mount-35-reflector",
+    "brand": "Aputure",
+    "model": "Aputure Mount 35° Reflector",
+    "type": "reflector",
+    "mounts": [
+      "aputure-mount"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.5,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/electro-storm-cs15"
+    ]
+  },
+  {
+    "id": "aputure.aputure-mount-50-reflector",
+    "brand": "Aputure",
+    "model": "Aputure Mount 50° Reflector",
+    "type": "reflector",
+    "mounts": [
+      "aputure-mount"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.2,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/electro-storm-cs15"
+    ]
+  },
+  {
+    "id": "aputure.barn-doors-for-aputure-mount-reflectors-35-50",
+    "brand": "Aputure",
+    "model": "Barn Doors for Aputure Mount Reflectors (35°/50°)",
+    "type": "barndoors",
+    "mounts": [
+      "aputure-mount"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.5,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/electro-storm-cs15"
+    ]
+  },
+  {
+    "id": "aputure.storm-1000c-45-reflector",
+    "brand": "Aputure",
+    "model": "STORM 1000c 45° Reflector",
+    "type": "reflector",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.storm-1000c"
+    ],
+    "weightKg": 0.4,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/storm-1000c"
+    ]
+  },
+  {
+    "id": "aputure.storm-400x-35-reflector",
+    "brand": "Aputure",
+    "model": "STORM 400x 35° Reflector",
+    "type": "reflector",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.storm-400x"
+    ],
+    "weightKg": 0.25,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/storm-400x"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-inflatable-clear-softbox-1x2",
+    "brand": "Aputure",
+    "model": "INFINIMAT Inflatable Clear Softbox 1x2",
+    "type": "softbox",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-1x2"
+    ],
+    "weightKg": 0.59,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-1x2-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-light-control-skirt-1x2",
+    "brand": "Aputure",
+    "model": "INFINIMAT Light Control Skirt 1x2",
+    "type": "skirt",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-1x2"
+    ],
+    "weightKg": 0.49,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-1x2-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-light-control-grid-1x2",
+    "brand": "Aputure",
+    "model": "INFINIMAT Light Control Grid 1x2",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-1x2"
+    ],
+    "weightKg": 0.46,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-1x2-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-inflatable-clear-softbox-1x4",
+    "brand": "Aputure",
+    "model": "INFINIMAT Inflatable Clear Softbox 1x4",
+    "type": "softbox",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-1x4"
+    ],
+    "weightKg": 0.95,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-1x4-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-light-control-skirt-1x4",
+    "brand": "Aputure",
+    "model": "INFINIMAT Light Control Skirt 1x4",
+    "type": "skirt",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-1x4"
+    ],
+    "weightKg": 0.78,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-1x4-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-light-control-grid-1x4",
+    "brand": "Aputure",
+    "model": "INFINIMAT Light Control Grid 1x4",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-1x4"
+    ],
+    "weightKg": 0.71,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-1x4-with-clear-softbox"
+    ],
+    "notes": "1x4 grid listed as \"0.71g\" on site; 0.71 kg used."
+  },
+  {
+    "id": "aputure.infinimat-inflatable-clear-softbox-2x4",
+    "brand": "Aputure",
+    "model": "INFINIMAT Inflatable Clear Softbox 2x4",
+    "type": "softbox",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-2x4"
+    ],
+    "weightKg": 1.38,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-2x4-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-light-control-skirt-2x4",
+    "brand": "Aputure",
+    "model": "INFINIMAT Light Control Skirt 2x4",
+    "type": "skirt",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-2x4"
+    ],
+    "weightKg": 0.81,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-2x4-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-light-control-grid-2x4",
+    "brand": "Aputure",
+    "model": "INFINIMAT Light Control Grid 2x4",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-2x4"
+    ],
+    "weightKg": 0.93,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-2x4-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-inflatable-clear-softbox-4x4",
+    "brand": "Aputure",
+    "model": "INFINIMAT Inflatable Clear Softbox 4x4",
+    "type": "softbox",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-4x4"
+    ],
+    "weightKg": 2.26,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-4x4-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-light-control-skirt-4x4",
+    "brand": "Aputure",
+    "model": "INFINIMAT Light Control Skirt 4x4",
+    "type": "skirt",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-4x4"
+    ],
+    "weightKg": 1.15,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-4x4-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-light-control-grid-4x4",
+    "brand": "Aputure",
+    "model": "INFINIMAT Light Control Grid 4x4",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-4x4"
+    ],
+    "weightKg": 1.25,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-4x4-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-inflatable-clear-softbox-8x8",
+    "brand": "Aputure",
+    "model": "INFINIMAT Inflatable Clear Softbox 8x8",
+    "type": "softbox",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-8x8"
+    ],
+    "weightKg": 10.34,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-8x8-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-light-control-skirt-8x8",
+    "brand": "Aputure",
+    "model": "INFINIMAT Light Control Skirt 8x8",
+    "type": "skirt",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-8x8"
+    ],
+    "weightKg": 3.45,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-8x8-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-light-control-grid-8x8",
+    "brand": "Aputure",
+    "model": "INFINIMAT Light Control Grid 8x8",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-8x8"
+    ],
+    "weightKg": 3.5,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-8x8-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-inflatable-clear-softbox-20x20",
+    "brand": "Aputure",
+    "model": "INFINIMAT Inflatable Clear Softbox 20x20",
+    "type": "softbox",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-20x20"
+    ],
+    "weightKg": 36.73,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-20x20-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-light-control-skirt-20x20",
+    "brand": "Aputure",
+    "model": "INFINIMAT Light Control Skirt 20x20",
+    "type": "skirt",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-20x20"
+    ],
+    "weightKg": 12.15,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-20x20-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "aputure.infinimat-light-control-grid-20x20",
+    "brand": "Aputure",
+    "model": "INFINIMAT Light Control Grid 20x20",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.infinimat-20x20"
+    ],
+    "weightKg": 6.15,
+    "sizeCm": null,
+    "sources": [
+      "https://aputure.com/en-US/products/aputure-infinimat-20x20-with-clear-softbox"
+    ]
+  },
+  {
+    "id": "amaran.pano-60c-softbox",
+    "brand": "amaran",
+    "model": "Pano 60c Softbox",
+    "type": "softbox",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.pano-60c"
+    ],
+    "weightKg": 0.26,
+    "sizeCm": null,
+    "sources": [
+      "https://amarancreators.com/pages/amaran-pano-60c"
+    ]
+  },
+  {
+    "id": "amaran.pano-60c-light-control-grid",
+    "brand": "amaran",
+    "model": "Pano 60c Light Control Grid",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.pano-60c"
+    ],
+    "weightKg": 0.08,
+    "sizeCm": null,
+    "sources": [
+      "https://amarancreators.com/pages/amaran-pano-60c"
+    ]
+  },
+  {
+    "id": "amaran.pano-120c-softbox",
+    "brand": "amaran",
+    "model": "Pano 120c Softbox",
+    "type": "softbox",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.pano-120c"
+    ],
+    "weightKg": 0.35,
+    "sizeCm": null,
+    "sources": [
+      "https://amarancreators.com/pages/amaran-pano-120c"
+    ]
+  },
+  {
+    "id": "amaran.pano-120c-light-control-grid",
+    "brand": "amaran",
+    "model": "Pano 120c Light Control Grid",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.pano-120c"
+    ],
+    "weightKg": 0.15,
+    "sizeCm": null,
+    "sources": [
+      "https://amarancreators.com/pages/amaran-pano-120c"
+    ]
+  },
+  {
+    "id": "amaran.p60-softbox",
+    "brand": "amaran",
+    "model": "P60 Softbox",
+    "type": "softbox",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.p60c",
+      "amaran.p60x"
+    ],
+    "weightKg": 0.17,
+    "sizeCm": null,
+    "sources": [
+      "https://amarancreators.com/pages/amaran-p60c",
+      "https://amarancreators.com/pages/amaran-p60x"
+    ]
+  },
+  {
+    "id": "amaran.f22-light-control-grid",
+    "brand": "amaran",
+    "model": "F22 Light Control Grid",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.f22c",
+      "amaran.f22x"
+    ],
+    "weightKg": 0.116,
+    "sizeCm": null,
+    "sources": [
+      "https://amarancreators.com/pages/amaran-f22c"
+    ]
+  },
+  {
+    "id": "amaran.ace-light-control-grid",
+    "brand": "amaran",
+    "model": "Ace Light Control Grid",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.ace-25c",
+      "amaran.ace-25x"
+    ],
+    "weightKg": 0.018,
+    "sizeCm": null,
+    "sources": [
+      "https://amarancreators.com/pages/amaran-ace-25c"
+    ]
+  }
+]

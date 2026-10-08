@@ -1,1 +1,1057 @@
-[]
+[
+  {
+    "id": "amaran.100d-s",
+    "brand": "amaran",
+    "model": "100d S",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 110.9,
+    "weightKg": 1.42,
+    "psu": {
+      "external": true,
+      "weightKg": 0.49,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 20.7,
+      "w": 11.5,
+      "h": 11.5
+    },
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-100d-s"
+    ],
+    "notes": "Site lists head size as \"207 x 115 x 115cm\" — read as mm. 48 V DC input (2-Bay Battery Power Station accessory). Power cable 3 m."
+  },
+  {
+    "id": "amaran.100x-s",
+    "brand": "amaran",
+    "model": "100x S",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 113,
+    "weightKg": 1.42,
+    "psu": {
+      "external": true,
+      "weightKg": 0.49,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 20.7,
+      "w": 11.5,
+      "h": 11.5
+    },
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-100x-s"
+    ],
+    "notes": "Site lists head size in cm — read as mm. 48 V DC input. Power cable 3 m."
+  },
+  {
+    "id": "amaran.150c",
+    "brand": "amaran",
+    "model": "150c",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 180,
+    "weightKg": 2.66,
+    "psu": {
+      "external": true,
+      "weightKg": 0.561,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 25.0,
+      "w": 15.5,
+      "h": 14.2
+    },
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-150c"
+    ],
+    "notes": "48 V DC input; runs from 2-Bay Battery Power Station (sold separately)."
+  },
+  {
+    "id": "amaran.200d-s",
+    "brand": "amaran",
+    "model": "200d S",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 221,
+    "weightKg": 1.56,
+    "psu": {
+      "external": true,
+      "weightKg": 0.79,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 20.7,
+      "w": 11.5,
+      "h": 11.5
+    },
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-200d-s"
+    ],
+    "notes": "Site lists head size in cm — read as mm. 48 V DC input."
+  },
+  {
+    "id": "amaran.200x-s",
+    "brand": "amaran",
+    "model": "200x S",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 229,
+    "weightKg": 1.56,
+    "psu": {
+      "external": true,
+      "weightKg": 0.79,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 20.7,
+      "w": 11.5,
+      "h": 11.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-200x-s"
+    ],
+    "notes": "48 V DC input."
+  },
+  {
+    "id": "amaran.300c",
+    "brand": "amaran",
+    "model": "300c",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 360,
+    "weightKg": 2.63,
+    "psu": {
+      "external": true,
+      "weightKg": 0.888,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 25.0,
+      "w": 15.5,
+      "h": 14.2
+    },
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-300c"
+    ],
+    "notes": "48 V DC input; runs from 2-Bay Battery Power Station (sold separately)."
+  },
+  {
+    "id": "amaran.ace-25c",
+    "brand": "amaran",
+    "model": "Ace 25c",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 41,
+    "weightKg": 0.3255,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 11.8,
+      "w": 7.7,
+      "h": 3.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 7.4 V 33.3 Wh",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-ace-25c"
+    ],
+    "notes": "32 W max output (boost), 41 W max USB-C input."
+  },
+  {
+    "id": "amaran.ace-25x",
+    "brand": "amaran",
+    "model": "Ace 25x",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 41,
+    "weightKg": 0.3255,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 11.8,
+      "w": 7.7,
+      "h": 3.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 7.4 V 33.3 Wh",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-ace-25x"
+    ],
+    "notes": "32 W max output (boost), 41 W max USB-C input."
+  },
+  {
+    "id": "amaran.cob-60d-s",
+    "brand": "amaran",
+    "model": "COB 60d S",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 77,
+    "weightKg": 0.695,
+    "psu": {
+      "external": true,
+      "weightKg": 0.5,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 11.7,
+      "w": 11.1,
+      "h": 11.1
+    },
+    "headCableM": 4.1,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Dual NP-F plate (included)",
+        "maxOutputPct": null
+      },
+      {
+        "type": "V-mount 12–16.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-cob-60d-s"
+    ],
+    "notes": "Power cable 4.1 m. Battery plate 111 g."
+  },
+  {
+    "id": "amaran.cob-60x-s",
+    "brand": "amaran",
+    "model": "COB 60x S",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 78,
+    "weightKg": 0.695,
+    "psu": {
+      "external": true,
+      "weightKg": 0.5,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 11.7,
+      "w": 11.1,
+      "h": 11.1
+    },
+    "headCableM": 4.1,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Dual NP-F plate (included)",
+        "maxOutputPct": null
+      },
+      {
+        "type": "V-mount 12–16.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-cob-60x-s"
+    ],
+    "notes": "Power cable 4.1 m. Battery plate 111 g."
+  },
+  {
+    "id": "amaran.f21c",
+    "brand": "amaran",
+    "model": "F21c",
+    "family": "mat",
+    "mount": null,
+    "powerW": 120,
+    "weightKg": null,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "D-Tap 16.8/26/28.8 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-f21c"
+    ],
+    "notes": "2×1 flexible mat with control box. Weight/size not listed on page. AC cable 4 m."
+  },
+  {
+    "id": "amaran.f21x",
+    "brand": "amaran",
+    "model": "F21x",
+    "family": "mat",
+    "mount": null,
+    "powerW": 120,
+    "weightKg": null,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "D-Tap 16.8/26/28.8 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-f21x"
+    ],
+    "notes": "2×1 flexible mat with control box. Weight/size not listed on page. AC cable 4 m."
+  },
+  {
+    "id": "amaran.f22c",
+    "brand": "amaran",
+    "model": "F22c",
+    "family": "mat",
+    "mount": null,
+    "powerW": 240,
+    "weightKg": 0.88,
+    "psu": {
+      "external": true,
+      "weightKg": 1.2,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 60,
+      "w": 60,
+      "h": 0.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "D-Tap 16.8/26/28.8 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-f22c"
+    ],
+    "notes": "2×2 flexible mat. Control box 1.2 kg + AC power supply 1.1 kg; mounting bracket 0.66 kg; with softbox 2.83 kg. Max power consumption ≤240 W (from F22x page)."
+  },
+  {
+    "id": "amaran.f22x",
+    "brand": "amaran",
+    "model": "F22x",
+    "family": "mat",
+    "mount": null,
+    "powerW": 240,
+    "weightKg": null,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "D-Tap 16.8/26/28.8 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-f22x"
+    ],
+    "notes": "2×2 flexible mat. Weight not listed on page."
+  },
+  {
+    "id": "amaran.go",
+    "brand": "amaran",
+    "model": "GO",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 3,
+    "weightKg": 0.085,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 9.0,
+      "w": 5.8,
+      "h": 1.6
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 3.7 V 2.96 Wh",
+        "maxOutputPct": 100,
+        "note": "1 h 21 min at 100%"
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-go"
+    ]
+  },
+  {
+    "id": "amaran.halo-60x",
+    "brand": "amaran",
+    "model": "Halo 60x",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 63,
+    "weightKg": 0.42,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 13.4,
+      "w": 12.0,
+      "h": 5.8
+    },
+    "headCableM": 2.5,
+    "ipRating": "IP20",
+    "batteries": [
+      {
+        "type": "USB-C PD (e.g. amaran Peak via Ace E-Lock adapter)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-halo-60x"
+    ],
+    "notes": "Adapter cable 2.5 m."
+  },
+  {
+    "id": "amaran.halo-100x",
+    "brand": "amaran",
+    "model": "Halo 100x",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 100,
+    "weightKg": 0.42,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 13.4,
+      "w": 12.0,
+      "h": 5.8
+    },
+    "headCableM": 2.5,
+    "ipRating": "IP20",
+    "batteries": [
+      {
+        "type": "USB-C PD (e.g. amaran Peak via Ace E-Lock adapter)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-halo-100x"
+    ],
+    "notes": "Adapter cable 2.5 m."
+  },
+  {
+    "id": "amaran.halo-200x",
+    "brand": "amaran",
+    "model": "Halo 200x",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 200,
+    "weightKg": 1.95,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 18.0,
+      "w": 14.1,
+      "h": 13.3
+    },
+    "headCableM": null,
+    "ipRating": "IP20",
+    "batteries": [],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-halo-200x"
+    ],
+    "notes": "Integrated AC power, 5 m AC cable."
+  },
+  {
+    "id": "amaran.halo-300x",
+    "brand": "amaran",
+    "model": "Halo 300x",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 305,
+    "weightKg": 2.3,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 22.0,
+      "w": 14.1,
+      "h": 13.3
+    },
+    "headCableM": null,
+    "ipRating": "IP20",
+    "batteries": [],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-halo-300x"
+    ],
+    "notes": "Integrated AC power, 5 m AC cable."
+  },
+  {
+    "id": "amaran.halo-600x",
+    "brand": "amaran",
+    "model": "Halo 600x",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 610,
+    "weightKg": 2.91,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 24.2,
+      "w": 14.1,
+      "h": 13.3
+    },
+    "headCableM": null,
+    "ipRating": "IP20",
+    "batteries": [],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-halo-600x"
+    ],
+    "notes": "Integrated AC power, 5 m AC cable."
+  },
+  {
+    "id": "amaran.p60c",
+    "brand": "amaran",
+    "model": "P60c",
+    "family": "panel",
+    "mount": null,
+    "powerW": null,
+    "weightKg": 1.88,
+    "psu": {
+      "external": true,
+      "weightKg": 0.5,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 27.1,
+      "w": 21.3,
+      "h": 4.34
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F",
+        "maxOutputPct": null
+      },
+      {
+        "type": "D-Tap 12–16.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-p60c"
+    ],
+    "notes": "60 W output; consumption given only as 4.5 A at 15 V DC. Bracket 0.24 kg."
+  },
+  {
+    "id": "amaran.p60x",
+    "brand": "amaran",
+    "model": "P60x",
+    "family": "panel",
+    "mount": null,
+    "powerW": 78,
+    "weightKg": 0.979,
+    "psu": {
+      "external": true,
+      "weightKg": 0.5,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 25.1,
+      "w": 17.5,
+      "h": 3.95
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F",
+        "maxOutputPct": null
+      },
+      {
+        "type": "D-Tap 12–16.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-p60x"
+    ],
+    "notes": "Bracket 0.24 kg."
+  },
+  {
+    "id": "amaran.pano-60c",
+    "brand": "amaran",
+    "model": "Pano 60c",
+    "family": "panel",
+    "mount": null,
+    "powerW": 65,
+    "weightKg": 0.61,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 25.5,
+      "w": 15.5,
+      "h": 3.0
+    },
+    "headCableM": 2.5,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "USB-C PD / amaran Peak via Ace E-Lock",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-pano-60c"
+    ]
+  },
+  {
+    "id": "amaran.pano-120c",
+    "brand": "amaran",
+    "model": "Pano 120c",
+    "family": "panel",
+    "mount": null,
+    "powerW": 140,
+    "weightKg": 1.6,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 35.5,
+      "w": 25.6,
+      "h": 3.6
+    },
+    "headCableM": 2.5,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "USB-C PD / amaran Peak via Ace E-Lock",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-pano-120c"
+    ]
+  },
+  {
+    "id": "amaran.pt1c",
+    "brand": "amaran",
+    "model": "PT1c",
+    "family": "tube",
+    "mount": null,
+    "powerW": 8,
+    "weightKg": 0.315,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": "IP20",
+    "batteries": [
+      {
+        "type": "Built-in 3.7 V 9.6 Wh",
+        "maxOutputPct": 100,
+        "note": "≈70 min at 100%"
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-pt1c"
+    ],
+    "notes": "1 ft pixel tube."
+  },
+  {
+    "id": "amaran.pt2c",
+    "brand": "amaran",
+    "model": "PT2c",
+    "family": "tube",
+    "mount": null,
+    "powerW": 16,
+    "weightKg": 0.705,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": "IP20",
+    "batteries": [
+      {
+        "type": "Built-in 14.8 V 38.48 Wh",
+        "maxOutputPct": 100,
+        "note": "≈170 min at 100%"
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-pt2c"
+    ],
+    "notes": "2 ft pixel tube. 45 W USB-C PD adapter, 1.8 m cable."
+  },
+  {
+    "id": "amaran.pt4c",
+    "brand": "amaran",
+    "model": "PT4c",
+    "family": "tube",
+    "mount": null,
+    "powerW": 32,
+    "weightKg": null,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": "IP20",
+    "batteries": [
+      {
+        "type": "Built-in 14.8 V 77 Wh",
+        "maxOutputPct": 100,
+        "note": "≈170 min at 100%"
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-pt4c"
+    ],
+    "notes": "4 ft pixel tube. Weight not listed on page."
+  },
+  {
+    "id": "amaran.ray-60c",
+    "brand": "amaran",
+    "model": "Ray 60c",
+    "family": "cob",
+    "mount": null,
+    "powerW": 75,
+    "weightKg": 0.5285,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 14.5,
+      "w": 11.5,
+      "h": 4.4
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [
+      {
+        "type": "amaran Peak 75 via Ace E-Lock",
+        "maxOutputPct": 100,
+        "note": "≈46 min at 100%"
+      },
+      {
+        "type": "USB-C PD power bank",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-ray-60c"
+    ],
+    "notes": "60 W output, 75 W USB-C input. Adapter cable 0.5 m, AC cable 4 m."
+  },
+  {
+    "id": "amaran.ray-120c",
+    "brand": "amaran",
+    "model": "Ray 120c",
+    "family": "cob",
+    "mount": null,
+    "powerW": 140,
+    "weightKg": 0.5994,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 14.5,
+      "w": 11.5,
+      "h": 5.1
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [
+      {
+        "type": "amaran Peak via Ace E-Lock",
+        "maxOutputPct": 100,
+        "note": "≈35 min at 100%"
+      },
+      {
+        "type": "USB-C PD power bank",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-ray-120c"
+    ],
+    "notes": "120 W output, 140 W USB-C input. Adapter cable 0.5 m, AC cable 4 m."
+  },
+  {
+    "id": "amaran.ray-360c",
+    "brand": "amaran",
+    "model": "Ray 360c",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 410,
+    "weightKg": 3.3,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 25.5,
+      "w": 14.8,
+      "h": 16.5
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-ray-360c"
+    ],
+    "notes": "Integrated AC, 5 m AC cable. 360 W output."
+  },
+  {
+    "id": "amaran.ray-660c",
+    "brand": "amaran",
+    "model": "Ray 660c",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 750,
+    "weightKg": 5.7,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 29.9,
+      "w": 18.6,
+      "h": 17.9
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-ray-660c"
+    ],
+    "notes": "Integrated AC, 5 m AC cable. 660 W output."
+  },
+  {
+    "id": "amaran.sm5c",
+    "brand": "amaran",
+    "model": "SM5c",
+    "family": "other",
+    "mount": null,
+    "powerW": 20,
+    "weightKg": null,
+    "psu": {
+      "external": true,
+      "weightKg": 0.157,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-sm5c"
+    ],
+    "notes": "5 m pixel LED strip with controller (137 g); kit weight 391 g."
+  },
+  {
+    "id": "amaran.t2c",
+    "brand": "amaran",
+    "model": "T2c",
+    "family": "tube",
+    "mount": null,
+    "powerW": 25,
+    "weightKg": 0.5,
+    "psu": {
+      "external": true,
+      "weightKg": 0.3,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 60,
+      "w": 4.2,
+      "h": 4.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Tube battery grip (included) / D-Tap 12–16.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-t2c"
+    ],
+    "notes": "AC power supply 24 V, AC cable 4 m."
+  },
+  {
+    "id": "amaran.t4c",
+    "brand": "amaran",
+    "model": "T4c",
+    "family": "tube",
+    "mount": null,
+    "powerW": 50,
+    "weightKg": 0.95,
+    "psu": {
+      "external": true,
+      "weightKg": 0.3,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 120,
+      "w": 4.2,
+      "h": 4.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Tube battery grip / D-Tap 12–16.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-t4c"
+    ],
+    "notes": "AC power supply 24 V, AC cable 4 m."
+  },
+  {
+    "id": "amaran.verge",
+    "brand": "amaran",
+    "model": "Verge",
+    "family": "panel",
+    "mount": null,
+    "powerW": 30,
+    "weightKg": 0.94,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 29.3,
+      "w": 22.1,
+      "h": 2.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "USB-C PD 20 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-verge"
+    ],
+    "notes": "Desk light. Power adapter cable 1.8 m."
+  },
+  {
+    "id": "amaran.verge-max",
+    "brand": "amaran",
+    "model": "Verge Max",
+    "family": "panel",
+    "mount": null,
+    "powerW": 65,
+    "weightKg": 3.66,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 60.0,
+      "w": 62.0,
+      "h": 3.6
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "USB-C PD 20 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://amarancreators.com/pages/amaran-verge-max"
+    ],
+    "notes": "Desk light; desk clamp 2.8 kg."
+  }
+]

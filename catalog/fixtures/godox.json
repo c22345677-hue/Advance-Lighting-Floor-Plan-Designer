@@ -1,1 +1,4393 @@
-[]
+[
+  {
+    "id": "godox.ml40bi",
+    "brand": "Godox",
+    "model": "ML40Bi",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 60,
+    "weightKg": 0.422,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 9.7,
+      "w": 4.6,
+      "h": 9.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 2× 3.63 V 4800 mAh",
+        "maxOutputPct": 100,
+        "note": "≈43 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.7"
+    ],
+    "notes": "powerW = USB-C input max (60 W). Weight excludes reflector."
+  },
+  {
+    "id": "godox.ml40r",
+    "brand": "Godox",
+    "model": "ML40R",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 60,
+    "weightKg": 0.422,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 9.7,
+      "w": 4.6,
+      "h": 9.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 2× 3.63 V 4800 mAh",
+        "maxOutputPct": 100,
+        "note": "≈43 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.7"
+    ],
+    "notes": "powerW = USB-C input max (60 W). Weight excludes reflector."
+  },
+  {
+    "id": "godox.ml60iibi",
+    "brand": "Godox",
+    "model": "ML60IIBi",
+    "family": "cob",
+    "mount": null,
+    "powerW": 70,
+    "weightKg": 0.526,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 8.8,
+      "w": 9.2,
+      "h": 11.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F (AK-B01 kit)",
+        "maxOutputPct": null
+      },
+      {
+        "type": "V-mount (AK-B02 kit)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.8"
+    ],
+    "notes": "Weight includes lamp head protective cover."
+  },
+  {
+    "id": "godox.ml100bi",
+    "brand": "Godox",
+    "model": "ML100Bi",
+    "family": "cob",
+    "mount": null,
+    "powerW": null,
+    "weightKg": 0.487,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount (AK-B02 kit)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.9"
+    ],
+    "notes": "Power not stated in catalogue. Also runs from USB-C / power bank."
+  },
+  {
+    "id": "godox.ml100r",
+    "brand": "Godox",
+    "model": "ML100R",
+    "family": "cob",
+    "mount": null,
+    "powerW": 110,
+    "weightKg": 0.465,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 12.2,
+      "w": 4.6,
+      "h": 11.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": null,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.10"
+    ],
+    "notes": "DC 20 V⎓6 A, input power ≈110 W. Bare light weight."
+  },
+  {
+    "id": "godox.ml80bi",
+    "brand": "Godox",
+    "model": "ML80Bi",
+    "family": "cob",
+    "mount": null,
+    "powerW": 120,
+    "weightKg": 0.519,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 9.6,
+      "w": 9.1,
+      "h": 7.4
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "ML-BA 14.4 V 95 Wh",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.11"
+    ],
+    "notes": "powerW from DC input rating 20 V⎓6 A. Bare light weight."
+  },
+  {
+    "id": "godox.ml150bi",
+    "brand": "Godox",
+    "model": "ML150Bi",
+    "family": "cob",
+    "mount": null,
+    "powerW": 166,
+    "weightKg": 0.77,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 9.1,
+      "w": 11.5,
+      "h": 9.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount (ML-VMA plate)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.11"
+    ],
+    "notes": "powerW from DC input 36 V⎓4.6 A max. Bare light weight."
+  },
+  {
+    "id": "godox.ml150rf",
+    "brand": "Godox",
+    "model": "ML150RF",
+    "family": "cob",
+    "mount": null,
+    "powerW": 165,
+    "weightKg": 0.907,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 9.1,
+      "w": 11.5,
+      "h": 9.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "ML-BA",
+        "maxOutputPct": null
+      },
+      {
+        "type": "V-mount (ML-VMA plate)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.12"
+    ],
+    "notes": "PaletteLab full-spectrum. DC 36 V⎓4.6 A, 165 W max."
+  },
+  {
+    "id": "godox.sl200-rf",
+    "brand": "Godox",
+    "model": "SL200 RF",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 230,
+    "weightKg": 3.7,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 23.0,
+      "w": 26.0,
+      "h": 30.4
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.17"
+    ],
+    "notes": "Integrated AC power. Weight excludes reflector."
+  },
+  {
+    "id": "godox.sl300-rf",
+    "brand": "Godox",
+    "model": "SL300 RF",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 300,
+    "weightKg": 4.0,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 23.0,
+      "w": 27.9,
+      "h": 33.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.17"
+    ],
+    "notes": "Integrated AC power. Weight excludes reflector."
+  },
+  {
+    "id": "godox.sl60iid",
+    "brand": "Godox",
+    "model": "SL60IID",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 70,
+    "weightKg": 1.43,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 14.0,
+      "w": 23.6,
+      "h": 21.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.19"
+    ],
+    "notes": "AC powered. Dimensions without reflector."
+  },
+  {
+    "id": "godox.sl60iibi",
+    "brand": "Godox",
+    "model": "SL60IIBi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 75,
+    "weightKg": 1.5,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 14.0,
+      "w": 23.6,
+      "h": 21.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.19"
+    ],
+    "notes": "AC powered. Dimensions without reflector."
+  },
+  {
+    "id": "godox.sl100d",
+    "brand": "Godox",
+    "model": "SL100D",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 100,
+    "weightKg": null,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 24.3,
+      "w": 20.5,
+      "h": 12.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.20"
+    ],
+    "notes": "AC powered. Weight not stated."
+  },
+  {
+    "id": "godox.sl100bi",
+    "brand": "Godox",
+    "model": "SL100Bi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 100,
+    "weightKg": null,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 24.3,
+      "w": 20.5,
+      "h": 12.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.20"
+    ],
+    "notes": "AC powered. Weight not stated."
+  },
+  {
+    "id": "godox.sl150iii",
+    "brand": "Godox",
+    "model": "SL150III",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 160,
+    "weightKg": 2.8,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 34,
+      "w": 20,
+      "h": 16
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.22"
+    ],
+    "notes": "AC powered. Dimensions exclude reflector."
+  },
+  {
+    "id": "godox.sl200iii",
+    "brand": "Godox",
+    "model": "SL200III",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 215,
+    "weightKg": 3.0,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 36.7,
+      "w": 20,
+      "h": 16
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.22"
+    ],
+    "notes": "AC powered. Dimensions exclude reflector."
+  },
+  {
+    "id": "godox.sl300iii",
+    "brand": "Godox",
+    "model": "SL300III",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 330,
+    "weightKg": 3.6,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 36.2,
+      "w": 19.4,
+      "h": 31
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.22"
+    ],
+    "notes": "AC powered. Dimensions exclude reflector."
+  },
+  {
+    "id": "godox.sl150iiibi",
+    "brand": "Godox",
+    "model": "SL150IIIBi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 160,
+    "weightKg": 3.1,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 19.9,
+      "w": 28.5,
+      "h": 28.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.22"
+    ],
+    "notes": "AC powered. Dimensions exclude reflector."
+  },
+  {
+    "id": "godox.sl200iiibi",
+    "brand": "Godox",
+    "model": "SL200IIIBi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 215,
+    "weightKg": 3.25,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 19.9,
+      "w": 31.1,
+      "h": 29.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.22"
+    ],
+    "notes": "AC powered. Dimensions exclude reflector."
+  },
+  {
+    "id": "godox.sl300iiibi",
+    "brand": "Godox",
+    "model": "SL300IIIBi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 330,
+    "weightKg": 3.59,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 19.9,
+      "w": 35.6,
+      "h": 31.6
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.22"
+    ],
+    "notes": "AC powered. Dimensions exclude reflector."
+  },
+  {
+    "id": "godox.fl15bi",
+    "brand": "Godox",
+    "model": "FL15Bi",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 17,
+    "weightKg": 0.253,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 4.5,
+      "w": 3.6,
+      "h": 14.5
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [
+      {
+        "type": "Built-in 3.63 V 17.2 Wh",
+        "maxOutputPct": 100,
+        "note": "≈1 h at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.24"
+    ],
+    "notes": "Handheld video/flash light. powerW = USB-C input max."
+  },
+  {
+    "id": "godox.rs60bi",
+    "brand": "Godox",
+    "model": "RS60Bi",
+    "family": "cob",
+    "mount": null,
+    "powerW": 60,
+    "weightKg": 0.303,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 7.7,
+      "w": 7.7,
+      "h": 9.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "MS60BAT01 14.4 V (detachable)",
+        "maxOutputPct": null
+      },
+      {
+        "type": "NP-F (MS60NPA)",
+        "maxOutputPct": null
+      },
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.27"
+    ],
+    "notes": "Weight without lens reflector and battery. Also E27 socket power."
+  },
+  {
+    "id": "godox.rs60r",
+    "brand": "Godox",
+    "model": "RS60R",
+    "family": "cob",
+    "mount": null,
+    "powerW": 60,
+    "weightKg": 0.311,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 7.7,
+      "w": 7.7,
+      "h": 9.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "MS60BAT01 14.4 V (detachable)",
+        "maxOutputPct": null
+      },
+      {
+        "type": "NP-F (MS60NPA)",
+        "maxOutputPct": null
+      },
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.27"
+    ],
+    "notes": "Weight without lens reflector and battery. Also E27 socket power."
+  },
+  {
+    "id": "godox.rs100bi",
+    "brand": "Godox",
+    "model": "RS100Bi",
+    "family": "cob",
+    "mount": null,
+    "powerW": 140,
+    "weightKg": 0.886,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 23.4,
+      "w": 7.8,
+      "h": 7.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈52 min at full output"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.29"
+    ],
+    "notes": "powerW from USB-C input 28 V⎓5 A. Marketed as outdoor-ready (no IP rating stated)."
+  },
+  {
+    "id": "godox.rs100r",
+    "brand": "Godox",
+    "model": "RS100R",
+    "family": "cob",
+    "mount": null,
+    "powerW": 140,
+    "weightKg": 0.921,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 23.4,
+      "w": 7.8,
+      "h": 7.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈52 min at full output"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.29"
+    ],
+    "notes": "powerW from USB-C input 28 V⎓5 A. Marketed as outdoor-ready (no IP rating stated)."
+  },
+  {
+    "id": "godox.s60bi",
+    "brand": "Godox",
+    "model": "S60Bi",
+    "family": "spot",
+    "mount": null,
+    "powerW": 77,
+    "weightKg": 1.36,
+    "psu": {
+      "external": true,
+      "weightKg": 1.0,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 26.4,
+      "w": 10.7,
+      "h": 10.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount 14.8 V (optional)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.33"
+    ],
+    "notes": "Focusing light, 6–55° beam. Separate controller box 1 kg."
+  },
+  {
+    "id": "godox.up150r",
+    "brand": "Godox",
+    "model": "UP150R",
+    "family": "panel",
+    "mount": null,
+    "powerW": 180,
+    "weightKg": 3.2,
+    "psu": {
+      "external": true,
+      "weightKg": 0.85,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 35.4,
+      "w": 2.4,
+      "h": 68.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount (direct)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.38"
+    ],
+    "notes": "LiteWafer panel; UP-C150 controller 180 W."
+  },
+  {
+    "id": "godox.p260c-pro",
+    "brand": "Godox",
+    "model": "P260C Pro",
+    "family": "panel",
+    "mount": null,
+    "powerW": 45,
+    "weightKg": 1.2,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 32.8,
+      "w": 32.3,
+      "h": 4.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Lithium battery (type not stated)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.40"
+    ],
+    "notes": "Weight and size include handle. Also USB-C / DC power."
+  },
+  {
+    "id": "godox.ldp8bi",
+    "brand": "Godox",
+    "model": "LDP8Bi",
+    "family": "panel",
+    "mount": null,
+    "powerW": 10,
+    "weightKg": 0.194,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 14.7,
+      "w": 10.5,
+      "h": 3.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.41"
+    ],
+    "notes": "On-camera panel. DC 5 V⎓2 A."
+  },
+  {
+    "id": "godox.ldp18bi",
+    "brand": "Godox",
+    "model": "LDP18Bi",
+    "family": "panel",
+    "mount": null,
+    "powerW": 22,
+    "weightKg": 0.363,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 21.0,
+      "w": 14.9,
+      "h": 3.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.41"
+    ],
+    "notes": "On-camera panel. DC 12 V⎓2 A."
+  },
+  {
+    "id": "godox.ldx50r",
+    "brand": "Godox",
+    "model": "LDX50R",
+    "family": "panel",
+    "mount": null,
+    "powerW": 63,
+    "weightKg": 1.86,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 35.7,
+      "w": 30.5,
+      "h": 7.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F",
+        "maxOutputPct": null
+      },
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.42"
+    ],
+    "notes": "DC 20 V⎓3.5 A."
+  },
+  {
+    "id": "godox.ldx100r",
+    "brand": "Godox",
+    "model": "LDX100R",
+    "family": "panel",
+    "mount": null,
+    "powerW": 118,
+    "weightKg": 3.24,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 41.7,
+      "w": 46.8,
+      "h": 6.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F",
+        "maxOutputPct": null
+      },
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.42"
+    ],
+    "notes": "DC 20 V⎓6 A."
+  },
+  {
+    "id": "godox.ldx50bi",
+    "brand": "Godox",
+    "model": "LDX50Bi",
+    "family": "panel",
+    "mount": null,
+    "powerW": 65,
+    "weightKg": 1.85,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 35.7,
+      "w": 30.5,
+      "h": 7.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F",
+        "maxOutputPct": null
+      },
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.42"
+    ],
+    "notes": "DC 20 V⎓3.5 A."
+  },
+  {
+    "id": "godox.ldx100bi",
+    "brand": "Godox",
+    "model": "LDX100Bi",
+    "family": "panel",
+    "mount": null,
+    "powerW": 120,
+    "weightKg": 3.26,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 41.7,
+      "w": 46.8,
+      "h": 6.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F",
+        "maxOutputPct": null
+      },
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.42"
+    ],
+    "notes": "DC 20 V⎓6 A."
+  },
+  {
+    "id": "godox.led1000d-ii",
+    "brand": "Godox",
+    "model": "LED1000D II",
+    "family": "panel",
+    "mount": null,
+    "powerW": 70,
+    "weightKg": 2.51,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 43.0,
+      "w": 46.0,
+      "h": 10.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "14.8 V BP-L lithium (sold separately)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.43"
+    ],
+    "notes": "DC 13–16.8 V."
+  },
+  {
+    "id": "godox.led1000bi-ii",
+    "brand": "Godox",
+    "model": "LED1000Bi II",
+    "family": "panel",
+    "mount": null,
+    "powerW": 70,
+    "weightKg": 2.51,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 43.0,
+      "w": 46.0,
+      "h": 10.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "14.8 V BP-L lithium (sold separately)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.43"
+    ],
+    "notes": "DC 13–16.8 V."
+  },
+  {
+    "id": "godox.ledp120c",
+    "brand": "Godox",
+    "model": "LEDP120C",
+    "family": "panel",
+    "mount": null,
+    "powerW": 12,
+    "weightKg": null,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 17.5,
+      "w": 13.0,
+      "h": 1.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F970 7.4 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.44"
+    ],
+    "notes": "Only package weight given (220 g)."
+  },
+  {
+    "id": "godox.ledp260c",
+    "brand": "Godox",
+    "model": "LEDP260C",
+    "family": "panel",
+    "mount": null,
+    "powerW": 30,
+    "weightKg": null,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 36.0,
+      "w": 24.0,
+      "h": 2.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F970 7.4 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.44"
+    ],
+    "notes": "Only package weight given (917 g). DC 13–16.8 V."
+  },
+  {
+    "id": "godox.fh50r",
+    "brand": "Godox",
+    "model": "FH50R",
+    "family": "mat",
+    "mount": null,
+    "powerW": 62,
+    "weightKg": 0.633,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 31.7,
+      "w": 31.1,
+      "h": 3.4
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× NP-F 7.2–8.4 V",
+        "maxOutputPct": null
+      },
+      {
+        "type": "V-mount 14.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.46"
+    ],
+    "notes": "Flexible handheld mat, bendable. Adapter 16.8 V."
+  },
+  {
+    "id": "godox.fh50bi",
+    "brand": "Godox",
+    "model": "FH50Bi",
+    "family": "mat",
+    "mount": null,
+    "powerW": 62,
+    "weightKg": 0.57,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 31.7,
+      "w": 31.1,
+      "h": 3.4
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× NP-F 7.2–8.4 V",
+        "maxOutputPct": null
+      },
+      {
+        "type": "V-mount 14.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.46"
+    ],
+    "notes": "Flexible handheld mat, bendable. Adapter 16.8 V."
+  },
+  {
+    "id": "godox.fl100r",
+    "brand": "Godox",
+    "model": "FL100R",
+    "family": "mat",
+    "mount": null,
+    "powerW": 250,
+    "weightKg": 0.6,
+    "psu": {
+      "external": true,
+      "weightKg": 0.85,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 34.4,
+      "w": 63.6,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Single V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.48"
+    ],
+    "notes": "Full-colour flexible mat. 250 W is the shared controller AC rating. Bare light weight; controller 0.85 kg. Size l×w only (thickness not stated). Air softbox / AirTube kits available."
+  },
+  {
+    "id": "godox.fl200r",
+    "brand": "Godox",
+    "model": "FL200R",
+    "family": "mat",
+    "mount": null,
+    "powerW": 250,
+    "weightKg": 1.0,
+    "psu": {
+      "external": true,
+      "weightKg": 0.85,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 63.7,
+      "w": 63.7,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Single V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.48"
+    ],
+    "notes": "Full-colour flexible mat. 250 W is the shared controller AC rating. Bare light weight; controller 0.85 kg. Size l×w only (thickness not stated). Air softbox / AirTube kits available."
+  },
+  {
+    "id": "godox.fl200sr",
+    "brand": "Godox",
+    "model": "FL200SR",
+    "family": "mat",
+    "mount": null,
+    "powerW": 250,
+    "weightKg": 1.05,
+    "psu": {
+      "external": true,
+      "weightKg": 0.85,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 34.4,
+      "w": 122.0,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Single V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.48"
+    ],
+    "notes": "Full-colour flexible mat. 250 W is the shared controller AC rating. Bare light weight; controller 0.85 kg. Size l×w only (thickness not stated). Air softbox / AirTube kits available."
+  },
+  {
+    "id": "godox.fl150s",
+    "brand": "Godox",
+    "model": "FL150S",
+    "family": "mat",
+    "mount": null,
+    "powerW": 150,
+    "weightKg": 3.9,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 60,
+      "w": 60,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.50"
+    ],
+    "notes": "Foldable mat. Main light body weight. DC 16.8 V. Size l×w only."
+  },
+  {
+    "id": "godox.fl150r",
+    "brand": "Godox",
+    "model": "FL150R",
+    "family": "mat",
+    "mount": null,
+    "powerW": 150,
+    "weightKg": 4.37,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30,
+      "w": 120,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.50"
+    ],
+    "notes": "Foldable mat. Main light body weight. DC 16.8 V. Size l×w only."
+  },
+  {
+    "id": "godox.fl100",
+    "brand": "Godox",
+    "model": "FL100",
+    "family": "mat",
+    "mount": null,
+    "powerW": 100,
+    "weightKg": 3.47,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 40,
+      "w": 60,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.50"
+    ],
+    "notes": "Foldable mat (spec column labelled FL100S in catalogue). Main light body weight."
+  },
+  {
+    "id": "godox.fl60",
+    "brand": "Godox",
+    "model": "FL60",
+    "family": "mat",
+    "mount": null,
+    "powerW": 60,
+    "weightKg": 2.87,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30,
+      "w": 45,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.50"
+    ],
+    "notes": "Foldable mat (spec column labelled FL100R in catalogue; 30×45 cm, 60 W matches FL60). Main light body weight."
+  },
+  {
+    "id": "godox.fv150",
+    "brand": "Godox",
+    "model": "FV150",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 150,
+    "weightKg": 3.13,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 34,
+      "w": 20,
+      "h": 16
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.53"
+    ],
+    "notes": "Hybrid flash + LED. AC powered. Dimensions exclude reflector."
+  },
+  {
+    "id": "godox.fv200",
+    "brand": "Godox",
+    "model": "FV200",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 200,
+    "weightKg": 3.33,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 36.7,
+      "w": 20,
+      "h": 16
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.53"
+    ],
+    "notes": "Hybrid flash + LED. AC powered. Dimensions exclude reflector."
+  },
+  {
+    "id": "godox.lf308bi",
+    "brand": "Godox",
+    "model": "LF308Bi",
+    "family": "panel",
+    "mount": null,
+    "powerW": 18,
+    "weightKg": 0.4,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 18.0,
+      "w": 18.5,
+      "h": 4.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F970 7.4 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.54"
+    ],
+    "notes": "Hybrid flash + LED panel. DC 6.5–12 V."
+  },
+  {
+    "id": "godox.tl30",
+    "brand": "Godox",
+    "model": "TL30",
+    "family": "tube",
+    "mount": null,
+    "powerW": 8,
+    "weightKg": 0.3,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30.0,
+      "w": 4.2,
+      "h": 4.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 3.6 V 10.7 Wh",
+        "maxOutputPct": 100,
+        "note": "≈60 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.58"
+    ],
+    "notes": "Waterproof bag accessory (TL-W30) available; no IP rating stated."
+  },
+  {
+    "id": "godox.tl60",
+    "brand": "Godox",
+    "model": "TL60",
+    "family": "tube",
+    "mount": null,
+    "powerW": 18,
+    "weightKg": 0.73,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 75.0,
+      "w": 4.8,
+      "h": 4.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 14.4 V 2600 mAh",
+        "maxOutputPct": 100,
+        "note": "≈2 h at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.58"
+    ],
+    "notes": "Adapter 20 V 2.4 A."
+  },
+  {
+    "id": "godox.tl120",
+    "brand": "Godox",
+    "model": "TL120",
+    "family": "tube",
+    "mount": null,
+    "powerW": 30,
+    "weightKg": 1.27,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 117.0,
+      "w": 4.8,
+      "h": 4.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 14.4 V 74.9 Wh",
+        "maxOutputPct": 100,
+        "note": "≈150 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.61"
+    ],
+    "notes": "Adapter 20 V/4.8 A."
+  },
+  {
+    "id": "godox.tl180",
+    "brand": "Godox",
+    "model": "TL180",
+    "family": "tube",
+    "mount": null,
+    "powerW": 55,
+    "weightKg": 2.21,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 180.0,
+      "w": 5.1,
+      "h": 5.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 14.4 V 129.6 Wh",
+        "maxOutputPct": 100,
+        "note": "≈160 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+    ],
+    "notes": "Adapter 20 V/5.5 A."
+  },
+  {
+    "id": "godox.lc500r-air",
+    "brand": "Godox",
+    "model": "LC500R Air",
+    "family": "inflatable",
+    "mount": null,
+    "powerW": 24,
+    "weightKg": 0.532,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 7.7,
+      "w": 8.2,
+      "h": 77.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "BG-LC5A grip 7.26 V 34.5 Wh",
+        "maxOutputPct": 100,
+        "note": "≈94 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.66"
+    ],
+    "notes": "Inflatable wand. Weight includes controller and battery grip. powerW from USB-C input 12 V⎓2 A."
+  },
+  {
+    "id": "godox.lr150-air",
+    "brand": "Godox",
+    "model": "LR150 Air",
+    "family": "inflatable",
+    "mount": null,
+    "powerW": 24,
+    "weightKg": 0.603,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 47.0,
+      "w": 9.0,
+      "h": 63.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "BG-LC5A grip 7.26 V 34.5 Wh",
+        "maxOutputPct": 100,
+        "note": "≈92 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.66"
+    ],
+    "notes": "Inflatable ring light. Weight includes controller and battery grip. powerW from USB-C input 12 V⎓2 A."
+  },
+  {
+    "id": "godox.lc500mini",
+    "brand": "Godox",
+    "model": "LC500mini",
+    "family": "tube",
+    "mount": null,
+    "powerW": 20,
+    "weightKg": 0.548,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 4.3,
+      "w": 4.4,
+      "h": 45.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Replaceable grip 7.2 V 2470 mAh",
+        "maxOutputPct": 100,
+        "note": "≈45 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.67"
+    ],
+    "notes": "Light stick. Size includes grip handle."
+  },
+  {
+    "id": "godox.lc500rmini",
+    "brand": "Godox",
+    "model": "LC500Rmini",
+    "family": "tube",
+    "mount": null,
+    "powerW": 20,
+    "weightKg": 0.559,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 4.3,
+      "w": 4.4,
+      "h": 45.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Replaceable grip 7.2 V 2470 mAh",
+        "maxOutputPct": 100,
+        "note": "≈50 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.67"
+    ],
+    "notes": "Light stick. Size includes grip handle."
+  },
+  {
+    "id": "godox.lc500",
+    "brand": "Godox",
+    "model": "LC500",
+    "family": "tube",
+    "mount": null,
+    "powerW": 18,
+    "weightKg": 0.76,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 56.5,
+      "w": 5.6,
+      "h": 5.6
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 14.8 V 2600 mAh",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.68"
+    ],
+    "notes": "Light stick. Size without reflector."
+  },
+  {
+    "id": "godox.lc500r",
+    "brand": "Godox",
+    "model": "LC500R",
+    "family": "tube",
+    "mount": null,
+    "powerW": 23,
+    "weightKg": 0.81,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 61.6,
+      "w": 5.6,
+      "h": 5.6
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 14.4 V 2600 mAh",
+        "maxOutputPct": 100,
+        "note": "≈90 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.68"
+    ],
+    "notes": "Light stick."
+  },
+  {
+    "id": "godox.lc1000r",
+    "brand": "Godox",
+    "model": "LC1000R",
+    "family": "tube",
+    "mount": null,
+    "powerW": 100,
+    "weightKg": 1.0,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 5.6,
+      "w": 55.8,
+      "h": 4.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 21.6 V 56 Wh",
+        "maxOutputPct": 100,
+        "note": "P mode ≈28 min; normal (65 W) ≈59 min"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.70"
+    ],
+    "notes": "Light stick. 65 W normal mode, 100 W P mode. Size includes grip."
+  },
+  {
+    "id": "godox.lc1000bi",
+    "brand": "Godox",
+    "model": "LC1000Bi",
+    "family": "tube",
+    "mount": null,
+    "powerW": 100,
+    "weightKg": 1.0,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 5.6,
+      "w": 55.8,
+      "h": 4.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 21.6 V 56 Wh",
+        "maxOutputPct": 100,
+        "note": "P mode ≈27 min; normal (65 W) ≈49 min"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.70"
+    ],
+    "notes": "Light stick. 65 W normal mode, 100 W P mode. Size includes grip."
+  },
+  {
+    "id": "godox.wt25d",
+    "brand": "Godox",
+    "model": "WT25D",
+    "family": "tube",
+    "mount": null,
+    "powerW": 24,
+    "weightKg": 0.64,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 5.7,
+      "w": 5.2,
+      "h": 25.0
+    },
+    "headCableM": null,
+    "ipRating": "IP68",
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈1 h underwater / 2 h 20 min above water"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.73"
+    ],
+    "notes": "Dive tube light, IP68 to 40 m. Max 24 W underwater, 10 W above water (auto high power when submerged)."
+  },
+  {
+    "id": "godox.wt40d",
+    "brand": "Godox",
+    "model": "WT40D",
+    "family": "tube",
+    "mount": null,
+    "powerW": 54,
+    "weightKg": 1.08,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 5.7,
+      "w": 5.2,
+      "h": 38.0
+    },
+    "headCableM": null,
+    "ipRating": "IP68",
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈1 h 20 min underwater / 5 h 30 min above water"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.73"
+    ],
+    "notes": "Dive tube light, IP68 to 40 m. Max 54 W underwater, 13 W above water (auto high power when submerged)."
+  },
+  {
+    "id": "godox.wt60d",
+    "brand": "Godox",
+    "model": "WT60D",
+    "family": "tube",
+    "mount": null,
+    "powerW": 70,
+    "weightKg": 1.9,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 5.7,
+      "w": 5.2,
+      "h": 64.0
+    },
+    "headCableM": null,
+    "ipRating": "IP68",
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈2 h underwater / 6 h above water"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.73"
+    ],
+    "notes": "Dive tube light, IP68 to 40 m. Max 70 W underwater, 21 W above water (auto high power when submerged)."
+  },
+  {
+    "id": "godox.wt25r",
+    "brand": "Godox",
+    "model": "WT25R",
+    "family": "tube",
+    "mount": null,
+    "powerW": 20,
+    "weightKg": 0.66,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 5.7,
+      "w": 5.3,
+      "h": 25.0
+    },
+    "headCableM": null,
+    "ipRating": "IP68",
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈1 h underwater / 3 h above water"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.74"
+    ],
+    "notes": "Dive tube light, IP68 to 40 m. Max 20 W underwater, 7 W above water (auto high power when submerged)."
+  },
+  {
+    "id": "godox.wt40r",
+    "brand": "Godox",
+    "model": "WT40R",
+    "family": "tube",
+    "mount": null,
+    "powerW": 55,
+    "weightKg": 1.1,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 5.7,
+      "w": 5.3,
+      "h": 38.0
+    },
+    "headCableM": null,
+    "ipRating": "IP68",
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈1.5 h underwater / 5.8 h above water"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.74"
+    ],
+    "notes": "Dive tube light, IP68 to 40 m. Max 55 W underwater, 15 W above water (auto high power when submerged)."
+  },
+  {
+    "id": "godox.wt60r",
+    "brand": "Godox",
+    "model": "WT60R",
+    "family": "tube",
+    "mount": null,
+    "powerW": 77,
+    "weightKg": 1.9,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 5.7,
+      "w": 5.3,
+      "h": 64.0
+    },
+    "headCableM": null,
+    "ipRating": "IP68",
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈2 h underwater / 10 h above water"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.74"
+    ],
+    "notes": "Dive tube light, IP68 to 40 m. Max 77 W underwater, 14 W above water (auto high power when submerged)."
+  },
+  {
+    "id": "godox.es30",
+    "brand": "Godox",
+    "model": "ES30",
+    "family": "panel",
+    "mount": null,
+    "powerW": 35,
+    "weightKg": 0.74,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 23.3,
+      "w": 23.3,
+      "h": 4.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.78"
+    ],
+    "notes": "Streaming panel. Adapter 14 V⎓2.5 A."
+  },
+  {
+    "id": "godox.es45",
+    "brand": "Godox",
+    "model": "ES45",
+    "family": "panel",
+    "mount": null,
+    "powerW": 47.6,
+    "weightKg": 1.33,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 36.7,
+      "w": 23.0,
+      "h": 4.6
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.79"
+    ],
+    "notes": "Streaming panel kit. Adapter 14.8 V 3.42 A. Weight includes control panel."
+  },
+  {
+    "id": "godox.lr120",
+    "brand": "Godox",
+    "model": "LR120",
+    "family": "other",
+    "mount": null,
+    "powerW": 10,
+    "weightKg": 0.44,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30.5,
+      "w": 39.5,
+      "h": 3.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.80"
+    ],
+    "notes": "Ring light. DC 5 V/2 A."
+  },
+  {
+    "id": "godox.lr150",
+    "brand": "Godox",
+    "model": "LR150",
+    "family": "other",
+    "mount": null,
+    "powerW": 38,
+    "weightKg": 0.88,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 45.5,
+      "w": 55.5,
+      "h": 4.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.80"
+    ],
+    "notes": "Ring light. DC 24 V/2 A. Pink version 870 g."
+  },
+  {
+    "id": "godox.lr160",
+    "brand": "Godox",
+    "model": "LR160",
+    "family": "other",
+    "mount": null,
+    "powerW": 18,
+    "weightKg": 1.21,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 49.2,
+      "w": 59,
+      "h": 4
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× NP-F970 7.4 V (sold separately)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.81"
+    ],
+    "notes": "Ring light. DC 16 V/1.5 A."
+  },
+  {
+    "id": "godox.lr180",
+    "brand": "Godox",
+    "model": "LR180",
+    "family": "other",
+    "mount": null,
+    "powerW": 27,
+    "weightKg": 0.88,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 36.1,
+      "w": 46,
+      "h": 4
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.81"
+    ],
+    "notes": "Ring light, DC only (16.8 V/2 A). Weight with one light-passing board."
+  },
+  {
+    "id": "godox.wl4b",
+    "brand": "Godox",
+    "model": "WL4B",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 4,
+    "weightKg": 0.116,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 4.5,
+      "w": 4.5,
+      "h": 4.7
+    },
+    "headCableM": null,
+    "ipRating": "IPX8",
+    "batteries": [
+      {
+        "type": "Built-in 3.8 V 1500 mAh",
+        "maxOutputPct": 100,
+        "note": "≈1 h 20 min at high"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.83"
+    ],
+    "notes": "Waterproof to 30 m."
+  },
+  {
+    "id": "godox.wl8p",
+    "brand": "Godox",
+    "model": "WL8P",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 10,
+    "weightKg": 0.263,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 11,
+      "w": 5.7,
+      "h": 3.25
+    },
+    "headCableM": null,
+    "ipRating": "IP68",
+    "batteries": [
+      {
+        "type": "Built-in 3.7 V 10.7 Wh",
+        "maxOutputPct": 100,
+        "note": "≈1 h at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.84"
+    ],
+    "notes": "Waterproof to 10 m."
+  },
+  {
+    "id": "godox.ma5r",
+    "brand": "Godox",
+    "model": "MA5R",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 5,
+    "weightKg": 0.164,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 10.7,
+      "w": 6.8,
+      "h": 1.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 3.7 V 18.1 Wh",
+        "maxOutputPct": 100,
+        "note": "≈3 h 40 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.87"
+    ],
+    "notes": "Magnetic phone light / power bank. 5 W fill + 0.8 W selfie lamp."
+  },
+  {
+    "id": "godox.r1",
+    "brand": "Godox",
+    "model": "R1",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 5,
+    "weightKg": 0.15,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 7.5,
+      "w": 7.5,
+      "h": 2.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 1800 mAh",
+        "maxOutputPct": 100,
+        "note": "≈90 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.89"
+    ],
+    "notes": "Round magnetic mini light, Ø75 mm."
+  },
+  {
+    "id": "godox.m1",
+    "brand": "Godox",
+    "model": "M1",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 13,
+    "weightKg": 0.24,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 14.5,
+      "w": 7.0,
+      "h": 1.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈150 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.89"
+    ]
+  },
+  {
+    "id": "godox.ledm32",
+    "brand": "Godox",
+    "model": "LEDM32",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 1.4,
+    "weightKg": 0.03,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 5.0,
+      "w": 5.0,
+      "h": 2.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 3.7 V 300 mAh",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.90"
+    ]
+  },
+  {
+    "id": "godox.ledm150",
+    "brand": "Godox",
+    "model": "LEDM150",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 9,
+    "weightKg": 0.17,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 13.2,
+      "w": 8.0,
+      "h": 2.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 3.7 V 3000 mAh",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.90"
+    ]
+  },
+  {
+    "id": "godox.le200r",
+    "brand": "Godox",
+    "model": "LE200R",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 230,
+    "weightKg": 2.8,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 15.8,
+      "w": 23.9,
+      "h": 26.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.94"
+    ],
+    "notes": "LITEMONS, integrated AC power. Weight/dimensions without reflector."
+  },
+  {
+    "id": "godox.le300r",
+    "brand": "Godox",
+    "model": "LE300R",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 330,
+    "weightKg": 2.8,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 15.8,
+      "w": 23.9,
+      "h": 26.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.94"
+    ],
+    "notes": "LITEMONS, integrated AC power. Weight/dimensions without reflector."
+  },
+  {
+    "id": "godox.le600r",
+    "brand": "Godox",
+    "model": "LE600R",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 635,
+    "weightKg": 5.2,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 27.2,
+      "w": 28.2,
+      "h": 39.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.94"
+    ],
+    "notes": "LITEMONS, integrated AC power. Weight/dimensions without reflector. 635 W at 100 V, 620 W at 240 V."
+  },
+  {
+    "id": "godox.le200bi",
+    "brand": "Godox",
+    "model": "LE200Bi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 220,
+    "weightKg": 2.9,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 15.8,
+      "w": 23.9,
+      "h": 26.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.95"
+    ],
+    "notes": "LITEMONS, integrated AC power. Weight/dimensions without reflector."
+  },
+  {
+    "id": "godox.le300bi",
+    "brand": "Godox",
+    "model": "LE300Bi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 315,
+    "weightKg": 2.9,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 15.8,
+      "w": 23.9,
+      "h": 26.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.95"
+    ],
+    "notes": "LITEMONS, integrated AC power. Weight/dimensions without reflector."
+  },
+  {
+    "id": "godox.le600bi",
+    "brand": "Godox",
+    "model": "LE600Bi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 610,
+    "weightKg": 4.77,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 27.2,
+      "w": 28.2,
+      "h": 39.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.95"
+    ],
+    "notes": "LITEMONS, integrated AC power. Weight/dimensions without reflector."
+  },
+  {
+    "id": "godox.la600r",
+    "brand": "Godox",
+    "model": "LA600R",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 600,
+    "weightKg": 5.1,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 27.5,
+      "w": 29.2,
+      "h": 37.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": null,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.96"
+    ],
+    "notes": "LITEMONS. 48 V XLR external power supply. Weight without reflector."
+  },
+  {
+    "id": "godox.la600bi",
+    "brand": "Godox",
+    "model": "LA600Bi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 600,
+    "weightKg": 4.5,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 27.5,
+      "w": 29.2,
+      "h": 37.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": null,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.96"
+    ],
+    "notes": "LITEMONS. 48 V XLR external power supply. Weight without reflector."
+  },
+  {
+    "id": "godox.la150r",
+    "brand": "Godox",
+    "model": "LA150R",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 165,
+    "weightKg": 2.5,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 23.1,
+      "w": 15.6,
+      "h": 23.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.97"
+    ],
+    "notes": "LITEMONS. Adapter included. Weight/size without reflector (shared figure for the series)."
+  },
+  {
+    "id": "godox.la200r",
+    "brand": "Godox",
+    "model": "LA200R",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 220,
+    "weightKg": 2.5,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 23.1,
+      "w": 15.6,
+      "h": 23.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.97"
+    ],
+    "notes": "LITEMONS. Adapter included. Weight/size without reflector (shared figure for the series)."
+  },
+  {
+    "id": "godox.la300r",
+    "brand": "Godox",
+    "model": "LA300R",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 330,
+    "weightKg": 2.5,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 23.1,
+      "w": 15.6,
+      "h": 23.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.97"
+    ],
+    "notes": "LITEMONS. Adapter included. Weight/size without reflector (shared figure for the series)."
+  },
+  {
+    "id": "godox.la300bi",
+    "brand": "Godox",
+    "model": "LA300Bi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 330,
+    "weightKg": 2.5,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 23.1,
+      "w": 15.6,
+      "h": 23.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.97"
+    ],
+    "notes": "LITEMONS. Adapter included. Weight/size without reflector (shared figure for the series)."
+  },
+  {
+    "id": "godox.la150d",
+    "brand": "Godox",
+    "model": "LA150D",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": null,
+    "weightKg": null,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": null,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.99"
+    ],
+    "notes": "LITEMONS. Catalogue gives no tech specs for this model."
+  },
+  {
+    "id": "godox.la200d",
+    "brand": "Godox",
+    "model": "LA200D",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": null,
+    "weightKg": null,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": null,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.99"
+    ],
+    "notes": "LITEMONS. Catalogue gives no tech specs for this model."
+  },
+  {
+    "id": "godox.la150bi",
+    "brand": "Godox",
+    "model": "LA150Bi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": null,
+    "weightKg": null,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": null,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.99"
+    ],
+    "notes": "LITEMONS. Catalogue gives no tech specs for this model."
+  },
+  {
+    "id": "godox.la200bi",
+    "brand": "Godox",
+    "model": "LA200Bi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": null,
+    "weightKg": null,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": null,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.99"
+    ],
+    "notes": "LITEMONS. Catalogue gives no tech specs for this model."
+  },
+  {
+    "id": "godox.lp800bi",
+    "brand": "Godox",
+    "model": "LP800Bi",
+    "family": "panel",
+    "mount": null,
+    "powerW": 85,
+    "weightKg": 2.3,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 34.3,
+      "w": 6.6,
+      "h": 62.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.102"
+    ],
+    "notes": "LITEMONS panel, AC input. Includes 1.9 m stand."
+  },
+  {
+    "id": "godox.lp400bi",
+    "brand": "Godox",
+    "model": "LP400Bi",
+    "family": "panel",
+    "mount": null,
+    "powerW": 36,
+    "weightKg": 0.855,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 22.9,
+      "w": 20.1,
+      "h": 7.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Battery (type not stated)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.103"
+    ],
+    "notes": "LITEMONS panel. DC 20 V⎓1.8 A."
+  },
+  {
+    "id": "godox.lp600bi",
+    "brand": "Godox",
+    "model": "LP600Bi",
+    "family": "panel",
+    "mount": null,
+    "powerW": 60,
+    "weightKg": 0.985,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 26.4,
+      "w": 20.1,
+      "h": 7.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Battery (type not stated)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.103"
+    ],
+    "notes": "LITEMONS panel. DC 20 V⎓3 A."
+  },
+  {
+    "id": "godox.lp1200bi",
+    "brand": "Godox",
+    "model": "LP1200Bi",
+    "family": "panel",
+    "mount": null,
+    "powerW": 120,
+    "weightKg": 1.847,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 40.1,
+      "w": 42.2,
+      "h": 7.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Battery (type not stated)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.103"
+    ],
+    "notes": "LITEMONS panel. DC 20 V⎓6 A."
+  },
+  {
+    "id": "godox.lp400r",
+    "brand": "Godox",
+    "model": "LP400R",
+    "family": "panel",
+    "mount": null,
+    "powerW": 36,
+    "weightKg": 0.855,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 22.9,
+      "w": 20.1,
+      "h": 7.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Battery (type not stated)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.103"
+    ],
+    "notes": "LITEMONS panel. DC 20 V⎓1.8 A."
+  },
+  {
+    "id": "godox.lp600r",
+    "brand": "Godox",
+    "model": "LP600R",
+    "family": "panel",
+    "mount": null,
+    "powerW": 60,
+    "weightKg": 0.985,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 26.4,
+      "w": 20.1,
+      "h": 7.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Battery (type not stated)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.103"
+    ],
+    "notes": "LITEMONS panel. DC 20 V⎓3 A."
+  },
+  {
+    "id": "godox.lp1200r",
+    "brand": "Godox",
+    "model": "LP1200R",
+    "family": "panel",
+    "mount": null,
+    "powerW": 120,
+    "weightKg": 1.847,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 40.1,
+      "w": 42.2,
+      "h": 7.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Battery (type not stated)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.103"
+    ],
+    "notes": "LITEMONS panel. DC 20 V⎓6 A."
+  },
+  {
+    "id": "godox.c30bi",
+    "brand": "Godox",
+    "model": "C30Bi",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 30,
+    "weightKg": 0.248,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 13.3,
+      "w": 7.8,
+      "h": 2.6
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 7.4 V 24.8 Wh",
+        "maxOutputPct": 100,
+        "note": "≈45 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.106"
+    ],
+    "notes": "LITEMONS pocket panel."
+  },
+  {
+    "id": "godox.c30r",
+    "brand": "Godox",
+    "model": "C30R",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 30,
+    "weightKg": 0.248,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 13.3,
+      "w": 7.8,
+      "h": 2.6
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈45 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.106"
+    ],
+    "notes": "LITEMONS pocket panel. Spec table lists C30Bi; weight per key features."
+  },
+  {
+    "id": "godox.lr15bi",
+    "brand": "Godox",
+    "model": "LR15Bi",
+    "family": "pocket",
+    "mount": null,
+    "powerW": null,
+    "weightKg": 0.033,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 5.6,
+      "w": 5.6,
+      "h": 1.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈1 h 15 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.107"
+    ],
+    "notes": "Clip-on phone light. USB-C 5 V⎓2 A charging."
+  },
+  {
+    "id": "godox.lr30bi",
+    "brand": "Godox",
+    "model": "LR30Bi",
+    "family": "pocket",
+    "mount": null,
+    "powerW": null,
+    "weightKg": 0.083,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 10.1,
+      "w": 3.7,
+      "h": 15.9
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈1 h 15 min at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.107"
+    ],
+    "notes": "Clip-on ring light. USB-C 5 V⎓2 A charging."
+  },
+  {
+    "id": "godox.led6r",
+    "brand": "Godox",
+    "model": "LED6R",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 6,
+    "weightKg": 0.11,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 7.7,
+      "w": 6.6,
+      "h": 3.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 1800 mAh",
+        "maxOutputPct": 100,
+        "note": "≈2 h at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.108"
+    ]
+  },
+  {
+    "id": "godox.led6bi",
+    "brand": "Godox",
+    "model": "LED6Bi",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 6,
+    "weightKg": 0.11,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 7.7,
+      "w": 6.6,
+      "h": 3.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 1800 mAh",
+        "maxOutputPct": 100,
+        "note": "≈1.5 h at 100%"
+      }
+    ],
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.108"
+    ]
+  },
+  {
+    "id": "godox.knowled-mg6k",
+    "brand": "Godox",
+    "model": "KNOWLED MG6K",
+    "aliases": [
+      "MG6K"
+    ],
+    "family": "cob",
+    "mount": "g-mount",
+    "powerW": 4300,
+    "weightKg": 25,
+    "psu": {
+      "external": true,
+      "weightKg": 12,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 35.6,
+      "w": 37.8,
+      "h": 43.4
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.7",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.10"
+    ],
+    "notes": "24.5 kg head without yoke (28 kg with yoke); spec table lists 25 kg. Controller 270×210×421 mm. Weather resistance IP65 (applies to light/controller per spec table)."
+  },
+  {
+    "id": "godox.knowled-mg4kr",
+    "brand": "Godox",
+    "model": "KNOWLED MG4KR",
+    "aliases": [
+      "MG4KR"
+    ],
+    "family": "cob",
+    "mount": "g-mount",
+    "powerW": 3100,
+    "weightKg": 23,
+    "psu": {
+      "external": true,
+      "weightKg": 6.9,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 35.6,
+      "w": 38.6,
+      "h": 37.8
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.7"
+    ],
+    "notes": "Full colour. Controller 238×177×330 mm."
+  },
+  {
+    "id": "godox.knowled-mg4k",
+    "brand": "Godox",
+    "model": "KNOWLED MG4K",
+    "aliases": [
+      "MG4K"
+    ],
+    "family": "cob",
+    "mount": "g-mount",
+    "powerW": 2300,
+    "weightKg": 10,
+    "psu": {
+      "external": true,
+      "weightKg": 6.4,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 36.5,
+      "w": 33.9,
+      "h": 30.0
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.7",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.18"
+    ],
+    "notes": "Bi-colour, 2000 W output. 10 kg head, <19 kg whole setup."
+  },
+  {
+    "id": "godox.knowled-mg1200r",
+    "brand": "Godox",
+    "model": "KNOWLED MG1200R",
+    "aliases": [
+      "MG1200R"
+    ],
+    "family": "cob",
+    "mount": "g-mount",
+    "powerW": 1600,
+    "weightKg": 9.8,
+    "psu": {
+      "external": true,
+      "weightKg": 6.7,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 40.0,
+      "w": 58.9,
+      "h": 33.9
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.7"
+    ],
+    "notes": "Product page says 1500 W; spec table max power 1600 W."
+  },
+  {
+    "id": "godox.knowled-mg1200bi",
+    "brand": "Godox",
+    "model": "KNOWLED MG1200Bi",
+    "aliases": [
+      "MG1200Bi"
+    ],
+    "family": "cob",
+    "mount": "g-mount",
+    "powerW": 1400,
+    "weightKg": 16,
+    "psu": {
+      "external": true,
+      "weightKg": 6.68,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 37.8,
+      "w": 57.9,
+      "h": 35.4
+    },
+    "headCableM": 8,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.7",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.26"
+    ],
+    "notes": "1200 W output. 8 m power cord and connecting cord."
+  },
+  {
+    "id": "godox.knowled-m600r",
+    "brand": "Godox",
+    "model": "KNOWLED M600R",
+    "aliases": [
+      "M600R"
+    ],
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 720,
+    "weightKg": 10,
+    "psu": {
+      "external": true,
+      "weightKg": 6,
+      "ipRating": "IP54"
+    },
+    "sizeCm": {
+      "l": 31.7,
+      "w": 50.1,
+      "h": 34.7
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.8"
+    ],
+    "notes": "Bowens mount."
+  },
+  {
+    "id": "godox.knowled-m300r",
+    "brand": "Godox",
+    "model": "KNOWLED M300R",
+    "aliases": [
+      "M300R"
+    ],
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 460,
+    "weightKg": 3.6,
+    "psu": {
+      "external": true,
+      "weightKg": 3.1,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 18.0,
+      "w": 24.4,
+      "h": 15.6
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.8"
+    ],
+    "notes": "Bowens mount. Magnesium-aluminium body."
+  },
+  {
+    "id": "godox.knowled-pl1200-rf",
+    "brand": "Godox",
+    "model": "KNOWLED PL1200 RF",
+    "aliases": [
+      "PL1200"
+    ],
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 1300,
+    "weightKg": 11.3,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 31.2,
+      "w": 39.1,
+      "h": 55.9
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.34"
+    ],
+    "notes": "All-in-one (integrated AC). PaletteLab full spectrum. Bowens mount."
+  },
+  {
+    "id": "godox.knowled-pl600-rf",
+    "brand": "Godox",
+    "model": "KNOWLED PL600 RF",
+    "aliases": [
+      "PL600"
+    ],
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 730,
+    "weightKg": 8.7,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 31.1,
+      "w": 31.2,
+      "h": 46.9
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.34"
+    ],
+    "notes": "All-in-one (integrated AC). PaletteLab full spectrum. Bowens mount."
+  },
+  {
+    "id": "godox.knowled-pl300-rf",
+    "brand": "Godox",
+    "model": "KNOWLED PL300 RF",
+    "family": "cob",
+    "mount": null,
+    "powerW": null,
+    "weightKg": null,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.34"
+    ],
+    "notes": "Specs TBD in catalogue."
+  },
+  {
+    "id": "godox.knowled-pl150-rf",
+    "brand": "Godox",
+    "model": "KNOWLED PL150 RF",
+    "family": "cob",
+    "mount": null,
+    "powerW": null,
+    "weightKg": null,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.34"
+    ],
+    "notes": "Specs TBD in catalogue."
+  },
+  {
+    "id": "godox.knowled-ms60r",
+    "brand": "Godox",
+    "model": "KNOWLED MS60R",
+    "family": "cob",
+    "mount": null,
+    "powerW": 60,
+    "weightKg": 0.311,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 7.7,
+      "w": 7.7,
+      "h": 9.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "MS60BAT01 14.4 V 48.96 Wh (detachable)",
+        "maxOutputPct": null
+      },
+      {
+        "type": "NP-F (MS60NPA)",
+        "maxOutputPct": null
+      },
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.44"
+    ],
+    "notes": "Weight without lens reflector and battery. Also DC 48 V, USB-C, E27 socket."
+  },
+  {
+    "id": "godox.knowled-ms60bi",
+    "brand": "Godox",
+    "model": "KNOWLED MS60Bi",
+    "family": "cob",
+    "mount": null,
+    "powerW": 60,
+    "weightKg": 0.303,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 7.7,
+      "w": 7.7,
+      "h": 9.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "MS60BAT01 14.4 V 48.96 Wh (detachable)",
+        "maxOutputPct": null
+      },
+      {
+        "type": "NP-F (MS60NPA)",
+        "maxOutputPct": null
+      },
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.44"
+    ],
+    "notes": "Weight without lens reflector and battery. Also DC 48 V, USB-C, E27 socket."
+  },
+  {
+    "id": "godox.knowled-p600r-hard-p4",
+    "brand": "Godox",
+    "model": "KNOWLED P600R Hard P4",
+    "aliases": [
+      "P600R Hard"
+    ],
+    "family": "panel",
+    "mount": null,
+    "powerW": 700,
+    "weightKg": 11,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 43.1,
+      "w": 15.1,
+      "h": 38.5
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.48",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.50"
+    ],
+    "notes": "AC powered. Dimensions/weight include yoke. 4 pixel zones, adjustable diffusion."
+  },
+  {
+    "id": "godox.knowled-p1200r-hard-p8",
+    "brand": "Godox",
+    "model": "KNOWLED P1200R Hard P8",
+    "aliases": [
+      "P1200R Hard"
+    ],
+    "family": "panel",
+    "mount": null,
+    "powerW": 1400,
+    "weightKg": 17.6,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 73.7,
+      "w": 15.1,
+      "h": 38.5
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.48",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.50"
+    ],
+    "notes": "AC powered. Dimensions/weight include yoke. 8 pixel zones."
+  },
+  {
+    "id": "godox.knowled-p300r",
+    "brand": "Godox",
+    "model": "KNOWLED P300R",
+    "family": "panel",
+    "mount": null,
+    "powerW": 350,
+    "weightKg": 11.6,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 56.3,
+      "w": 49.8,
+      "h": 15.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.48"
+    ],
+    "notes": "AC / DC 48 V. Dimensions/weight include yoke. No IP rating stated."
+  },
+  {
+    "id": "godox.knowled-p600r",
+    "brand": "Godox",
+    "model": "KNOWLED P600R",
+    "family": "panel",
+    "mount": null,
+    "powerW": 700,
+    "weightKg": 17.8,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 77.6,
+      "w": 56.7,
+      "h": 15.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.48"
+    ],
+    "notes": "AC / DC 48 V. Dimensions/weight include yoke. No IP rating stated."
+  },
+  {
+    "id": "godox.knowled-am1600r-8-8",
+    "brand": "Godox",
+    "model": "KNOWLED AM1600R 8×8",
+    "aliases": [
+      "AM88R",
+      "AM1600R 8x8"
+    ],
+    "family": "inflatable",
+    "mount": null,
+    "powerW": 1800,
+    "weightKg": 12,
+    "psu": {
+      "external": true,
+      "weightKg": 11,
+      "ipRating": "IP54"
+    },
+    "sizeCm": {
+      "l": 230.0,
+      "w": 230.0,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.60",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.62"
+    ],
+    "notes": "Inflatable mat (AM88R body + AM1600R controller). 1600 W output, 1800 W max draw. Inflates to 8 psi in 3 min, no truss needed."
+  },
+  {
+    "id": "godox.knowled-am1600r-4-8",
+    "brand": "Godox",
+    "model": "KNOWLED AM1600R 4×8",
+    "aliases": [
+      "AM48R",
+      "AM1600R 4x8"
+    ],
+    "family": "inflatable",
+    "mount": null,
+    "powerW": 1800,
+    "weightKg": 6.7,
+    "psu": {
+      "external": true,
+      "weightKg": 11,
+      "ipRating": "IP54"
+    },
+    "sizeCm": {
+      "l": 230.0,
+      "w": 110.0,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.60",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.62"
+    ],
+    "notes": "Inflatable mat (AM48R body + AM1600R controller). Controller weight per AM1600R."
+  },
+  {
+    "id": "godox.knowled-am800r-4-4",
+    "brand": "Godox",
+    "model": "KNOWLED AM800R 4×4",
+    "aliases": [
+      "AM800R",
+      "AM44R"
+    ],
+    "family": "inflatable",
+    "mount": null,
+    "powerW": 800,
+    "weightKg": 4.95,
+    "psu": {
+      "external": true,
+      "weightKg": 6.4,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 120.0,
+      "w": 120.0,
+      "h": null
+    },
+    "headCableM": 8,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.60",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.66",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.68"
+    ],
+    "notes": "Inflatable mat. Butterfly frame has built-in 8 m DC cable."
+  },
+  {
+    "id": "godox.knowled-f100r",
+    "brand": "Godox",
+    "model": "KNOWLED F100R",
+    "aliases": [
+      "F100R"
+    ],
+    "family": "mat",
+    "mount": null,
+    "powerW": 130,
+    "weightKg": 0.6,
+    "psu": {
+      "external": true,
+      "weightKg": 2.8,
+      "ipRating": "IP54"
+    },
+    "sizeCm": {
+      "l": 34.4,
+      "w": 63.6,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.70",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.72"
+    ],
+    "notes": "Flexible mat, bare light body weight. Controller 154×128×232 mm. AC powered (DC 48 V / V-mount options listed for the series). Optional 5 m and 10 m DC cables."
+  },
+  {
+    "id": "godox.knowled-f200r",
+    "brand": "Godox",
+    "model": "KNOWLED F200R",
+    "aliases": [
+      "F200R"
+    ],
+    "family": "mat",
+    "mount": null,
+    "powerW": 250,
+    "weightKg": 1.0,
+    "psu": {
+      "external": true,
+      "weightKg": 2.8,
+      "ipRating": "IP54"
+    },
+    "sizeCm": {
+      "l": 63.7,
+      "w": 63.7,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.70",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.72"
+    ],
+    "notes": "Flexible mat, bare light body weight. Controller 154×128×232 mm. AC powered (DC 48 V / V-mount options listed for the series). Optional 5 m and 10 m DC cables."
+  },
+  {
+    "id": "godox.knowled-f200sr",
+    "brand": "Godox",
+    "model": "KNOWLED F200SR",
+    "aliases": [
+      "F200SR"
+    ],
+    "family": "mat",
+    "mount": null,
+    "powerW": 250,
+    "weightKg": 1.05,
+    "psu": {
+      "external": true,
+      "weightKg": 2.8,
+      "ipRating": "IP54"
+    },
+    "sizeCm": {
+      "l": 34.4,
+      "w": 122.0,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.70",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.72"
+    ],
+    "notes": "Flexible mat, bare light body weight. Controller 154×128×232 mm. AC powered (DC 48 V / V-mount options listed for the series). Optional 5 m and 10 m DC cables."
+  },
+  {
+    "id": "godox.knowled-f400r",
+    "brand": "Godox",
+    "model": "KNOWLED F400R",
+    "aliases": [
+      "F400R"
+    ],
+    "family": "mat",
+    "mount": null,
+    "powerW": 460,
+    "weightKg": 1.8,
+    "psu": {
+      "external": true,
+      "weightKg": 5.8,
+      "ipRating": "IP54"
+    },
+    "sizeCm": {
+      "l": 63.7,
+      "w": 122.1,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.70",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.72"
+    ],
+    "notes": "Flexible mat, bare light body weight. Controller 208×161×322 mm. AC powered (DC 48 V / V-mount options listed for the series). Optional 5 m and 10 m DC cables."
+  },
+  {
+    "id": "godox.knowled-f800r",
+    "brand": "Godox",
+    "model": "KNOWLED F800R",
+    "aliases": [
+      "F800R"
+    ],
+    "family": "mat",
+    "mount": null,
+    "powerW": 900,
+    "weightKg": 3.0,
+    "psu": {
+      "external": true,
+      "weightKg": 6.5,
+      "ipRating": "IP54"
+    },
+    "sizeCm": {
+      "l": 122.1,
+      "w": 122.1,
+      "h": null
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.70",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.72"
+    ],
+    "notes": "Flexible mat, bare light body weight. Controller 190×166×366 mm. AC powered (DC 48 V / V-mount options listed for the series). Optional 5 m and 10 m DC cables."
+  },
+  {
+    "id": "godox.knowled-f200bi",
+    "brand": "Godox",
+    "model": "KNOWLED F200Bi",
+    "aliases": [
+      "F200Bi"
+    ],
+    "family": "mat",
+    "mount": null,
+    "powerW": 210,
+    "weightKg": 1.83,
+    "psu": {
+      "external": true,
+      "weightKg": 2.77,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 65.0,
+      "w": 63.1,
+      "h": 2.9
+    },
+    "headCableM": 3,
+    "ipRating": "IP65",
+    "batteries": [
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.70",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.78",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.80"
+    ],
+    "notes": "Bi-colour flexible mat. AC / DC 48 V / V-mount. 3 m connect cable in kit."
+  },
+  {
+    "id": "godox.knowled-f400bi",
+    "brand": "Godox",
+    "model": "KNOWLED F400Bi",
+    "aliases": [
+      "F400Bi"
+    ],
+    "family": "mat",
+    "mount": null,
+    "powerW": 410,
+    "weightKg": 3.1,
+    "psu": {
+      "external": true,
+      "weightKg": 3.07,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 120.9,
+      "w": 62.7,
+      "h": 2.3
+    },
+    "headCableM": 3,
+    "ipRating": "IP65",
+    "batteries": [
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.70",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.78",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.80"
+    ],
+    "notes": "Bi-colour flexible mat. AC / DC 48 V / V-mount. 3 m connect cable in kit."
+  },
+  {
+    "id": "godox.knowled-f600bi",
+    "brand": "Godox",
+    "model": "KNOWLED F600Bi",
+    "aliases": [
+      "F600Bi"
+    ],
+    "family": "mat",
+    "mount": null,
+    "powerW": 670,
+    "weightKg": 3.8,
+    "psu": {
+      "external": true,
+      "weightKg": 3.9,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 121.0,
+      "w": 121.0,
+      "h": 2.4
+    },
+    "headCableM": 3,
+    "ipRating": "IP65",
+    "batteries": [
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.70",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.78",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.80"
+    ],
+    "notes": "Bi-colour flexible mat. AC / DC 48 V / V-mount. 3 m connect cable in kit."
+  },
+  {
+    "id": "godox.knowled-tp2r",
+    "brand": "Godox",
+    "model": "KNOWLED TP2R",
+    "aliases": [
+      "TP2R"
+    ],
+    "family": "tube",
+    "mount": null,
+    "powerW": 26,
+    "weightKg": 0.84,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 60.0,
+      "w": 4.7,
+      "h": 4.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.82"
+    ],
+    "notes": "RGBWW pixel tube. AC / built-in battery."
+  },
+  {
+    "id": "godox.knowled-tp4r",
+    "brand": "Godox",
+    "model": "KNOWLED TP4R",
+    "aliases": [
+      "TP4R"
+    ],
+    "family": "tube",
+    "mount": null,
+    "powerW": 47,
+    "weightKg": 1.5,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 120.0,
+      "w": 4.7,
+      "h": 4.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.82"
+    ],
+    "notes": "RGBWW pixel tube. AC / built-in battery."
+  },
+  {
+    "id": "godox.knowled-tp8r",
+    "brand": "Godox",
+    "model": "KNOWLED TP8R",
+    "aliases": [
+      "TP8R"
+    ],
+    "family": "tube",
+    "mount": null,
+    "powerW": 83,
+    "weightKg": 2.94,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 240.0,
+      "w": 4.7,
+      "h": 4.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.82"
+    ],
+    "notes": "RGBWW pixel tube. AC / built-in battery."
+  },
+  {
+    "id": "godox.knowled-at200bi",
+    "brand": "Godox",
+    "model": "KNOWLED AT200Bi",
+    "aliases": [
+      "AT200Bi"
+    ],
+    "family": "inflatable",
+    "mount": null,
+    "powerW": 210,
+    "weightKg": 2.15,
+    "psu": {
+      "external": true,
+      "weightKg": 2.8,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 122.6,
+      "w": 28.0,
+      "h": 26.7
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [
+      {
+        "type": "V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.88",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.90"
+    ],
+    "notes": "Air tube light. Weight includes airbag. Controller 124×132×270 mm."
+  },
+  {
+    "id": "godox.knowled-c5r",
+    "brand": "Godox",
+    "model": "KNOWLED C5R",
+    "aliases": [
+      "C5R"
+    ],
+    "family": "pocket",
+    "mount": null,
+    "powerW": 5,
+    "weightKg": 0.169,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 10.6,
+      "w": 6.8,
+      "h": 1.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 3000 mAh",
+        "maxOutputPct": 100,
+        "note": "≈2 h at full output"
+      }
+    ],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.92",
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.94"
+    ]
+  },
+  {
+    "id": "godox.knowled-c7r",
+    "brand": "Godox",
+    "model": "KNOWLED C7R",
+    "aliases": [
+      "C7R"
+    ],
+    "family": "bulb",
+    "mount": null,
+    "powerW": 7,
+    "weightKg": 0.256,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 7.3,
+      "w": 7.3,
+      "h": 13.6
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.92"
+    ],
+    "notes": "E26/E27 bulb. AC (lamp socket) / USB-C / battery."
+  },
+  {
+    "id": "godox.knowled-c10r",
+    "brand": "Godox",
+    "model": "KNOWLED C10R",
+    "aliases": [
+      "C10R"
+    ],
+    "family": "bulb",
+    "mount": null,
+    "powerW": 10,
+    "weightKg": 0.236,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 7.3,
+      "w": 7.3,
+      "h": 13.6
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox KNOWLED Catalogue 2026 (5th ed.), p.92"
+    ],
+    "notes": "E26/E27 bulb. AC (lamp socket) / USB-C. No battery."
+  }
+]

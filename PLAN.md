@@ -69,7 +69,11 @@ Each placed light carries:
 - **ID**: auto-numbered (`L1`, `L2`…) with an optional role (Key, Fill, Back…).
 - **Fixture and mode**: power draw is filled in from the catalogue.
 - **Colour**: CCT, gel (`CTS ¼`, `CTB ½`, …) and diffusion (216, 250, grid cloth…).
-- **Output**: modifier and intensity %.
+- **Output**: intensity %.
+- **Modifier**: pick the light first, then a modifier from the list of modifiers that fit it
+  (made for that model, or matching its mount: Bowens, NL, G-mount, FM…). Several can stack
+  (e.g. adapter + Fresnel). The modifier's **weight** is added to the light's to give the
+  **rig weight**, which is shown on the light and used for stand and rigging checks.
 - **Beam**: beam angle and throw length. These drive the **beam cone** on the plan, a soft
   gradient tinted by CCT or gel.
 - **Placement**: height and tilt (for notes and the photometric phase).
@@ -259,7 +263,15 @@ Each catalogue entry stores:
 - `category`, `department`, `family` (which icon it uses)
 - `footprintCm` (w × d, so it draws at true scale)
 - `powerW`, `source` (LED / HMI / tungsten / fluorescent), `cctRange`, `rgb`, `beamAngle`
-- `weightKg`, `connector`, `includedAccessories`
+- `weightKg` (head only), external power supply and its weight, deployed size, head cable
+  length, IP rating of the light and of the power supply, battery types and max output on each
+- `mount` (accessory mount) for matching modifiers
+
+Modifiers are a separate list (`catalog/modifiers/`) with type, weight, size and what they fit.
+Stands (weight, load capacity, closed and max height) come later.
+
+Derived tags: size class (tiny → huge), best for rigging (mats and inflatables first, then
+lightest), weather sealed (IPx4 and up, light and power supply checked separately).
 
 How the catalogue gets built:
 1. You send catalogues (PDFs or links to spec pages), in priority order.
@@ -398,7 +410,7 @@ Each phase ends with something usable.
 | **4. Equipment, kits, power** | Auto list, reuse-aware quantities, kits, accessory rules, owned flag, power and circuits, XLSX/CSV export | A rental-ready list comes out in one click |
 | **5. Accounts & sync** | Google Sign-In, project → location → scene → shot, Google Drive sync (offline-first, conflict handling), photos in Drive, version history | Start on phone, finish on PC |
 | **6. Location & sun** | Address lookup, satellite import with auto-scale, north alignment, sun arc, time slider, sun times | You can see where the sun is at 3 pm on the shoot day |
-| **7. Vendor catalogue** | Ingest your catalogues, icon families, search, filters, favourites, custom items | Real fixtures can be picked by name ("S60", "M18") |
+| **7. Vendor catalogue** | Ingest your catalogues (first pass done: Aputure, amaran, Godox, Nanlite, Nanlux), modifiers per light with rig weight, icon families, search, filters, favourites, custom items | Real fixtures can be picked by name ("S60", "M18") |
 | **8. Full PDF package** | Multi-page PDF, lighting schedule, reference photos, true-scale print | A complete package can go to the producer |
 | **9. Public launch** | Landing page, Stripe billing (free and pro tiers), team workspaces and roles, terms, privacy policy and GDPR (data export, account deletion), Sentry, Google Maps cost controls, optional App Store and Play Store builds | Anyone can sign up, pay and use it |
 | **Later** | Lux/f-stop estimates from photometrics, sun through windows, DMX patch sheet, rental cost estimate, real-time collaboration, iPad LiDAR room scan (native app) | — |

@@ -71,7 +71,7 @@ export function riggingPicks(fixtures: Fixture[], perClass = 3): Set<string> {
 
 /** Highest output available on battery power, or null if it can't run on batteries. */
 export function bestBatteryOutputPct(f: Fixture): number | null {
-  if (f.batteries.length === 0) return null;
+  if (!f.batteries?.length) return null;
   const known = f.batteries.map((b) => b.maxOutputPct).filter((p): p is number => p !== null);
   return known.length ? Math.max(...known) : null;
 }
