@@ -1066,5 +1066,36 @@
       "https://aputure.com/en-US/products/storm-xt52"
     ],
     "notes": "5600 W standard / 6000 W extended-cable mode at 180–240 V; 3200 W at 100–179 V. 4800 W LED output. Head without yoke; with yoke 31.3 kg. Head cable 7.5 or 15 m."
+  },
+  {
+    "id": "aputure.mc",
+    "brand": "Aputure",
+    "model": "MC",
+    "family": "pocket",
+    "mount": null,
+    "powerW": null,
+    "weightKg": 0.13,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": null,
+      "w": null,
+      "h": 1.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://aputure.com/en-US/products/mc"
+    ],
+    "notes": "Only weight (130 g) and 17 mm thickness given in product text."
   }
 ]

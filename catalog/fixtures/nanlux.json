@@ -262,5 +262,193 @@
       "NANLUX Catalogue NL202608-1, p.33"
     ],
     "notes": "Four-head all-in-one, AC 28 A. Yoke 2.25 kg. Motorized Fresnel FL-MT25 (4.6 kg) included. AC cable 7.5 m."
+  },
+  {
+    "id": "nanlux.evoke-1200",
+    "brand": "Nanlux",
+    "model": "Evoke 1200",
+    "family": "cob",
+    "mount": "nl",
+    "powerW": 1200,
+    "weightKg": 6.94,
+    "psu": {
+      "external": true,
+      "weightKg": 10.5,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 33.0,
+      "w": 24.1,
+      "h": 21.0
+    },
+    "headCableM": 7.5,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlux.com/product-evoke-1200"
+    ],
+    "notes": "Daylight. DC 48 V/25 A or AC. Head without yoke (yoke 1.84 kg). DC cable 7.5 m, AC cable 6 m."
+  },
+  {
+    "id": "nanlux.dyno-650c",
+    "brand": "Nanlux",
+    "model": "Dyno 650C",
+    "family": "panel",
+    "mount": null,
+    "powerW": 650,
+    "weightKg": 15.18,
+    "psu": {
+      "external": true,
+      "weightKg": 4.2,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 85.1,
+      "w": 17.3,
+      "h": 63.0
+    },
+    "headCableM": 5,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlux.com/product-dyno-650c-1200c"
+    ],
+    "notes": "Soft light. Weight/size as listed (size given with yoke). Diffuser 1.8 kg. DC 48 V/14.6 A. DC cable 5 m, AC cable 3 m."
+  },
+  {
+    "id": "nanlux.dyno-1200c",
+    "brand": "Nanlux",
+    "model": "Dyno 1200C",
+    "family": "panel",
+    "mount": null,
+    "powerW": 1200,
+    "weightKg": 26.2,
+    "psu": {
+      "external": true,
+      "weightKg": 7.5,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 102.3,
+      "w": 17.3,
+      "h": 91.8
+    },
+    "headCableM": 5,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlux.com/product-dyno-650c-1200c"
+    ],
+    "notes": "Soft light. Weight/size as listed (size given with yoke). Diffuser 3 kg. DC 48 V/29.2 A. DC cable 5 m, AC cable 3 m."
+  },
+  {
+    "id": "nanlux.tk-200",
+    "brand": "Nanlux",
+    "model": "TK-200",
+    "family": "panel",
+    "mount": null,
+    "powerW": 240,
+    "weightKg": 5.68,
+    "psu": {
+      "external": true,
+      "weightKg": 0.97,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 89.0,
+      "w": 8.5,
+      "h": 54.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlux.com/product-tk-200-450-140b-280b"
+    ],
+    "notes": "Daylight soft panel. Yoke 1.38 kg, barndoor 1.08 kg. Size with yoke."
+  },
+  {
+    "id": "nanlux.tk-450",
+    "brand": "Nanlux",
+    "model": "TK-450",
+    "family": "panel",
+    "mount": null,
+    "powerW": 455,
+    "weightKg": 8.58,
+    "psu": {
+      "external": true,
+      "weightKg": 2.78,
+      "ipRating": null
+    },
+    "sizeCm": null,
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlux.com/product-tk-200-450-140b-280b"
+    ],
+    "notes": "Daylight soft panel. Yoke 1.68 kg, barndoor 1.58 kg. DC 48 V/10 A. Size not listed."
+  },
+  {
+    "id": "nanlux.tk-140b",
+    "brand": "Nanlux",
+    "model": "TK-140B",
+    "family": "panel",
+    "mount": null,
+    "powerW": 160,
+    "weightKg": 6.06,
+    "psu": {
+      "external": true,
+      "weightKg": 0.76,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 89.0,
+      "w": 8.5,
+      "h": 54.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× V-mount 14.8 V / 1–2× V-mount 26 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlux.com/product-tk-200-450-140b-280b"
+    ],
+    "notes": "Bi-colour soft panel. Yoke 1.38 kg, barndoor 1.08 kg. Output on battery not stated."
+  },
+  {
+    "id": "nanlux.tk-280b",
+    "brand": "Nanlux",
+    "model": "TK-280B",
+    "family": "panel",
+    "mount": null,
+    "powerW": 280,
+    "weightKg": 10.5,
+    "psu": {
+      "external": true,
+      "weightKg": 1.33,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 134.0,
+      "w": 8.5,
+      "h": 54.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× V-mount 14.8 V / 1–2× V-mount 26 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlux.com/product-tk-200-450-140b-280b"
+    ],
+    "notes": "Bi-colour soft panel. Yoke 1.68 kg, barndoor 1.58 kg. Output on battery not stated."
   }
 ]

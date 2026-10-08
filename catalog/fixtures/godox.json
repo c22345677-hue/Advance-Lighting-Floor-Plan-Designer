@@ -2811,94 +2811,6 @@
     "notes": "LITEMONS. Adapter included. Weight/size without reflector (shared figure for the series)."
   },
   {
-    "id": "godox.la150d",
-    "brand": "Godox",
-    "model": "LA150D",
-    "family": "cob",
-    "mount": "bowens",
-    "powerW": null,
-    "weightKg": null,
-    "psu": {
-      "external": false,
-      "weightKg": null,
-      "ipRating": null
-    },
-    "sizeCm": null,
-    "headCableM": null,
-    "ipRating": null,
-    "batteries": null,
-    "sources": [
-      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.99"
-    ],
-    "notes": "LITEMONS. Catalogue gives no tech specs for this model."
-  },
-  {
-    "id": "godox.la200d",
-    "brand": "Godox",
-    "model": "LA200D",
-    "family": "cob",
-    "mount": "bowens",
-    "powerW": null,
-    "weightKg": null,
-    "psu": {
-      "external": false,
-      "weightKg": null,
-      "ipRating": null
-    },
-    "sizeCm": null,
-    "headCableM": null,
-    "ipRating": null,
-    "batteries": null,
-    "sources": [
-      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.99"
-    ],
-    "notes": "LITEMONS. Catalogue gives no tech specs for this model."
-  },
-  {
-    "id": "godox.la150bi",
-    "brand": "Godox",
-    "model": "LA150Bi",
-    "family": "cob",
-    "mount": "bowens",
-    "powerW": null,
-    "weightKg": null,
-    "psu": {
-      "external": false,
-      "weightKg": null,
-      "ipRating": null
-    },
-    "sizeCm": null,
-    "headCableM": null,
-    "ipRating": null,
-    "batteries": null,
-    "sources": [
-      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.99"
-    ],
-    "notes": "LITEMONS. Catalogue gives no tech specs for this model."
-  },
-  {
-    "id": "godox.la200bi",
-    "brand": "Godox",
-    "model": "LA200Bi",
-    "family": "cob",
-    "mount": "bowens",
-    "powerW": null,
-    "weightKg": null,
-    "psu": {
-      "external": false,
-      "weightKg": null,
-      "ipRating": null
-    },
-    "sizeCm": null,
-    "headCableM": null,
-    "ipRating": null,
-    "batteries": null,
-    "sources": [
-      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.99"
-    ],
-    "notes": "LITEMONS. Catalogue gives no tech specs for this model."
-  },
-  {
     "id": "godox.lp800bi",
     "brand": "Godox",
     "model": "LP800Bi",
@@ -3299,6 +3211,971 @@
     "sources": [
       "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.108"
     ]
+  },
+  {
+    "id": "godox.ml30",
+    "brand": "Godox",
+    "model": "ML30",
+    "family": "cob",
+    "mount": null,
+    "powerW": 37.6,
+    "weightKg": 0.587,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 12.0,
+      "w": 8.8,
+      "h": 8.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× NP-F970 (battery case)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), ML30"
+    ],
+    "notes": "Weight/size without handle and reflector. Adapter 14 V/3.4 A."
+  },
+  {
+    "id": "godox.ml30bi",
+    "brand": "Godox",
+    "model": "ML30Bi",
+    "family": "cob",
+    "mount": null,
+    "powerW": 40,
+    "weightKg": 0.602,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 12.0,
+      "w": 8.8,
+      "h": 8.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× NP-F970 (battery case)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), ML30Bi"
+    ],
+    "notes": "Weight/size without handle and reflector. Adapter 14 V/3.4 A."
+  },
+  {
+    "id": "godox.ml60",
+    "brand": "Godox",
+    "model": "ML60",
+    "family": "cob",
+    "mount": null,
+    "powerW": 60,
+    "weightKg": 0.77,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 14.5,
+      "w": 8.8,
+      "h": 8.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× NP-F970 (battery case BC60)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), ML60"
+    ],
+    "notes": "Weight/size without handle and reflector. Adapter 16.8 V/4.2 A. AC cable 5 m, DC cable 1.5 m."
+  },
+  {
+    "id": "godox.ml60bi",
+    "brand": "Godox",
+    "model": "ML60Bi",
+    "family": "cob",
+    "mount": null,
+    "powerW": 60,
+    "weightKg": 0.77,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 14.5,
+      "w": 8.8,
+      "h": 8.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× NP-F970 (battery case BC60)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), ML60Bi"
+    ],
+    "notes": "Weight/size without handle and reflector. Adapter 16.8 V/4.2 A. AC cable 5 m, DC cable 1.5 m."
+  },
+  {
+    "id": "godox.s30",
+    "brand": "Godox",
+    "model": "S30",
+    "family": "spot",
+    "mount": null,
+    "powerW": 30,
+    "weightKg": 0.907,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 21.5,
+      "w": 10.8,
+      "h": 10.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F970/F950/F930 7.4 V",
+        "maxOutputPct": 33,
+        "note": "10 W on battery vs 30 W on adapter"
+      },
+      {
+        "type": "USB power bank 5 V/2 A",
+        "maxOutputPct": 33,
+        "note": "10 W"
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), S30"
+    ],
+    "notes": "Focusing light, 6–55°. Adapter 15 V/4 A."
+  },
+  {
+    "id": "godox.s60",
+    "brand": "Godox",
+    "model": "S60",
+    "family": "spot",
+    "mount": null,
+    "powerW": 60,
+    "weightKg": 1.36,
+    "psu": {
+      "external": true,
+      "weightKg": 0.94,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 26.4,
+      "w": 10.7,
+      "h": 10.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount 14.8 V on controller",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), S60"
+    ],
+    "notes": "Focusing light, 6–55°."
+  },
+  {
+    "id": "godox.sl60w",
+    "brand": "Godox",
+    "model": "SL60W",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 60,
+    "weightKg": 1.61,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 23,
+      "w": 24,
+      "h": 14
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox user manual (godox.com product page), SL60"
+    ],
+    "notes": "Older SL60 (white/daylight). AC only. Size without lamp cover."
+  },
+  {
+    "id": "godox.sl60y",
+    "brand": "Godox",
+    "model": "SL60Y",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 60,
+    "weightKg": 1.61,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 23,
+      "w": 24,
+      "h": 14
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox user manual (godox.com product page), SL60"
+    ],
+    "notes": "Older SL60 (yellow/3300 K). AC only."
+  },
+  {
+    "id": "godox.sl150r",
+    "brand": "Godox",
+    "model": "SL150R",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 165,
+    "weightKg": 2.35,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 28.8,
+      "w": 19.9,
+      "h": 28.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox user manual (godox.com product page), SL150R"
+    ],
+    "notes": "RGB. 36 V/4.6 A external supply. Weight/size include U-bracket."
+  },
+  {
+    "id": "godox.sz150r",
+    "brand": "Godox",
+    "model": "SZ150R",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 150,
+    "weightKg": 2.65,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 33.6,
+      "w": 19.9,
+      "h": 16.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox user manual (godox.com product page), SZ150R"
+    ],
+    "notes": "Zoom 20–65°, RGB. AC. Weight without reflector and cover."
+  },
+  {
+    "id": "godox.sz200bi",
+    "brand": "Godox",
+    "model": "SZ200Bi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 200,
+    "weightKg": 2.54,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 33.6,
+      "w": 19.9,
+      "h": 16.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox user manual (godox.com product page), SZ200Bi"
+    ],
+    "notes": "Zoom 20–65°. AC."
+  },
+  {
+    "id": "godox.sz300r",
+    "brand": "Godox",
+    "model": "SZ300R",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 320,
+    "weightKg": 3.2,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 35.4,
+      "w": 20.1,
+      "h": 37.8
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox user manual (godox.com product page), SZ300R"
+    ],
+    "notes": "Zoom 20–65°, RGB. Adapter 52 V/5.7 A. Weight/size include U-bracket."
+  },
+  {
+    "id": "godox.ul60",
+    "brand": "Godox",
+    "model": "UL60",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 60,
+    "weightKg": 2.38,
+    "psu": {
+      "external": true,
+      "weightKg": 0.94,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 22.5,
+      "w": 11.9,
+      "h": 26.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount 14.8 V on controller",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), UL60"
+    ],
+    "notes": "Silent (fanless). Size/weight include U-bracket and sleeve."
+  },
+  {
+    "id": "godox.ul60bi",
+    "brand": "Godox",
+    "model": "UL60Bi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 78,
+    "weightKg": 2.46,
+    "psu": {
+      "external": true,
+      "weightKg": 0.99,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 22.5,
+      "w": 11.9,
+      "h": 26.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount 14.8 V on controller",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), UL60Bi"
+    ],
+    "notes": "Silent (fanless)."
+  },
+  {
+    "id": "godox.ul150",
+    "brand": "Godox",
+    "model": "UL150",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 150,
+    "weightKg": 3.09,
+    "psu": {
+      "external": true,
+      "weightKg": 1.58,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 31.7,
+      "w": 21.8,
+      "h": 17.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount on controller",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), UL150"
+    ],
+    "notes": "Silent. psu weight = controller 0.86 + adapter 0.72 kg."
+  },
+  {
+    "id": "godox.ul150ii",
+    "brand": "Godox",
+    "model": "UL150II",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 160,
+    "weightKg": 3.11,
+    "psu": {
+      "external": true,
+      "weightKg": 2.66,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 31.7,
+      "w": 21.8,
+      "h": 17.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.8 V",
+        "maxOutputPct": 50
+      },
+      {
+        "type": "2× V-mount 14.8 V or 1× 26 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), UL150II"
+    ],
+    "notes": "Silent. Controller 270×124×132 mm. DC 48 V input."
+  },
+  {
+    "id": "godox.ul150iibi",
+    "brand": "Godox",
+    "model": "UL150IIBi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 155,
+    "weightKg": 3.13,
+    "psu": {
+      "external": true,
+      "weightKg": 2.79,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 31.7,
+      "w": 21.8,
+      "h": 17.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.8 V",
+        "maxOutputPct": 50
+      },
+      {
+        "type": "2× V-mount 14.8 V or 1× 26 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), UL150IIBi"
+    ],
+    "notes": "Silent. DC 48 V input."
+  },
+  {
+    "id": "godox.vl150",
+    "brand": "Godox",
+    "model": "VL150",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 150,
+    "weightKg": 1.97,
+    "psu": {
+      "external": true,
+      "weightKg": 1.58,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30,
+      "w": 14,
+      "h": 18
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount on controller",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), VL300/VL200/VL150"
+    ],
+    "notes": "psu weight = controller 0.86 + adapter 0.72 kg."
+  },
+  {
+    "id": "godox.vl200",
+    "brand": "Godox",
+    "model": "VL200",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 200,
+    "weightKg": 2.23,
+    "psu": {
+      "external": true,
+      "weightKg": 2.15,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30,
+      "w": 14,
+      "h": 18
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount on controller",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), VL300/VL200/VL150"
+    ],
+    "notes": "psu weight = controller 1.19 + adapter 0.96 kg."
+  },
+  {
+    "id": "godox.vl300",
+    "brand": "Godox",
+    "model": "VL300",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 300,
+    "weightKg": 2.64,
+    "psu": {
+      "external": true,
+      "weightKg": 2.4,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 34,
+      "w": 14,
+      "h": 18
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount on controller",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), VL300/VL200/VL150"
+    ],
+    "notes": "psu weight = controller 1.26 + adapter 1.14 kg."
+  },
+  {
+    "id": "godox.vl150ii",
+    "brand": "Godox",
+    "model": "VL150II",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 165,
+    "weightKg": 1.72,
+    "psu": {
+      "external": true,
+      "weightKg": 0.7,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 27,
+      "w": 17.5,
+      "h": 21.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount 14.8 V (optional)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), VL150II/VL200II/VL300II"
+    ],
+    "notes": "psu weight = controller."
+  },
+  {
+    "id": "godox.vl200ii",
+    "brand": "Godox",
+    "model": "VL200II",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 215,
+    "weightKg": 1.77,
+    "psu": {
+      "external": true,
+      "weightKg": 1.19,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 27,
+      "w": 17.5,
+      "h": 21.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount 14.8 V (optional)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), VL150II/VL200II/VL300II"
+    ],
+    "notes": "psu weight = controller."
+  },
+  {
+    "id": "godox.vl300ii",
+    "brand": "Godox",
+    "model": "VL300II",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 320,
+    "weightKg": 2.78,
+    "psu": {
+      "external": true,
+      "weightKg": 1.2,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 27.2,
+      "w": 17.6,
+      "h": 29.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount 14.8 V (optional)",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), VL150II/VL200II/VL300II"
+    ],
+    "notes": "psu weight = controller."
+  },
+  {
+    "id": "godox.lc30d",
+    "brand": "Godox",
+    "model": "LC30D",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 33,
+    "weightKg": 0.299,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 7.6,
+      "w": 7.6,
+      "h": 9.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox user manual (godox.com product page), LC30D/LC30Bi"
+    ],
+    "notes": "Clamp/desk light, DC 14 V."
+  },
+  {
+    "id": "godox.lc30bi",
+    "brand": "Godox",
+    "model": "LC30Bi",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 38,
+    "weightKg": 0.299,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 7.6,
+      "w": 7.6,
+      "h": 9.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox user manual (godox.com product page), LC30D/LC30Bi"
+    ],
+    "notes": "Clamp/desk light, DC 14 V."
+  },
+  {
+    "id": "godox.led500l",
+    "brand": "Godox",
+    "model": "LED500L",
+    "family": "panel",
+    "mount": null,
+    "powerW": 32,
+    "weightKg": 0.51,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 25.0,
+      "w": 17.0,
+      "h": 4.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× NP-F970",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), LED500L/LED500LR"
+    ]
+  },
+  {
+    "id": "godox.led500lr",
+    "brand": "Godox",
+    "model": "LED500LR",
+    "family": "panel",
+    "mount": null,
+    "powerW": 32,
+    "weightKg": 0.62,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 25.0,
+      "w": 17.0,
+      "h": 4.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× NP-F970",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "Godox user manual (godox.com product page), LED500L/LED500LR"
+    ]
+  },
+  {
+    "id": "godox.f7-120d",
+    "brand": "Godox",
+    "model": "F7-120D",
+    "family": "fresnel",
+    "mount": null,
+    "powerW": 120,
+    "weightKg": 7.62,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 50.8,
+      "w": 32.5,
+      "h": 38.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox user manual (godox.com product page), F7-120D"
+    ],
+    "notes": "LED Fresnel, AC. Weight/size with U-bracket."
+  },
+  {
+    "id": "godox.f7-120bi",
+    "brand": "Godox",
+    "model": "F7-120Bi",
+    "family": "fresnel",
+    "mount": null,
+    "powerW": 120,
+    "weightKg": 7.63,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 50.9,
+      "w": 32.4,
+      "h": 38.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox user manual (godox.com product page), F7-120Bi"
+    ],
+    "notes": "LED Fresnel, AC. Weight/size with U-bracket."
+  },
+  {
+    "id": "godox.la150d",
+    "brand": "Godox",
+    "model": "LA150D",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 190,
+    "weightKg": 1.4,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 20.5,
+      "w": 14.5,
+      "h": 21.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox user manual (godox.com product page), LA150D/LA200D"
+    ],
+    "notes": "DC 48 V."
+  },
+  {
+    "id": "godox.la200d",
+    "brand": "Godox",
+    "model": "LA200D",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 205,
+    "weightKg": 1.4,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 20.5,
+      "w": 14.5,
+      "h": 21.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox user manual (godox.com product page), LA150D/LA200D"
+    ],
+    "notes": "DC 48 V."
+  },
+  {
+    "id": "godox.la150bi",
+    "brand": "Godox",
+    "model": "LA150Bi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 190,
+    "weightKg": 1.4,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 20.5,
+      "w": 14.5,
+      "h": 21.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox user manual (godox.com product page), LA150Bi/LA200Bi"
+    ],
+    "notes": "DC 48 V."
+  },
+  {
+    "id": "godox.la200bi",
+    "brand": "Godox",
+    "model": "LA200Bi",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 210,
+    "weightKg": 1.4,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 20.5,
+      "w": 14.5,
+      "h": 21.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "Godox user manual (godox.com product page), LA150Bi/LA200Bi"
+    ],
+    "notes": "DC 48 V."
   },
   {
     "id": "godox.knowled-mg6k",
@@ -4389,5 +5266,320 @@
       "Godox KNOWLED Catalogue 2026 (5th ed.), p.92"
     ],
     "notes": "E26/E27 bulb. AC (lamp socket) / USB-C. No battery."
+  },
+  {
+    "id": "godox.knowled-m1000r",
+    "brand": "Godox",
+    "model": "KNOWLED M1000R",
+    "aliases": [
+      "M1000R"
+    ],
+    "family": "cob",
+    "mount": null,
+    "powerW": 1150,
+    "weightKg": 8.1,
+    "psu": {
+      "external": true,
+      "weightKg": 5.6,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 19.8,
+      "w": 18.8,
+      "h": 36.9
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "https://www.knowled.com/product-b/M1000R.html"
+    ],
+    "notes": "Full colour. Without U-bracket and reflector."
+  },
+  {
+    "id": "godox.knowled-m600bi-pro",
+    "brand": "Godox",
+    "model": "KNOWLED M600Bi Pro",
+    "aliases": [
+      "M600Bi Pro"
+    ],
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 650,
+    "weightKg": 4.6,
+    "psu": {
+      "external": true,
+      "weightKg": 5.5,
+      "ipRating": "IP54"
+    },
+    "sizeCm": {
+      "l": 17.4,
+      "w": 29.8,
+      "h": 17.7
+    },
+    "headCableM": null,
+    "ipRating": "IP54",
+    "batteries": [],
+    "sources": [
+      "https://www.knowled.com/product-b/M600Bi-Pro.html"
+    ],
+    "notes": "AC or 48 V DC. Without U-bracket and reflector."
+  },
+  {
+    "id": "godox.knowled-m600bi",
+    "brand": "Godox",
+    "model": "KNOWLED M600Bi",
+    "aliases": [
+      "M600Bi"
+    ],
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 730,
+    "weightKg": 4.96,
+    "psu": {
+      "external": true,
+      "weightKg": 3.74,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 48.1,
+      "w": 24.3,
+      "h": 15.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount 14.8 V / 26 V on controller",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.knowled.com/product-b/M600Bi.html"
+    ],
+    "notes": "Head input 48 V/13 A."
+  },
+  {
+    "id": "godox.knowled-mg2400bi",
+    "brand": "Godox",
+    "model": "KNOWLED MG2400Bi",
+    "aliases": [
+      "MG2400Bi"
+    ],
+    "family": "cob",
+    "mount": "g-mount",
+    "powerW": 2900,
+    "weightKg": 22,
+    "psu": {
+      "external": true,
+      "weightKg": 13,
+      "ipRating": "IP65"
+    },
+    "sizeCm": {
+      "l": 40.9,
+      "w": 38.5,
+      "h": 35.6
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "https://www.knowled.com/product-b/MG2400Bi.html"
+    ],
+    "notes": "2600 W output across all CCT. AC 30 A max. Without yoke and reflector."
+  },
+  {
+    "id": "godox.knowled-p600bi-hard",
+    "brand": "Godox",
+    "model": "KNOWLED P600Bi Hard",
+    "aliases": [
+      "P600Bi Hard"
+    ],
+    "family": "panel",
+    "mount": null,
+    "powerW": 650,
+    "weightKg": 10,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 57.1,
+      "w": 49.9,
+      "h": 12.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.knowled.com/product-a/P600Bi-Hard.html"
+    ],
+    "notes": "AC 7 A. Weight/size include U-bracket."
+  },
+  {
+    "id": "godox.knowled-p1200r-hard-pro",
+    "brand": "Godox",
+    "model": "KNOWLED P1200R Hard PRO",
+    "aliases": [
+      "P1200R Hard PRO"
+    ],
+    "family": "panel",
+    "mount": null,
+    "powerW": 1300,
+    "weightKg": 22,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 74.3,
+      "w": 38.6,
+      "h": 16.6
+    },
+    "headCableM": null,
+    "ipRating": "IP65",
+    "batteries": [],
+    "sources": [
+      "https://www.knowled.com/product-e/P1200R-Hard-PRO-P600R-Hard-PRO.html"
+    ],
+    "notes": "Integrated PSU. Without U-bracket."
+  },
+  {
+    "id": "godox.knowled-m200d",
+    "brand": "Godox",
+    "model": "KNOWLED M200D",
+    "aliases": [
+      "M200D"
+    ],
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 230,
+    "weightKg": 3.03,
+    "psu": {
+      "external": true,
+      "weightKg": 2.74,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 42.5,
+      "w": 23.2,
+      "h": 14.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount 14.8 V / 26 V on controller",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.knowled.com/product-b/1452.html"
+    ],
+    "notes": "Head input 48 V. Controller 270×124×132 mm. Site lists one head/controller weight for M200D/M300D."
+  },
+  {
+    "id": "godox.knowled-m300d",
+    "brand": "Godox",
+    "model": "KNOWLED M300D",
+    "aliases": [
+      "M300D"
+    ],
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 330,
+    "weightKg": 3.03,
+    "psu": {
+      "external": true,
+      "weightKg": 2.74,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 42.5,
+      "w": 23.2,
+      "h": 14.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount 14.8 V / 26 V on controller",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.knowled.com/product-b/1452.html"
+    ],
+    "notes": "Head input 48 V. Controller 270×124×132 mm. Site lists one head/controller weight for M200D/M300D."
+  },
+  {
+    "id": "godox.knowled-m200bi",
+    "brand": "Godox",
+    "model": "KNOWLED M200Bi",
+    "aliases": [
+      "M200Bi"
+    ],
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 230,
+    "weightKg": 3.2,
+    "psu": {
+      "external": true,
+      "weightKg": 2.7,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 42.5,
+      "w": 23.2,
+      "h": 14.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount 14.8 V / 26 V on controller",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.knowled.com/product-b/1452.html"
+    ],
+    "notes": "Head input 48 V. Controller 270×124×132 mm."
+  },
+  {
+    "id": "godox.knowled-m300bi",
+    "brand": "Godox",
+    "model": "KNOWLED M300Bi",
+    "aliases": [
+      "M300Bi"
+    ],
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 360,
+    "weightKg": 3.5,
+    "psu": {
+      "external": true,
+      "weightKg": 2.7,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 42.5,
+      "w": 23.2,
+      "h": 14.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount 14.8 V / 26 V on controller",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.knowled.com/product-b/1452.html"
+    ],
+    "notes": "Head input 48 V. Controller 270×124×132 mm."
   }
 ]

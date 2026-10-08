@@ -9,7 +9,7 @@
     "weightKg": 0.7,
     "psu": {
       "external": true,
-      "weightKg": null,
+      "weightKg": 0.45,
       "ipRating": null
     },
     "sizeCm": {
@@ -45,7 +45,7 @@
     "weightKg": 1.08,
     "psu": {
       "external": true,
-      "weightKg": null,
+      "weightKg": 0.47,
       "ipRating": null
     },
     "sizeCm": {
@@ -81,7 +81,7 @@
     "weightKg": 1.16,
     "psu": {
       "external": true,
-      "weightKg": null,
+      "weightKg": 0.47,
       "ipRating": null
     },
     "sizeCm": {
@@ -117,7 +117,7 @@
     "weightKg": 1.56,
     "psu": {
       "external": true,
-      "weightKg": null,
+      "weightKg": 0.67,
       "ipRating": null
     },
     "sizeCm": {
@@ -153,7 +153,7 @@
     "weightKg": 2.9,
     "psu": {
       "external": true,
-      "weightKg": null,
+      "weightKg": 2.75,
       "ipRating": null
     },
     "sizeCm": {
@@ -177,7 +177,7 @@
       "NANLITE Catalogue 2026-05, p.7",
       "NANLITE Catalogue 2026-05, p.9"
     ],
-    "notes": "Separate control unit with built-in power adapter and dual V-mount plates (weight not stated). DC connection cable 3 m."
+    "notes": "Control unit has built-in power adapter and dual V-mount plates. DC connection cable 3 m."
   },
   {
     "id": "nanlite.forza-500b-ii",
@@ -242,15 +242,14 @@
       },
       {
         "type": "2× V-mount 26 V",
-        "maxOutputPct": 70,
-        "note": "65–70%"
+        "maxOutputPct": 65
       }
     ],
     "sources": [
       "NANLITE Catalogue 2026-05, p.8",
       "NANLITE Catalogue 2026-05, p.10"
     ],
-    "notes": "Separate control unit (weight not stated). DC 48 V/16.67 A. DC connection cable 5 m."
+    "notes": "Separate control unit (weight not stated). DC 48 V/16.67 A. DC connection cable 5 m. 26 V output 65% per nanlite.com (catalogue: 70%/65%)."
   },
   {
     "id": "nanlite.fc-60b",
@@ -262,7 +261,7 @@
     "weightKg": 0.7,
     "psu": {
       "external": true,
-      "weightKg": null,
+      "weightKg": 0.45,
       "ipRating": null
     },
     "sizeCm": {
@@ -299,7 +298,7 @@
     "weightKg": 0.98,
     "psu": {
       "external": true,
-      "weightKg": null,
+      "weightKg": 0.52,
       "ipRating": null
     },
     "sizeCm": {
@@ -337,7 +336,7 @@
     "weightKg": 1.13,
     "psu": {
       "external": true,
-      "weightKg": null,
+      "weightKg": 0.52,
       "ipRating": null
     },
     "sizeCm": {
@@ -453,7 +452,7 @@
     "weightKg": 3.91,
     "psu": {
       "external": true,
-      "weightKg": null,
+      "weightKg": 2.24,
       "ipRating": null
     },
     "sizeCm": {
@@ -1486,5 +1485,1258 @@
       "NANLITE Catalogue 2026-05, p.61"
     ],
     "notes": "Power adapter 15 V/4 A; also USB-C PD."
+  },
+  {
+    "id": "nanlite.forza-60-ii",
+    "brand": "Nanlite",
+    "model": "Forza 60 II",
+    "family": "cob",
+    "mount": "fm",
+    "powerW": 72,
+    "weightKg": 0.84,
+    "psu": {
+      "external": true,
+      "weightKg": 0.45,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 20.0,
+      "w": 10.8,
+      "h": 8.4
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–14.8 V",
+        "maxOutputPct": 100
+      },
+      {
+        "type": "2× NP-F 7.4 V",
+        "maxOutputPct": 100
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-forza-60-60b-ii"
+    ],
+    "notes": "Daylight. Battery grip BT-BG-FZ60 included."
+  },
+  {
+    "id": "nanlite.forza-150",
+    "brand": "Nanlite",
+    "model": "Forza 150",
+    "family": "cob",
+    "mount": "fm",
+    "powerW": 170,
+    "weightKg": 1.36,
+    "psu": {
+      "external": true,
+      "weightKg": 0.64,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 22.7,
+      "w": 13.3,
+      "h": 11.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Battery grip + 14.8 V/26 V V-mount",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-forza-150"
+    ],
+    "notes": "Daylight. Power adapter 24 V/7.5 A, cable 4.5 m."
+  },
+  {
+    "id": "nanlite.forza-200",
+    "brand": "Nanlite",
+    "model": "Forza 200",
+    "family": "cob",
+    "mount": null,
+    "powerW": 200,
+    "weightKg": 1.78,
+    "psu": {
+      "external": true,
+      "weightKg": 2.26,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 31.5,
+      "w": 21.0,
+      "h": 11.5
+    },
+    "headCableM": 2.5,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "V-mount 14.8 V",
+        "maxOutputPct": 60
+      },
+      {
+        "type": "V-mount 26 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-forza-200"
+    ],
+    "notes": "psu weight = control unit + power adapter (4.04 kg total minus head). Connecting cable 2.5 m."
+  },
+  {
+    "id": "nanlite.forza-300-ii",
+    "brand": "Nanlite",
+    "model": "Forza 300 II",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 350,
+    "weightKg": 2.88,
+    "psu": {
+      "external": true,
+      "weightKg": 2.45,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 33.0,
+      "w": 22.8,
+      "h": 12.3
+    },
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× V-mount 14.4–14.8 V",
+        "maxOutputPct": null
+      },
+      {
+        "type": "2× V-mount 14.4–14.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-forza-300-300b-500-500b-ii"
+    ],
+    "notes": "Daylight. Control unit with built-in adapter and V-mount plates. DC cable 3 m."
+  },
+  {
+    "id": "nanlite.forza-500-ii",
+    "brand": "Nanlite",
+    "model": "Forza 500 II",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 560,
+    "weightKg": 3.88,
+    "psu": {
+      "external": true,
+      "weightKg": 3.58,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 35.2,
+      "w": 23.0,
+      "h": 14.2
+    },
+    "headCableM": 3,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× V-mount 14.4–26 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-forza-300-300b-500-500b-ii"
+    ],
+    "notes": "Daylight. Control unit with built-in adapter and V-mount plates. DC cable 3 m."
+  },
+  {
+    "id": "nanlite.forza-720",
+    "brand": "Nanlite",
+    "model": "Forza 720",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 800,
+    "weightKg": 4.8,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 47.5,
+      "w": 23.1,
+      "h": 14.2
+    },
+    "headCableM": 5,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× V-mount 14.4–14.8 V",
+        "maxOutputPct": 40
+      },
+      {
+        "type": "2× V-mount 26 V",
+        "maxOutputPct": 70
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-forza-720-720b"
+    ],
+    "notes": "Daylight. Separate control unit (weight not stated). Connection cable 5 m."
+  },
+  {
+    "id": "nanlite.fc-1200b",
+    "brand": "Nanlite",
+    "model": "FC-1200B",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 1350,
+    "weightKg": 10.0,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 42.8,
+      "w": 38.1,
+      "h": 19.9
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-1200b-1200c"
+    ],
+    "notes": "All-in-one (adapter and control in head). AC cable 7.5 m. Reflector 0.2 kg."
+  },
+  {
+    "id": "nanlite.fc-1200c",
+    "brand": "Nanlite",
+    "model": "FC-1200C",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 1350,
+    "weightKg": 10.13,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 42.8,
+      "w": 38.1,
+      "h": 19.9
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-1200b-1200c"
+    ],
+    "notes": "All-in-one (adapter and control in head). AC cable 7.5 m. Reflector 0.2 kg."
+  },
+  {
+    "id": "nanlite.litolite-5c",
+    "brand": "Nanlite",
+    "model": "LitoLite 5C",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 7,
+    "weightKg": 0.138,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 10.8,
+      "w": 2.2,
+      "h": 6.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": 100,
+        "note": "≈90 min at full power"
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-litolite-5c"
+    ],
+    "notes": "DC 5 V/2 A."
+  },
+  {
+    "id": "nanlite.lumo",
+    "brand": "Nanlite",
+    "model": "lumo",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 5,
+    "weightKg": 0.063,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 6.8,
+      "w": 6.5,
+      "h": 1.4
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 3.7 V 145 mAh",
+        "maxOutputPct": 100,
+        "note": "≈38 min at high"
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-lumo"
+    ],
+    "notes": "Phone ring light. powerW = USB input 5 V/1 A."
+  },
+  {
+    "id": "nanlite.miro-30c",
+    "brand": "Nanlite",
+    "model": "miro 30c",
+    "family": "panel",
+    "mount": null,
+    "powerW": 30,
+    "weightKg": 0.33,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 18.1,
+      "w": 18.3,
+      "h": 3.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "1× NP-F 7.4 V",
+        "maxOutputPct": 100,
+        "note": "≈1 h (NP-F750) / 1.5 h (NP-F970)"
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-miro"
+    ],
+    "notes": "Magnetic diffuser 0.06 kg. Also USB-C PD."
+  },
+  {
+    "id": "nanlite.miro-60c",
+    "brand": "Nanlite",
+    "model": "miro 60c",
+    "family": "panel",
+    "mount": null,
+    "powerW": 60,
+    "weightKg": 0.74,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 22.3,
+      "w": 22.8,
+      "h": 3.4
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "2× NP-F 7.4 V",
+        "maxOutputPct": 100,
+        "note": "≈1 h (NP-F750) / 1.6 h (NP-F970)"
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-miro"
+    ],
+    "notes": "Magnetic diffuser 0.09 kg. Also USB-C PD."
+  },
+  {
+    "id": "nanlite.pico",
+    "brand": "Nanlite",
+    "model": "pico",
+    "family": "pocket",
+    "mount": null,
+    "powerW": 4,
+    "weightKg": 0.13,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 6.7,
+      "w": 7.2,
+      "h": 3.4
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in 3.7 V 1500 mAh",
+        "maxOutputPct": 100,
+        "note": "≈1 h 20 min at 100%"
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-pico"
+    ]
+  },
+  {
+    "id": "nanlite.pavobulb-10c",
+    "brand": "Nanlite",
+    "model": "PavoBulb 10C",
+    "family": "bulb",
+    "mount": null,
+    "powerW": 10,
+    "weightKg": 0.17,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 7.3,
+      "w": 7.3,
+      "h": 12.1
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F via BT-BA-SNP-E27 adapter",
+        "maxOutputPct": 100,
+        "note": "≈5.5 h (NP-F970)"
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-pavobulb-10c"
+    ],
+    "notes": "E27. DC 5 V/2.4 A or AC."
+  },
+  {
+    "id": "nanlite.fs-150",
+    "brand": "Nanlite",
+    "model": "FS-150",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 185,
+    "weightKg": 2.27,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 35.6,
+      "w": 21.3,
+      "h": 11.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-fs-150"
+    ],
+    "notes": "Daylight, AC 220–240 V only. Size with yoke."
+  },
+  {
+    "id": "nanlite.fs-200",
+    "brand": "Nanlite",
+    "model": "FS-200",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 240,
+    "weightKg": 2.48,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 30.9,
+      "w": 23.2,
+      "h": 12.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-fs-200"
+    ],
+    "notes": "Daylight, AC."
+  },
+  {
+    "id": "nanlite.fs-300",
+    "brand": "Nanlite",
+    "model": "FS-300",
+    "family": "cob",
+    "mount": "bowens",
+    "powerW": 350,
+    "weightKg": 2.95,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 34.2,
+      "w": 23.2,
+      "h": 12.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-fs-300-en"
+    ],
+    "notes": "Daylight, AC. Size with yoke."
+  },
+  {
+    "id": "nanlite.600sa",
+    "brand": "Nanlite",
+    "model": "600SA",
+    "family": "panel",
+    "mount": null,
+    "powerW": 36,
+    "weightKg": 1.8,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 34.0,
+      "w": 37.0,
+      "h": 8.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Sony V-lock (V-mount) 14.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-600-900-1200-sa-and-dsa-series"
+    ],
+    "notes": "LED studio panel. 14.8 V DC / AC."
+  },
+  {
+    "id": "nanlite.600csa",
+    "brand": "Nanlite",
+    "model": "600CSA",
+    "family": "panel",
+    "mount": null,
+    "powerW": 36,
+    "weightKg": 2.1,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 34.5,
+      "w": 38.5,
+      "h": 9.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Sony V-lock (V-mount) 14.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-600-900-1200-sa-and-dsa-series"
+    ],
+    "notes": "LED studio panel. 14.8 V DC / AC."
+  },
+  {
+    "id": "nanlite.900sa",
+    "brand": "Nanlite",
+    "model": "900SA",
+    "family": "panel",
+    "mount": null,
+    "powerW": 54,
+    "weightKg": 2.1,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 41.5,
+      "w": 37.5,
+      "h": 8.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Sony V-lock (V-mount) 14.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-600-900-1200-sa-and-dsa-series"
+    ],
+    "notes": "LED studio panel. 14.8 V DC / AC."
+  },
+  {
+    "id": "nanlite.900csa",
+    "brand": "Nanlite",
+    "model": "900CSA",
+    "family": "panel",
+    "mount": null,
+    "powerW": 54,
+    "weightKg": 2.4,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 42.0,
+      "w": 37.5,
+      "h": 9.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Sony V-lock (V-mount) 14.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-600-900-1200-sa-and-dsa-series"
+    ],
+    "notes": "LED studio panel. 14.8 V DC / AC."
+  },
+  {
+    "id": "nanlite.1200sa",
+    "brand": "Nanlite",
+    "model": "1200SA",
+    "family": "panel",
+    "mount": null,
+    "powerW": 72,
+    "weightKg": 2.5,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 47.5,
+      "w": 40.0,
+      "h": 8.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Sony V-lock (V-mount) 14.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-600-900-1200-sa-and-dsa-series"
+    ],
+    "notes": "LED studio panel. 14.8 V DC / AC."
+  },
+  {
+    "id": "nanlite.1200csa",
+    "brand": "Nanlite",
+    "model": "1200CSA",
+    "family": "panel",
+    "mount": null,
+    "powerW": 72,
+    "weightKg": 2.5,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 47.0,
+      "w": 38.0,
+      "h": 9.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Sony V-lock (V-mount) 14.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-600-900-1200-sa-and-dsa-series"
+    ],
+    "notes": "LED studio panel. 14.8 V DC / AC."
+  },
+  {
+    "id": "nanlite.600dsa",
+    "brand": "Nanlite",
+    "model": "600DSA",
+    "family": "panel",
+    "mount": null,
+    "powerW": 36,
+    "weightKg": 2.1,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 37.5,
+      "w": 34.3,
+      "h": 8.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Sony V-lock (V-mount) 14.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-600-900-1200-sa-and-dsa-series"
+    ],
+    "notes": "LED studio panel. 14.8 V DC / AC."
+  },
+  {
+    "id": "nanlite.900dsa",
+    "brand": "Nanlite",
+    "model": "900DSA",
+    "family": "panel",
+    "mount": null,
+    "powerW": 54,
+    "weightKg": 2.4,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 39.5,
+      "w": 41.5,
+      "h": 8.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Sony V-lock (V-mount) 14.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-600-900-1200-sa-and-dsa-series"
+    ],
+    "notes": "LED studio panel. 14.8 V DC / AC."
+  },
+  {
+    "id": "nanlite.1200dsa",
+    "brand": "Nanlite",
+    "model": "1200DSA",
+    "family": "panel",
+    "mount": null,
+    "powerW": 72,
+    "weightKg": 2.5,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 47.0,
+      "w": 38.0,
+      "h": 8.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Sony V-lock (V-mount) 14.8 V",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-600-900-1200-sa-and-dsa-series"
+    ],
+    "notes": "LED studio panel. 14.8 V DC / AC."
+  },
+  {
+    "id": "nanlite.compac-20",
+    "brand": "Nanlite",
+    "model": "Compac 20",
+    "family": "panel",
+    "mount": null,
+    "powerW": 20,
+    "weightKg": 0.35,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 20.5,
+      "w": 14.0,
+      "h": 4.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-compac"
+    ],
+    "notes": "Slim studio panel, AC."
+  },
+  {
+    "id": "nanlite.compac-24",
+    "brand": "Nanlite",
+    "model": "Compac 24",
+    "family": "panel",
+    "mount": null,
+    "powerW": 24,
+    "weightKg": 0.72,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 31.6,
+      "w": 17.2,
+      "h": 7.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-compac"
+    ],
+    "notes": "Slim studio panel, AC."
+  },
+  {
+    "id": "nanlite.compac-24b",
+    "brand": "Nanlite",
+    "model": "Compac 24B",
+    "family": "panel",
+    "mount": null,
+    "powerW": 24,
+    "weightKg": 0.72,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 31.6,
+      "w": 17.2,
+      "h": 7.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-compac"
+    ],
+    "notes": "Slim studio panel, AC."
+  },
+  {
+    "id": "nanlite.compac-40",
+    "brand": "Nanlite",
+    "model": "Compac 40",
+    "family": "panel",
+    "mount": null,
+    "powerW": 40,
+    "weightKg": 1.3,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 40.8,
+      "w": 23.2,
+      "h": 8.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-compac"
+    ],
+    "notes": "Slim studio panel, AC."
+  },
+  {
+    "id": "nanlite.compac-40b",
+    "brand": "Nanlite",
+    "model": "Compac 40B",
+    "family": "panel",
+    "mount": null,
+    "powerW": 40,
+    "weightKg": 1.3,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 40.8,
+      "w": 23.2,
+      "h": 8.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-compac"
+    ],
+    "notes": "Slim studio panel, AC."
+  },
+  {
+    "id": "nanlite.compac-68",
+    "brand": "Nanlite",
+    "model": "Compac 68",
+    "family": "panel",
+    "mount": null,
+    "powerW": 68,
+    "weightKg": 2.5,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 56.6,
+      "w": 35.0,
+      "h": 9.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-compac"
+    ],
+    "notes": "Slim studio panel, AC."
+  },
+  {
+    "id": "nanlite.compac-68b",
+    "brand": "Nanlite",
+    "model": "Compac 68B",
+    "family": "panel",
+    "mount": null,
+    "powerW": 68,
+    "weightKg": 2.5,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 56.6,
+      "w": 35.0,
+      "h": 9.0
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-compac"
+    ],
+    "notes": "Slim studio panel, AC."
+  },
+  {
+    "id": "nanlite.compac-100",
+    "brand": "Nanlite",
+    "model": "Compac 100",
+    "family": "panel",
+    "mount": null,
+    "powerW": 100,
+    "weightKg": 3.3,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 66.4,
+      "w": 40.0,
+      "h": 8.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-compac"
+    ],
+    "notes": "Slim studio panel, AC."
+  },
+  {
+    "id": "nanlite.compac-100b",
+    "brand": "Nanlite",
+    "model": "Compac 100B",
+    "family": "panel",
+    "mount": null,
+    "powerW": 100,
+    "weightKg": 3.3,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 66.4,
+      "w": 40.0,
+      "h": 8.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-compac"
+    ],
+    "notes": "Slim studio panel, AC."
+  },
+  {
+    "id": "nanlite.compac-200",
+    "brand": "Nanlite",
+    "model": "Compac 200",
+    "family": "panel",
+    "mount": null,
+    "powerW": 200,
+    "weightKg": 6.0,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 81.8,
+      "w": 50.0,
+      "h": 10.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-compac"
+    ],
+    "notes": "Slim studio panel, AC."
+  },
+  {
+    "id": "nanlite.compac-200b",
+    "brand": "Nanlite",
+    "model": "Compac 200B",
+    "family": "panel",
+    "mount": null,
+    "powerW": 200,
+    "weightKg": 6.0,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 81.8,
+      "w": 50.0,
+      "h": 10.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-compac"
+    ],
+    "notes": "Slim studio panel, AC."
+  },
+  {
+    "id": "nanlite.mixpanel-60",
+    "brand": "Nanlite",
+    "model": "MixPanel 60",
+    "family": "panel",
+    "mount": null,
+    "powerW": 64,
+    "weightKg": 3.3,
+    "psu": {
+      "external": true,
+      "weightKg": 0.53,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 42.6,
+      "w": 37.0,
+      "h": 8.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-mixpanel-60-150"
+    ],
+    "notes": "psu weight from light+adapter 3.83 kg. DC 15 V/6 A."
+  },
+  {
+    "id": "nanlite.mixpanel-150",
+    "brand": "Nanlite",
+    "model": "MixPanel 150",
+    "family": "panel",
+    "mount": null,
+    "powerW": 164,
+    "weightKg": 4.1,
+    "psu": {
+      "external": true,
+      "weightKg": 0.72,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 48.2,
+      "w": 43.5,
+      "h": 8.2
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-mixpanel-60-150"
+    ],
+    "notes": "psu weight from light+adapter 4.82 kg. DC 15 V/7.5 A."
+  },
+  {
+    "id": "nanlite.d672-ii",
+    "brand": "Nanlite",
+    "model": "D672 II",
+    "family": "panel",
+    "mount": null,
+    "powerW": 148,
+    "weightKg": 8.0,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 58.1,
+      "w": 44.2,
+      "h": 9.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-d672-ii-d672b-ii"
+    ],
+    "notes": "Daylight studio panel, AC."
+  },
+  {
+    "id": "nanlite.d672b-ii",
+    "brand": "Nanlite",
+    "model": "D672B II",
+    "family": "panel",
+    "mount": null,
+    "powerW": 296,
+    "weightKg": 8.0,
+    "psu": {
+      "external": false,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 58.1,
+      "w": 44.2,
+      "h": 9.3
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [],
+    "sources": [
+      "https://www.nanlite.com/product-d672-ii-d672b-ii"
+    ],
+    "notes": "Bi-colour, listed as 148 W ×2."
+  },
+  {
+    "id": "nanlite.mixwand-18-ii",
+    "brand": "Nanlite",
+    "model": "MixWand 18 II",
+    "family": "tube",
+    "mount": null,
+    "powerW": 22,
+    "weightKg": 0.49,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 59.0,
+      "w": 6.7,
+      "h": 3.7
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "Built-in",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-mixwand-18ii"
+    ],
+    "notes": "DC 15 V/1.6 A. Battery runtime not stated on spec sheet."
+  },
+  {
+    "id": "nanlite.lumipad-25",
+    "brand": "Nanlite",
+    "model": "LumiPad 25",
+    "family": "panel",
+    "mount": null,
+    "powerW": 25.6,
+    "weightKg": 1.01,
+    "psu": {
+      "external": true,
+      "weightKg": null,
+      "ipRating": null
+    },
+    "sizeCm": {
+      "l": 31.0,
+      "w": 34.5,
+      "h": 5.5
+    },
+    "headCableM": null,
+    "ipRating": null,
+    "batteries": [
+      {
+        "type": "NP-F",
+        "maxOutputPct": null
+      }
+    ],
+    "sources": [
+      "https://www.nanlite.com/product-lumipad-25"
+    ]
   }
 ]
