@@ -13,7 +13,8 @@ producers and rental houses.
   drawn at its real footprint.
 - Default canvas: grey background, **50 cm grid**. Thicker lines every 1 m and 5 m; the grid
   adapts as you zoom out so it never turns into noise.
-- Metric by default, imperial toggle (grid becomes 2 ft).
+- **Metric by default**. Switch to imperial in settings: the grid becomes 2 ft and every input
+  and export uses ft/in. The setting is per user and can be overridden per project.
 - Two icon display modes:
   - **True scale**: a 12×12 butterfly really is 3.66 m wide.
   - **Symbol**: keeps small items legible when zoomed out.
@@ -74,7 +75,39 @@ Each placed light carries:
 - **Placement**: height and tilt (for notes and the photometric phase).
 - **Control**: circuit or distro, DMX universe and address, free notes.
 
-### 2.4 Camera & blocking
+### 2.4 String lights tool
+For a row of identical fixtures. Examples: tubes along a ceiling beam, a line of LED panels
+over a set, practicals down a corridor, or a curved row of lights around a car.
+
+How it works:
+1. Pick the **String** tool and set the **start** and **end** points (tap–tap or drag). One
+   light goes on each end.
+2. Choose the **fixture** and the **total count**. The remaining lights are spaced evenly
+   between the two ends, and the panel shows the spacing live (e.g. "8 × Titan Tube,
+   every 64 cm").
+   - Alternative: set a spacing ("every 1 m") and let the count follow.
+3. **Curve**: drag the midpoint handle to bend the line. Add more handles for S-curves. Lights
+   are spaced evenly along the curve's real length.
+4. **Aim mode**:
+   - **Same direction**: all lights point parallel. One rotation handle turns them all; the
+     default is square to the line.
+   - **Same spot**: all lights aim at one target point. Drag the target and every light
+     re-aims.
+   - **Follow curve** (extra): each light points square to the curve where it sits, facing in
+     or out (flip). This suits an arc of lights around a car or set.
+
+Behaviour:
+- Endpoints, curve handles, count, fixture and aim all stay editable, and the lights re-space
+  live.
+- One settings panel (CCT, gel, intensity, modifier) applies to the whole string. You can
+  override settings per light, or **Detach** the string into individual lights.
+- The equipment list and power totals count it as N fixtures.
+- IDs are numbered as a group (`L5.1`–`L5.8`). Optional sequential DMX addressing from a start
+  address.
+- It snaps to grid and walls like everything else.
+- The same tool works for any library item, such as a row of chairs, flags or sandbags.
+
+### 2.5 Camera & blocking
 - Camera FOV cone from **sensor + focal length**, using presets for common bodies and lenses.
 - Camera moves:
   - Dolly track: a straight or curved line with its real track length.
@@ -82,7 +115,7 @@ Each placed light carries:
   - Crane: an arc.
 - Actor blocking: mark A → mark B with a dashed path, as in the reference.
 
-### 2.5 Photo backgrounds & calibration (ruler tool)
+### 2.6 Photo backgrounds & calibration (ruler tool)
 1. Upload a photo: a ceiling shot looking down, a drone shot, or a scanned plan.
 2. **2-point calibration**: tap the start and end of a known object, then type its real
    length (e.g. table = 180 cm). The app computes `cm per pixel` and scales the whole image,
@@ -100,7 +133,14 @@ Extras:
 Wide-angle lens distortion is not corrected. The app will advise shooting from as high as
 possible with a normal lens.
 
-### 2.6 Location, sun path & maps
+### 2.7 Location, sun path & maps
+- Maps provider: **Google Maps** for address search and satellite imagery.
+  - Google's terms generally don't allow storing its imagery on our servers. The app saves
+    the location and zoom and re-loads the imagery when you open the plan. Satellite
+    backgrounds therefore need a connection; your own photos still work offline.
+  - Exports carry Google's attribution. Check the print/PDF rules in the terms before launch.
+  - The provider sits behind an interface, so switching to Mapbox or Esri is a small change
+    if terms or cost become a problem.
 - Enter an address. It is geocoded to lat/lng, and the timezone comes from the coordinates.
 - **Satellite import with auto-scale**: fetch the overhead map for the address. Map imagery
   has a known metres-per-pixel at each zoom, so no ruler is needed and north is already up.
@@ -114,7 +154,7 @@ possible with a normal lens.
 - Later: **sunlight through windows**. Combining the sun direction and elevation with window
   sill and head heights gives the sun patch on the floor at a given time.
 
-### 2.7 Equipment list (automatic)
+### 2.8 Equipment list (automatic)
 - Every placed catalogue item feeds a live equipment list, grouped by department: Lighting,
   Grip, Electric, Camera support and Art/Props. Props are excluded from rental exports by
   default.
@@ -125,7 +165,7 @@ possible with a normal lens.
   drops off the rental list.
 - Each line shows where it came from: `auto` (from the plan), `kit`, `rule` or `manual`.
 
-### 2.8 Kits & accessory rules
+### 2.9 Kits & accessory rules
 **Kits** (your "add to equipment list" presets) are named, reusable lists with quantities,
 added with one button. For example:
 
@@ -141,18 +181,21 @@ added with one button. For example:
   - Each HMI adds a head cable and a ballast.
   - Each frame of 8×8 or larger adds 2 high rollers + 4 sandbags.
 
-### 2.9 Power
-- Total watts and amps at the chosen voltage (230 V EU / 120 V US).
+### 2.10 Power
+- **230 V by default**. Switch to 120 V or enter any value (e.g. 100 V Japan, 240 V UK/AU).
+  The setting is per user and can be overridden per project, for example when shooting abroad.
+  Breaker presets follow the chosen region.
+- Total watts and amps at the chosen voltage.
 - Assign lights to circuits or distros, with a warning when a circuit exceeds its breaker
   (16 A, 20 A, 32 A…).
 - Generator sizing suggestion: total load plus about 25 % headroom.
 
-### 2.10 Attachments
+### 2.11 Attachments
 Scout photos, mood references and documents can be attached to a location, scene or shot.
 Each attachment can have a caption and an optional pin on the plan showing where it was taken
 and in which direction.
 
-### 2.11 Export
+### 2.12 Export
 - **PNG**: the current view or fit-to-content, at a chosen resolution, with or without the
   background photo.
 - **Multi-page PDF**, built from the pages you tick:
@@ -168,7 +211,7 @@ and in which direction.
   plan can be measured with a ruler.
 - Equipment list also exports as **XLSX / CSV** for rental houses.
 
-### 2.12 Cloud sync, offline, sharing
+### 2.13 Cloud sync, offline, sharing
 - Sign in to see the same projects on phone, tablet and PC.
 - **Offline-first**: everything works without signal on set and syncs when back online.
 - If the same shot was edited on two devices while offline, you choose which version to keep,
@@ -177,7 +220,7 @@ and in which direction.
 - **Read-only share link** for producers and rental houses (view and download, no account
   needed).
 
-### 2.13 Phone & tablet UX
+### 2.14 Phone & tablet UX
 - An installable app (PWA) on iPad, Android and desktop.
 - Large touch targets, long-press context menu, Apple Pencil precision, and on-screen
   undo/redo.
@@ -237,12 +280,14 @@ Suggested first vendors:
 | Local storage | IndexedDB (Dexie) | Offline-first source of truth on the device. |
 | Backend | **Supabase** (Auth, Postgres, Storage, row-level security) | Accounts, sync and photo storage. Generous free tier. |
 | Sun | `suncalc` + `tz-lookup` | Sun azimuth and elevation, and the local timezone, computed on device (works offline). |
-| Maps / geocoding | Mapbox (or Google Maps Platform) | Geocoding and satellite imagery. Check terms of service for storing and printing imagery. |
+| Maps / geocoding | **Google Maps Platform** (Geocoding, Map Tiles / Static Maps), behind a provider interface | The best-known option. Uses an API key restricted to our domain and per-user quotas to keep costs under control. Can swap to Mapbox or Esri. |
 | PDF / XLSX | `pdf-lib` / `exceljs` | Built on the client, so export works offline. |
 | Validation | `zod` | Catalogue and saved-file schemas with versioned migrations. |
 | Images | Client-side resize/compress (≤4096 px, WebP); WebGL for the perspective warp | Fast uploads, small storage. |
 | Tests | Vitest (maths: calibration, sun, power, list aggregation) + Playwright (iPad and phone emulation) | |
 | Hosting | Vercel / Cloudflare Pages + Supabase | |
+| Payments (launch) | Stripe | Subscriptions for the public release. |
+| Monitoring (launch) | Sentry | Error reports from real devices. |
 
 ---
 
@@ -254,7 +299,7 @@ type Vec2 = { x: number; y: number };          // cm, world space
 interface Project {
   id: string; name: string;
   production: { title; dp?; gaffer?; shootDates?: string[] };
-  settings: { units: 'metric' | 'imperial'; voltage: 230 | 120 };
+  settings?: { units?: 'metric' | 'imperial'; voltage?: number };   // overrides user defaults (metric, 230)
   locations: Location[]; attachments: Attachment[];
 }
 
@@ -274,18 +319,38 @@ interface Background {
 }
 
 interface Scene { id: string; number: string; name: string; shots: Shot[] }
-interface Shot  { id: string; number: string; name: string; shootDate?: string; items: Item[] }
+interface Shot {
+  id: string; number: string; name: string; shootDate?: string;
+  items: Item[]; strings: ItemString[];
+}
+
+interface LightProps {
+  id: string; cct?: number; gel?: string; diffusion?: string; modifier?: string;
+  intensityPct?: number; beamDeg?: number; throwCm?: number; heightCm?: number;
+  circuit?: string; dmx?: { universe: number; address: number };
+}
 
 interface Item {
   id: string; catalogId?: string;
   kind: 'light' | 'modifier' | 'grip' | 'camera' | 'person' | 'set' | 'prop' | 'path' | 'note';
   pos: Vec2; rotationDeg: number; sizeCm?: { w: number; d: number };
   label?: string; locked?: boolean; hidden?: boolean;
-  light?: { id: string; cct?: number; gel?: string; diffusion?: string; modifier?: string;
-            intensityPct?: number; beamDeg?: number; throwCm?: number; heightCm?: number;
-            circuit?: string; dmx?: { universe: number; address: number } };
+  light?: LightProps;
   camera?: { sensor: string; focalMm: number };
   path?: { points: Vec2[]; style: 'dolly' | 'steadicam' | 'crane' | 'blocking' };
+}
+
+// String tool: N identical items spaced evenly along a straight or curved line
+interface ItemString {
+  id: string; catalogId: string;
+  count: number;                                 // includes both endpoints
+  spacingCm?: number;                            // if set, count follows spacing
+  path: { start: Vec2; end: Vec2; handles: Vec2[] };   // handles = curve control points
+  aim: { mode: 'parallel'; angleDeg: number }
+     | { mode: 'target'; target: Vec2 }
+     | { mode: 'normal'; flip: boolean };
+  light?: LightProps;                            // shared settings for the whole string
+  overrides?: Record<number, Partial<LightProps>>;     // per-light tweaks, by index
 }
 
 interface Kit  { id: string; name: string; lines: KitLine[] }
@@ -293,8 +358,8 @@ interface Rule { id: string; when: { family?: string; category?: string }; add: 
 interface KitLine { catalogId?: string; customName?: string; qty: number; department: string }
 ```
 
-The equipment list is **derived** from items, kits and rules, plus your manual overrides. It
-is never stored as a second copy that could go stale.
+The equipment list is **derived** from items, strings (each counts as `count` units), kits and
+rules, plus your manual overrides. It is never stored as a second copy that could go stale.
 
 ---
 
@@ -307,32 +372,34 @@ Each phase ends with something usable.
 | **0. Foundation** | Repo scaffold, lint, tests, CI, PWA shell, preview deploys | The app loads on iPad, phone and PC from a URL |
 | **1. Canvas MVP** | 50 cm grid at real scale; pan and zoom (mouse and touch); place, move, rotate and duplicate; labels; multi-select; snap; undo/redo; starter library of about 30 generic items; local autosave; PNG export | A 3-point interview can be planned on an iPad and exported |
 | **2. Photo & measure** | Upload, 2-point calibration with loupe, rotate/opacity/lock, measure tool, wall/door/window tool, 4-point perspective fix | A ceiling or drone photo comes out at true scale |
-| **3. Lights & camera detail** | Beam cones, CCT/gel/modifiers, light IDs, camera FOV, dolly/steadicam/crane paths, actor blocking, design styles | The reference screenshot can be recreated |
+| **3. Lights & camera detail** | Beam cones, CCT/gel/modifiers, light IDs, **string lights tool**, camera FOV, dolly/steadicam/crane paths, actor blocking, design styles | The reference screenshot can be recreated, and a curved row of 8 tubes aimed at one spot can be placed in seconds |
 | **4. Equipment, kits, power** | Auto list, reuse-aware quantities, kits, accessory rules, owned flag, power and circuits, XLSX/CSV export | A rental-ready list comes out in one click |
 | **5. Accounts & sync** | Sign-in, project → location → scene → shot, offline sync, photo storage, version history, read-only share link | Start on phone, finish on PC |
 | **6. Location & sun** | Address lookup, satellite import with auto-scale, north alignment, sun arc, time slider, sun times | You can see where the sun is at 3 pm on the shoot day |
 | **7. Vendor catalogue** | Ingest your catalogues, icon families, search, filters, favourites, custom items | Real fixtures can be picked by name ("S60", "M18") |
 | **8. Full PDF package** | Multi-page PDF, lighting schedule, reference photos, true-scale print | A complete package can go to the producer |
+| **9. Public launch** | Landing page, Stripe billing (free and pro tiers), team workspaces and roles, terms, privacy policy and GDPR (data export, account deletion), Sentry, Google Maps cost controls, optional App Store and Play Store builds | Anyone can sign up, pay and use it |
 | **Later** | Lux/f-stop estimates from photometrics, sun through windows, DMX patch sheet, rental cost estimate, real-time collaboration, iPad LiDAR room scan (native app) | — |
 
 Catalogue extraction (phase 7 data) can run in parallel from phase 1 as soon as you send
 catalogues.
 
+Because the app will be public, it is built multi-user from the start: every row is scoped to
+its owner or team, even before billing exists.
+
 ---
 
-## 7. Open decisions (my recommendation first)
+## 7. Decisions
 
-1. **Platform**: PWA first, with an optional native wrapper later. *Alternative:* native
-   iOS/Android from day one (slower, two codebases).
-2. **Backend**: Supabase. *Alternative:* Firebase (built-in offline sync, but proprietary and
-   NoSQL).
-3. **Maps provider**: Mapbox, which has friendlier terms for static/printed imagery.
-   *Alternative:* Google Maps.
-4. **Units / voltage default**: metric + 230 V. *Alternative:* imperial + 120 V.
-5. **Illustration style for MVP**: clean coded SVG first. *Alternative:* commission realistic
-   art up front.
-6. **Audience**: just you and your crew, or a public product? A public product adds billing,
-   team accounts, and stricter licensing for map and catalogue data.
+| Topic | Decision |
+|---|---|
+| Maps | Google Maps, behind a provider interface so it can be swapped |
+| Units | Metric by default, imperial switch (per user, per project override) |
+| Voltage | 230 V by default, 120 V or custom switch (per user, per project override) |
+| Icons | Simple coded SVG icons first, to be replaced with better art later |
+| Audience | Public product (see Phase 9) |
+| Platform | PWA first, optional App Store and Play Store builds later *(proposed, no objection yet)* |
+| Backend | Supabase *(proposed, no objection yet)* |
 
 ## 8. What I need from you
 - Vendor catalogues, in priority order.
