@@ -1,0 +1,226 @@
+[
+  {
+    "id": "godox.90f",
+    "brand": "Godox",
+    "model": "90F Foldable Floor Light Stand",
+    "type": "light",
+    "weightKg": 1.2,
+    "loadCapacityKg": 3,
+    "minHeightCm": 48,
+    "maxHeightCm": 87,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.139"
+    ],
+    "notes": "Floor stand; 60 cm leg span."
+  },
+  {
+    "id": "godox.190f",
+    "brand": "Godox",
+    "model": "190F Adjustable Legs Light Stand",
+    "type": "light",
+    "weightKg": 1.25,
+    "loadCapacityKg": 3,
+    "minHeightCm": 49,
+    "maxHeightCm": 188,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.139"
+    ]
+  },
+  {
+    "id": "godox.210f",
+    "brand": "Godox",
+    "model": "210F Light Stand",
+    "type": "light",
+    "weightKg": 1.4,
+    "loadCapacityKg": 2,
+    "minHeightCm": 51,
+    "maxHeightCm": 213,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.139"
+    ]
+  },
+  {
+    "id": "godox.240f",
+    "brand": "Godox",
+    "model": "240F Light Stand",
+    "type": "light",
+    "weightKg": 1.3,
+    "loadCapacityKg": 2,
+    "minHeightCm": 68,
+    "maxHeightCm": 240,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.139"
+    ]
+  },
+  {
+    "id": "godox.300f",
+    "brand": "Godox",
+    "model": "300F Light Stand",
+    "type": "light",
+    "weightKg": 1.7,
+    "loadCapacityKg": 3,
+    "minHeightCm": 86,
+    "maxHeightCm": 300,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.139"
+    ]
+  },
+  {
+    "id": "godox.290f",
+    "brand": "Godox",
+    "model": "290F Heavy Duty Light Stand",
+    "type": "light",
+    "weightKg": 2.2,
+    "loadCapacityKg": 5,
+    "minHeightCm": 110,
+    "maxHeightCm": 286,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.140"
+    ]
+  },
+  {
+    "id": "godox.380f",
+    "brand": "Godox",
+    "model": "380F Heavy Duty Light Stand",
+    "type": "light",
+    "weightKg": 2.0,
+    "loadCapacityKg": 5,
+    "minHeightCm": 110,
+    "maxHeightCm": 380,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.140"
+    ]
+  },
+  {
+    "id": "godox.240cs",
+    "brand": "Godox",
+    "model": "240CS C-Stand with Arm (Silver)",
+    "type": "c-stand",
+    "weightKg": 6.0,
+    "loadCapacityKg": 10,
+    "minHeightCm": 130,
+    "maxHeightCm": 237,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.140"
+    ]
+  },
+  {
+    "id": "godox.270cs",
+    "brand": "Godox",
+    "model": "270CS C-Stand with Arm (Silver)",
+    "type": "c-stand",
+    "weightKg": 6.3,
+    "loadCapacityKg": 10,
+    "minHeightCm": 140,
+    "maxHeightCm": 270,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.140"
+    ]
+  },
+  {
+    "id": "godox.240fs",
+    "brand": "Godox",
+    "model": "240FS Wheeled Light Stand",
+    "type": "roller",
+    "weightKg": 6.3,
+    "loadCapacityKg": 10,
+    "minHeightCm": 120,
+    "maxHeightCm": 240,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.140"
+    ]
+  },
+  {
+    "id": "godox.420lb",
+    "brand": "Godox",
+    "model": "420LB Light Boom Stand with Weight Bag",
+    "type": "boom",
+    "weightKg": 4.3,
+    "loadCapacityKg": 5,
+    "minHeightCm": 125,
+    "maxHeightCm": 422,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.140"
+    ]
+  },
+  {
+    "id": "godox.la-300",
+    "brand": "Godox",
+    "model": "LA-300 Light Stand",
+    "type": "light",
+    "weightKg": 1.86,
+    "loadCapacityKg": 3,
+    "minHeightCm": 88.5,
+    "maxHeightCm": 300,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.141"
+    ]
+  },
+  {
+    "id": "godox.la-302",
+    "brand": "Godox",
+    "model": "LA-302 Light Stand",
+    "type": "light",
+    "weightKg": 0.65,
+    "loadCapacityKg": 5,
+    "minHeightCm": 70,
+    "maxHeightCm": 190,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.141"
+    ]
+  },
+  {
+    "id": "godox.la-303",
+    "brand": "Godox",
+    "model": "LA-303 Light Stand",
+    "type": "light",
+    "weightKg": 1.5,
+    "loadCapacityKg": 6,
+    "minHeightCm": 97,
+    "maxHeightCm": 260,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.141"
+    ]
+  },
+  {
+    "id": "godox.la-304",
+    "brand": "Godox",
+    "model": "LA-304 Light Stand",
+    "type": "light",
+    "weightKg": 1.037,
+    "loadCapacityKg": 5,
+    "minHeightCm": 73,
+    "maxHeightCm": 200,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.141"
+    ]
+  },
+  {
+    "id": "godox.sa5015",
+    "brand": "Godox",
+    "model": "SA5015 Heavy Duty Steel Roller Stand",
+    "type": "roller",
+    "weightKg": 10.4,
+    "loadCapacityKg": 40,
+    "minHeightCm": 92,
+    "maxHeightCm": 168,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.142"
+    ],
+    "notes": "Junior 1-1/8\" receiver with 5/8\" pin."
+  },
+  {
+    "id": "godox.sa5045",
+    "brand": "Godox",
+    "model": "SA5045 Heavy Duty Steel Roller Stand",
+    "type": "roller",
+    "weightKg": 16.2,
+    "loadCapacityKg": 40,
+    "minHeightCm": 146,
+    "maxHeightCm": 450,
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.142"
+    ],
+    "notes": "Junior 1-1/8\" receiver with 5/8\" pin."
+  }
+]

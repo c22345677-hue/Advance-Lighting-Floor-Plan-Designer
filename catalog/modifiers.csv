@@ -1,0 +1,157 @@
+﻿Brand,Model,Type,Weight (kg),Size L×W×H (cm),Mounts,Fits only,Notes,Source
+amaran,Fresnel Barn Doors,barndoors,1.6,49.5 × 33.1 × 8,,Ray 360c; Ray 660c,Mounts on the amaran Fresnel.,https://amarancreators.com/products/amaran-fresnel
+amaran,Mini Fresnel Barn Doors,barndoors,0.18,26.9 × 17.4 × 5.9,,Ray 60c; Ray 120c,Mounts on the amaran Mini Fresnel.,https://amarancreators.com/products/amaran-mini-fresnel
+amaran,Pano 120c Barn Doors,barndoors,1,,,Pano 120c,,https://amarancreators.com/products/amaran-pano-120c-barn-doors
+amaran,Pano 60c Barn Doors,barndoors,0.48,28.7 × 18.6 × 3,,Pano 60c,,https://amarancreators.com/products/amaran-pano-60c-barn-doors
+amaran,Fresnel,fresnel,2.4,33.3 × 33.3 × 19.7,,Ray 360c; Ray 660c,,https://amarancreators.com/products/amaran-fresnel
+amaran,Mini Fresnel,fresnel,0.37,18.7 × 18.7 × 14,,Ray 60c; Ray 120c,,https://amarancreators.com/products/amaran-mini-fresnel
+amaran,45° Grid for PT1c,grid,0.109,,,PT1c,,https://amarancreators.com/products/45-grid-for-amaran-pt1c
+amaran,45° Grid for T2c/PT2c,grid,0.36,,,T2c; PT2c,,https://amarancreators.com/products/45-grid-for-amaran-t2c-pt2c
+amaran,45° Grid for T4c/PT4c,grid,0.58,,,T4c; PT4c,,https://amarancreators.com/products/45-grid-for-amaran-t4c-pt4c
+amaran,Ace Light Control Grid,grid,0.018,,,Ace 25c; Ace 25x,,https://amarancreators.com/pages/amaran-ace-25c
+amaran,F22 Light Control Grid,grid,0.116,,,F22c; F22x,,https://amarancreators.com/pages/amaran-f22c
+amaran,Light Dome Mini SE Grid,grid,0.05,55 × 55 × ?,bowens,,Fits the Light Dome Mini SE softbox (no published weight).,https://amarancreators.com/products/amaran-light-dome-mini-se-grid
+amaran,Pano 120c Light Control Grid,grid,0.15,,,Pano 120c,,https://amarancreators.com/pages/amaran-pano-120c
+amaran,Pano 60c Light Control Grid,grid,0.099,,,Pano 60c,,https://amarancreators.com/pages/amaran-pano-60c
+amaran,Verge Max Light Control Grid,grid,0.23,56 × 56 × ?,,Verge Max,,https://amarancreators.com/products/amaran-verge-max-light-control-grid
+amaran,Lantern 65,lantern,0.8,65 × 65 × 57,bowens,,Up to 600 W.,https://amarancreators.com/products/amaran-lantern-65
+amaran,Lantern 90,lantern,0.9,90 × 90 × 57,bowens,,Up to 600 W.,https://amarancreators.com/products/amaran-lantern-90
+amaran,Lantern for F21,lantern,0.723,,,F21c; F21x,,https://amarancreators.com/products/lantern-for-amaran-f21
+amaran,Lantern for F22,lantern,0.962,,,F22c; F22x,,https://amarancreators.com/products/lantern-for-amaran-f22
+amaran,Mini Reflector,reflector,0.13,14.5 × 14.5 × 15.8,,Ray 60c; Ray 120c,,https://amarancreators.com/products/amaran-mini-reflector
+amaran,Light Box 30x120,softbox,0.9,30 × 120 × ?,bowens,,,https://amarancreators.com/products/amaran-light-box-30x120
+amaran,Light Box 45x45,softbox,0.7,45 × 45 × 34.5,bowens,,Up to 300 W.,https://amarancreators.com/products/amaran-light-box-45x45
+amaran,Light Box 60x90,softbox,0.9,60 × 90 × ?,bowens,,,https://amarancreators.com/products/amaran-light-box-60x90
+amaran,Light Dome 60,softbox,1.2,60.5 × 60.5 × 40,bowens,,Up to 600 W.,https://amarancreators.com/products/amaran-light-dome-60
+amaran,Light Dome 90,softbox,1.7,90 × 90 × ?,bowens,,,https://amarancreators.com/products/amaran-light-dome-90
+amaran,Octa Dome 120,softbox,1.2,120 × 120 × 51,bowens,,Up to 600 W.,https://amarancreators.com/products/amaran-octa-dome-120
+amaran,Octa Dome 60,softbox,0.7,60 × 60 × 39,bowens,,Up to 600 W.,https://amarancreators.com/products/amaran-octa-dome-60
+amaran,Octa Dome 90,softbox,1,90 × 90 × ?,bowens,,,https://amarancreators.com/products/amaran-octa-dome-90
+amaran,P60 Softbox,softbox,0.17,,,P60c; P60x,,https://amarancreators.com/pages/amaran-p60c; https://amarancreators.com/pages/amaran-p60x
+amaran,Pano 120c Softbox,softbox,0.35,,,Pano 120c,,https://amarancreators.com/pages/amaran-pano-120c
+amaran,Pano 60c Softbox,softbox,0.22,,,Pano 60c,,https://amarancreators.com/pages/amaran-pano-60c
+Aputure,"Barn Doors (Bowens, for reflectors & Fresnel 2X)",barndoors,,,bowens,,Only package weight published (1.04 kg / 2.285 lb).,https://www.aputure.com/products/aputure-barndoors
+Aputure,Barn Doors for Aputure Mount Reflectors (35°/50°),barndoors,1.5,,aputure-mount,,,https://aputure.com/en-US/products/electro-storm-cs15
+Aputure,F10 Barn Doors,barndoors,2.64,34.6 × 34 × 11.9,bowens,,Mounts on the F10 Fresnel.,https://www.aputure.com/products/f10-barn-doors
+Aputure,Nova P300c Barn Doors,barndoors,1.79,,,NOVA P300c,,https://www.aputure.com/products/nova-p300c-barn-doors
+Aputure,Nova P600c Barn Doors,barndoors,2.7,,,NOVA P600c,,https://www.aputure.com/products/nova-p600c-barn-doors
+Aputure,Nova 1x1 Dome Diffuser,diffusion,1.5,38.6 × 39.5 × 8.3,,NOVA II 1x1,Light and heavy frost versions weigh the same.,https://www.aputure.com/products/nova-1x1-dome-diffuser-light-frost
+Aputure,Nova 2x1 Dome Diffuser,diffusion,2.11,67.7 × 37.5 × 8.4,,NOVA II 2x1; NOVA 9 2x1,Light and heavy frost versions weigh the same.,https://www.aputure.com/products/nova-2x1-dome-diffuser-light-frost
+Aputure,CF12 Fresnel,fresnel,4.72,38.3 × 37 × 12.8,bowens,,Made for STORM 1000c / 1200x.,https://www.aputure.com/products/cf12-fresnel
+Aputure,CF16 Motorized Fresnel,fresnel,11.8,56.4 × 51.9 × 23.4,aputure-mount,,Made for STORM XT52.,https://www.aputure.com/products/motorized-cf16-fresnel
+Aputure,CF4 Fresnel,fresnel,0.53,14 × 14 × 8.7,mini-prolock,,Made for STORM 80c.,https://www.aputure.com/products/cf4-fresnel
+Aputure,F10 Fresnel,fresnel,3.85,34.6 × 34 × 17.2,bowens,,For 600–1200 W Bowens point sources.,https://www.aputure.com/products/f10-fresnel
+Aputure,INFINIMAT Light Control Grid 1x2,grid,0.46,,,INFINIMAT 1x2,,https://aputure.com/en-US/products/aputure-infinimat-1x2-with-clear-softbox
+Aputure,INFINIMAT Light Control Grid 1x4,grid,0.71,,,INFINIMAT 1x4,"1x4 grid listed as ""0.71g"" on site; 0.71 kg used.",https://aputure.com/en-US/products/aputure-infinimat-1x4-with-clear-softbox
+Aputure,INFINIMAT Light Control Grid 20x20,grid,6.15,,,INFINIMAT 20x20,,https://aputure.com/en-US/products/aputure-infinimat-20x20-with-clear-softbox
+Aputure,INFINIMAT Light Control Grid 2x4,grid,0.93,,,INFINIMAT 2x4,,https://aputure.com/en-US/products/aputure-infinimat-2x4-with-clear-softbox
+Aputure,INFINIMAT Light Control Grid 4x4,grid,1.25,,,INFINIMAT 4x4,,https://aputure.com/en-US/products/aputure-infinimat-4x4-with-clear-softbox
+Aputure,INFINIMAT Light Control Grid 8x8,grid,3.5,,,INFINIMAT 8x8,,https://aputure.com/en-US/products/aputure-infinimat-8x8-with-clear-softbox
+Aputure,Nova P600c 45° Metal Grid,grid,0.63,,,NOVA P600c,,https://www.aputure.com/products/nova-p600c-45-metal-grid
+Aputure,Aputure Mount Lantern 120,lantern,2.41,120 × 120 × ?,aputure-mount,,3.31 kg with skirt.,https://www.aputure.com/products/aputure-mount-lantern-120
+Aputure,Aputure Mount Lantern 180,lantern,8.15,180 × 180 × ?,aputure-mount,,9.60 kg with skirt.,https://www.aputure.com/products/aputure-mount-lantern-180
+Aputure,Lantern (65 cm),lantern,1.3,65 × 65 × ?,bowens,,,https://www.aputure.com/products/lantern
+Aputure,Lantern 30,lantern,0.21,30 × 30 × 39,mini-prolock,,With skirt; 0.15 kg without.,https://www.aputure.com/products/lantern-30
+Aputure,Nova P600c Space Light,lantern,4,84 × 84 × 72,,NOVA P600c; NOVA P300c,,https://www.aputure.com/products/nova-p600c-space-light
+Aputure,Spotlight Mini 19°,projection,2.6,,mini-prolock,,3.95 kg with STORM 80c.,https://www.aputure.com/products/spotlight-mini-19-lens
+Aputure,Spotlight Mini 36°,projection,2.31,,mini-prolock,,3.66 kg with STORM 80c.,https://www.aputure.com/products/spotlight-mini-36-lens
+Aputure,Spotlight Mini Zoom,projection,4.4,16.4 × 16.4 × 37.8,,LS 60d; LS 60x,With yoke; 4.095 kg without.,https://www.aputure.com/products/spotlight-mini-zoom
+Aputure,Aputure Mount 20° Reflector,reflector,3.8,,aputure-mount,,,https://aputure.com/en-US/products/electro-storm-cs15
+Aputure,Aputure Mount 35° Reflector,reflector,1.5,,aputure-mount,,,https://aputure.com/en-US/products/electro-storm-cs15
+Aputure,Aputure Mount 50° Reflector,reflector,1.2,,aputure-mount,,,https://aputure.com/en-US/products/electro-storm-cs15
+Aputure,BM6825 25° Reflector,reflector,0.35,25.5 × 25.5 × 25.9,,STORM 700x,,https://www.aputure.com/products/bm6825-25-reflector
+Aputure,STORM 1000c 45° Reflector,reflector,0.4,,,STORM 1000c,,https://aputure.com/en-US/products/storm-1000c
+Aputure,STORM 400x 35° Reflector,reflector,0.25,,,STORM 400x,,https://aputure.com/en-US/products/storm-400x
+Aputure,INFINIMAT Light Control Skirt 1x2,skirt,0.49,,,INFINIMAT 1x2,,https://aputure.com/en-US/products/aputure-infinimat-1x2-with-clear-softbox
+Aputure,INFINIMAT Light Control Skirt 1x4,skirt,0.78,,,INFINIMAT 1x4,,https://aputure.com/en-US/products/aputure-infinimat-1x4-with-clear-softbox
+Aputure,INFINIMAT Light Control Skirt 20x20,skirt,12.15,,,INFINIMAT 20x20,,https://aputure.com/en-US/products/aputure-infinimat-20x20-with-clear-softbox
+Aputure,INFINIMAT Light Control Skirt 2x4,skirt,0.81,,,INFINIMAT 2x4,,https://aputure.com/en-US/products/aputure-infinimat-2x4-with-clear-softbox
+Aputure,INFINIMAT Light Control Skirt 4x4,skirt,1.15,,,INFINIMAT 4x4,,https://aputure.com/en-US/products/aputure-infinimat-4x4-with-clear-softbox
+Aputure,INFINIMAT Light Control Skirt 8x8,skirt,3.45,,,INFINIMAT 8x8,,https://aputure.com/en-US/products/aputure-infinimat-8x8-with-clear-softbox
+Aputure,Aputure Mount Light Dome 150,softbox,3.2,150 × 150 × ?,aputure-mount,,Grid +0.36 kg.,https://www.aputure.com/products/aputure-mount-light-dome-150
+Aputure,INFINIMAT Inflatable Clear Softbox 1x2,softbox,0.59,,,INFINIMAT 1x2,,https://aputure.com/en-US/products/aputure-infinimat-1x2-with-clear-softbox
+Aputure,INFINIMAT Inflatable Clear Softbox 1x4,softbox,0.95,,,INFINIMAT 1x4,,https://aputure.com/en-US/products/aputure-infinimat-1x4-with-clear-softbox
+Aputure,INFINIMAT Inflatable Clear Softbox 20x20,softbox,36.73,,,INFINIMAT 20x20,,https://aputure.com/en-US/products/aputure-infinimat-20x20-with-clear-softbox
+Aputure,INFINIMAT Inflatable Clear Softbox 2x4,softbox,1.38,,,INFINIMAT 2x4,,https://aputure.com/en-US/products/aputure-infinimat-2x4-with-clear-softbox
+Aputure,INFINIMAT Inflatable Clear Softbox 4x4,softbox,2.26,,,INFINIMAT 4x4,,https://aputure.com/en-US/products/aputure-infinimat-4x4-with-clear-softbox
+Aputure,INFINIMAT Inflatable Clear Softbox 8x8,softbox,10.34,,,INFINIMAT 8x8,,https://aputure.com/en-US/products/aputure-infinimat-8x8-with-clear-softbox
+Aputure,Light Box 30x120,softbox,1.08,30 × 120 × ?,bowens,,,https://www.aputure.com/products/light-box-30x120
+Aputure,Light Box 45x45,softbox,0.68,45 × 45 × ?,bowens,,,https://www.aputure.com/products/light-box-45x45
+Aputure,Light Box 60x90,softbox,1.22,60 × 90 × ?,bowens,,,https://www.aputure.com/products/light-box-60x90
+Aputure,Light Dome 150,softbox,3.32,150 × 150 × ?,bowens,,,https://www.aputure.com/products/light-dome-150
+Aputure,Light Dome 40,softbox,0.28,44 × 44 × 23,mini-prolock,,"Without diffusion; grid +0.038 kg, diffusion +0.014–0.019 kg.",https://www.aputure.com/products/light-dome-40
+Aputure,Light Dome III,softbox,2.24,90 × 90 × ?,bowens,,,https://www.aputure.com/products/light-dome-iii
+Aputure,Light Dome Mini III,softbox,1.3,60 × 60 × ?,bowens,,Rated for Bowens fixtures up to 600 W.,https://www.aputure.com/products/light-dome-mini-iii
+Aputure,Light Dome SE,softbox,1.1,85 × 85 × 45,bowens,,,https://www.aputure.com/products/light-dome-se
+Aputure,Light OctaDome 120,softbox,1.7,120 × 120 × ?,bowens,,,https://www.aputure.com/products/light-octadome-120
+Aputure,LS 60 Softbox,softbox,0.42,,,LS 60d; LS 60x,,https://www.aputure.com/products/ls-60-softbox
+Aputure,Nova P300c Softbox,softbox,1.43,,,NOVA P300c,Softbox+diffusion+grid 0.93 kg plus mounting frame 0.5 kg.,https://www.aputure.com/products/nova-p300c-softbox
+Aputure,Nova P600c Softbox,softbox,1.7,95.5 × 58 × 33,,NOVA P600c,Spec table 1.7 kg; marketing text says 1.34 kg. Higher value used.,https://www.aputure.com/products/nova-p600c-softbox
+Aputure,Quick Dome 40,softbox,0.26,40 × 40 × ?,mini-prolock,,,https://www.aputure.com/products/quick-dome-40
+Aputure,Quick Dome 60,softbox,0.76,60 × 60 × ?,bowens,,,https://www.aputure.com/products/quick-dome-60
+Aputure,Quick Dome 90,softbox,1.4,90 × 90 × ?,bowens,,,https://www.aputure.com/products/quick-dome-90
+Godox,BF10 Fresnel Lens 10–35°,fresnel,3.1,29.6 × 29.6 × 14.5,bowens,,,"Godox KNOWLED Catalogue 2026 (5th ed.), p.119"
+Godox,BF12 Fresnel Lens 15–50°,fresnel,3.95,33 × 38 × 8,bowens,,,"Godox KNOWLED Catalogue 2026 (5th ed.), p.119"
+Godox,GF14 Fresnel Lens 15–45°,fresnel,9.68,47.1 × 42.6 × 23.5,g-mount,,,"Godox KNOWLED Catalogue 2026 (5th ed.), p.119"
+Godox,GF18M Motorized Fresnel 15–60°,fresnel,17.3,59.7 × 60.6 × 37.6,g-mount,,Without U-bracket and barndoor (barndoor 5.1 kg). IPX5.,"Godox KNOWLED Catalogue 2026 (5th ed.), p.118"
+Godox,CS-50T Lantern Softbox,lantern,0.869,50 × 50 × 33.5,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.65"
+Godox,CS-65T Lantern Softbox,lantern,0.129,65 × 65 × 41.8,bowens,,"Catalogue lists 0.129 kg — likely a typo (CS-50T 0.869 kg, CS-80T 1.4 kg); check before relying on it.","Godox Continuous Lighting Catalogue 2026 (8th ed.), p.65"
+Godox,CS-80T Lantern Softbox,lantern,1.4,85 × 85 × 54.1,bowens,,Table says CS-80T; product is sold as CS-85T.,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.65"
+Godox,BeamLight B60,parallel-beam,9.8,60 × 60 × 50,bowens,,5° parallel beam. Size from catalogue drawing (23.6 × 19.7 in).,"Godox KNOWLED Catalogue 2026 (5th ed.), p.112"
+Godox,BeamLight Max60,parallel-beam,9.8,60 × 60 × 50,g-mount,,5° parallel beam. Size from catalogue drawing.,"Godox KNOWLED Catalogue 2026 (5th ed.), p.112"
+Godox,BLP Projection Attachment (no lens),projection,1.3,22 × 22 × 16.6,bowens,,"Lenses: 48 mm ≈1.2 kg, 65/85 mm ≈0.5 kg, 150 mm ≈0.7 kg.","Godox Continuous Lighting Catalogue 2026 (8th ed.), p.61"
+Godox,BP-19K Projection Attachment,projection,5.4,30.3 × 22.7 × 20.7,bowens,,"Excluding lens. Lenses: 19° 1.9 kg, 26° 1.7 kg, 36° 2 kg.","Godox KNOWLED Catalogue 2026 (5th ed.), p.116"
+Godox,BP-SE Projection Tube (no lens),projection,1.3,22 × 22 × 11.8,bowens,,"Lenses: 65 mm ≈0.5 kg, 85 mm ≈0.5 kg, 150 mm ≈0.7 kg.","Godox Continuous Lighting Catalogue 2026 (8th ed.), p.60"
+Godox,GP19K Projection Attachment,projection,11.6,41.8 × 64.7 × 72.7,g-mount,,"Excluding lens. Lenses: 19° 9.94 kg, 26° 8.41 kg, 36° 8.23 kg.","Godox KNOWLED Catalogue 2026 (5th ed.), p.115"
+Godox,ML-SP Projection Attachment (no lens),projection,0.697,13.4 × 13.4 × 12.9,godox-mount,,"Lenses: 19° 0.427 kg, 36° 0.255 kg, 50° 0.392 kg.","Godox Continuous Lighting Catalogue 2026 (8th ed.), p.60"
+Godox,EazyFlow Octa120 Softbox,softbox,2.1,120 × 120 × ?,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+Godox,EazyFlow Octa150 Softbox,softbox,2.1,150 × 150 × ?,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+Godox,EazyFlow Octa60 Softbox,softbox,0.98,60 × 60 × ?,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+Godox,EazyFlow Octa90 Softbox,softbox,1.34,90 × 90 × ?,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+Godox,EazyFlow Rect 30×45 Softbox,softbox,0.84,30 × 45 × ?,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+Godox,EazyFlow Rect 40×40 Softbox,softbox,0.86,40 × 40 × ?,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+Godox,EazyFlow Rect 40×90 Softbox,softbox,1.14,40 × 90 × ?,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+Godox,EazyFlow Rect 45×60 Softbox,softbox,1,45 × 60 × ?,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+Godox,EazyFlow Rect 60×60 Softbox,softbox,1.04,60 × 60 × ?,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+Godox,EazyFlow Rect 60×90 Softbox,softbox,1.22,60 × 90 × ?,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+Godox,EazyFlow Rect 90×90 Softbox,softbox,1.44,90 × 90 × ?,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+Godox,QR-P120T Parabolic Softbox,softbox,1.781,120 × 120 × 56.7,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.64"
+Godox,QR-P150T Parabolic Softbox,softbox,2.386,150 × 150 × 70.2,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.64"
+Godox,QR-P60T Parabolic Softbox,softbox,0.771,60 × 60 × 29.8,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.64"
+Godox,QR-P70T Parabolic Softbox,softbox,0.83,70 × 70 × 34.1,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.64"
+Godox,QR-P90T Parabolic Softbox,softbox,1.359,90 × 90 × 42.7,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.64"
+Godox,S120T Umbrella Softbox,softbox,1.424,120 × 120 × 49,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.66"
+Godox,S65T Umbrella Softbox,softbox,0.851,65 × 65 × 30,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.66"
+Godox,S85T Umbrella Softbox,softbox,1.016,85 × 85 × 38,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.66"
+Godox,UL-BOX Octa-150 Umbrella Softbox,softbox,1.75,150 × 150 × 55,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+Godox,UL-BOX Octa-60 Umbrella Softbox,softbox,0.8,60 × 60 × 39,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+Godox,UL-BOX Octa-90 Umbrella Softbox,softbox,1.1,90 × 90 × 57,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+Godox,UL-BOX-30×45 Umbrella Softbox,softbox,0.7,30 × 45 × 33.5,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+Godox,UL-BOX-30×90 Umbrella Softbox,softbox,0.8,30 × 90 × 42,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+Godox,UL-BOX-40 Umbrella Softbox,softbox,0.65,40 × 40 × 33.5,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+Godox,UL-BOX-45×60 Umbrella Softbox,softbox,0.8,45 × 60 × 38,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+Godox,UL-BOX-60 Umbrella Softbox,softbox,0.85,60 × 60 × 38,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+Godox,UL-BOX-60×90 Umbrella Softbox,softbox,1,60 × 90 × 49.5,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+Godox,UL-BOX-90 Umbrella Softbox,softbox,1.15,90 × 90 × 38,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+Godox,UL-BOX-90×120 Umbrella Softbox,softbox,1.55,90 × 120 × 50,bowens,,,"Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+Nanlite,PJ-BM Projection Attachment (no lens),projection,4.2,31.4 × 26.7 × 44.1,bowens,,"Lenses: 19° 3.8 kg, 36° 3.1 kg. For fixtures below 800 W.","NANLITE Catalogue 2026-05, p.35"
+Nanlite,PJ-BM-25-45 Projection Attachment,projection,2.68,38.4 × 17.2 × 13.8,bowens,,For Bowens fixtures below 800 W.,"NANLITE Catalogue 2026-05, p.34"
+Nanlite,PJ-FMM Projection Attachment (no lens),projection,0.89,21.5 × 16 × 23.5,fm,,"Lenses: 10° 1.93 kg, 19° 0.64 kg, 36° 0.69 kg, 50° 0.68 kg.","NANLITE Catalogue 2026-05, p.33"
+Nanlite,PJ-FMM-18-36 Projection Attachment,projection,4.18,38.5 × 19.1 × 19.2,fm,,,"NANLITE Catalogue 2026-05, p.32"
+Nanlux,AS-NLA-BE NL to BE Mount Adapter,adapter,0.44,22.4 × 18.5 × 6,be; bowens,,Lets BE/Bowens fixtures take NL-mount modifiers.,"NANLUX Catalogue NL202608-1, p.23"
+Nanlux,AS-PJA-EV Projection Adapter,adapter,4.724,44.7 × 14.9 × 52.4,nl,,ETC barrel/lens compatibility.,"NANLUX Catalogue NL202608-1, p.29"
+Nanlux,MD-DB-BE20 Diffusion Ball 20cm,dome,0.23,20 × 20 × 23.3,be; bowens,,,"NANLUX Catalogue NL202608-1, p.22"
+Nanlux,MD-DB-FE15 Diffusion Ball 15cm,dome,0.13,15.1 × 15.1 × 16,fe; fm,,,"NANLUX Catalogue NL202608-1, p.22"
+Nanlux,FL-12 Fresnel Lens,fresnel,0.38,15.4 × 15.4 × 6.4,fe; fm,,"15–30°, IP66.","NANLUX Catalogue NL202608-1, p.21"
+Nanlux,FL-12E Motorized Fresnel 15–35°,fresnel,1.01,15.1 × 17.8 × 18.4,fe,,IP66.,"NANLUX Catalogue NL202608-1, p.22"
+Nanlux,FL-22E Motorized Fresnel 15–50°,fresnel,3.94,31.1 × 29.6 × 26.5,be; bowens,,IP66. For fixtures ≤800 W.,"NANLUX Catalogue NL202608-1, p.24"
+Nanlux,FL-28 Fresnel Lens 17–43°,fresnel,3.86,42.2 × 36.1 × 22.6,nl,,Evoke 2400B/5000B limited to ~1200 W with this lens.,"NANLUX Catalogue NL202608-1, p.19; NANLUX Catalogue NL202608-1, p.26"
+Nanlux,FL-35-PO Pole-Operated Fresnel,fresnel,16.14,84.8 × 54.4 × 33.7,nl,Evoke 900C; Evoke 1200B,,"NANLUX Catalogue NL202608-1, p.19; NANLUX Catalogue NL202608-1, p.25"
+Nanlux,FL-35E Motorized Fresnel 15–46°,fresnel,10,43 × 49 × 33,nl,Evoke 2400B; Evoke 5000B,IP55. Evoke 5000B up to 2400 W.,"NANLUX Catalogue NL202608-1, p.19; NANLUX Catalogue NL202608-1, p.27"
+Nanlux,FL-35YK Fresnel Lens 11–45°,fresnel,10.84,57.1 × 31 × 71.7,nl,Evoke 900C; Evoke 1200B,With centre-mounted yoke.,"NANLUX Catalogue NL202608-1, p.19; NANLUX Catalogue NL202608-1, p.25"
+Nanlux,FL-45E Motorized Fresnel 16–50°,fresnel,12.25,56.3 × 57.8 × 34.2,nl,Evoke 5000B,IP55.,"NANLUX Catalogue NL202608-1, p.19; NANLUX Catalogue NL202608-1, p.27"
+Nanlux,FL-MT25 Motorized Fresnel 16–48°,fresnel,4.6,40 × 40 × 18.5,,Matrix 2500B; Matrix 2500C,Included with Matrix 2500. IP66.,"NANLUX Catalogue NL202608-1, p.34"
+Nanlux,RF-BE-PB BE55 Parallel Beam Reflector,parallel-beam,5.56,60.3 × 60.3 × 47.1,be; bowens,,"8° beam, IP66. For fixtures ≤800 W.","NANLUX Catalogue NL202608-1, p.23"
+Nanlux,RF-FE-PB FE30 Parallel Beam Reflector,parallel-beam,1.38,33 × 33 × 33.6,fe; fm,,"8° beam, IP66.","NANLUX Catalogue NL202608-1, p.21"
+Nanlux,RF-NL-PB NL70 Parallel Beam Reflector,parallel-beam,9.37,77.4 × 77.4 × 71.1,nl,,~6° beam.,"NANLUX Catalogue NL202608-1, p.19; NANLUX Catalogue NL202608-1, p.28"
+Nanlux,PJ-NLM-15-30 Projection Attachment,projection,11.85,63 × 39.2 × 51.5,nl,,Size extended at 15°; 451.5 mm long at 30°.,"NANLUX Catalogue NL202608-1, p.19; NANLUX Catalogue NL202608-1, p.28"

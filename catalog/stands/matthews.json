@@ -1,0 +1,626 @@
+[
+  {
+    "id": "matthews.hollywood-low-boy-combo-double-riser-black",
+    "brand": "Matthews",
+    "model": "Hollywood Low Boy Combo - Double Riser Black",
+    "type": "combo",
+    "weightKg": 7.0,
+    "loadCapacityKg": 33.0,
+    "minHeightCm": 85.1,
+    "maxHeightCm": 194.3,
+    "sources": [
+      "https://www.msegrip.com/products/hollywood-low-boy-combo-double-riser-black"
+    ]
+  },
+  {
+    "id": "matthews.40-c-stand-folding-leg-black",
+    "brand": "Matthews",
+    "model": "40\" C-Stand Folding Leg, Black",
+    "type": "c-stand",
+    "weightKg": 3.0,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 135.0,
+    "maxHeightCm": 321.0,
+    "sources": [
+      "https://www.msegrip.com/products/40-c-stand-folding-leg-1"
+    ]
+  },
+  {
+    "id": "matthews.hollywood-baby-jr-double-riser-black",
+    "brand": "Matthews",
+    "model": "Hollywood Baby Jr. Double Riser Black",
+    "type": "light",
+    "weightKg": 6.0,
+    "loadCapacityKg": 14.0,
+    "minHeightCm": 121.9,
+    "maxHeightCm": 294.6,
+    "sources": [
+      "https://www.msegrip.com/products/hollywood-baby-jr-double-riser-copy"
+    ]
+  },
+  {
+    "id": "matthews.40-c-stand-with-turtle-base",
+    "brand": "Matthews",
+    "model": "40\" C+Stand with Turtle Base",
+    "type": "c-stand",
+    "weightKg": 5.0,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 134.0,
+    "maxHeightCm": 321.0,
+    "sources": [
+      "https://www.msegrip.com/products/40-c-stand-folding-leg"
+    ]
+  },
+  {
+    "id": "matthews.20-double-riser-spring-loaded-folding-c-stand-w-grip-head-arm-black",
+    "brand": "Matthews",
+    "model": "20\" Double Riser Spring Loaded Folding C-Stand w/Grip Head & Arm Black",
+    "type": "c-stand",
+    "weightKg": 4.0,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 76.0,
+    "maxHeightCm": 161.0,
+    "sources": [
+      "https://www.msegrip.com/products/20-double-riser-spring-loaded-folding-c-stand-w-grip-head-arm-copy"
+    ]
+  },
+  {
+    "id": "matthews.20-c-stand-w-turtle-base-grip-head-arm-black",
+    "brand": "Matthews",
+    "model": "20\" C+Stand w/Turtle Base, Grip Head & Arm Black",
+    "type": "c-stand",
+    "weightKg": 6.0,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 83.3,
+    "maxHeightCm": 146.0,
+    "sources": [
+      "https://www.msegrip.com/products/20-c-stand-w-turtle-base-grip-head-arm-copy"
+    ]
+  },
+  {
+    "id": "matthews.40-double-riser-spring-loaded-folding-c-stand-w-grip-head-arm-black",
+    "brand": "Matthews",
+    "model": "40\" Double Riser Spring Loaded Folding C-Stand w/Grip Head & Arm Black",
+    "type": "c-stand",
+    "weightKg": 5.0,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 134.0,
+    "maxHeightCm": 321.0,
+    "sources": [
+      "https://www.msegrip.com/products/40-double-riser-spring-loaded-folding-c-stand-w-grip-head-arm-copy"
+    ]
+  },
+  {
+    "id": "matthews.40-c-stand-w-sliding-leg-includes-grip-head-arm-black",
+    "brand": "Matthews",
+    "model": "40\" C-Stand w/Sliding Leg, Includes Grip Head & Arm Black",
+    "type": "c-stand",
+    "weightKg": 7.2,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 135.0,
+    "maxHeightCm": 321.0,
+    "sources": [
+      "https://www.msegrip.com/products/40-c-stand-w-sliding-leg-includes-grip-head-arm-copy"
+    ]
+  },
+  {
+    "id": "matthews.hollywood-overhead-stand-triple-riser-with-4-5-grip-head",
+    "brand": "Matthews",
+    "model": "Hollywood Overhead Stand Triple Riser with 4.5\" Grip Head",
+    "type": "roller",
+    "weightKg": 14.0,
+    "loadCapacityKg": 30.0,
+    "minHeightCm": 145.0,
+    "maxHeightCm": 452.0,
+    "sources": [
+      "https://www.msegrip.com/products/combo-stand-overhead-sky-high-with-4-5-grip-head"
+    ]
+  },
+  {
+    "id": "matthews.reverse-stand",
+    "brand": "Matthews",
+    "model": "Reverse Stand",
+    "type": "light",
+    "weightKg": 1.4,
+    "loadCapacityKg": 5.0,
+    "minHeightCm": null,
+    "maxHeightCm": 226.0,
+    "sources": [
+      "https://www.msegrip.com/products/reverse-stand"
+    ]
+  },
+  {
+    "id": "matthews.back-light-stand",
+    "brand": "Matthews",
+    "model": "Back Light Stand",
+    "type": "light",
+    "weightKg": 1.8,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 49.2,
+    "maxHeightCm": 132.0,
+    "sources": [
+      "https://www.msegrip.com/products/back-light-stand"
+    ]
+  },
+  {
+    "id": "matthews.revenger-stand-black",
+    "brand": "Matthews",
+    "model": "Revenger Stand - Black",
+    "type": "light",
+    "weightKg": 1.8,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 96.5,
+    "maxHeightCm": 325.1,
+    "sources": [
+      "https://www.msegrip.com/products/revenger-stand-black"
+    ]
+  },
+  {
+    "id": "matthews.kit-light-heavy-double-riser-black",
+    "brand": "Matthews",
+    "model": "Kit - Light/Heavy Double Riser - Black",
+    "type": "light",
+    "weightKg": 3.0,
+    "loadCapacityKg": 11.0,
+    "minHeightCm": 99.1,
+    "maxHeightCm": 255.3,
+    "sources": [
+      "https://www.msegrip.com/products/kit-light-heavy-double-riser-black"
+    ]
+  },
+  {
+    "id": "matthews.kit-light-heavy-triple-riser-black",
+    "brand": "Matthews",
+    "model": "Kit - Light/Heavy Triple Riser - Black",
+    "type": "light",
+    "weightKg": 3.0,
+    "loadCapacityKg": 11.0,
+    "minHeightCm": 124.5,
+    "maxHeightCm": 353.1,
+    "sources": [
+      "https://www.msegrip.com/products/kit-light-heavy-triple-riser-black"
+    ]
+  },
+  {
+    "id": "matthews.40-c-stand-w-sliding-leg-includes-grip-head-arm-chrome",
+    "brand": "Matthews",
+    "model": "40\" C-Stand w/Sliding Leg, Includes Grip Head & Arm Chrome",
+    "type": "c-stand",
+    "weightKg": 7.2,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 135.0,
+    "maxHeightCm": 321.0,
+    "sources": [
+      "https://www.msegrip.com/products/40-c-stand-w-sliding-leg-includes-grip-head-arm"
+    ]
+  },
+  {
+    "id": "matthews.hollywood-pro-40-c-stand-w-sliding-leg-low-profile-base-includes-grip-head-arm",
+    "brand": "Matthews",
+    "model": "Hollywood Pro 40\" C-Stand w/Sliding Leg, Low Profile Base, Includes Grip Head & Arm",
+    "type": "c-stand",
+    "weightKg": 7.2,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 134.0,
+    "maxHeightCm": 321.0,
+    "sources": [
+      "https://www.msegrip.com/products/hollywood-pro-40-c-stand-w-sliding-leg-low-profile-base-includes-grip-head-arm"
+    ]
+  },
+  {
+    "id": "matthews.40-c-stand-w-spring-loaded-turtle-base-includes-grip-head-arm",
+    "brand": "Matthews",
+    "model": "40\" C+Stand w/Spring Loaded Turtle Base, Includes Grip Head & Arm",
+    "type": "c-stand",
+    "weightKg": 7.2,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 135.0,
+    "maxHeightCm": 321.0,
+    "sources": [
+      "https://www.msegrip.com/products/40-c-stand-w-spring-loaded-turtle-base-includes-grip-head-arm"
+    ]
+  },
+  {
+    "id": "matthews.hollywood-pro-20-c-stand-w-sliding-leg-low-profile-includes-grip-head-arm",
+    "brand": "Matthews",
+    "model": "Hollywood Pro 20\" C-Stand w/Sliding Leg, Low Profile, Includes Grip Head & Arm",
+    "type": "c-stand",
+    "weightKg": 3.74,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 76.0,
+    "maxHeightCm": 161.0,
+    "sources": [
+      "https://www.msegrip.com/products/hollywood-pro-20-c-stand-w-sliding-leg-low-profile-includes-grip-head-arm"
+    ]
+  },
+  {
+    "id": "matthews.20-c-stand-w-turtle-base-grip-head-arm-chrome",
+    "brand": "Matthews",
+    "model": "20\" C+Stand w/Turtle Base, Grip Head & Arm Chrome",
+    "type": "c-stand",
+    "weightKg": 6.0,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 83.3,
+    "maxHeightCm": 146.0,
+    "sources": [
+      "https://www.msegrip.com/products/20-c-stand-w-spring-loaded-turtle-base-includes-grip-head-arm"
+    ]
+  },
+  {
+    "id": "matthews.20-c-stand-w-sliding-leg-includes-grip-head-arm",
+    "brand": "Matthews",
+    "model": "20\" C-Stand w/Sliding Leg, Includes Grip Head & Arm",
+    "type": "c-stand",
+    "weightKg": 4.0,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 85.1,
+    "maxHeightCm": 171.5,
+    "sources": [
+      "https://www.msegrip.com/products/20-c-stand-w-sliding-leg-includes-grip-head-arm"
+    ]
+  },
+  {
+    "id": "matthews.20-c-stand-punky-w-spring-loaded-base",
+    "brand": "Matthews",
+    "model": "20\" C-Stand - \"Punky\" w/Spring Loaded Base",
+    "type": "c-stand",
+    "weightKg": 3.0,
+    "loadCapacityKg": 7.0,
+    "minHeightCm": 76.0,
+    "maxHeightCm": 161.0,
+    "sources": [
+      "https://www.msegrip.com/products/20-c-stand-punky-w-spring-loaded-base"
+    ]
+  },
+  {
+    "id": "matthews.magic-stand",
+    "brand": "Matthews",
+    "model": "Magic Stand",
+    "type": "c-stand",
+    "weightKg": 17.0,
+    "loadCapacityKg": 18.0,
+    "minHeightCm": 138.4,
+    "maxHeightCm": 381.0,
+    "sources": [
+      "https://www.msegrip.com/products/magic-stand"
+    ]
+  },
+  {
+    "id": "matthews.mini-mombo-overhead-light-stand",
+    "brand": "Matthews",
+    "model": "Mini Mombo Overhead / Light Stand",
+    "type": "roller",
+    "weightKg": 15.5,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 162.0,
+    "maxHeightCm": 529.0,
+    "sources": [
+      "https://www.msegrip.com/products/mini-mombo-overhead-light-stand"
+    ]
+  },
+  {
+    "id": "matthews.mombo-combo-daddy-long-legs",
+    "brand": "Matthews",
+    "model": "Mombo Combo - \"Daddy Long Legs\"",
+    "type": "roller",
+    "weightKg": 22.0,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 189.2,
+    "maxHeightCm": 731.5,
+    "sources": [
+      "https://www.msegrip.com/products/mombo-combo-daddy-long-legs"
+    ]
+  },
+  {
+    "id": "matthews.20-double-riser-spring-loaded-folding-c-stand-w-grip-head-arm-chrome",
+    "brand": "Matthews",
+    "model": "20\" Double Riser Spring Loaded Folding C-Stand w/Grip Head & Arm Chrome",
+    "type": "c-stand",
+    "weightKg": 4.0,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 76.0,
+    "maxHeightCm": 161.0,
+    "sources": [
+      "https://www.msegrip.com/products/double-riser-spring-loaded-20-folding-c-stand-w-grip-head-arm"
+    ]
+  },
+  {
+    "id": "matthews.40-double-riser-spring-loaded-folding-c-stand-w-grip-head-arm-chrome",
+    "brand": "Matthews",
+    "model": "40\" Double Riser Spring Loaded Folding C-Stand w/Grip Head & Arm Chrome",
+    "type": "c-stand",
+    "weightKg": 5.0,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 134.0,
+    "maxHeightCm": 321.0,
+    "sources": [
+      "https://www.msegrip.com/products/40-double-riser-spring-loaded-folding-c-stand-w-grip-head-arm"
+    ]
+  },
+  {
+    "id": "matthews.hollywood-combo-double-riser",
+    "brand": "Matthews",
+    "model": "Hollywood Combo - Double Riser",
+    "type": "combo",
+    "weightKg": 12.0,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 125.7,
+    "maxHeightCm": 345.4,
+    "sources": [
+      "https://www.msegrip.com/products/hollywood-combo-double-riser"
+    ]
+  },
+  {
+    "id": "matthews.hollywood-combo-triple-riser",
+    "brand": "Matthews",
+    "model": "Hollywood Combo - Triple Riser",
+    "type": "combo",
+    "weightKg": 14.0,
+    "loadCapacityKg": 30.0,
+    "minHeightCm": 137.6,
+    "maxHeightCm": 450.8,
+    "sources": [
+      "https://www.msegrip.com/products/hollywood-combo-triple-riser"
+    ]
+  },
+  {
+    "id": "matthews.hollywood-low-boy-combo-double-riser",
+    "brand": "Matthews",
+    "model": "Hollywood Low Boy Combo - Double Riser",
+    "type": "combo",
+    "weightKg": 7.0,
+    "loadCapacityKg": 33.0,
+    "minHeightCm": 85.1,
+    "maxHeightCm": 194.3,
+    "sources": [
+      "https://www.msegrip.com/products/hollywood-loboy-combo-double-riser"
+    ]
+  },
+  {
+    "id": "matthews.hollywood-sky-high-combo-triple-riser-steel",
+    "brand": "Matthews",
+    "model": "Hollywood Sky High Combo - Triple Riser, Steel",
+    "type": "combo",
+    "weightKg": 13.0,
+    "loadCapacityKg": 23.0,
+    "minHeightCm": 144.2,
+    "maxHeightCm": 464.8,
+    "sources": [
+      "https://www.msegrip.com/products/hollywood-sky-high-combo-triple-riser-steel"
+    ]
+  },
+  {
+    "id": "matthews.hollywood-beefy-baby-double-riser-with-rocky-mountain-leg",
+    "brand": "Matthews",
+    "model": "Hollywood Beefy Baby - Double Riser with Rocky Mountain Leg",
+    "type": "light",
+    "weightKg": 5.7,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 104.1,
+    "maxHeightCm": 264.2,
+    "sources": [
+      "https://www.msegrip.com/products/hollywood-beefy-baby-double-riser-with-rocky-mountain-leg"
+    ]
+  },
+  {
+    "id": "matthews.hollywood-beefy-baby-triple-riser-with-rocky-mountain-leg",
+    "brand": "Matthews",
+    "model": "Hollywood Beefy Baby - Triple Riser with Rocky Mountain Leg",
+    "type": "light",
+    "weightKg": 6.1,
+    "loadCapacityKg": 9.1,
+    "minHeightCm": 115.6,
+    "maxHeightCm": 375.9,
+    "sources": [
+      "https://www.msegrip.com/products/hollywood-beefy-baby-triple-riser-br-with-rocky-mountain-leg"
+    ]
+  },
+  {
+    "id": "matthews.preemie-baby",
+    "brand": "Matthews",
+    "model": "Preemie Baby",
+    "type": "light",
+    "weightKg": 2.0,
+    "loadCapacityKg": 11.0,
+    "minHeightCm": 71.1,
+    "maxHeightCm": 175.3,
+    "sources": [
+      "https://www.msegrip.com/products/preemie-baby"
+    ]
+  },
+  {
+    "id": "matthews.mini-preemie-baby-steel",
+    "brand": "Matthews",
+    "model": "Mini Preemie Baby - Steel",
+    "type": "light",
+    "weightKg": 2.61,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 50.8,
+    "maxHeightCm": 91.4,
+    "sources": [
+      "https://www.msegrip.com/products/mini-preemie-baby-steel"
+    ]
+  },
+  {
+    "id": "matthews.senior-stand-double-riser-rolling",
+    "brand": "Matthews",
+    "model": "Senior Stand Double Riser Rolling",
+    "type": "roller",
+    "weightKg": 16.0,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 142.2,
+    "maxHeightCm": 320.0,
+    "sources": [
+      "https://www.msegrip.com/products/senior-stand-double-riser-rolling"
+    ]
+  },
+  {
+    "id": "matthews.low-boy-junior-double-riser-rolling",
+    "brand": "Matthews",
+    "model": "Low Boy Junior Double Riser Rolling",
+    "type": "roller",
+    "weightKg": 11.11,
+    "loadCapacityKg": 25.0,
+    "minHeightCm": 99.1,
+    "maxHeightCm": 190.5,
+    "sources": [
+      "https://www.msegrip.com/products/low-boy-junior-double-riser-rolling"
+    ]
+  },
+  {
+    "id": "matthews.junior-stand-triple-riser-rolling",
+    "brand": "Matthews",
+    "model": "Junior Stand Triple Riser Rolling",
+    "type": "roller",
+    "weightKg": 14.0,
+    "loadCapacityKg": 25.0,
+    "minHeightCm": 142.2,
+    "maxHeightCm": 391.2,
+    "sources": [
+      "https://www.msegrip.com/products/junior-stand-triple-riser-rolling"
+    ]
+  },
+  {
+    "id": "matthews.junior-stand-double-riser-rolling",
+    "brand": "Matthews",
+    "model": "Junior Stand Double Riser Rolling",
+    "type": "roller",
+    "weightKg": 12.0,
+    "loadCapacityKg": 25.0,
+    "minHeightCm": 129.5,
+    "maxHeightCm": 289.6,
+    "sources": [
+      "https://www.msegrip.com/products/junior-stand-double-riser-rolling"
+    ]
+  },
+  {
+    "id": "matthews.black-aluminum-lightweight-digital-combo-stand",
+    "brand": "Matthews",
+    "model": "Black Aluminum Lightweight Digital Combo Stand",
+    "type": "combo",
+    "weightKg": 4.3,
+    "loadCapacityKg": 11.3,
+    "minHeightCm": 122.0,
+    "maxHeightCm": 315.0,
+    "sources": [
+      "https://www.msegrip.com/products/black-aluminum-lightweight-digital-combo-stand"
+    ]
+  },
+  {
+    "id": "matthews.black-aluminum-lightweight-digital-baby-stand",
+    "brand": "Matthews",
+    "model": "Black Aluminum Lightweight Digital Baby Stand",
+    "type": "light",
+    "weightKg": 4.0,
+    "loadCapacityKg": 11.3,
+    "minHeightCm": 135.0,
+    "maxHeightCm": 393.0,
+    "sources": [
+      "https://www.msegrip.com/products/black-aluminum-lightweight-digital-baby-stand"
+    ]
+  },
+  {
+    "id": "matthews.digital-baby-stand",
+    "brand": "Matthews",
+    "model": "Digital Baby Stand",
+    "type": "light",
+    "weightKg": 9.0,
+    "loadCapacityKg": 26.3,
+    "minHeightCm": 127.0,
+    "maxHeightCm": 414.0,
+    "sources": [
+      "https://www.msegrip.com/products/digital-baby-stand"
+    ]
+  },
+  {
+    "id": "matthews.digital-combo-stand",
+    "brand": "Matthews",
+    "model": "Digital Combo Stand",
+    "type": "combo",
+    "weightKg": 8.1,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 130.0,
+    "maxHeightCm": 335.0,
+    "sources": [
+      "https://www.msegrip.com/products/digital-combo-stand"
+    ]
+  },
+  {
+    "id": "matthews.hollywood-baby-jr-double-riser",
+    "brand": "Matthews",
+    "model": "Hollywood Baby Jr. Double Riser",
+    "type": "light",
+    "weightKg": 6.0,
+    "loadCapacityKg": 14.0,
+    "minHeightCm": 121.9,
+    "maxHeightCm": 294.6,
+    "sources": [
+      "https://www.msegrip.com/products/hollywood-baby-jr-double-riser"
+    ]
+  },
+  {
+    "id": "matthews.hollywood-baby-jr-triple-riser",
+    "brand": "Matthews",
+    "model": "Hollywood Baby Jr. Triple Riser",
+    "type": "light",
+    "weightKg": 8.0,
+    "loadCapacityKg": 14.0,
+    "minHeightCm": 139.7,
+    "maxHeightCm": 373.4,
+    "sources": [
+      "https://www.msegrip.com/products/hollywood-baby-jr-triple-riser"
+    ]
+  },
+  {
+    "id": "matthews.medium-overhead-roller-stand",
+    "brand": "Matthews",
+    "model": "Medium Overhead Roller Stand",
+    "type": "roller",
+    "weightKg": 16.0,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 162.6,
+    "maxHeightCm": 425.5,
+    "sources": [
+      "https://www.msegrip.com/products/medium-overhead-roller-stand"
+    ]
+  },
+  {
+    "id": "matthews.hi-hi-overhead-roller-stand",
+    "brand": "Matthews",
+    "model": "Hi-Hi Overhead Roller Stand",
+    "type": "roller",
+    "weightKg": 20.0,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 214.3,
+    "maxHeightCm": 632.5,
+    "sources": [
+      "https://www.msegrip.com/products/hi-hi-overhead-roller-stand"
+    ]
+  },
+  {
+    "id": "matthews.hi-hi-overhead-roller-stand-with-rocky-mountain-leg",
+    "brand": "Matthews",
+    "model": "Hi-Hi Overhead Roller Stand With Rocky Mountain Leg",
+    "type": "roller",
+    "weightKg": 20.0,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 214.3,
+    "maxHeightCm": 632.5,
+    "sources": [
+      "https://www.msegrip.com/products/hi-hi-overhead-roller-stand-with-rocky-mountain-leg"
+    ]
+  },
+  {
+    "id": "matthews.hi-hi-overhead-stand-wide-base-with-rocky-mountain-leg",
+    "brand": "Matthews",
+    "model": "Hi-Hi Overhead Stand Wide Base with Rocky Mountain Leg",
+    "type": "roller",
+    "weightKg": 17.0,
+    "loadCapacityKg": 30.0,
+    "minHeightCm": 193.0,
+    "maxHeightCm": 612.1,
+    "sources": [
+      "https://www.msegrip.com/products/hi-hi-overhead-stand-wide-base"
+    ]
+  }
+]

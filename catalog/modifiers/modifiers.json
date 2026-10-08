@@ -968,7 +968,7 @@
     "fitsFixtureIds": [
       "amaran.pano-60c"
     ],
-    "weightKg": 0.26,
+    "weightKg": 0.22,
     "sizeCm": null,
     "sources": [
       "https://amarancreators.com/pages/amaran-pano-60c"
@@ -983,7 +983,7 @@
     "fitsFixtureIds": [
       "amaran.pano-60c"
     ],
-    "weightKg": 0.08,
+    "weightKg": 0.099,
     "sizeCm": null,
     "sources": [
       "https://amarancreators.com/pages/amaran-pano-60c"
@@ -1066,6 +1066,1820 @@
     "sizeCm": null,
     "sources": [
       "https://amarancreators.com/pages/amaran-ace-25c"
+    ]
+  },
+  {
+    "id": "aputure.light-dome-150",
+    "brand": "Aputure",
+    "model": "Light Dome 150",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 3.32,
+    "sizeCm": {
+      "l": 150,
+      "w": 150,
+      "h": null
+    },
+    "sources": [
+      "https://www.aputure.com/products/light-dome-150"
+    ]
+  },
+  {
+    "id": "aputure.light-dome-iii",
+    "brand": "Aputure",
+    "model": "Light Dome III",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 2.24,
+    "sizeCm": {
+      "l": 90,
+      "w": 90,
+      "h": null
+    },
+    "sources": [
+      "https://www.aputure.com/products/light-dome-iii"
+    ]
+  },
+  {
+    "id": "aputure.light-dome-mini-iii",
+    "brand": "Aputure",
+    "model": "Light Dome Mini III",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.3,
+    "sizeCm": {
+      "l": 60,
+      "w": 60,
+      "h": null
+    },
+    "sources": [
+      "https://www.aputure.com/products/light-dome-mini-iii"
+    ],
+    "notes": "Rated for Bowens fixtures up to 600 W."
+  },
+  {
+    "id": "aputure.light-dome-se",
+    "brand": "Aputure",
+    "model": "Light Dome SE",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.1,
+    "sizeCm": {
+      "l": 85,
+      "w": 85,
+      "h": 45
+    },
+    "sources": [
+      "https://www.aputure.com/products/light-dome-se"
+    ]
+  },
+  {
+    "id": "aputure.light-octadome-120",
+    "brand": "Aputure",
+    "model": "Light OctaDome 120",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.7,
+    "sizeCm": {
+      "l": 120,
+      "w": 120,
+      "h": null
+    },
+    "sources": [
+      "https://www.aputure.com/products/light-octadome-120"
+    ]
+  },
+  {
+    "id": "aputure.light-box-30x120",
+    "brand": "Aputure",
+    "model": "Light Box 30x120",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.08,
+    "sizeCm": {
+      "l": 30,
+      "w": 120,
+      "h": null
+    },
+    "sources": [
+      "https://www.aputure.com/products/light-box-30x120"
+    ]
+  },
+  {
+    "id": "aputure.light-box-45x45",
+    "brand": "Aputure",
+    "model": "Light Box 45x45",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.68,
+    "sizeCm": {
+      "l": 45,
+      "w": 45,
+      "h": null
+    },
+    "sources": [
+      "https://www.aputure.com/products/light-box-45x45"
+    ]
+  },
+  {
+    "id": "aputure.light-box-60x90",
+    "brand": "Aputure",
+    "model": "Light Box 60x90",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.22,
+    "sizeCm": {
+      "l": 60,
+      "w": 90,
+      "h": null
+    },
+    "sources": [
+      "https://www.aputure.com/products/light-box-60x90"
+    ]
+  },
+  {
+    "id": "aputure.lantern-65-cm",
+    "brand": "Aputure",
+    "model": "Lantern (65 cm)",
+    "type": "lantern",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.3,
+    "sizeCm": {
+      "l": 65,
+      "w": 65,
+      "h": null
+    },
+    "sources": [
+      "https://www.aputure.com/products/lantern"
+    ]
+  },
+  {
+    "id": "aputure.quick-dome-60",
+    "brand": "Aputure",
+    "model": "Quick Dome 60",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.76,
+    "sizeCm": {
+      "l": 60,
+      "w": 60,
+      "h": null
+    },
+    "sources": [
+      "https://www.aputure.com/products/quick-dome-60"
+    ]
+  },
+  {
+    "id": "aputure.quick-dome-90",
+    "brand": "Aputure",
+    "model": "Quick Dome 90",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.4,
+    "sizeCm": {
+      "l": 90,
+      "w": 90,
+      "h": null
+    },
+    "sources": [
+      "https://www.aputure.com/products/quick-dome-90"
+    ]
+  },
+  {
+    "id": "aputure.quick-dome-40",
+    "brand": "Aputure",
+    "model": "Quick Dome 40",
+    "type": "softbox",
+    "mounts": [
+      "mini-prolock"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.26,
+    "sizeCm": {
+      "l": 40,
+      "w": 40,
+      "h": null
+    },
+    "sources": [
+      "https://www.aputure.com/products/quick-dome-40"
+    ]
+  },
+  {
+    "id": "aputure.lantern-30",
+    "brand": "Aputure",
+    "model": "Lantern 30",
+    "type": "lantern",
+    "mounts": [
+      "mini-prolock"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.21,
+    "sizeCm": {
+      "l": 30,
+      "w": 30,
+      "h": 39
+    },
+    "sources": [
+      "https://www.aputure.com/products/lantern-30"
+    ],
+    "notes": "With skirt; 0.15 kg without."
+  },
+  {
+    "id": "aputure.light-dome-40",
+    "brand": "Aputure",
+    "model": "Light Dome 40",
+    "type": "softbox",
+    "mounts": [
+      "mini-prolock"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.28,
+    "sizeCm": {
+      "l": 44,
+      "w": 44,
+      "h": 23
+    },
+    "sources": [
+      "https://www.aputure.com/products/light-dome-40"
+    ],
+    "notes": "Without diffusion; grid +0.038 kg, diffusion +0.014–0.019 kg."
+  },
+  {
+    "id": "aputure.cf4-fresnel",
+    "brand": "Aputure",
+    "model": "CF4 Fresnel",
+    "type": "fresnel",
+    "mounts": [
+      "mini-prolock"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.53,
+    "sizeCm": {
+      "l": 14,
+      "w": 14,
+      "h": 8.7
+    },
+    "sources": [
+      "https://www.aputure.com/products/cf4-fresnel"
+    ],
+    "notes": "Made for STORM 80c."
+  },
+  {
+    "id": "aputure.spotlight-mini-19",
+    "brand": "Aputure",
+    "model": "Spotlight Mini 19°",
+    "type": "projection",
+    "mounts": [
+      "mini-prolock"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 2.6,
+    "sizeCm": null,
+    "sources": [
+      "https://www.aputure.com/products/spotlight-mini-19-lens"
+    ],
+    "notes": "3.95 kg with STORM 80c."
+  },
+  {
+    "id": "aputure.spotlight-mini-36",
+    "brand": "Aputure",
+    "model": "Spotlight Mini 36°",
+    "type": "projection",
+    "mounts": [
+      "mini-prolock"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 2.31,
+    "sizeCm": null,
+    "sources": [
+      "https://www.aputure.com/products/spotlight-mini-36-lens"
+    ],
+    "notes": "3.66 kg with STORM 80c."
+  },
+  {
+    "id": "aputure.spotlight-mini-zoom",
+    "brand": "Aputure",
+    "model": "Spotlight Mini Zoom",
+    "type": "projection",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.ls-60d",
+      "aputure.ls-60x"
+    ],
+    "weightKg": 4.4,
+    "sizeCm": {
+      "l": 16.4,
+      "w": 16.4,
+      "h": 37.8
+    },
+    "sources": [
+      "https://www.aputure.com/products/spotlight-mini-zoom"
+    ],
+    "notes": "With yoke; 4.095 kg without."
+  },
+  {
+    "id": "aputure.ls-60-softbox",
+    "brand": "Aputure",
+    "model": "LS 60 Softbox",
+    "type": "softbox",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.ls-60d",
+      "aputure.ls-60x"
+    ],
+    "weightKg": 0.42,
+    "sizeCm": null,
+    "sources": [
+      "https://www.aputure.com/products/ls-60-softbox"
+    ]
+  },
+  {
+    "id": "aputure.f10-fresnel",
+    "brand": "Aputure",
+    "model": "F10 Fresnel",
+    "type": "fresnel",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 3.85,
+    "sizeCm": {
+      "l": 34.6,
+      "w": 34.0,
+      "h": 17.2
+    },
+    "sources": [
+      "https://www.aputure.com/products/f10-fresnel"
+    ],
+    "notes": "For 600–1200 W Bowens point sources."
+  },
+  {
+    "id": "aputure.f10-barn-doors",
+    "brand": "Aputure",
+    "model": "F10 Barn Doors",
+    "type": "barndoors",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 2.64,
+    "sizeCm": {
+      "l": 34.6,
+      "w": 34.0,
+      "h": 11.9
+    },
+    "sources": [
+      "https://www.aputure.com/products/f10-barn-doors"
+    ],
+    "notes": "Mounts on the F10 Fresnel."
+  },
+  {
+    "id": "aputure.cf12-fresnel",
+    "brand": "Aputure",
+    "model": "CF12 Fresnel",
+    "type": "fresnel",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 4.72,
+    "sizeCm": {
+      "l": 38.3,
+      "w": 37,
+      "h": 12.8
+    },
+    "sources": [
+      "https://www.aputure.com/products/cf12-fresnel"
+    ],
+    "notes": "Made for STORM 1000c / 1200x."
+  },
+  {
+    "id": "aputure.cf16-motorized-fresnel",
+    "brand": "Aputure",
+    "model": "CF16 Motorized Fresnel",
+    "type": "fresnel",
+    "mounts": [
+      "aputure-mount"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 11.8,
+    "sizeCm": {
+      "l": 56.4,
+      "w": 51.9,
+      "h": 23.4
+    },
+    "sources": [
+      "https://www.aputure.com/products/motorized-cf16-fresnel"
+    ],
+    "notes": "Made for STORM XT52."
+  },
+  {
+    "id": "aputure.barn-doors-bowens-for-reflectors-fresnel-2x",
+    "brand": "Aputure",
+    "model": "Barn Doors (Bowens, for reflectors & Fresnel 2X)",
+    "type": "barndoors",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": null,
+    "sizeCm": null,
+    "sources": [
+      "https://www.aputure.com/products/aputure-barndoors"
+    ],
+    "notes": "Only package weight published (1.04 kg / 2.285 lb)."
+  },
+  {
+    "id": "aputure.bm6825-25-reflector",
+    "brand": "Aputure",
+    "model": "BM6825 25° Reflector",
+    "type": "reflector",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.storm-700x"
+    ],
+    "weightKg": 0.35,
+    "sizeCm": {
+      "l": 25.5,
+      "w": 25.5,
+      "h": 25.9
+    },
+    "sources": [
+      "https://www.aputure.com/products/bm6825-25-reflector"
+    ]
+  },
+  {
+    "id": "aputure.aputure-mount-lantern-120",
+    "brand": "Aputure",
+    "model": "Aputure Mount Lantern 120",
+    "type": "lantern",
+    "mounts": [
+      "aputure-mount"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 2.41,
+    "sizeCm": {
+      "l": 120,
+      "w": 120,
+      "h": null
+    },
+    "sources": [
+      "https://www.aputure.com/products/aputure-mount-lantern-120"
+    ],
+    "notes": "3.31 kg with skirt."
+  },
+  {
+    "id": "aputure.aputure-mount-lantern-180",
+    "brand": "Aputure",
+    "model": "Aputure Mount Lantern 180",
+    "type": "lantern",
+    "mounts": [
+      "aputure-mount"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 8.15,
+    "sizeCm": {
+      "l": 180,
+      "w": 180,
+      "h": null
+    },
+    "sources": [
+      "https://www.aputure.com/products/aputure-mount-lantern-180"
+    ],
+    "notes": "9.60 kg with skirt."
+  },
+  {
+    "id": "aputure.aputure-mount-light-dome-150",
+    "brand": "Aputure",
+    "model": "Aputure Mount Light Dome 150",
+    "type": "softbox",
+    "mounts": [
+      "aputure-mount"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 3.2,
+    "sizeCm": {
+      "l": 150,
+      "w": 150,
+      "h": null
+    },
+    "sources": [
+      "https://www.aputure.com/products/aputure-mount-light-dome-150"
+    ],
+    "notes": "Grid +0.36 kg."
+  },
+  {
+    "id": "aputure.nova-1x1-dome-diffuser",
+    "brand": "Aputure",
+    "model": "Nova 1x1 Dome Diffuser",
+    "type": "diffusion",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.nova-ii-1x1"
+    ],
+    "weightKg": 1.5,
+    "sizeCm": {
+      "l": 38.6,
+      "w": 39.5,
+      "h": 8.3
+    },
+    "sources": [
+      "https://www.aputure.com/products/nova-1x1-dome-diffuser-light-frost"
+    ],
+    "notes": "Light and heavy frost versions weigh the same."
+  },
+  {
+    "id": "aputure.nova-2x1-dome-diffuser",
+    "brand": "Aputure",
+    "model": "Nova 2x1 Dome Diffuser",
+    "type": "diffusion",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.nova-ii-2x1",
+      "aputure.nova-9-2x1"
+    ],
+    "weightKg": 2.11,
+    "sizeCm": {
+      "l": 67.7,
+      "w": 37.5,
+      "h": 8.4
+    },
+    "sources": [
+      "https://www.aputure.com/products/nova-2x1-dome-diffuser-light-frost"
+    ],
+    "notes": "Light and heavy frost versions weigh the same."
+  },
+  {
+    "id": "aputure.nova-p300c-barn-doors",
+    "brand": "Aputure",
+    "model": "Nova P300c Barn Doors",
+    "type": "barndoors",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.nova-p300c"
+    ],
+    "weightKg": 1.79,
+    "sizeCm": null,
+    "sources": [
+      "https://www.aputure.com/products/nova-p300c-barn-doors"
+    ]
+  },
+  {
+    "id": "aputure.nova-p300c-softbox",
+    "brand": "Aputure",
+    "model": "Nova P300c Softbox",
+    "type": "softbox",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.nova-p300c"
+    ],
+    "weightKg": 1.43,
+    "sizeCm": null,
+    "sources": [
+      "https://www.aputure.com/products/nova-p300c-softbox"
+    ],
+    "notes": "Softbox+diffusion+grid 0.93 kg plus mounting frame 0.5 kg."
+  },
+  {
+    "id": "aputure.nova-p600c-barn-doors",
+    "brand": "Aputure",
+    "model": "Nova P600c Barn Doors",
+    "type": "barndoors",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.nova-p600c"
+    ],
+    "weightKg": 2.7,
+    "sizeCm": null,
+    "sources": [
+      "https://www.aputure.com/products/nova-p600c-barn-doors"
+    ]
+  },
+  {
+    "id": "aputure.nova-p600c-45-metal-grid",
+    "brand": "Aputure",
+    "model": "Nova P600c 45° Metal Grid",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.nova-p600c"
+    ],
+    "weightKg": 0.63,
+    "sizeCm": null,
+    "sources": [
+      "https://www.aputure.com/products/nova-p600c-45-metal-grid"
+    ]
+  },
+  {
+    "id": "aputure.nova-p600c-softbox",
+    "brand": "Aputure",
+    "model": "Nova P600c Softbox",
+    "type": "softbox",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.nova-p600c"
+    ],
+    "weightKg": 1.7,
+    "sizeCm": {
+      "l": 95.5,
+      "w": 58,
+      "h": 33
+    },
+    "sources": [
+      "https://www.aputure.com/products/nova-p600c-softbox"
+    ],
+    "notes": "Spec table 1.7 kg; marketing text says 1.34 kg. Higher value used."
+  },
+  {
+    "id": "aputure.nova-p600c-space-light",
+    "brand": "Aputure",
+    "model": "Nova P600c Space Light",
+    "type": "lantern",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "aputure.nova-p600c",
+      "aputure.nova-p300c"
+    ],
+    "weightKg": 4.0,
+    "sizeCm": {
+      "l": 84,
+      "w": 84,
+      "h": 72
+    },
+    "sources": [
+      "https://www.aputure.com/products/nova-p600c-space-light"
+    ]
+  },
+  {
+    "id": "amaran.fresnel",
+    "brand": "amaran",
+    "model": "Fresnel",
+    "type": "fresnel",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.ray-360c",
+      "amaran.ray-660c"
+    ],
+    "weightKg": 2.4,
+    "sizeCm": {
+      "l": 33.3,
+      "w": 33.3,
+      "h": 19.7
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-fresnel"
+    ]
+  },
+  {
+    "id": "amaran.fresnel-barn-doors",
+    "brand": "amaran",
+    "model": "Fresnel Barn Doors",
+    "type": "barndoors",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.ray-360c",
+      "amaran.ray-660c"
+    ],
+    "weightKg": 1.6,
+    "sizeCm": {
+      "l": 49.5,
+      "w": 33.1,
+      "h": 8
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-fresnel"
+    ],
+    "notes": "Mounts on the amaran Fresnel."
+  },
+  {
+    "id": "amaran.mini-fresnel",
+    "brand": "amaran",
+    "model": "Mini Fresnel",
+    "type": "fresnel",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.ray-60c",
+      "amaran.ray-120c"
+    ],
+    "weightKg": 0.37,
+    "sizeCm": {
+      "l": 18.7,
+      "w": 18.7,
+      "h": 14
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-mini-fresnel"
+    ]
+  },
+  {
+    "id": "amaran.mini-fresnel-barn-doors",
+    "brand": "amaran",
+    "model": "Mini Fresnel Barn Doors",
+    "type": "barndoors",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.ray-60c",
+      "amaran.ray-120c"
+    ],
+    "weightKg": 0.18,
+    "sizeCm": {
+      "l": 26.9,
+      "w": 17.4,
+      "h": 5.9
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-mini-fresnel"
+    ],
+    "notes": "Mounts on the amaran Mini Fresnel."
+  },
+  {
+    "id": "amaran.mini-reflector",
+    "brand": "amaran",
+    "model": "Mini Reflector",
+    "type": "reflector",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.ray-60c",
+      "amaran.ray-120c"
+    ],
+    "weightKg": 0.13,
+    "sizeCm": {
+      "l": 14.5,
+      "w": 14.5,
+      "h": 15.8
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-mini-reflector"
+    ]
+  },
+  {
+    "id": "amaran.lantern-65",
+    "brand": "amaran",
+    "model": "Lantern 65",
+    "type": "lantern",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.8,
+    "sizeCm": {
+      "l": 65,
+      "w": 65,
+      "h": 57
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-lantern-65"
+    ],
+    "notes": "Up to 600 W."
+  },
+  {
+    "id": "amaran.lantern-90",
+    "brand": "amaran",
+    "model": "Lantern 90",
+    "type": "lantern",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.9,
+    "sizeCm": {
+      "l": 90,
+      "w": 90,
+      "h": 57
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-lantern-90"
+    ],
+    "notes": "Up to 600 W."
+  },
+  {
+    "id": "amaran.light-box-30x120",
+    "brand": "amaran",
+    "model": "Light Box 30x120",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.9,
+    "sizeCm": {
+      "l": 30,
+      "w": 120,
+      "h": null
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-light-box-30x120"
+    ]
+  },
+  {
+    "id": "amaran.light-box-45x45",
+    "brand": "amaran",
+    "model": "Light Box 45x45",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.7,
+    "sizeCm": {
+      "l": 45,
+      "w": 45,
+      "h": 34.5
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-light-box-45x45"
+    ],
+    "notes": "Up to 300 W."
+  },
+  {
+    "id": "amaran.light-box-60x90",
+    "brand": "amaran",
+    "model": "Light Box 60x90",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.9,
+    "sizeCm": {
+      "l": 60,
+      "w": 90,
+      "h": null
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-light-box-60x90"
+    ]
+  },
+  {
+    "id": "amaran.light-dome-60",
+    "brand": "amaran",
+    "model": "Light Dome 60",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.2,
+    "sizeCm": {
+      "l": 60.5,
+      "w": 60.5,
+      "h": 40
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-light-dome-60"
+    ],
+    "notes": "Up to 600 W."
+  },
+  {
+    "id": "amaran.light-dome-90",
+    "brand": "amaran",
+    "model": "Light Dome 90",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.7,
+    "sizeCm": {
+      "l": 90,
+      "w": 90,
+      "h": null
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-light-dome-90"
+    ]
+  },
+  {
+    "id": "amaran.octa-dome-60",
+    "brand": "amaran",
+    "model": "Octa Dome 60",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.7,
+    "sizeCm": {
+      "l": 60,
+      "w": 60,
+      "h": 39
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-octa-dome-60"
+    ],
+    "notes": "Up to 600 W."
+  },
+  {
+    "id": "amaran.octa-dome-90",
+    "brand": "amaran",
+    "model": "Octa Dome 90",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.0,
+    "sizeCm": {
+      "l": 90,
+      "w": 90,
+      "h": null
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-octa-dome-90"
+    ]
+  },
+  {
+    "id": "amaran.octa-dome-120",
+    "brand": "amaran",
+    "model": "Octa Dome 120",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.2,
+    "sizeCm": {
+      "l": 120,
+      "w": 120,
+      "h": 51
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-octa-dome-120"
+    ],
+    "notes": "Up to 600 W."
+  },
+  {
+    "id": "amaran.light-dome-mini-se-grid",
+    "brand": "amaran",
+    "model": "Light Dome Mini SE Grid",
+    "type": "grid",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.05,
+    "sizeCm": {
+      "l": 55,
+      "w": 55,
+      "h": null
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-light-dome-mini-se-grid"
+    ],
+    "notes": "Fits the Light Dome Mini SE softbox (no published weight)."
+  },
+  {
+    "id": "amaran.pano-60c-barn-doors",
+    "brand": "amaran",
+    "model": "Pano 60c Barn Doors",
+    "type": "barndoors",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.pano-60c"
+    ],
+    "weightKg": 0.48,
+    "sizeCm": {
+      "l": 28.7,
+      "w": 18.6,
+      "h": 3
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-pano-60c-barn-doors"
+    ]
+  },
+  {
+    "id": "amaran.pano-120c-barn-doors",
+    "brand": "amaran",
+    "model": "Pano 120c Barn Doors",
+    "type": "barndoors",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.pano-120c"
+    ],
+    "weightKg": 1.0,
+    "sizeCm": null,
+    "sources": [
+      "https://amarancreators.com/products/amaran-pano-120c-barn-doors"
+    ]
+  },
+  {
+    "id": "amaran.verge-max-light-control-grid",
+    "brand": "amaran",
+    "model": "Verge Max Light Control Grid",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.verge-max"
+    ],
+    "weightKg": 0.23,
+    "sizeCm": {
+      "l": 56,
+      "w": 56,
+      "h": null
+    },
+    "sources": [
+      "https://amarancreators.com/products/amaran-verge-max-light-control-grid"
+    ]
+  },
+  {
+    "id": "amaran.lantern-for-f21",
+    "brand": "amaran",
+    "model": "Lantern for F21",
+    "type": "lantern",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.f21c",
+      "amaran.f21x"
+    ],
+    "weightKg": 0.723,
+    "sizeCm": null,
+    "sources": [
+      "https://amarancreators.com/products/lantern-for-amaran-f21"
+    ]
+  },
+  {
+    "id": "amaran.lantern-for-f22",
+    "brand": "amaran",
+    "model": "Lantern for F22",
+    "type": "lantern",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.f22c",
+      "amaran.f22x"
+    ],
+    "weightKg": 0.962,
+    "sizeCm": null,
+    "sources": [
+      "https://amarancreators.com/products/lantern-for-amaran-f22"
+    ]
+  },
+  {
+    "id": "amaran.45-grid-for-pt1c",
+    "brand": "amaran",
+    "model": "45° Grid for PT1c",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.pt1c"
+    ],
+    "weightKg": 0.109,
+    "sizeCm": null,
+    "sources": [
+      "https://amarancreators.com/products/45-grid-for-amaran-pt1c"
+    ]
+  },
+  {
+    "id": "amaran.45-grid-for-t2c-pt2c",
+    "brand": "amaran",
+    "model": "45° Grid for T2c/PT2c",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.t2c",
+      "amaran.pt2c"
+    ],
+    "weightKg": 0.36,
+    "sizeCm": null,
+    "sources": [
+      "https://amarancreators.com/products/45-grid-for-amaran-t2c-pt2c"
+    ]
+  },
+  {
+    "id": "amaran.45-grid-for-t4c-pt4c",
+    "brand": "amaran",
+    "model": "45° Grid for T4c/PT4c",
+    "type": "grid",
+    "mounts": [],
+    "fitsFixtureIds": [
+      "amaran.t4c",
+      "amaran.pt4c"
+    ],
+    "weightKg": 0.58,
+    "sizeCm": null,
+    "sources": [
+      "https://amarancreators.com/products/45-grid-for-amaran-t4c-pt4c"
+    ]
+  },
+  {
+    "id": "godox.ml-sp-projection-attachment-no-lens",
+    "brand": "Godox",
+    "model": "ML-SP Projection Attachment (no lens)",
+    "type": "projection",
+    "mounts": [
+      "godox-mount"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.697,
+    "sizeCm": {
+      "l": 13.4,
+      "w": 13.4,
+      "h": 12.9
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.60"
+    ],
+    "notes": "Lenses: 19° 0.427 kg, 36° 0.255 kg, 50° 0.392 kg."
+  },
+  {
+    "id": "godox.bp-se-projection-tube-no-lens",
+    "brand": "Godox",
+    "model": "BP-SE Projection Tube (no lens)",
+    "type": "projection",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.3,
+    "sizeCm": {
+      "l": 22.0,
+      "w": 22.0,
+      "h": 11.8
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.60"
+    ],
+    "notes": "Lenses: 65 mm ≈0.5 kg, 85 mm ≈0.5 kg, 150 mm ≈0.7 kg."
+  },
+  {
+    "id": "godox.blp-projection-attachment-no-lens",
+    "brand": "Godox",
+    "model": "BLP Projection Attachment (no lens)",
+    "type": "projection",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.3,
+    "sizeCm": {
+      "l": 22.0,
+      "w": 22.0,
+      "h": 16.6
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.61"
+    ],
+    "notes": "Lenses: 48 mm ≈1.2 kg, 65/85 mm ≈0.5 kg, 150 mm ≈0.7 kg."
+  },
+  {
+    "id": "godox.eazyflow-octa60-softbox",
+    "brand": "Godox",
+    "model": "EazyFlow Octa60 Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.98,
+    "sizeCm": {
+      "l": 60,
+      "w": 60,
+      "h": null
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+    ]
+  },
+  {
+    "id": "godox.eazyflow-octa90-softbox",
+    "brand": "Godox",
+    "model": "EazyFlow Octa90 Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.34,
+    "sizeCm": {
+      "l": 90,
+      "w": 90,
+      "h": null
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+    ]
+  },
+  {
+    "id": "godox.eazyflow-octa120-softbox",
+    "brand": "Godox",
+    "model": "EazyFlow Octa120 Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 2.1,
+    "sizeCm": {
+      "l": 120,
+      "w": 120,
+      "h": null
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+    ]
+  },
+  {
+    "id": "godox.eazyflow-octa150-softbox",
+    "brand": "Godox",
+    "model": "EazyFlow Octa150 Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 2.1,
+    "sizeCm": {
+      "l": 150,
+      "w": 150,
+      "h": null
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+    ]
+  },
+  {
+    "id": "godox.eazyflow-rect-40-40-softbox",
+    "brand": "Godox",
+    "model": "EazyFlow Rect 40×40 Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.86,
+    "sizeCm": {
+      "l": 40,
+      "w": 40,
+      "h": null
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+    ]
+  },
+  {
+    "id": "godox.eazyflow-rect-60-60-softbox",
+    "brand": "Godox",
+    "model": "EazyFlow Rect 60×60 Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.04,
+    "sizeCm": {
+      "l": 60,
+      "w": 60,
+      "h": null
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+    ]
+  },
+  {
+    "id": "godox.eazyflow-rect-90-90-softbox",
+    "brand": "Godox",
+    "model": "EazyFlow Rect 90×90 Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.44,
+    "sizeCm": {
+      "l": 90,
+      "w": 90,
+      "h": null
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+    ]
+  },
+  {
+    "id": "godox.eazyflow-rect-30-45-softbox",
+    "brand": "Godox",
+    "model": "EazyFlow Rect 30×45 Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.84,
+    "sizeCm": {
+      "l": 30,
+      "w": 45,
+      "h": null
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+    ]
+  },
+  {
+    "id": "godox.eazyflow-rect-45-60-softbox",
+    "brand": "Godox",
+    "model": "EazyFlow Rect 45×60 Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.0,
+    "sizeCm": {
+      "l": 45,
+      "w": 60,
+      "h": null
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+    ]
+  },
+  {
+    "id": "godox.eazyflow-rect-60-90-softbox",
+    "brand": "Godox",
+    "model": "EazyFlow Rect 60×90 Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.22,
+    "sizeCm": {
+      "l": 60,
+      "w": 90,
+      "h": null
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+    ]
+  },
+  {
+    "id": "godox.eazyflow-rect-40-90-softbox",
+    "brand": "Godox",
+    "model": "EazyFlow Rect 40×90 Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.14,
+    "sizeCm": {
+      "l": 40,
+      "w": 90,
+      "h": null
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.63"
+    ]
+  },
+  {
+    "id": "godox.qr-p60t-parabolic-softbox",
+    "brand": "Godox",
+    "model": "QR-P60T Parabolic Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.771,
+    "sizeCm": {
+      "l": 60,
+      "w": 60,
+      "h": 29.8
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.64"
+    ]
+  },
+  {
+    "id": "godox.qr-p70t-parabolic-softbox",
+    "brand": "Godox",
+    "model": "QR-P70T Parabolic Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.83,
+    "sizeCm": {
+      "l": 70,
+      "w": 70,
+      "h": 34.1
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.64"
+    ]
+  },
+  {
+    "id": "godox.qr-p90t-parabolic-softbox",
+    "brand": "Godox",
+    "model": "QR-P90T Parabolic Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.359,
+    "sizeCm": {
+      "l": 90,
+      "w": 90,
+      "h": 42.7
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.64"
+    ]
+  },
+  {
+    "id": "godox.qr-p120t-parabolic-softbox",
+    "brand": "Godox",
+    "model": "QR-P120T Parabolic Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.781,
+    "sizeCm": {
+      "l": 120,
+      "w": 120,
+      "h": 56.7
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.64"
+    ]
+  },
+  {
+    "id": "godox.qr-p150t-parabolic-softbox",
+    "brand": "Godox",
+    "model": "QR-P150T Parabolic Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 2.386,
+    "sizeCm": {
+      "l": 150,
+      "w": 150,
+      "h": 70.2
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.64"
+    ]
+  },
+  {
+    "id": "godox.cs-50t-lantern-softbox",
+    "brand": "Godox",
+    "model": "CS-50T Lantern Softbox",
+    "type": "lantern",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.869,
+    "sizeCm": {
+      "l": 50,
+      "w": 50,
+      "h": 33.5
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.65"
+    ]
+  },
+  {
+    "id": "godox.cs-65t-lantern-softbox",
+    "brand": "Godox",
+    "model": "CS-65T Lantern Softbox",
+    "type": "lantern",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.129,
+    "sizeCm": {
+      "l": 65,
+      "w": 65,
+      "h": 41.8
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.65"
+    ],
+    "notes": "Catalogue lists 0.129 kg — likely a typo (CS-50T 0.869 kg, CS-80T 1.4 kg); check before relying on it."
+  },
+  {
+    "id": "godox.cs-80t-lantern-softbox",
+    "brand": "Godox",
+    "model": "CS-80T Lantern Softbox",
+    "type": "lantern",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.4,
+    "sizeCm": {
+      "l": 85,
+      "w": 85,
+      "h": 54.1
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.65"
+    ],
+    "notes": "Table says CS-80T; product is sold as CS-85T."
+  },
+  {
+    "id": "godox.s65t-umbrella-softbox",
+    "brand": "Godox",
+    "model": "S65T Umbrella Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.851,
+    "sizeCm": {
+      "l": 65,
+      "w": 65,
+      "h": 30
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.66"
+    ]
+  },
+  {
+    "id": "godox.s85t-umbrella-softbox",
+    "brand": "Godox",
+    "model": "S85T Umbrella Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.016,
+    "sizeCm": {
+      "l": 85,
+      "w": 85,
+      "h": 38
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.66"
+    ]
+  },
+  {
+    "id": "godox.s120t-umbrella-softbox",
+    "brand": "Godox",
+    "model": "S120T Umbrella Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.424,
+    "sizeCm": {
+      "l": 120,
+      "w": 120,
+      "h": 49
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.66"
+    ]
+  },
+  {
+    "id": "godox.ul-box-octa-60-umbrella-softbox",
+    "brand": "Godox",
+    "model": "UL-BOX Octa-60 Umbrella Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.8,
+    "sizeCm": {
+      "l": 60,
+      "w": 60,
+      "h": 39
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+    ]
+  },
+  {
+    "id": "godox.ul-box-octa-90-umbrella-softbox",
+    "brand": "Godox",
+    "model": "UL-BOX Octa-90 Umbrella Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.1,
+    "sizeCm": {
+      "l": 90,
+      "w": 90,
+      "h": 57
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+    ]
+  },
+  {
+    "id": "godox.ul-box-octa-150-umbrella-softbox",
+    "brand": "Godox",
+    "model": "UL-BOX Octa-150 Umbrella Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.75,
+    "sizeCm": {
+      "l": 150,
+      "w": 150,
+      "h": 55
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+    ]
+  },
+  {
+    "id": "godox.ul-box-40-umbrella-softbox",
+    "brand": "Godox",
+    "model": "UL-BOX-40 Umbrella Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.65,
+    "sizeCm": {
+      "l": 40,
+      "w": 40,
+      "h": 33.5
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+    ]
+  },
+  {
+    "id": "godox.ul-box-60-umbrella-softbox",
+    "brand": "Godox",
+    "model": "UL-BOX-60 Umbrella Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.85,
+    "sizeCm": {
+      "l": 60,
+      "w": 60,
+      "h": 38
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+    ]
+  },
+  {
+    "id": "godox.ul-box-90-umbrella-softbox",
+    "brand": "Godox",
+    "model": "UL-BOX-90 Umbrella Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.15,
+    "sizeCm": {
+      "l": 90,
+      "w": 90,
+      "h": 38
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+    ]
+  },
+  {
+    "id": "godox.ul-box-30-45-umbrella-softbox",
+    "brand": "Godox",
+    "model": "UL-BOX-30×45 Umbrella Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.7,
+    "sizeCm": {
+      "l": 30,
+      "w": 45,
+      "h": 33.5
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+    ]
+  },
+  {
+    "id": "godox.ul-box-45-60-umbrella-softbox",
+    "brand": "Godox",
+    "model": "UL-BOX-45×60 Umbrella Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.8,
+    "sizeCm": {
+      "l": 45,
+      "w": 60,
+      "h": 38
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+    ]
+  },
+  {
+    "id": "godox.ul-box-60-90-umbrella-softbox",
+    "brand": "Godox",
+    "model": "UL-BOX-60×90 Umbrella Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.0,
+    "sizeCm": {
+      "l": 60,
+      "w": 90,
+      "h": 49.5
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+    ]
+  },
+  {
+    "id": "godox.ul-box-90-120-umbrella-softbox",
+    "brand": "Godox",
+    "model": "UL-BOX-90×120 Umbrella Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 1.55,
+    "sizeCm": {
+      "l": 90,
+      "w": 120,
+      "h": 50
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
+    ]
+  },
+  {
+    "id": "godox.ul-box-30-90-umbrella-softbox",
+    "brand": "Godox",
+    "model": "UL-BOX-30×90 Umbrella Softbox",
+    "type": "softbox",
+    "mounts": [
+      "bowens"
+    ],
+    "fitsFixtureIds": [],
+    "weightKg": 0.8,
+    "sizeCm": {
+      "l": 30,
+      "w": 90,
+      "h": 42
+    },
+    "sources": [
+      "Godox Continuous Lighting Catalogue 2026 (8th ed.), p.69"
     ]
   }
 ]

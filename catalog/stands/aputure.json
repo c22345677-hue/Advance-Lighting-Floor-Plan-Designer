@@ -1,0 +1,16 @@
+[
+  {
+    "id": "aputure.heavy-duty-air-cushioned-light-stand",
+    "brand": "Aputure",
+    "model": "Heavy Duty Air-Cushioned Light Stand",
+    "type": "light",
+    "weightKg": null,
+    "loadCapacityKg": 7.98,
+    "minHeightCm": 100.1,
+    "maxHeightCm": 279.9,
+    "sources": [
+      "https://amarancreators.com/products/heavy-duty-air-cushioned-light-stand"
+    ],
+    "notes": "Weight not listed."
+  }
+]

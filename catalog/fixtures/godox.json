@@ -68,7 +68,7 @@
     "brand": "Godox",
     "model": "ML60IIBi",
     "family": "cob",
-    "mount": null,
+    "mount": "godox-mount",
     "powerW": 70,
     "weightKg": 0.526,
     "psu": {
@@ -3217,7 +3217,7 @@
     "brand": "Godox",
     "model": "ML30",
     "family": "cob",
-    "mount": null,
+    "mount": "godox-mount",
     "powerW": 37.6,
     "weightKg": 0.587,
     "psu": {
@@ -3248,7 +3248,7 @@
     "brand": "Godox",
     "model": "ML30Bi",
     "family": "cob",
-    "mount": null,
+    "mount": "godox-mount",
     "powerW": 40,
     "weightKg": 0.602,
     "psu": {
@@ -3279,7 +3279,7 @@
     "brand": "Godox",
     "model": "ML60",
     "family": "cob",
-    "mount": null,
+    "mount": "godox-mount",
     "powerW": 60,
     "weightKg": 0.77,
     "psu": {
@@ -3310,7 +3310,7 @@
     "brand": "Godox",
     "model": "ML60Bi",
     "family": "cob",
-    "mount": null,
+    "mount": "godox-mount",
     "powerW": 60,
     "weightKg": 0.77,
     "psu": {

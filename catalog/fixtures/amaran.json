@@ -789,7 +789,7 @@
     "brand": "amaran",
     "model": "Ray 60c",
     "family": "cob",
-    "mount": null,
+    "mount": "bowens",
     "powerW": 75,
     "weightKg": 0.5285,
     "psu": {
@@ -825,7 +825,7 @@
     "brand": "amaran",
     "model": "Ray 120c",
     "family": "cob",
-    "mount": null,
+    "mount": "bowens",
     "powerW": 140,
     "weightKg": 0.5994,
     "psu": {

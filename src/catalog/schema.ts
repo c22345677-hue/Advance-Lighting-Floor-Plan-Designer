@@ -56,10 +56,13 @@ export interface Fixture {
   notes?: string;
 }
 
+export type StandType = 'light' | 'c-stand' | 'combo' | 'roller' | 'boom';
+
 export interface Stand {
   id: string;
   brand: string;
   model: string;
+  type: StandType;
   weightKg: number | null;
   loadCapacityKg: number | null;
   /** Closed (minimum) and fully extended (maximum) height, cm. */

@@ -876,7 +876,7 @@
     "brand": "Aputure",
     "model": "STORM 80c",
     "family": "cob",
-    "mount": "bowens",
+    "mount": "mini-prolock",
     "powerW": 100,
     "weightKg": 1.01,
     "psu": {
@@ -1020,7 +1020,7 @@
     "brand": "Aputure",
     "model": "STORM CS32",
     "family": "cob",
-    "mount": "bowens",
+    "mount": "aputure-mount",
     "powerW": 3200,
     "weightKg": 16.8,
     "psu": {
@@ -1046,7 +1046,7 @@
     "brand": "Aputure",
     "model": "STORM XT52",
     "family": "cob",
-    "mount": "bowens",
+    "mount": "aputure-mount",
     "powerW": 6000,
     "weightKg": 27.8,
     "psu": {

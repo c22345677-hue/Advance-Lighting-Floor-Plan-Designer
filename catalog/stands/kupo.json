@@ -1,0 +1,908 @@
+[
+  {
+    "id": "kupo.ks403411-12-5ft-tall-steel-stand",
+    "brand": "Kupo",
+    "model": "KS403411 12.5ft Tall Steel Stand",
+    "type": "light",
+    "weightKg": 11.79,
+    "loadCapacityKg": 25.0,
+    "minHeightCm": 155.0,
+    "maxHeightCm": 380.0,
+    "sources": [
+      "https://kupogrip.com/kupo-12-5ft-tall-steel-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks080311-12ft-click-stand-with-removable-column",
+    "brand": "Kupo",
+    "model": "KS080311 12ft Click Stand with Removable Column",
+    "type": "light",
+    "weightKg": 3.05,
+    "loadCapacityKg": 9.0,
+    "minHeightCm": 107.0,
+    "maxHeightCm": 366.0,
+    "sources": [
+      "https://kupogrip.com/kupo-12ft-click-stand-with-removable-center-column/"
+    ]
+  },
+  {
+    "id": "kupo.ks401111-12ft-steel-black-wind-up-stand",
+    "brand": "Kupo",
+    "model": "KS401111 12ft Steel Black Wind-Up Stand",
+    "type": "roller",
+    "weightKg": 22.98,
+    "loadCapacityKg": 30.0,
+    "minHeightCm": 181.0,
+    "maxHeightCm": 380.0,
+    "sources": [
+      "https://kupogrip.com/kupo-12ft-steel-black-wind-up-stand-with-auto-self-locking-device/"
+    ]
+  },
+  {
+    "id": "kupo.ks600412-14ft-medium-steel-overhead-roller-stand",
+    "brand": "Kupo",
+    "model": "KS600412 14ft Medium Steel Overhead Roller Stand",
+    "type": "roller",
+    "weightKg": 17.16,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 146.0,
+    "maxHeightCm": 430.0,
+    "sources": [
+      "https://kupogrip.com/kupo-14ft-medium-steel-overhead-roller-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks301812-2-section-low-base-wind-up-stand",
+    "brand": "Kupo",
+    "model": "KS301812 2-Section Low Base Wind-Up Stand",
+    "type": "roller",
+    "weightKg": 14.0,
+    "loadCapacityKg": 35.0,
+    "minHeightCm": 115.0,
+    "maxHeightCm": 190.0,
+    "sources": [
+      "https://kupogrip.com/kupo-2-sct-low-base-wind-up-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks400612-2-sct-wind-up-followspot-stand",
+    "brand": "Kupo",
+    "model": "KS400612 2 SCT. Wind-Up Followspot Stand",
+    "type": "roller",
+    "weightKg": 13.78,
+    "loadCapacityKg": 50.0,
+    "minHeightCm": 110.0,
+    "maxHeightCm": 145.0,
+    "sources": [
+      "https://kupogrip.com/kupo-2-sct-wind-up-followspot-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks400812-wind-up-stand",
+    "brand": "Kupo",
+    "model": "KS400812 Wind-Up Stand",
+    "type": "roller",
+    "weightKg": 17.9,
+    "loadCapacityKg": 45.0,
+    "minHeightCm": 160.0,
+    "maxHeightCm": 245.0,
+    "sources": [
+      "https://kupogrip.com/kupo-2-sct-wind-up-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks703411-20in-master-c-stand-with-sliding-leg",
+    "brand": "Kupo",
+    "model": "KS703411 20in Master C-Stand with Sliding Leg",
+    "type": "c-stand",
+    "weightKg": 7.3,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 91.0,
+    "maxHeightCm": 196.0,
+    "sources": [
+      "https://kupogrip.com/kupo-20in-master-c-stand-with-sliding-leg-black/"
+    ]
+  },
+  {
+    "id": "kupo.ks703312-20in-master-c-stand-with-sliding-leg",
+    "brand": "Kupo",
+    "model": "KS703312 20in Master C-Stand with Sliding Leg",
+    "type": "c-stand",
+    "weightKg": 7.3,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 91.0,
+    "maxHeightCm": 196.0,
+    "sources": [
+      "https://kupogrip.com/kupo-20in-master-c-stand-with-sliding-leg-silver/"
+    ]
+  },
+  {
+    "id": "kupo.ks704211-20in-master-c-stand-with-turtle-base",
+    "brand": "Kupo",
+    "model": "KS704211 20in Master C-Stand with Turtle Base",
+    "type": "c-stand",
+    "weightKg": 6.4,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 93.0,
+    "maxHeightCm": 172.0,
+    "sources": [
+      "https://kupogrip.com/kupo-20in-master-c-stand-with-turtle-base-black/"
+    ]
+  },
+  {
+    "id": "kupo.ks704112-20in-master-c-stand-with-turtle-base",
+    "brand": "Kupo",
+    "model": "KS704112 20in Master C-Stand with Turtle Base",
+    "type": "c-stand",
+    "weightKg": 6.42,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 93.0,
+    "maxHeightCm": 172.0,
+    "sources": [
+      "https://kupogrip.com/kupo-20in-master-c-stand-with-turtle-base-silver/"
+    ]
+  },
+  {
+    "id": "kupo.ks401212-3-section-wind-up-stand-with-auto-self-lock",
+    "brand": "Kupo",
+    "model": "KS401212 3 Section Wind Up Stand with Auto Self Lock",
+    "type": "roller",
+    "weightKg": 22.82,
+    "loadCapacityKg": 30.0,
+    "minHeightCm": 181.0,
+    "maxHeightCm": 380.0,
+    "sources": [
+      "https://kupogrip.com/kupo-3-section-wind-up-stand-with-auto-self-lock/"
+    ]
+  },
+  {
+    "id": "kupo.ks703611-40in-master-c-stand-with-sliding-leg",
+    "brand": "Kupo",
+    "model": "KS703611 40in Master C-Stand with Sliding Leg",
+    "type": "c-stand",
+    "weightKg": 7.02,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 132.0,
+    "maxHeightCm": 323.0,
+    "sources": [
+      "https://kupogrip.com/kupo-40in-master-c-stand-with-sliding-leg-black/"
+    ]
+  },
+  {
+    "id": "kupo.ks707511-40in-master-c-stand-with-sliding-leg-and-quick-release-system",
+    "brand": "Kupo",
+    "model": "KS707511 40in Master C-Stand with Sliding Leg and Quick-Release System",
+    "type": "c-stand",
+    "weightKg": 6.7,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 132.5,
+    "maxHeightCm": 313.0,
+    "sources": [
+      "https://kupogrip.com/kupo-40in-master-c-stand-with-sliding-leg-quick-release-system-black/"
+    ]
+  },
+  {
+    "id": "kupo.ks707412-40in-master-c-stand-with-sliding-leg-and-quick-release-system",
+    "brand": "Kupo",
+    "model": "KS707412 40in Master C-Stand with Sliding Leg and Quick-Release System",
+    "type": "c-stand",
+    "weightKg": 6.7,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 132.5,
+    "maxHeightCm": 313.0,
+    "sources": [
+      "https://kupogrip.com/kupo-40in-master-c-stand-with-sliding-leg-quick-release-system-silver/"
+    ]
+  },
+  {
+    "id": "kupo.ks703512-40in-master-c-stand-with-sliding-leg",
+    "brand": "Kupo",
+    "model": "KS703512 40in Master C-Stand with Sliding Leg",
+    "type": "c-stand",
+    "weightKg": 6.98,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 132.0,
+    "maxHeightCm": 323.0,
+    "sources": [
+      "https://kupogrip.com/kupo-40in-master-c-stand-with-sliding-leg-silver/"
+    ]
+  },
+  {
+    "id": "kupo.ks704411-40in-master-c-stand-with-turtle-base",
+    "brand": "Kupo",
+    "model": "KS704411 40in Master C-Stand with Turtle Base",
+    "type": "c-stand",
+    "weightKg": 7.56,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 134.0,
+    "maxHeightCm": 295.0,
+    "sources": [
+      "https://kupogrip.com/kupo-40in-master-c-stand-with-turtle-base-black/"
+    ]
+  },
+  {
+    "id": "kupo.ks704312-40in-master-c-stand-with-turtle-base",
+    "brand": "Kupo",
+    "model": "KS704312 40in Master C-Stand with Turtle Base",
+    "type": "c-stand",
+    "weightKg": 7.56,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 134.0,
+    "maxHeightCm": 295.0,
+    "sources": [
+      "https://kupogrip.com/kupo-40in-master-c-stand-with-turtle-base-silver/"
+    ]
+  },
+  {
+    "id": "kupo.ks041611-7ft-mini-click-light-stand",
+    "brand": "Kupo",
+    "model": "KS041611 7ft Mini Click Light Stand",
+    "type": "light",
+    "weightKg": 1.09,
+    "loadCapacityKg": 4.0,
+    "minHeightCm": 71.0,
+    "maxHeightCm": 213.36,
+    "sources": [
+      "https://kupogrip.com/kupo-7ft-mini-click-light-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks041711-8ft-midi-click-light-stand",
+    "brand": "Kupo",
+    "model": "KS041711 8ft Midi Click Light Stand",
+    "type": "light",
+    "weightKg": 0.68,
+    "loadCapacityKg": 5.0,
+    "minHeightCm": 89.0,
+    "maxHeightCm": 243.84,
+    "sources": [
+      "https://kupogrip.com/kupo-8ft-midi-click-light-stand/"
+    ],
+    "notes": "Listed weight looks low for this stand size; check with Kupo."
+  },
+  {
+    "id": "kupo.ks080211-9ft-click-stand-with-removable-center-column",
+    "brand": "Kupo",
+    "model": "KS080211 9ft Click Stand with Removable Center Column",
+    "type": "light",
+    "weightKg": 2.85,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 106.0,
+    "maxHeightCm": 277.0,
+    "sources": [
+      "https://kupogrip.com/kupo-9ft-click-stand-with-removable-center-column/"
+    ]
+  },
+  {
+    "id": "kupo.ks140611-baby-kit-stand-with-square-legs",
+    "brand": "Kupo",
+    "model": "KS140611 Baby Kit Stand with Square Legs",
+    "type": "light",
+    "weightKg": 3.3,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 108.0,
+    "maxHeightCm": 400.0,
+    "sources": [
+      "https://kupogrip.com/kupo-baby-kit-stand-with-square-legs/"
+    ]
+  },
+  {
+    "id": "kupo.ks140511-baby-kit-stand",
+    "brand": "Kupo",
+    "model": "KS140511 Baby Kit Stand",
+    "type": "light",
+    "weightKg": 0.66,
+    "loadCapacityKg": 9.0,
+    "minHeightCm": 107.0,
+    "maxHeightCm": 385.0,
+    "sources": [
+      "https://kupogrip.com/kupo-baby-kit-stand/"
+    ],
+    "notes": "Listed weight looks low for this stand size; check with Kupo."
+  },
+  {
+    "id": "kupo.ks300712-baby-roller-stand-for-studio-location-use",
+    "brand": "Kupo",
+    "model": "KS300712 Baby Roller Stand for Studio & Location Use",
+    "type": "roller",
+    "weightKg": 7.48,
+    "loadCapacityKg": 12.0,
+    "minHeightCm": 114.0,
+    "maxHeightCm": 270.0,
+    "sources": [
+      "https://kupogrip.com/kupo-baby-roller-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks040111-folding-base-mini-stand",
+    "brand": "Kupo",
+    "model": "KS040111 Folding Base Mini Stand",
+    "type": "light",
+    "weightKg": 0.31,
+    "loadCapacityKg": 3.0,
+    "minHeightCm": 48.0,
+    "maxHeightCm": 85.0,
+    "sources": [
+      "https://kupogrip.com/kupo-folding-base-mini-stand/"
+    ],
+    "notes": "Listed weight looks low for this stand size; check with Kupo."
+  },
+  {
+    "id": "kupo.ks400212-followspot-stand",
+    "brand": "Kupo",
+    "model": "KS400212 Followspot Stand",
+    "type": "light",
+    "weightKg": 7.4,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 109.0,
+    "maxHeightCm": 147.0,
+    "sources": [
+      "https://kupogrip.com/kupo-followspot-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks041011-handy-stand-for-compact-travel-lighting",
+    "brand": "Kupo",
+    "model": "KS041011 Handy Stand for Compact Travel Lighting",
+    "type": "light",
+    "weightKg": 0.2,
+    "loadCapacityKg": 2.5,
+    "minHeightCm": 49.0,
+    "maxHeightCm": 227.0,
+    "sources": [
+      "https://kupogrip.com/kupo-handy-stand/"
+    ],
+    "notes": "Listed weight looks low for this stand size; check with Kupo."
+  },
+  {
+    "id": "kupo.ks403212-heavy-duty-wind-up-low-base-steel-stand",
+    "brand": "Kupo",
+    "model": "KS403212 Heavy Duty Wind-Up Low Base Steel Stand",
+    "type": "roller",
+    "weightKg": 30.95,
+    "loadCapacityKg": 80.0,
+    "minHeightCm": 156.0,
+    "maxHeightCm": 270.0,
+    "sources": [
+      "https://kupogrip.com/kupo-heavy-duty-wind-up-low-base-steel-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks300812-high-baby-roller-stand",
+    "brand": "Kupo",
+    "model": "KS300812 High Baby Roller Stand",
+    "type": "roller",
+    "weightKg": 9.84,
+    "loadCapacityKg": 12.0,
+    "minHeightCm": 130.0,
+    "maxHeightCm": 420.0,
+    "sources": [
+      "https://kupogrip.com/kupo-high-baby-roller-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks101112-high-baby-stand",
+    "brand": "Kupo",
+    "model": "KS101112 High Baby Stand",
+    "type": "light",
+    "weightKg": 8.0,
+    "loadCapacityKg": 25.0,
+    "minHeightCm": 119.0,
+    "maxHeightCm": 420.0,
+    "sources": [
+      "https://kupogrip.com/kupo-high-baby-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks600212-high-overhead-roller-stand",
+    "brand": "Kupo",
+    "model": "KS600212 High Overhead Roller Stand",
+    "type": "roller",
+    "weightKg": 18.49,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 186.0,
+    "maxHeightCm": 594.0,
+    "sources": [
+      "https://kupogrip.com/kupo-high-overhead-roller-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks300112-high-roller-stand",
+    "brand": "Kupo",
+    "model": "KS300112 High Roller Stand",
+    "type": "roller",
+    "weightKg": 14.9,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 142.0,
+    "maxHeightCm": 428.0,
+    "sources": [
+      "https://kupogrip.com/kupo-high-roller-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks201211-high-view-stand",
+    "brand": "Kupo",
+    "model": "KS201211 High View Stand",
+    "type": "light",
+    "weightKg": 10.8,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 174.0,
+    "maxHeightCm": 730.0,
+    "sources": [
+      "https://kupogrip.com/kupo-high-view-stand-black/"
+    ]
+  },
+  {
+    "id": "kupo.ks301512-junior-boom-roller-stand",
+    "brand": "Kupo",
+    "model": "KS301512 Junior Boom Roller Stand",
+    "type": "roller",
+    "weightKg": 16.29,
+    "loadCapacityKg": 30.0,
+    "minHeightCm": 173.0,
+    "maxHeightCm": 380.0,
+    "sources": [
+      "https://kupogrip.com/kupo-junior-boom-roller-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks501311-junior-boom-stand-for-light-fixtures",
+    "brand": "Kupo",
+    "model": "KS501311 Junior Boom Stand for Light Fixtures",
+    "type": "light",
+    "weightKg": 16.1,
+    "loadCapacityKg": 30.0,
+    "minHeightCm": 160.0,
+    "maxHeightCm": 510.0,
+    "sources": [
+      "https://kupogrip.com/kupo-junior-boom-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks142311-aluminum-baby-boom-stand",
+    "brand": "Kupo",
+    "model": "KS142311 Aluminum Baby Boom Stand",
+    "type": "light",
+    "weightKg": 4.16,
+    "loadCapacityKg": 9.0,
+    "minHeightCm": 114.0,
+    "maxHeightCm": 393.0,
+    "sources": [
+      "https://kupogrip.com/kupo-kupo-aluminum-baby-boom-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks140111-classic-stand",
+    "brand": "Kupo",
+    "model": "KS140111 Classic Stand",
+    "type": "c-stand",
+    "weightKg": 2.4,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 101.0,
+    "maxHeightCm": 290.0,
+    "sources": [
+      "https://kupogrip.com/kupo-kupo-classic-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks100912-heavy-duty-baby-stand",
+    "brand": "Kupo",
+    "model": "KS100912 Heavy-Duty Baby Stand",
+    "type": "light",
+    "weightKg": 6.89,
+    "loadCapacityKg": 13.0,
+    "minHeightCm": 115.0,
+    "maxHeightCm": 400.0,
+    "sources": [
+      "https://kupogrip.com/kupo-kupo-heavy-duty-baby-stand/"
+    ]
+  },
+  {
+    "id": "kupo.steel-baby-boom-stand",
+    "brand": "Kupo",
+    "model": "Steel Baby Boom Stand",
+    "type": "light",
+    "weightKg": 7.9,
+    "loadCapacityKg": 12.0,
+    "minHeightCm": 114.0,
+    "maxHeightCm": 393.0,
+    "sources": [
+      "https://kupogrip.com/kupo-kupo-steel-baby-boom-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks101212-low-mighty-baby-stand",
+    "brand": "Kupo",
+    "model": "KS101212 Low Mighty Baby Stand",
+    "type": "light",
+    "weightKg": 3.74,
+    "loadCapacityKg": 15.0,
+    "minHeightCm": 57.0,
+    "maxHeightCm": 101.0,
+    "sources": [
+      "https://kupogrip.com/kupo-low-mighty-baby-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks300312-low-mighty-stand-for-heavy-lighting",
+    "brand": "Kupo",
+    "model": "KS300312 Low Mighty Stand for Heavy Lighting",
+    "type": "light",
+    "weightKg": 0.86,
+    "loadCapacityKg": 35.0,
+    "minHeightCm": 92.0,
+    "maxHeightCm": 205.0,
+    "sources": [
+      "https://kupogrip.com/kupo-low-mighty-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks041211-low-mini-kit-stand",
+    "brand": "Kupo",
+    "model": "KS041211 Low Mini Kit Stand",
+    "type": "light",
+    "weightKg": 0.29,
+    "loadCapacityKg": 1.5,
+    "minHeightCm": 40.0,
+    "maxHeightCm": 129.0,
+    "sources": [
+      "https://kupogrip.com/kupo-low-mini-kit-stand/"
+    ],
+    "notes": "Listed weight looks low for this stand size; check with Kupo."
+  },
+  {
+    "id": "kupo.ks306212-lowboy-junior-roller-stand",
+    "brand": "Kupo",
+    "model": "KS306212 Lowboy Junior Roller Stand",
+    "type": "roller",
+    "weightKg": 7.7,
+    "loadCapacityKg": 25.0,
+    "minHeightCm": 71.0,
+    "maxHeightCm": 120.0,
+    "sources": [
+      "https://kupogrip.com/kupo-lowboy-junior-roller-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks501411-master-cine-stand",
+    "brand": "Kupo",
+    "model": "KS501411 Master Cine Stand",
+    "type": "light",
+    "weightKg": 11.25,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 140.0,
+    "maxHeightCm": 347.0,
+    "sources": [
+      "https://kupogrip.com/kupo-master-cine-stand-black/"
+    ]
+  },
+  {
+    "id": "kupo.ks500112-master-cine-stand",
+    "brand": "Kupo",
+    "model": "KS500112 Master Cine Stand",
+    "type": "light",
+    "weightKg": 11.25,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 140.0,
+    "maxHeightCm": 347.0,
+    "sources": [
+      "https://kupogrip.com/kupo-master-cine-stand-silver/"
+    ]
+  },
+  {
+    "id": "kupo.ks200511-master-combo-alu-senior-stand",
+    "brand": "Kupo",
+    "model": "KS200511 Master Combo Alu Senior Stand",
+    "type": "combo",
+    "weightKg": 0.35,
+    "loadCapacityKg": 12.0,
+    "minHeightCm": 122.0,
+    "maxHeightCm": 315.0,
+    "sources": [
+      "https://kupogrip.com/kupo-master-combo-alu-senior-stand/"
+    ],
+    "notes": "Listed weight looks low for this stand size; check with Kupo."
+  },
+  {
+    "id": "kupo.ks200211-master-combo-hd-stand",
+    "brand": "Kupo",
+    "model": "KS200211 Master Combo HD Stand",
+    "type": "combo",
+    "weightKg": 9.95,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 132.0,
+    "maxHeightCm": 340.0,
+    "sources": [
+      "https://kupogrip.com/kupo-master-combo-hd-stand-black/"
+    ]
+  },
+  {
+    "id": "kupo.ks200112-master-combo-hd-stand",
+    "brand": "Kupo",
+    "model": "KS200112 Master Combo HD Stand",
+    "type": "combo",
+    "weightKg": 9.95,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 132.0,
+    "maxHeightCm": 340.0,
+    "sources": [
+      "https://kupogrip.com/kupo-master-combo-hd-stand-silver/"
+    ]
+  },
+  {
+    "id": "kupo.ks200912-master-combo-stand",
+    "brand": "Kupo",
+    "model": "KS200912 Master Combo Stand",
+    "type": "combo",
+    "weightKg": 8.95,
+    "loadCapacityKg": 30.0,
+    "minHeightCm": 122.0,
+    "maxHeightCm": 230.0,
+    "sources": [
+      "https://kupogrip.com/kupo-master-combo-stand-silver/"
+    ]
+  },
+  {
+    "id": "kupo.ks501211-master-high-cine-stand",
+    "brand": "Kupo",
+    "model": "KS501211 Master High Cine Stand",
+    "type": "light",
+    "weightKg": 12.6,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 150.0,
+    "maxHeightCm": 445.0,
+    "sources": [
+      "https://kupogrip.com/kupo-master-high-cine-stand-black/"
+    ]
+  },
+  {
+    "id": "kupo.ks500412-master-high-cine-stand",
+    "brand": "Kupo",
+    "model": "KS500412 Master High Cine Stand",
+    "type": "light",
+    "weightKg": 12.5,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 150.0,
+    "maxHeightCm": 445.0,
+    "sources": [
+      "https://kupogrip.com/kupo-master-high-cine-stand-silver/"
+    ]
+  },
+  {
+    "id": "kupo.ks040911-medium-stand-for-photo-and-video-support",
+    "brand": "Kupo",
+    "model": "KS040911 Medium Stand for Photo and Video Support",
+    "type": "light",
+    "weightKg": 1.8,
+    "loadCapacityKg": 1.0,
+    "minHeightCm": 95.0,
+    "maxHeightCm": 455.0,
+    "sources": [
+      "https://kupogrip.com/kupo-medium-stand/"
+    ],
+    "notes": "Listed weight looks low for this stand size; check with Kupo."
+  },
+  {
+    "id": "kupo.ks106311-midi-baby-kit-stand",
+    "brand": "Kupo",
+    "model": "KS106311 Midi Baby Kit Stand",
+    "type": "light",
+    "weightKg": 2.28,
+    "loadCapacityKg": 9.0,
+    "minHeightCm": 90.0,
+    "maxHeightCm": 315.0,
+    "sources": [
+      "https://kupogrip.com/kupo-midi-baby-kit-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks100312-midi-max-baby-kit-stand",
+    "brand": "Kupo",
+    "model": "KS100312 Midi-Max Baby Kit Stand",
+    "type": "light",
+    "weightKg": 5.7,
+    "loadCapacityKg": 13.0,
+    "minHeightCm": 105.0,
+    "maxHeightCm": 350.0,
+    "sources": [
+      "https://kupogrip.com/kupo-midi-max-kit-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks040511-midi-pro-stand-with-air-cushion",
+    "brand": "Kupo",
+    "model": "KS040511 Midi Pro Stand with Air Cushion",
+    "type": "light",
+    "weightKg": 2.16,
+    "loadCapacityKg": 5.0,
+    "minHeightCm": 86.0,
+    "maxHeightCm": 250.0,
+    "sources": [
+      "https://kupogrip.com/kupo-midi-pro-stand-with-air-cushion/"
+    ]
+  },
+  {
+    "id": "kupo.ks040411-midi-pro-stand",
+    "brand": "Kupo",
+    "model": "KS040411 Midi Pro Stand",
+    "type": "light",
+    "weightKg": 0.33,
+    "loadCapacityKg": 5.0,
+    "minHeightCm": 86.0,
+    "maxHeightCm": 250.0,
+    "sources": [
+      "https://kupogrip.com/kupo-midi-pro-stand/"
+    ],
+    "notes": "Listed weight looks low for this stand size; check with Kupo."
+  },
+  {
+    "id": "kupo.ks040611-mini-kit-stand",
+    "brand": "Kupo",
+    "model": "KS040611 Mini Kit Stand",
+    "type": "light",
+    "weightKg": 1.02,
+    "loadCapacityKg": 4.0,
+    "minHeightCm": 66.0,
+    "maxHeightCm": 236.0,
+    "sources": [
+      "https://kupogrip.com/kupo-mini-kit-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks403512-short-3-sct-wind-up-stand",
+    "brand": "Kupo",
+    "model": "KS403512 Short 3 SCT Wind-Up Stand",
+    "type": "roller",
+    "weightKg": 18.55,
+    "loadCapacityKg": 30.0,
+    "minHeightCm": 152.0,
+    "maxHeightCm": 262.0,
+    "sources": [
+      "https://kupogrip.com/kupo-short-3-sct-wind-up-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks101412-short-low-mighty-stand",
+    "brand": "Kupo",
+    "model": "KS101412 Short Low Mighty Stand",
+    "type": "light",
+    "weightKg": 4.63,
+    "loadCapacityKg": 15.0,
+    "minHeightCm": 57.0,
+    "maxHeightCm": 101.0,
+    "sources": [
+      "https://kupogrip.com/kupo-short-low-mighty-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks140211-shorty-stand-for-photo-video-production",
+    "brand": "Kupo",
+    "model": "KS140211 Shorty Stand for Photo & Video Production",
+    "type": "light",
+    "weightKg": 1.7,
+    "loadCapacityKg": 9.0,
+    "minHeightCm": 70.0,
+    "maxHeightCm": 213.0,
+    "sources": [
+      "https://kupogrip.com/kupo-shorty-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks041811-single-handed-stand",
+    "brand": "Kupo",
+    "model": "KS041811 Single Handed Stand",
+    "type": "light",
+    "weightKg": 1.18,
+    "loadCapacityKg": 3.0,
+    "minHeightCm": 73.6,
+    "maxHeightCm": 247.0,
+    "sources": [
+      "https://kupogrip.com/kupo-single-handed-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks106111-slider-stand",
+    "brand": "Kupo",
+    "model": "KS106111 Slider Stand",
+    "type": "light",
+    "weightKg": 5.72,
+    "loadCapacityKg": 36.0,
+    "minHeightCm": 68.0,
+    "maxHeightCm": 115.0,
+    "sources": [
+      "https://kupogrip.com/kupo-slider-stand-black/"
+    ]
+  },
+  {
+    "id": "kupo.ks301912-steel-column-roller-stand",
+    "brand": "Kupo",
+    "model": "KS301912 Steel Column Roller Stand",
+    "type": "roller",
+    "weightKg": 10.0,
+    "loadCapacityKg": 8.0,
+    "minHeightCm": 124.0,
+    "maxHeightCm": 260.0,
+    "sources": [
+      "https://kupogrip.com/kupo-steel-column-roller-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks601312-steel-senior-stand-for-professional-use",
+    "brand": "Kupo",
+    "model": "KS601312 Steel Senior Stand for Professional Use",
+    "type": "light",
+    "weightKg": 16.1,
+    "loadCapacityKg": 45.0,
+    "minHeightCm": 155.0,
+    "maxHeightCm": 477.0,
+    "sources": [
+      "https://kupogrip.com/kupo-steel-senior-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks042311-two-in-one-multi-stand-lightweight-grip",
+    "brand": "Kupo",
+    "model": "KS042311 Two-In-One Multi-Stand Lightweight Grip",
+    "type": "light",
+    "weightKg": 1.22,
+    "loadCapacityKg": 2.5,
+    "minHeightCm": 51.8,
+    "maxHeightCm": 202.0,
+    "sources": [
+      "https://kupogrip.com/kupo-two-in-one-multi-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks140911-universal-stand-with-air-cushion",
+    "brand": "Kupo",
+    "model": "KS140911 Universal Stand with Air Cushion",
+    "type": "light",
+    "weightKg": 1.7,
+    "loadCapacityKg": 9.0,
+    "minHeightCm": 107.0,
+    "maxHeightCm": 385.0,
+    "sources": [
+      "https://kupogrip.com/kupo-universal-stand-with-air-cushion/"
+    ]
+  },
+  {
+    "id": "kupo.ks140811-universal-stand-for-photo-video",
+    "brand": "Kupo",
+    "model": "KS140811 Universal Stand for Photo & Video",
+    "type": "light",
+    "weightKg": 1.42,
+    "loadCapacityKg": 9.0,
+    "minHeightCm": 107.0,
+    "maxHeightCm": 385.0,
+    "sources": [
+      "https://kupogrip.com/kupo-universal-stand/"
+    ],
+    "notes": "Listed weight looks low for this stand size; check with Kupo."
+  },
+  {
+    "id": "kupo.ks600812-wide-base-high-overhead-stand",
+    "brand": "Kupo",
+    "model": "KS600812 Wide Base High Overhead Stand",
+    "type": "light",
+    "weightKg": 20.34,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 188.0,
+    "maxHeightCm": 633.0,
+    "sources": [
+      "https://kupogrip.com/kupo-wide-base-high-overhead-stand/"
+    ]
+  },
+  {
+    "id": "kupo.ks141211-medium-baby-kit-stand",
+    "brand": "Kupo",
+    "model": "KS141211 Medium Baby Kit Stand",
+    "type": "light",
+    "weightKg": 2.7,
+    "loadCapacityKg": 10.0,
+    "minHeightCm": 88.0,
+    "maxHeightCm": 288.0,
+    "sources": [
+      "https://kupogrip.com/medium-baby-kit-stand/"
+    ]
+  }
+]

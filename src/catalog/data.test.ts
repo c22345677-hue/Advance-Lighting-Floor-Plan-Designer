@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseIp, riggingPicks, sizeClass } from './classify';
-import { FIXTURES, MODIFIERS } from './data';
+import { FIXTURES, MODIFIERS, STANDS } from './data';
 import { modifiersFor, rigWeightKg } from './modifiers';
 
 const pos = (n: number | null) => n === null || (Number.isFinite(n) && n > 0);
@@ -56,5 +56,21 @@ describe('modifier data', () => {
     expect(fits).not.toContain('nanlux.fl-45e-motorized-fresnel-16-50'); // 5000B only
     const fresnel = MODIFIERS.find((m) => m.id === 'nanlux.fl-35yk-fresnel-lens-11-45')!;
     expect(rigWeightKg(evoke, [fresnel])).toBeCloseTo(7.75 + 10.84);
+  });
+});
+
+describe('stand data', () => {
+  it('has unique ids, sources and sane heights and loads', () => {
+    const ids = STANDS.map((s) => s.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const s of STANDS) {
+      expect(s.sources.length, s.id).toBeGreaterThan(0);
+      expect(s.maxHeightCm, `${s.id} max height`).not.toBeNull();
+      if (s.minHeightCm !== null && s.maxHeightCm !== null) {
+        expect(s.minHeightCm, `${s.id} min <= max`).toBeLessThanOrEqual(s.maxHeightCm);
+      }
+      expect(pos(s.weightKg) && pos(s.loadCapacityKg), s.id).toBe(true);
+      expect(s.loadCapacityKg === null || s.loadCapacityKg <= 250, `${s.id} load`).toBe(true);
+    }
   });
 });

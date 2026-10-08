@@ -1,0 +1,15 @@
+[
+  {
+    "id": "amaran.light-stand-2m",
+    "brand": "amaran",
+    "model": "Light Stand 2m",
+    "type": "light",
+    "weightKg": 0.92,
+    "loadCapacityKg": 2.95,
+    "minHeightCm": 50,
+    "maxHeightCm": 200,
+    "sources": [
+      "https://amarancreators.com/products/amaran-light-stand-2m"
+    ]
+  }
+]

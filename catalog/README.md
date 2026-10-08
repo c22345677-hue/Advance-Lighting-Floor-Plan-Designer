@@ -1,8 +1,8 @@
 # Gear catalogue
 
 Data files: `fixtures/<brand>.json` (array of `Fixture`), `modifiers/modifiers.json` (array of
-`Modifier`) and later `stands/<brand>.json` (array of `Stand`). Review sheet: `fixtures.csv`
-(regenerate with `npx vite-node scripts/export-catalog.ts`). Types: `src/catalog/schema.ts`. Rules: `src/catalog/classify.ts`.
+`Modifier`) and `stands/<brand>.json` (array of `Stand`). Review sheets: `fixtures.csv`,
+`modifiers.csv`, `stands.csv` (regenerate with `npm run catalog:csv`). Types: `src/catalog/schema.ts`. Rules: `src/catalog/classify.ts`.
 
 Rule for every record: **unknown = `null`, never guessed.** Each record lists its `sources`.
 
@@ -17,14 +17,16 @@ Rule for every record: **unknown = `null`, never guessed.** Each record lists it
 | `headCableM` | Cable length, power supply → fixture |
 | `ipRating` | Fixture IP rating (weather sealing) |
 | `batteries` | Battery types it runs on and **max output % on each**. `[]` = mains only, `null` = not stated |
-| `mount` | Accessory mount (bowens, nl, fm, fe, be, g-mount, aputure-mount); `null` = not stated |
+| `mount` | Accessory mount (bowens, mini-prolock, aputure-mount, godox-mount, g-mount, nl, fm, fe, be); `null` = not stated |
 
 ## Modifier fields
 `type`, `weightKg`, `sizeCm`, `mounts` (fits any light with that mount) and `fitsFixtureIds`
 (fits only those models). A light's **rig weight** = head weight + attached modifiers.
 
 ## Stand fields
-`weightKg`, `loadCapacityKg`, `minHeightCm` (closed), `maxHeightCm` (fully extended).
+`type` (light, c-stand, combo, roller, boom), `weightKg`, `loadCapacityKg`, `minHeightCm` (closed),
+`maxHeightCm` (fully extended). When a vendor page gives imperial and metric values that disagree, the
+imperial value is used and the record gets a note.
 
 ## Derived (computed, not stored)
 - **Size class**:
@@ -48,4 +50,14 @@ Rule for every record: **unknown = `null`, never guessed.** Each record lists it
 | Nanlite | https://cdn-aliyun.nanlite.com/release/1784539206097-287704-112412124152153530517-202605_NANLITE%E4%BA%A7%E5%93%81%E5%86%8C_A4_%E8%8B%B1%E6%96%87%E9%98%85%E8%AF%BB%E7%89%88_%E4%B8%8D%E5%8F%AF%E7%BC%96%E8%BE%91RGB_%E5%B7%B2%E5%8E%8B%E7%BC%A9.pdf |
 | Nanlite (web) | https://www.nanlite.com/product?model=fs#/en |
 
-Stands: later. Start with Godox and other light makers' own stands, then Avenger, Matthews, Kupo, Manfrotto. Lights come first.
+Modifiers also come from the brands' accessory pages (aputure.com, amarancreators.com) and the
+catalogues above. Nanlite's own accessory pages could not be reached; its modifiers come from the catalogue only.
+
+| Stands | Source |
+|---|---|
+| Godox | Godox Continuous Lighting Catalogue (above) |
+| Aputure / amaran | https://amarancreators.com (product pages) |
+| Matthews | https://www.msegrip.com |
+| Kupo | https://kupogrip.com |
+| Manfrotto | https://www.manfrotto.com |
+| Avenger | Not included: avenger-grip.com no longer serves product pages. |

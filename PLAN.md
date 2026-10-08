@@ -268,7 +268,7 @@ Each catalogue entry stores:
 - `mount` (accessory mount) for matching modifiers
 
 Modifiers are a separate list (`catalog/modifiers/`) with type, weight, size and what they fit.
-Stands (weight, load capacity, closed and max height) come later.
+Stands are a separate list (`catalog/stands/`) with type, weight, load capacity, closed and max height.
 
 Derived tags: size class (tiny → huge), best for rigging (mats and inflatables first, then
 lightest), weather sealed (IPx4 and up, light and power supply checked separately).

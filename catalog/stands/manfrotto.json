@@ -1,0 +1,310 @@
+[
+  {
+    "id": "manfrotto.007bsu",
+    "brand": "Manfrotto",
+    "model": "007BSU 10.6' Black Chrome Plated Steel Senior Stand w/ Leveling Leg",
+    "type": "light",
+    "weightKg": 7.3,
+    "loadCapacityKg": 6.7,
+    "minHeightCm": 124.0,
+    "maxHeightCm": 325.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/10-6-black-chrome-plated-steel-senior-stand-w-leveling-leg-007bsu/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.126csu",
+    "brand": "Manfrotto",
+    "model": "126CSU 10.9' Chrome Plated Steel Heavy Duty Stand w/ Leveling Leg",
+    "type": "light",
+    "weightKg": 8.3,
+    "loadCapacityKg": 3.0,
+    "minHeightCm": 131.0,
+    "maxHeightCm": 333.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/10-9-chrome-plated-steel-heavy-duty-stand-w-leveling-leg-126csu/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.008buac",
+    "brand": "Manfrotto",
+    "model": "008BUAC 2 Section Black Alu Cine Stand w/Leveling Leg-Air Cushions",
+    "type": "light",
+    "weightKg": 7.0,
+    "loadCapacityKg": 3.0,
+    "minHeightCm": 112.0,
+    "maxHeightCm": 212.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/2-section-black-alu-cine-stand-w-leveling-leg-air-cushions-008buac/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.070bu",
+    "brand": "Manfrotto",
+    "model": "070BU Aluminum Follow Spot Stand w/ Leveling Leg",
+    "type": "light",
+    "weightKg": 6.2,
+    "loadCapacityKg": null,
+    "minHeightCm": 88.0,
+    "maxHeightCm": 147.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/aluminum-follow-spot-stand-w-leveling-leg-070bu/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.007buac",
+    "brand": "Manfrotto",
+    "model": "007BUAC Black Aluminum Air-Cushioned Senior Stand w/ Leveling Leg",
+    "type": "light",
+    "weightKg": 3.0,
+    "loadCapacityKg": 2.5,
+    "minHeightCm": 124.0,
+    "maxHeightCm": 315.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/black-aluminum-air-cushioned-senior-stand-w-leveling-leg-007buac/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.156blb",
+    "brand": "Manfrotto",
+    "model": "156BLB Black Aluminum Mini Pro Stand",
+    "type": "light",
+    "weightKg": 0.62,
+    "loadCapacityKg": null,
+    "minHeightCm": 40.0,
+    "maxHeightCm": 123.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/black-aluminum-mini-pro-stand-156blb/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.007bu",
+    "brand": "Manfrotto",
+    "model": "007BU Black Aluminum Senior Stand",
+    "type": "light",
+    "weightKg": 3.0,
+    "loadCapacityKg": 6.7,
+    "minHeightCm": 124.0,
+    "maxHeightCm": 315.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/black-aluminum-senior-stand-007bu/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.008bu",
+    "brand": "Manfrotto",
+    "model": "008BU Black Aluminum Two-Section Cine Stand",
+    "type": "light",
+    "weightKg": 4.2,
+    "loadCapacityKg": 3.0,
+    "minHeightCm": 131.0,
+    "maxHeightCm": 212.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/black-aluminum-two-section-cine-stand-008bu/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.012b",
+    "brand": "Manfrotto",
+    "model": "012B Black Backlight Stand w/ Pole",
+    "type": "light",
+    "weightKg": 1.32,
+    "loadCapacityKg": null,
+    "minHeightCm": 9.0,
+    "maxHeightCm": 85.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/black-backlight-stand-w-pole-012b/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.126bsuac",
+    "brand": "Manfrotto",
+    "model": "126BSUAC Black Steel Air-Cushioned Stand w/ Leveling Leg",
+    "type": "light",
+    "weightKg": 8.3,
+    "loadCapacityKg": 40.0,
+    "minHeightCm": 131.0,
+    "maxHeightCm": 333.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/black-steel-air-cushioned-stand-w-leveling-leg-126bsuac/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.126bsu",
+    "brand": "Manfrotto",
+    "model": "126BSU Black Steel Stand w/ Leveling Leg",
+    "type": "light",
+    "weightKg": 8.3,
+    "loadCapacityKg": 3.0,
+    "minHeightCm": 131.0,
+    "maxHeightCm": 333.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/black-steel-stand-w-leveling-leg-126bsu/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.087nwb",
+    "brand": "Manfrotto",
+    "model": "087NWB Black Zinc Three-Section Wind Up Stand",
+    "type": "roller",
+    "weightKg": 21.7,
+    "loadCapacityKg": 30.0,
+    "minHeightCm": 167.0,
+    "maxHeightCm": 370.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/black-zinc-three-section-wind-up-stand-087nwb/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.008bsu",
+    "brand": "Manfrotto",
+    "model": "008BSU CINE STAND,BLACK ZINC W/O WHEL",
+    "type": "light",
+    "weightKg": 7.4,
+    "loadCapacityKg": null,
+    "minHeightCm": 132.0,
+    "maxHeightCm": 216.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/cine-stand-black-zinc-w-o-whel-008bsu/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.008csu",
+    "brand": "Manfrotto",
+    "model": "008CSU CINE STAND W/O WHEELS, LEVLEG",
+    "type": "light",
+    "weightKg": 6.52,
+    "loadCapacityKg": null,
+    "minHeightCm": 131.0,
+    "maxHeightCm": 212.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/cine-stand-w-o-wheels-levleg-008csu/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.126csuac",
+    "brand": "Manfrotto",
+    "model": "126CSUAC HEAVY DUTY STAND A14 AIR CUSH.",
+    "type": "light",
+    "weightKg": 9.3,
+    "loadCapacityKg": 3.0,
+    "minHeightCm": 131.0,
+    "maxHeightCm": 333.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/heavy-duty-stand-a14-air-cush-126csuac/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.087nwlb",
+    "brand": "Manfrotto",
+    "model": "087NWLB LOW BASE 3 SECTION WIND UP STA",
+    "type": "roller",
+    "weightKg": 16.0,
+    "loadCapacityKg": 30.0,
+    "minHeightCm": 144.0,
+    "maxHeightCm": 276.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/low-base-3-section-wind-up-sta-087nwlb/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.001jb",
+    "brand": "Manfrotto",
+    "model": "001JB NANO STAND BLACK 17,5    40001",
+    "type": "light",
+    "weightKg": 1.12,
+    "loadCapacityKg": null,
+    "minHeightCm": 49.0,
+    "maxHeightCm": 190.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/nano-stand-black-17-5-40001-001jb/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.087nwsh",
+    "brand": "Manfrotto",
+    "model": "087NWSH Short Wind Up Stand (Special Order Only)",
+    "type": "roller",
+    "weightKg": 15.5,
+    "loadCapacityKg": null,
+    "minHeightCm": 135.0,
+    "maxHeightCm": 276.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/short-wind-up-stand-special-order-only-087nwsh/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.087nwshb",
+    "brand": "Manfrotto",
+    "model": "087NWSHB Steel Short Wind Up Stand",
+    "type": "roller",
+    "weightKg": 23.4,
+    "loadCapacityKg": null,
+    "minHeightCm": 135.0,
+    "maxHeightCm": 276.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/steel-short-wind-up-stand-087nwshb/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.007csu",
+    "brand": "Manfrotto",
+    "model": "007CSU Steel Three-Section Senior Stand w/ Leveling Leg",
+    "type": "light",
+    "weightKg": 7.3,
+    "loadCapacityKg": 6.7,
+    "minHeightCm": 124.0,
+    "maxHeightCm": 325.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/steel-three-section-senior-stand-w-leveling-leg-007csu/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.083nw",
+    "brand": "Manfrotto",
+    "model": "083NW Steel Two-Section Wind Up Stand",
+    "type": "roller",
+    "weightKg": 16.0,
+    "loadCapacityKg": 30.0,
+    "minHeightCm": 139.0,
+    "maxHeightCm": 247.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/steel-two-section-wind-up-stand-083nw/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  },
+  {
+    "id": "manfrotto.087nw",
+    "brand": "Manfrotto",
+    "model": "087NW Steel Wind Up Stand w/ Safety Release Cable",
+    "type": "roller",
+    "weightKg": 21.7,
+    "loadCapacityKg": 30.0,
+    "minHeightCm": 167.0,
+    "maxHeightCm": 370.0,
+    "sources": [
+      "https://www.manfrotto.com/global-en/steel-wind-up-stand-w-safety-release-cable-087nw/"
+    ],
+    "notes": "Load = capacity at max extension as listed by Manfrotto (some listed values look low for the stand class; check before relying on them)."
+  }
+]
