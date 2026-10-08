@@ -211,16 +211,37 @@ and in which direction.
   plan can be measured with a ruler.
 - Equipment list also exports as **XLSX / CSV** for rental houses.
 
-### 2.13 Cloud sync, offline, sharing
-- Sign in to see the same projects on phone, tablet and PC.
-- **Offline-first**: everything works without signal on set and syncs when back online.
-- If the same shot was edited on two devices while offline, you choose which version to keep,
-  or keep both.
-- Version history to restore earlier versions.
-- **Read-only share link** for producers and rental houses (view and download, no account
-  needed).
+### 2.13 Sync via Google Drive, offline, sharing
+- Sign in with Google once to see the same projects on phone, tablet and PC.
+- Projects are saved to the user's **own Google Drive** in a `Lighting Plans/` folder: one
+  data file per project, with its photos in a subfolder. Kits and settings are saved there too.
+- The app asks for permission to see **only the files it creates**, never the rest of the
+  Drive. This is also the easiest permission to get approved by Google.
+- **Offline-first**: every change is saved on the device first, then uploaded a few seconds
+  after you stop editing, or once you're back online. On open, the app pulls newer versions
+  from Drive.
+- If the same project was edited on two devices while offline, the app detects it (using
+  Drive's version numbers) and you choose which version to keep, or keep both.
+- Version history comes from Drive's file revisions.
+- **Sharing** with producers and rental houses uses normal Drive sharing of the project
+  file or the exported PDF.
+- Storage sits behind an interface (local ↔ Google Drive), so our own cloud can be added
+  later if team editing or non-Google users are needed.
 
-### 2.14 Phone & tablet UX
+### 2.14 Templates
+Start a plan from a ready-made setup, then adjust it.
+- Examples: **Interview**, **Piece to camera**, **Green screen** (more to be defined).
+- Each template has its own options. For example, Interview asks for the number of
+  interviewees and the number of cameras.
+- Options can repeat per element. "Number of cameras" can give each camera its own settings.
+- A template can create several shots/setups at once (e.g. one per camera angle) plus shared
+  set items.
+- It is placed where you tap (or at the centre of the view), and everything it creates is a
+  normal, editable item.
+- Code lives in `src/templates/`; each template is one file that defines its options and a
+  `build()` function.
+
+### 2.15 Phone & tablet UX
 - An installable app (PWA) on iPad, Android and desktop.
 - Large touch targets, long-press context menu, Apple Pencil precision, and on-screen
   undo/redo.
@@ -278,14 +299,15 @@ Suggested first vendors:
 | State | Zustand + Immer (patch-based undo/redo) | Simple and fast. |
 | UI | Tailwind + Radix/shadcn | Accessible, touch-friendly components. |
 | Local storage | IndexedDB (Dexie) | Offline-first source of truth on the device. |
-| Backend | **Supabase** (Auth, Postgres, Storage, row-level security) | Accounts, sync and photo storage. Generous free tier. |
+| Sync / storage | **Google Drive API** (`drive.file` permission) + Google Sign-In | Projects sync through each user's own Drive, so there is no storage bill for us and users own their data. |
+| Backend (launch) | Small serverless functions (e.g. Vercel / Cloudflare) | Only for subscriptions (Stripe webhooks) and licence checks. |
 | Sun | `suncalc` + `tz-lookup` | Sun azimuth and elevation, and the local timezone, computed on device (works offline). |
 | Maps / geocoding | **Google Maps Platform** (Geocoding, Map Tiles / Static Maps), behind a provider interface | The best-known option. Uses an API key restricted to our domain and per-user quotas to keep costs under control. Can swap to Mapbox or Esri. |
 | PDF / XLSX | `pdf-lib` / `exceljs` | Built on the client, so export works offline. |
 | Validation | `zod` | Catalogue and saved-file schemas with versioned migrations. |
 | Images | Client-side resize/compress (≤4096 px, WebP); WebGL for the perspective warp | Fast uploads, small storage. |
 | Tests | Vitest (maths: calibration, sun, power, list aggregation) + Playwright (iPad and phone emulation) | |
-| Hosting | Vercel / Cloudflare Pages + Supabase | |
+| Hosting | Vercel / Cloudflare Pages | |
 | Payments (launch) | Stripe | Subscriptions for the public release. |
 | Monitoring (launch) | Sentry | Error reports from real devices. |
 
@@ -325,7 +347,7 @@ interface Shot {
 }
 
 interface LightProps {
-  id: string; cct?: number; gel?: string; diffusion?: string; modifier?: string;
+  unitId?: string; cct?: number; gel?: string; diffusion?: string; modifier?: string;
   intensityPct?: number; beamDeg?: number; throwCm?: number; heightCm?: number;
   circuit?: string; dmx?: { universe: number; address: number };
 }
@@ -370,11 +392,11 @@ Each phase ends with something usable.
 | Phase | Scope | Done when |
 |---|---|---|
 | **0. Foundation** | Repo scaffold, lint, tests, CI, PWA shell, preview deploys | The app loads on iPad, phone and PC from a URL |
-| **1. Canvas MVP** | 50 cm grid at real scale; pan and zoom (mouse and touch); place, move, rotate and duplicate; labels; multi-select; snap; undo/redo; starter library of about 30 generic items; local autosave; PNG export | A 3-point interview can be planned on an iPad and exported |
+| **1. Canvas MVP** | 50 cm grid at real scale; pan and zoom (mouse and touch); place, move, rotate and duplicate; labels; multi-select; snap; undo/redo; starter library of about 30 generic items; template picker; local autosave; PNG export | A 3-point interview can be planned on an iPad and exported |
 | **2. Photo & measure** | Upload, 2-point calibration with loupe, rotate/opacity/lock, measure tool, wall/door/window tool, 4-point perspective fix | A ceiling or drone photo comes out at true scale |
 | **3. Lights & camera detail** | Beam cones, CCT/gel/modifiers, light IDs, **string lights tool**, camera FOV, dolly/steadicam/crane paths, actor blocking, design styles | The reference screenshot can be recreated, and a curved row of 8 tubes aimed at one spot can be placed in seconds |
 | **4. Equipment, kits, power** | Auto list, reuse-aware quantities, kits, accessory rules, owned flag, power and circuits, XLSX/CSV export | A rental-ready list comes out in one click |
-| **5. Accounts & sync** | Sign-in, project → location → scene → shot, offline sync, photo storage, version history, read-only share link | Start on phone, finish on PC |
+| **5. Accounts & sync** | Google Sign-In, project → location → scene → shot, Google Drive sync (offline-first, conflict handling), photos in Drive, version history | Start on phone, finish on PC |
 | **6. Location & sun** | Address lookup, satellite import with auto-scale, north alignment, sun arc, time slider, sun times | You can see where the sun is at 3 pm on the shoot day |
 | **7. Vendor catalogue** | Ingest your catalogues, icon families, search, filters, favourites, custom items | Real fixtures can be picked by name ("S60", "M18") |
 | **8. Full PDF package** | Multi-page PDF, lighting schedule, reference photos, true-scale print | A complete package can go to the producer |
@@ -384,8 +406,8 @@ Each phase ends with something usable.
 Catalogue extraction (phase 7 data) can run in parallel from phase 1 as soon as you send
 catalogues.
 
-Because the app will be public, it is built multi-user from the start: every row is scoped to
-its owner or team, even before billing exists.
+The template engine (options and placement) is already in `src/templates/`; template layouts
+get filled in as you define them.
 
 ---
 
@@ -399,7 +421,8 @@ its owner or team, even before billing exists.
 | Icons | Simple coded SVG icons first, to be replaced with better art later |
 | Audience | Public product (see Phase 9) |
 | Platform | PWA first, optional App Store and Play Store builds later *(proposed, no objection yet)* |
-| Backend | Supabase *(proposed, no objection yet)* |
+| Sync | Google Drive (user's own Drive); own cloud only if needed later |
+| Templates | Engine first; each template's layout defined by you later |
 
 ## 8. What I need from you
 - Vendor catalogues, in priority order.
