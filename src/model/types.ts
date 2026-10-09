@@ -48,6 +48,8 @@ export interface Item {
   locked?: boolean;
   hidden?: boolean;
   light?: LightProps;
+  /** Walls: a chain of corners relative to `pos` (a room when closed). */
+  wall?: { points: Vec2[]; closed: boolean; thicknessCm?: number };
   /** Frames: the fabric stretched on it (see library/fabrics.ts). */
   grip?: { fabric?: string };
   /** People placed as cast: points at the project's actor list (name, colour, gender live there). */

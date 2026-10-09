@@ -4,6 +4,8 @@ import type { Fixture } from '../catalog/schema';
 import { BRANDS, filterFixtures, RIGGING_PICKS } from '../model/gear';
 import { avail, limitingList, NO_GEAR, type GearScope } from './gearScope';
 
+const DRAG_TYPE = 'application/x-lfpd-item';
+
 interface Props {
   onPick: (f: Fixture) => void;
   gear?: GearScope;
@@ -76,7 +78,16 @@ export function FixtureSearch({ onPick, gear = NO_GEAR, keepId, autoFocus }: Pro
             const out = !!list && !!a && a.left <= 0 && f.id !== keepId;
             return (
               <li key={f.id}>
-                <button className="row" onClick={() => onPick(f)} disabled={out}>
+                <button
+                  className="row"
+                  onClick={() => onPick(f)}
+                  disabled={out}
+                  draggable={!out}
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData(DRAG_TYPE, `fixture:${f.id}`);
+                    e.dataTransfer.effectAllowed = 'copy';
+                  }}
+                >
                   <span className="row-main">
                     <span className="row-title">
                       {f.model} <span className="muted">{f.brand}</span>

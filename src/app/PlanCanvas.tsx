@@ -4,12 +4,13 @@ import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'rea
 import { Arc, Arrow, Circle, Ellipse, Group, Layer, Line, Rect, Stage, Text, Transformer, Wedge } from 'react-konva';
 import type { Modifier } from '../catalog/schema';
 import { FABRIC_FILL, fabricById } from '../library/fabrics';
-import { libraryItem } from '../library/items';
+import { isOpening, libraryItem } from '../library/items';
 import { itemFixture, itemLook, itemModifiers } from '../model/gear';
-import { aimAt } from '../model/geometry';
+import { aimAt, normDeg } from '../model/geometry';
 import { DEFAULT_LENS_MM, horizontalFovDeg } from '../model/lens';
 import { followsActorId, modeOf, sceneItems, type EditMode, type SceneDoc } from '../model/project';
 import type { Actor, Item, Vec2 } from '../model/types';
+import { DEFAULT_WALL_CM, nearestWall, snapWallPoint, toLocal, wallPoints } from '../model/walls';
 import type { SceneAction } from './doc';
 import type { CanvasColors } from './theme';
 
@@ -32,6 +33,8 @@ const GRID_CM = 50;
 const PERSON_SCALE = 1.5;
 const DEFAULT_THROW_CM = 300;
 const CAMERA_CONE_CM = 660;
+/** How close (cm) a dragged door or window must come to a wall to snap into it. */
+const OPENING_SNAP_CM = 45;
 
 export const clampScale = (s: number) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
 
@@ -52,10 +55,19 @@ export const beamDegOf = (item: Item): number =>
 export function displayLabel(item: Item, actors: readonly Actor[] = []): string {
   const actor = item.actorId ? actors.find((a) => a.id === item.actorId) : undefined;
   const fabric = fabricById(item.grip?.fabric);
-  const base = itemFixture(item)?.model ?? libraryItem(item.catalogId)?.name ?? '';
+  const lib = libraryItem(item.catalogId);
+  // Walls, doors and windows are self-explanatory: no label unless one was typed.
+  if (!item.label && (item.wall || isOpening(item.catalogId))) return '';
+  const base = itemFixture(item)?.model ?? lib?.name ?? '';
   const name = actor?.name ?? item.label ?? (fabric ? `${base} · ${fabric.name}` : base);
   const unit = item.light?.unitId;
   return unit ? (name ? `${unit} · ${name}` : unit) : name;
+}
+
+/** What an item is called when it has no label: "Room"/"Walls" for wall chains, else its library name. */
+export function itemName(item: Item): string {
+  if (item.wall) return item.wall.closed ? 'Room' : 'Walls';
+  return itemFixture(item)?.model ?? libraryItem(item.catalogId)?.name ?? item.kind;
 }
 
 /** A camera whose rotation is driven by its focus actor (when that actor is in the scene). */
@@ -81,6 +93,11 @@ interface Props {
   mode: EditMode;
   tool: Tool;
   exportRef: MutableRefObject<ExportPng | null>;
+  /** Draw walls tool: corners clicked so far, and callbacks to add a corner or finish. */
+  wallTool: boolean;
+  wallDraft: Vec2[];
+  onWallDraft: (points: Vec2[]) => void;
+  onWallFinish: (closed: boolean) => void;
 }
 
 interface RotateSession {
@@ -100,6 +117,9 @@ export function PlanCanvas(p: Props) {
   const [dragging, setDragging] = useState<string | null>(null);
   const all = sceneItems(scene);
   const visible = all.filter((i) => !i.hidden);
+  const walls = all.filter((i) => i.wall);
+  const [hover, setHover] = useState<Vec2 | null>(null);
+  const snapRadius = 14 / view.scale;
 
   const node = (id: string) => stageRef.current?.findOne((n: Konva.Node) => n.id() === id);
 
@@ -108,6 +128,11 @@ export function PlanCanvas(p: Props) {
     const tr = trRef.current;
     if (!tr) return;
     const n = selected && tool === 'move' ? node(selected) : undefined;
+    const sel = all.find((i) => i.id === selected);
+    // Doors and windows resize along the wall from their side handles.
+    const resizable = !!sel && tool === 'move' && isOpening(sel.catalogId) && !sel.locked;
+    tr.resizeEnabled(resizable);
+    tr.enabledAnchors(resizable ? ['middle-left', 'middle-right'] : []);
     tr.nodes(n ? [n] : []);
     tr.getLayer()?.batchDraw();
   }, [selected, scene, tool]);
@@ -250,6 +275,36 @@ export function PlanCanvas(p: Props) {
     if (r.current !== r.startRot) dispatch({ type: 'rotate', id: r.id, rotationDeg: r.current });
   };
 
+  // ---- Draw walls tool ----
+  const corners = (): Vec2[] => [...walls.flatMap(wallPoints), ...p.wallDraft];
+  const snapDraft = (pt: Vec2, e?: MouseEvent | TouchEvent) =>
+    snapWallPoint(pt, {
+      from: p.wallDraft[p.wallDraft.length - 1],
+      corners: corners(),
+      radius: snapRadius,
+      angle: e && 'altKey' in e && e.altKey ? 'free' : e && 'shiftKey' in e && e.shiftKey ? 'fine' : 'auto',
+    }).point;
+  const closesRoom = (pt: Vec2) => p.wallDraft.length >= 3 && Math.hypot(pt.x - p.wallDraft[0]!.x, pt.y - p.wallDraft[0]!.y) <= snapRadius;
+  // Konva's own dblclick fires for two quick clicks anywhere, which would end a wall while
+  // clicking corners fast; a double-click here means two clicks on the same spot.
+  const lastClick = useRef<{ t: number; x: number; y: number } | null>(null);
+  const wallClick = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
+    if ('button' in e.evt && e.evt.button !== 0) return;
+    const ptr = worldPointer();
+    const scr = stageRef.current?.getPointerPosition();
+    if (!ptr || !scr) return;
+    const prev = lastClick.current;
+    lastClick.current = { t: e.evt.timeStamp, x: scr.x, y: scr.y };
+    if (prev && e.evt.timeStamp - prev.t < 350 && Math.hypot(scr.x - prev.x, scr.y - prev.y) < 8) {
+      lastClick.current = null;
+      p.onWallFinish(false);
+      return;
+    }
+    const pt = snapDraft(ptr, e.evt);
+    if (closesRoom(pt)) p.onWallFinish(true);
+    else p.onWallDraft([...p.wallDraft, pt]);
+  };
+
   const onWheel = (e: KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault();
     const pt = stageRef.current?.getPointerPosition();
@@ -307,12 +362,49 @@ export function PlanCanvas(p: Props) {
         onMouseEnter={() => active && !item.locked && setCursor(tool === 'move' ? 'move' : ROTATE_CURSOR)}
         onMouseLeave={() => setCursor('')}
         onDragStart={() => setDragging(item.id)}
-        onDragMove={(e) => follow(item, { x: e.target.x(), y: e.target.y() })}
+        onDragMove={(e) => {
+          const pos = { x: e.target.x(), y: e.target.y() };
+          if (isOpening(item.catalogId)) {
+            // Doors and windows snap into the nearest wall, lined up with it.
+            const hit = nearestWall(pos, walls, OPENING_SNAP_CM);
+            if (hit) {
+              e.target.position(hit.point);
+              e.target.rotation(hit.angleDeg);
+            }
+            return;
+          }
+          follow(item, pos);
+        }}
         onDragEnd={(e) => {
           setDragging(null);
           const pos = { x: e.target.x(), y: e.target.y() };
+          if (isOpening(item.catalogId)) {
+            const hit = nearestWall(pos, walls, OPENING_SNAP_CM);
+            const look = itemLook(item);
+            dispatch({
+              type: 'update',
+              id: item.id,
+              patch: hit
+                ? { pos: hit.point, rotationDeg: normDeg(hit.angleDeg), sizeCm: { w: look.w, d: hit.thicknessCm } }
+                : { pos, rotationDeg: normDeg(e.target.rotation()) },
+            });
+            return;
+          }
           follow(item, pos);
           dispatch({ type: 'move', id: item.id, pos });
+        }}
+        onTransformEnd={(e) => {
+          // Side handles stretch the opening; store the new width and keep the scale at 1.
+          const n = e.target;
+          const sx = n.scaleX();
+          n.scaleX(1);
+          n.scaleY(1);
+          const look = itemLook(item);
+          dispatch({
+            type: 'update',
+            id: item.id,
+            patch: { pos: { x: n.x(), y: n.y() }, sizeCm: { w: Math.max(30, Math.round(look.w * sx)), d: look.d } },
+          });
         }}
       >
         <ItemShape item={item} actors={actors} colors={colors} />
@@ -396,17 +488,76 @@ export function PlanCanvas(p: Props) {
         {visible.map(beam)}
       </Layer>
       <Layer>
-        {visible.filter((i) => scene.setItems.includes(i)).map(renderItem)}
+        {visible
+          .filter((i) => scene.setItems.includes(i))
+          .sort((a, b) => Number(!!b.wall) - Number(!!a.wall)) /* walls under doors and windows */
+          .map(renderItem)}
         {visible.filter((i) => scene.items.includes(i)).map(renderItem)}
         {visible.map(label)}
         {tool === 'rotate' && selected && (() => {
           const sel = visible.find((i) => i.id === selected);
           return sel ? <RotateRing item={sel} scale={view.scale} color={colors.rotate} /> : null;
         })()}
+        {(() => {
+          // Corner handles on a selected wall (Move tool): drag a corner to reshape the room.
+          const sel = visible.find((i) => i.id === selected && i.wall);
+          if (!sel || tool !== 'move' || p.wallTool || sel.locked || modeOf(sel) !== mode) return null;
+          const others = walls.filter((w) => w.id !== sel.id).flatMap(wallPoints);
+          return wallPoints(sel).map((pt, idx) => (
+            <Circle
+              key={`${sel.id}-v${idx}`}
+              name="ui-only"
+              x={pt.x}
+              y={pt.y}
+              radius={7 / view.scale}
+              fill={colors.canvas}
+              stroke={colors.select}
+              strokeWidth={2 / view.scale}
+              draggable
+              onMouseDown={(e) => (e.cancelBubble = true)}
+              onTouchStart={(e) => (e.cancelBubble = true)}
+              onDragMove={(e) => {
+                const at = snapWallPoint({ x: e.target.x(), y: e.target.y() }, { corners: others, radius: snapRadius, angle: 'free' }).point;
+                e.target.position(at);
+                const local = sel.wall!.points.slice();
+                local[idx] = toLocal(sel, at);
+                (node(sel.id) as Konva.Group | undefined)?.findOne<Konva.Line>('.wall-line')?.points(local.flatMap((q) => [q.x, q.y]));
+              }}
+              onDragEnd={(e) => {
+                const local = sel.wall!.points.slice();
+                local[idx] = toLocal(sel, { x: e.target.x(), y: e.target.y() });
+                dispatch({ type: 'update', id: sel.id, patch: { wall: { ...sel.wall!, points: local } } });
+              }}
+            />
+          ));
+        })()}
+        {p.wallTool && (
+          <>
+            <Rect
+              x={-view.x / view.scale}
+              y={-view.y / view.scale}
+              width={width / view.scale}
+              height={height / view.scale}
+              fill="rgba(0,0,0,0)"
+              onMouseDown={wallClick}
+              onTap={wallClick}
+              onMouseMove={(e) => {
+                const ptr = worldPointer();
+                setHover(ptr ? snapDraft(ptr, e.evt) : null);
+              }}
+              onMouseEnter={() => setCursor('crosshair')}
+              onMouseLeave={() => setHover(null)}
+            />
+            <WallDraft draft={p.wallDraft} hover={hover} closing={!!hover && closesRoom(hover)} scale={view.scale} colors={colors} />
+          </>
+        )}
         <Transformer
           ref={trRef}
           resizeEnabled={false}
           rotateEnabled={false}
+          keepRatio={false}
+          ignoreStroke
+          boundBoxFunc={(oldBox, newBox) => (newBox.width < 20 ? oldBox : newBox)}
           borderStroke={colors.select}
           borderStrokeWidth={2}
           padding={6}
@@ -442,6 +593,364 @@ function RotateRing({ item, scale, color }: { item: Item; scale: number; color: 
       <Arrow points={arc(200, 250)} {...arrow} />
     </Group>
   );
+}
+
+/** The wall being drawn: placed corners, the next segment to the pointer and its length. */
+function WallDraft({ draft, hover, closing, scale, colors: c }: { draft: Vec2[]; hover: Vec2 | null; closing: boolean; scale: number; colors: CanvasColors }) {
+  const px = 1 / scale;
+  const pts = hover && draft.length ? [...draft, hover] : draft;
+  const last = draft[draft.length - 1];
+  const len = hover && last ? Math.hypot(hover.x - last.x, hover.y - last.y) : 0;
+  return (
+    <Group name="ui-only" listening={false}>
+      {pts.length > 1 && (
+        <Line points={pts.flatMap((q) => [q.x, q.y])} stroke={c.select} strokeWidth={DEFAULT_WALL_CM} opacity={0.55} lineCap="square" lineJoin="miter" />
+      )}
+      {draft.map((q, i) => (
+        <Circle key={i} x={q.x} y={q.y} radius={5 * px} fill={c.select} />
+      ))}
+      {closing && draft[0] && <Circle x={draft[0].x} y={draft[0].y} radius={13 * px} stroke={c.select} strokeWidth={3 * px} />}
+      {hover && <Circle x={hover.x} y={hover.y} radius={4 * px} stroke={c.select} strokeWidth={2 * px} />}
+      {hover && last && len > 1 && (
+        <Text
+          x={(hover.x + last.x) / 2 + 10 * px}
+          y={(hover.y + last.y) / 2 + 10 * px}
+          text={`${(len / 100).toFixed(2)} m`}
+          fontSize={13 * px}
+          fontFamily="'IBM Plex Mono', monospace"
+          fill={c.label}
+        />
+      )}
+    </Group>
+  );
+}
+
+/** Doors, top down, centred, along x; the swing side is -y. */
+function DoorShape({ style, w, d, c }: { style: string; w: number; d: number; c: CanvasColors }) {
+  const hw = w / 2;
+  const hd = Math.max(d, 6) / 2;
+  const gap = <Rect x={-hw} y={-hd} width={w} height={hd * 2} fill={c.canvas} />;
+  const jambs = (
+    <>
+      <Line points={[-hw, -hd, -hw, hd]} stroke={c.set} strokeWidth={3} />
+      <Line points={[hw, -hd, hw, hd]} stroke={c.set} strokeWidth={3} />
+    </>
+  );
+  const leaf = { stroke: c.label, strokeWidth: 3 };
+  const swing = { stroke: c.label, strokeWidth: 1.2, dash: [6, 5], opacity: 0.7 };
+  switch (style) {
+    case 'double':
+      return (
+        <>
+          {gap}
+          {jambs}
+          <Line points={[-hw, -hd, -hw, -hd - hw]} {...leaf} />
+          <Line points={[hw, -hd, hw, -hd - hw]} {...leaf} />
+          <Arc x={-hw} y={-hd} innerRadius={hw} outerRadius={hw} angle={90} rotation={-90} {...swing} />
+          <Arc x={hw} y={-hd} innerRadius={hw} outerRadius={hw} angle={90} rotation={180} {...swing} />
+        </>
+      );
+    case 'sliding':
+      return (
+        <>
+          {gap}
+          {jambs}
+          <Rect x={-hw} y={-4} width={w * 0.55} height={4} fill={c.label} />
+          <Rect x={hw - w * 0.55} y={0} width={w * 0.55} height={4} fill={c.label} />
+        </>
+      );
+    case 'pocket':
+      return (
+        <>
+          {gap}
+          {jambs}
+          <Rect x={hw} y={-hd + 2} width={w * 0.9} height={hd * 2 - 4} stroke={c.label} strokeWidth={1} dash={[5, 4]} opacity={0.7} />
+          <Rect x={-hw * 0.3} y={-2} width={hw * 1.3 + w * 0.4} height={4} fill={c.label} />
+        </>
+      );
+    case 'bifold':
+      return (
+        <>
+          {gap}
+          {jambs}
+          <Line points={[-hw, -hd, -hw + w * 0.15, -hd - w * 0.22, -hw + w * 0.3, -hd]} {...leaf} lineJoin="round" />
+          <Line points={[hw, -hd, hw - w * 0.15, -hd - w * 0.22, hw - w * 0.3, -hd]} {...leaf} lineJoin="round" />
+        </>
+      );
+    case 'barn':
+      return (
+        <>
+          {gap}
+          {jambs}
+          <Line points={[-hw - 10, -hd - 7, hw + w, -hd - 7]} stroke={c.set} strokeWidth={1.5} />
+          <Rect x={-hw + w * 0.45} y={-hd - 12} width={w * 1.05} height={6} fill={c.label} />
+        </>
+      );
+    case 'garage':
+      return (
+        <>
+          {gap}
+          {jambs}
+          <Rect x={-hw} y={-2} width={w} height={4} fill={c.label} opacity={0.8} />
+          <Rect x={-hw} y={hd} width={w} height={w * 0.75} stroke={c.label} strokeWidth={1.2} dash={[8, 6]} opacity={0.6} />
+        </>
+      );
+    default: // single
+      return (
+        <>
+          {gap}
+          {jambs}
+          <Line points={[-hw, -hd, -hw, -hd - w]} {...leaf} />
+          <Arc x={-hw} y={-hd} innerRadius={w} outerRadius={w} angle={90} rotation={-90} {...swing} />
+        </>
+      );
+  }
+}
+
+/** Windows, top down, centred, along x; the outside is -y. */
+function WindowShape({ style, w, d, c }: { style: string; w: number; d: number; c: CanvasColors }) {
+  const hw = w / 2;
+  const hd = Math.max(d, 6) / 2;
+  const frame = <Rect x={-hw} y={-hd} width={w} height={hd * 2} fill={c.canvas} stroke={c.set} strokeWidth={2} />;
+  const glass = { stroke: c.label, strokeWidth: 2 };
+  const swing = { stroke: c.label, strokeWidth: 1.2, dash: [5, 4], opacity: 0.7 };
+  switch (style) {
+    case 'casement':
+      return (
+        <>
+          {frame}
+          <Line points={[-hw, 0, hw, 0]} {...glass} />
+          <Arc x={-hw} y={-hd} innerRadius={w} outerRadius={w} angle={90} rotation={-90} {...swing} />
+        </>
+      );
+    case 'double-casement':
+      return (
+        <>
+          {frame}
+          <Line points={[-hw, 0, hw, 0]} {...glass} />
+          <Arc x={-hw} y={-hd} innerRadius={hw} outerRadius={hw} angle={90} rotation={-90} {...swing} />
+          <Arc x={hw} y={-hd} innerRadius={hw} outerRadius={hw} angle={90} rotation={180} {...swing} />
+        </>
+      );
+    case 'sliding':
+      return (
+        <>
+          {frame}
+          <Line points={[-hw, -2, -hw + w * 0.55, -2]} {...glass} />
+          <Line points={[hw - w * 0.55, 2, hw, 2]} {...glass} />
+        </>
+      );
+    case 'picture':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={hd * 2} fill={c.canvas} stroke={c.set} strokeWidth={3.5} />
+          <Line points={[-hw, 0, hw, 0]} stroke={c.label} strokeWidth={3} />
+        </>
+      );
+    case 'bay': {
+      const out = [-hw, -hd, -hw + w * 0.2, -hd - w * 0.25, hw - w * 0.2, -hd - w * 0.25, hw, -hd];
+      return (
+        <>
+          {frame}
+          <Line points={out} stroke={c.set} strokeWidth={hd * 2} lineJoin="miter" />
+          <Line points={out} {...glass} lineJoin="miter" />
+        </>
+      );
+    }
+    case 'floor-to-ceiling':
+      return (
+        <>
+          {frame}
+          <Line points={[-hw, 0, hw, 0]} {...glass} />
+          {[-0.25, 0, 0.25].map((f) => (
+            <Line key={f} points={[f * w, -hd, f * w, hd]} stroke={c.set} strokeWidth={3} />
+          ))}
+        </>
+      );
+    default: // standard
+      return (
+        <>
+          {frame}
+          <Line points={[-hw, 0, hw, 0]} {...glass} />
+        </>
+      );
+  }
+}
+
+/** Furniture and props, top down, front (-y) up. */
+function PropShape({ style, w, d, c }: { style: string; w: number; d: number; c: CanvasColors }) {
+  const hw = w / 2;
+  const hd = d / 2;
+  const base = { fill: c.prop };
+  const detail = { stroke: c.canvas, strokeWidth: 2, opacity: 0.8 };
+  const green = c.chroma;
+  switch (style) {
+    case 'table':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={3} {...base} />
+          <Rect x={-hw + 6} y={-hd + 6} width={w - 12} height={d - 12} cornerRadius={2} {...detail} />
+        </>
+      );
+    case 'round-table':
+      return (
+        <>
+          <Circle radius={hw} {...base} />
+          <Circle radius={hw - 7} {...detail} />
+        </>
+      );
+    case 'desk':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={2} {...base} />
+          <Rect x={-w * 0.2} y={hd - 14} width={w * 0.4} height={5} fill={c.grip} />
+        </>
+      );
+    case 'chair':
+      return (
+        <>
+          <Rect x={-hw * 0.85} y={-hd * 0.85} width={w * 0.85} height={d * 0.75} cornerRadius={4} {...base} />
+          <Rect x={-hw} y={hd - d * 0.22} width={w} height={d * 0.22} cornerRadius={3} {...base} />
+        </>
+      );
+    case 'office-chair':
+      return (
+        <>
+          {[0, 72, 144, 216, 288].map((a) => {
+            const r = (a * Math.PI) / 180;
+            return <Line key={a} points={[0, 0, Math.sin(r) * hw, -Math.cos(r) * hw]} stroke={c.prop} strokeWidth={4} lineCap="round" />;
+          })}
+          <Circle radius={hw * 0.6} {...base} />
+          <Arc innerRadius={hw * 0.55} outerRadius={hw * 0.8} angle={140} rotation={20} {...base} />
+        </>
+      );
+    case 'armchair':
+    case 'sofa': {
+      const arm = Math.min(w * 0.14, 22);
+      const back = d * 0.25;
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={8} {...base} />
+          <Rect x={-hw} y={hd - back} width={w} height={back} cornerRadius={6} fill={c.grip} opacity={0.35} />
+          <Rect x={-hw} y={-hd} width={arm} height={d} cornerRadius={6} fill={c.grip} opacity={0.35} />
+          <Rect x={hw - arm} y={-hd} width={arm} height={d} cornerRadius={6} fill={c.grip} opacity={0.35} />
+          {style === 'sofa' && <Line points={[0, -hd + 4, 0, hd - back]} {...detail} />}
+        </>
+      );
+    }
+    case 'stool':
+      return <Circle radius={hw} {...base} />;
+    case 'bench':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={3} {...base} />
+          <Line points={[-hw + 6, 0, hw - 6, 0]} {...detail} />
+        </>
+      );
+    case 'bed': {
+      const pillows = w > 120 ? 2 : 1;
+      const pw = (w - 16 - (pillows - 1) * 8) / pillows;
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={4} {...base} />
+          {Array.from({ length: pillows }, (_, i) => (
+            <Rect key={i} x={-hw + 8 + i * (pw + 8)} y={-hd + 8} width={pw} height={d * 0.16} cornerRadius={6} fill={c.label} opacity={0.75} />
+          ))}
+          <Rect x={-hw} y={-hd + d * 0.3} width={w} height={d * 0.7} cornerRadius={4} fill={c.grip} opacity={0.3} />
+        </>
+      );
+    }
+    case 'cabinet':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={2} {...base} />
+          <Line points={[0, -hd, 0, hd]} {...detail} />
+          <Line points={[-hw, -hd + 3, hw, -hd + 3]} stroke={c.grip} strokeWidth={3} />
+        </>
+      );
+    case 'shelf':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} {...base} />
+          {[-1 / 6, 1 / 6].map((f) => (
+            <Line key={f} points={[f * w * 1.5, -hd, f * w * 1.5, hd]} {...detail} />
+          ))}
+        </>
+      );
+    case 'tv':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={2} {...base} />
+          <Rect x={-hw * 0.9} y={-hd - 2} width={w * 0.9} height={5} fill={c.grip} />
+        </>
+      );
+    case 'counter':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} {...base} />
+          <Rect x={-hw + w * 0.15} y={-hd + 10} width={w * 0.22} height={d - 20} cornerRadius={6} {...detail} />
+          {[0, 1, 2, 3].map((i) => (
+            <Circle key={i} x={hw - w * 0.32 + (i % 2) * w * 0.12} y={-hd + d * 0.32 + Math.floor(i / 2) * d * 0.36} radius={Math.min(d * 0.13, 9)} {...detail} />
+          ))}
+        </>
+      );
+    case 'fridge':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={3} fill={c.label} opacity={0.8} />
+          <Line points={[-hw, -hd + 6, hw, -hd + 6]} stroke={c.prop} strokeWidth={3} />
+        </>
+      );
+    case 'rug':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} fill={c.prop} opacity={0.3} />
+          <Rect x={-hw + 8} y={-hd + 8} width={w - 16} height={d - 16} stroke={c.prop} strokeWidth={2} dash={[10, 6]} />
+        </>
+      );
+    case 'plant':
+      return (
+        <>
+          {[0, 60, 120, 180, 240, 300].map((a) => {
+            const r = (a * Math.PI) / 180;
+            return <Ellipse key={a} x={Math.sin(r) * hw * 0.5} y={-Math.cos(r) * hw * 0.5} radiusX={hw * 0.3} radiusY={hw * 0.5} rotation={a} fill={green} opacity={0.8} />;
+          })}
+          <Circle radius={hw * 0.3} fill={c.prop} />
+        </>
+      );
+    case 'tree':
+      return (
+        <>
+          {[0, 72, 144, 216, 288].map((a) => {
+            const r = (a * Math.PI) / 180;
+            return <Circle key={a} x={Math.sin(r) * hw * 0.4} y={-Math.cos(r) * hw * 0.4} radius={hw * 0.55} fill={green} opacity={0.45} />;
+          })}
+          <Circle radius={hw * 0.12} fill={c.grip} opacity={0.7} />
+        </>
+      );
+    case 'car':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={w * 0.22} {...base} />
+          <Rect x={-hw + w * 0.12} y={-hd + d * 0.22} width={w * 0.76} height={d * 0.14} cornerRadius={8} fill={c.grip} opacity={0.6} />
+          <Rect x={-hw + w * 0.14} y={hd - d * 0.24} width={w * 0.72} height={d * 0.1} cornerRadius={8} fill={c.grip} opacity={0.6} />
+          <Rect x={-hw - 8} y={-hd + d * 0.3} width={10} height={14} cornerRadius={3} {...base} />
+          <Rect x={hw - 2} y={-hd + d * 0.3} width={10} height={14} cornerRadius={3} {...base} />
+        </>
+      );
+    case 'piano':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={3} fill={c.grip} opacity={0.85} />
+          <Rect x={-hw + 6} y={-hd} width={w - 12} height={d * 0.3} fill={c.label} />
+          {Array.from({ length: 12 }, (_, i) => (
+            <Line key={i} points={[-hw + 6 + ((i + 1) * (w - 12)) / 13, -hd, -hw + 6 + ((i + 1) * (w - 12)) / 13, -hd + d * 0.3]} stroke={c.grip} strokeWidth={1} />
+          ))}
+        </>
+      );
+    default:
+      return <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={4} {...base} />;
+  }
 }
 
 function labelOffset(item: Item): number {
@@ -682,21 +1191,28 @@ function ItemShape({ item, actors, colors: c }: { item: Item; actors: readonly A
       const chroma = item.catalogId?.includes('green-screen');
       return <Rect x={-hw} y={-hd} width={w} height={d} fill={chroma ? c.chroma : c.set} cornerRadius={1} />;
     }
+    case 'walls': {
+      const t = item.wall?.thicknessCm ?? DEFAULT_WALL_CM;
+      return (
+        <Line
+          name="wall-line"
+          points={(item.wall?.points ?? []).flatMap((q) => [q.x, q.y])}
+          closed={!!item.wall?.closed}
+          fillEnabled={false}
+          stroke={c.set}
+          strokeWidth={t}
+          lineJoin="miter"
+          lineCap="square"
+          hitStrokeWidth={Math.max(t, 24)}
+        />
+      );
+    }
     case 'door':
-      return (
-        <>
-          <Rect x={-hw} y={-hd} width={w} height={d} fill={c.canvas} stroke={c.set} strokeWidth={2} />
-          <Line points={[-hw, 0, -hw, -w]} stroke={c.set} strokeWidth={3} />
-          <Arc x={-hw} y={0} innerRadius={w} outerRadius={w} angle={90} rotation={-90} stroke={c.set} strokeWidth={1.5} dash={[6, 5]} />
-        </>
-      );
+      return <DoorShape style={libraryItem(item.catalogId)?.style ?? 'single'} w={w} d={d} c={c} />;
     case 'window':
-      return (
-        <>
-          <Rect x={-hw} y={-hd} width={w} height={d} fill={c.canvas} stroke={c.set} strokeWidth={3} />
-          <Line points={[-hw, 0, hw, 0]} stroke={c.set} strokeWidth={1.5} />
-        </>
-      );
+      return <WindowShape style={libraryItem(item.catalogId)?.style ?? 'standard'} w={w} d={d} c={c} />;
+    case 'prop':
+      return <PropShape style={libraryItem(item.catalogId)?.style ?? 'box'} w={w} d={d} c={c} />;
     case 'round':
       return <Circle radius={hw} fill={c.prop} />;
     default:

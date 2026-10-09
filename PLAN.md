@@ -298,6 +298,16 @@ Start a plan from a ready-made setup, then adjust it.
 - **Phones**: three short top rows; the side panel becomes a bottom sheet whose header is always
   visible.
 
+### 2.18 Build set: walls, doors, windows, props (built)
+- **Draw walls** (SCENE panel): click corner by corner; click the first corner to close a room,
+  double-click / Enter to stop with open walls, Esc to cancel. Corners snap to other walls' corners;
+  lines straighten near 0/45/90° (Shift: 15° steps, Alt: free). Live length readout.
+- Select a wall: drag its round corner handles to reshape; thickness and "closed room" in the panel.
+- **Doors** (single, double, sliding, pocket, bi-fold, barn, garage) and **windows** (standard,
+  casement, double casement, sliding, picture, bay, floor-to-ceiling): drag onto a wall and they
+  snap in, lined up with it; resize with the side handles or the width field; Flip side.
+- **24 props** with their own top-down drawings. Any panel tile can be dragged onto the plan.
+
 ## 3. Gear catalogue & illustrations
 
 ### Catalogue data

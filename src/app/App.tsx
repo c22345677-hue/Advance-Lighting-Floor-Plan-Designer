@@ -13,9 +13,12 @@ import {
   type ProjectKind,
   type SceneDoc,
 } from '../model/project';
-import type { Actor, CastRole, Item } from '../model/types';
+import type { Actor, CastRole, Item, Vec2 } from '../model/types';
+import { nearestWall, wallFromChain } from '../model/walls';
+import { isOpening, libraryItem } from '../library/items';
+import { fixtureById } from '../model/gear';
 import { applyTemplate, getTemplate, type TemplateDefinition, type TemplateValues } from '../templates';
-import { CategoryPanel, type PlaceRequest } from './CategoryPanel';
+import { CategoryPanel, DRAG_TYPE, type PlaceRequest } from './CategoryPanel';
 import { useConfirm } from './confirm';
 import { Dialog } from './Dialog';
 import { EquipmentPanel } from './EquipmentPanel';
@@ -40,7 +43,7 @@ import {
   IconUndo,
 } from './icons';
 import { Inspector } from './Inspector';
-import { clampScale, displayLabel, PlanCanvas, zoomAt, type ExportPng, type Tool, type View } from './PlanCanvas';
+import { clampScale, displayLabel, itemName, PlanCanvas, zoomAt, type ExportPng, type Tool, type View } from './PlanCanvas';
 import { ProjectMenu } from './ProjectMenu';
 import { deleteProject, listProjects, loadGearLists, loadProject, loadStartProject, saveGearLists, saveProject } from './storage';
 import { TemplatePanel } from './TemplatePanel';
@@ -215,6 +218,26 @@ export function App() {
   const switchMode = (m: EditMode) => {
     setMode(m);
     setSelected(null);
+    setWallTool(false);
+    setWallDraft([]);
+  };
+
+  // ---- Draw walls tool (SCENE) ----
+  const [wallTool, setWallToolState] = useState(false);
+  const [wallDraft, setWallDraft] = useState<Vec2[]>([]);
+  const setWallTool = (on: boolean) => {
+    setWallToolState(on);
+    setWallDraft([]);
+    if (on) {
+      setMode('scene');
+      setSelected(null);
+      setTool('move');
+    }
+  };
+  const finishWalls = (closed: boolean) => {
+    const wall = wallFromChain(uid(), wallDraft, closed);
+    if (wall) sd({ type: 'add', setItems: [wall], items: [] });
+    setWallDraft([]); // keep the tool on to draw the next room
   };
 
   const deleteSelected = () => {
@@ -234,8 +257,21 @@ export function App() {
     setSelected(item.id);
   };
 
-  const place = (req: PlaceRequest) => {
-    const pos = viewCenter();
+  const place = (req: PlaceRequest, at?: Vec2) => {
+    const pos = at ?? viewCenter();
+    if ('library' in req && isOpening(req.library.id)) {
+      // A door or window dropped on (or placed near) a wall goes into it.
+      const hit = nearestWall(pos, items, 60);
+      addItem({
+        id: uid(),
+        kind: 'set',
+        catalogId: req.library.id,
+        pos: hit?.point ?? pos,
+        rotationDeg: hit ? ((hit.angleDeg % 360) + 360) % 360 : 0,
+        sizeCm: { w: req.library.sizeCm.w, d: hit?.thicknessCm ?? req.library.sizeCm.d },
+      });
+      return;
+    }
     addItem(
       'fixture' in req
         ? { id: uid(), kind: 'light', catalogId: req.fixture.id, pos, rotationDeg: 0, light: { unitId: nextUnitId(items) } }
@@ -333,7 +369,11 @@ export function App() {
       } else if (k >= '1' && k <= '4') {
         switchMode(EDIT_MODES[Number(k) - 1]!.id);
       } else if (k === 'escape') {
-        setSelected(null);
+        if (wallTool && wallDraft.length) setWallDraft([]);
+        else if (wallTool) setWallTool(false);
+        else setSelected(null);
+      } else if (k === 'enter' && wallTool) {
+        finishWalls(false);
       } else if (e.key === 'Delete' || e.key === 'Backspace') {
         deleteSelected();
       }
@@ -474,7 +514,29 @@ export function App() {
 
 
       <main className="workspace">
-        <div className={`stage tool-${tool}`} ref={stageBox}>
+        <div
+          className={`stage tool-${wallTool ? 'walls' : tool}`}
+          ref={stageBox}
+          onDragOver={(e) => {
+            if (e.dataTransfer.types.includes(DRAG_TYPE)) {
+              e.preventDefault();
+              e.dataTransfer.dropEffect = 'copy';
+            }
+          }}
+          onDrop={(e) => {
+            // A tile dragged from the side panel lands where it is dropped.
+            const ref = e.dataTransfer.getData(DRAG_TYPE);
+            if (!ref || !view) return;
+            e.preventDefault();
+            const box = e.currentTarget.getBoundingClientRect();
+            const at = { x: (e.clientX - box.left - view.x) / view.scale, y: (e.clientY - box.top - view.y) / view.scale };
+            const [kindOf, id] = ref.split(':', 2) as [string, string];
+            const fixture = kindOf === 'fixture' ? fixtureById(id) : undefined;
+            const library = kindOf === 'lib' ? libraryItem(id) : undefined;
+            if (fixture) place({ fixture }, at);
+            else if (library) place({ library }, at);
+          }}
+        >
           {view && size.width > 0 && (
             <PlanCanvas
               width={size.width}
@@ -491,13 +553,23 @@ export function App() {
               mode={mode}
               tool={tool}
               exportRef={exportRef}
+              wallTool={wallTool}
+              wallDraft={wallDraft}
+              onWallDraft={setWallDraft}
+              onWallFinish={finishWalls}
             />
           )}
 
-          <div className={`tool-badge ${tool}`} role="status" aria-live="polite">
-            {tool === 'move' ? <IconMove /> : <IconRotate />}
-            {tool === 'move' ? 'Move' : 'Rotate'} <kbd>{tool === 'move' ? 'W' : 'R'}</kbd>
-          </div>
+          {wallTool ? (
+            <div className="tool-badge walls" role="status" aria-live="polite">
+              Draw walls · {wallDraft.length ? `${wallDraft.length} corner${wallDraft.length > 1 ? 's' : ''}` : 'click to start'}
+            </div>
+          ) : (
+            <div className={`tool-badge ${tool}`} role="status" aria-live="polite">
+              {tool === 'move' ? <IconMove /> : <IconRotate />}
+              {tool === 'move' ? 'Move' : 'Rotate'} <kbd>{tool === 'move' ? 'W' : 'R'}</kbd>
+            </div>
+          )}
 
           <div className="view-controls" role="toolbar" aria-label="View">
             <button className="icon-btn" onClick={() => zoomBy(1 / 1.25)} aria-label="Zoom out" title="Zoom out">
@@ -573,6 +645,10 @@ export function App() {
                 onPlace={place}
                 onPlaceActor={placeActor}
                 onNewPerson={newPerson}
+                wallTool={wallTool}
+                wallDraftCount={wallDraft.length}
+                onWallTool={setWallTool}
+                onWallFinish={() => finishWalls(false)}
               />
             )}
           </div>
@@ -596,7 +672,7 @@ export function App() {
         {gear.limit && <span className="stat accent">Gear list: {activeList?.name}</span>}
         {selectedItem ? (
           <span className="stat accent">
-            {displayLabel(selectedItem, project.actors) || selectedItem.kind} · x {fmtM(selectedItem.pos.x)} · y {fmtM(selectedItem.pos.y)} · {Math.round(selectedItem.rotationDeg)}°
+            {displayLabel(selectedItem, project.actors) || itemName(selectedItem)} · x {fmtM(selectedItem.pos.x)} · y {fmtM(selectedItem.pos.y)} · {Math.round(selectedItem.rotationDeg)}°
           </span>
         ) : (
           <span className="stat hint">

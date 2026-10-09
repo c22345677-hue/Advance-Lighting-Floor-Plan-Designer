@@ -4,7 +4,9 @@ import { modifiersFor } from '../catalog/modifiers';
 import { MODIFIERS } from '../catalog/data';
 import type { Fixture } from '../catalog/schema';
 import { FABRIC_KIND_LABEL, FABRICS, takesFabric, type FabricKind } from '../library/fabrics';
-import { libraryItem } from '../library/items';
+import { isOpening, libraryItem } from '../library/items';
+import { DEFAULT_WALL_CM, wallLength } from '../model/walls';
+import { itemLook } from '../model/gear';
 import {
   itemFixture,
   itemModifiers,
@@ -22,7 +24,7 @@ import { avail, limitingList, type GearScope } from './gearScope';
 import { useConfirm } from './confirm';
 import { IconClose } from './icons';
 import { PersonEditor } from './PersonEditor';
-import { beamDegOf, displayLabel } from './PlanCanvas';
+import { beamDegOf, displayLabel, itemName } from './PlanCanvas';
 
 interface Props {
   item: Item;
@@ -58,7 +60,7 @@ export function Inspector(props: Props) {
   const setLight = (patch: Partial<LightProps>) => onUpdate({ light: { ...item.light, ...patch } });
   const fixture = itemFixture(item);
   const lib = libraryItem(item.catalogId);
-  const name = fixture?.model ?? lib?.name ?? item.kind;
+  const name = itemName(item);
   const actor = item.actorId ? actors.find((a) => a.id === item.actorId) : undefined;
   const confirm = useConfirm();
   const subtitle = actor
@@ -67,7 +69,9 @@ export function Inspector(props: Props) {
       ? fixture
         ? `${fixture.brand} light`
         : 'Stand-in light'
-      : (lib?.name ?? item.kind);
+      : item.wall
+        ? 'Set'
+        : (lib?.name ?? item.kind);
 
   return (
     <>
@@ -94,6 +98,59 @@ export function Inspector(props: Props) {
 
       {item.kind === 'light' && (
         <LightSection item={item} gear={gear} sceneItems={sceneItems} actors={actors} setLight={setLight} onUpdate={onUpdate} />
+      )}
+      {item.wall && (
+        <Section title={item.wall.closed ? 'Room' : 'Walls'}>
+          <p className="hint-text">
+            {(wallLength(item) / 100).toFixed(2)} m of wall. Drag the round corner handles on the plan to reshape it.
+          </p>
+          <label className="field">
+            <span className="field-label">Thickness</span>
+            <span className="input-unit">
+              <input
+                className="text-input num"
+                type="number"
+                min={5}
+                max={60}
+                value={item.wall.thicknessCm ?? DEFAULT_WALL_CM}
+                onChange={(e) =>
+                  onUpdate({ wall: { ...item.wall!, thicknessCm: Math.min(60, Math.max(5, Math.round(Number(e.target.value) || DEFAULT_WALL_CM))) } })
+                }
+              />
+              <span className="unit">cm</span>
+            </span>
+          </label>
+          {item.wall.points.length > 2 && (
+            <label className="field toggle">
+              <span className="field-label">Closed room</span>
+              <input type="checkbox" checked={item.wall.closed} onChange={(e) => onUpdate({ wall: { ...item.wall!, closed: e.target.checked } })} />
+            </label>
+          )}
+        </Section>
+      )}
+      {isOpening(item.catalogId) && (
+        <Section title="Size">
+          <label className="field">
+            <span className="field-label">Width</span>
+            <span className="input-unit">
+              <input
+                className="text-input num"
+                type="number"
+                min={30}
+                max={1000}
+                value={Math.round(itemLook(item).w)}
+                onChange={(e) =>
+                  onUpdate({ sizeCm: { w: Math.min(1000, Math.max(30, Math.round(Number(e.target.value) || 30))), d: itemLook(item).d } })
+                }
+              />
+              <span className="unit">cm</span>
+            </span>
+          </label>
+          <button className="btn" onClick={() => onUpdate({ rotationDeg: (item.rotationDeg + 180) % 360 })}>
+            Flip side
+          </button>
+          <p className="hint-text">Drag it onto a wall to snap in. On the plan, drag the side handles to resize.</p>
+        </Section>
       )}
       {takesFabric(item.catalogId) && (
         <Section title="Fabric">

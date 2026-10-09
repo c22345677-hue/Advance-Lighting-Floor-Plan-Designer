@@ -222,7 +222,7 @@ export function sceneCounts(scene: SceneDoc, rules = true): Counts {
         dept: chroma ? 'grip' : 'art',
         name: chroma ? 'Green screen backdrop' : lib.name,
         unitKg: null,
-        notRented: !chroma && lib.category === 'set',
+        notRented: !chroma && (lib.category === 'set' || lib.category === 'doors' || lib.category === 'windows'),
       });
     }
   }

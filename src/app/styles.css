@@ -539,6 +539,15 @@ select {
   color: #06202e;
 }
 
+.tool-badge.walls {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.stage.tool-walls {
+  cursor: crosshair;
+}
+
 .view-controls {
   position: absolute;
   right: 12px;

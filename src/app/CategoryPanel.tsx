@@ -6,11 +6,15 @@ import { LIBRARY, libraryItem, type LibraryCategory, type LibraryItem } from '..
 import { itemFixture, itemRigWeightKg, standCheck } from '../model/gear';
 import { KIND_ROLES, modeOf, ROLE_LABEL, roleOf, type EditMode, type ProjectKind } from '../model/project';
 import type { Actor, CastRole, Item } from '../model/types';
+import { wallLength } from '../model/walls';
 import { FixtureSearch } from './FixtureSearch';
 import { limitingList, type GearScope } from './gearScope';
-import { displayLabel } from './PlanCanvas';
+import { displayLabel, itemName } from './PlanCanvas';
 
 export type PlaceRequest = { library: LibraryItem } | { fixture: Fixture };
+
+/** Drag-and-drop payload type for panel tiles: "lib:<id>" or "fixture:<id>". */
+export const DRAG_TYPE = 'application/x-lfpd-item';
 
 interface Props {
   mode: EditMode;
@@ -22,6 +26,11 @@ interface Props {
   onPlace: (req: PlaceRequest) => void;
   onPlaceActor: (id: string) => void;
   onNewPerson: (role: CastRole) => void;
+  /** SCENE: Draw walls tool. */
+  wallTool: boolean;
+  wallDraftCount: number;
+  onWallTool: (on: boolean) => void;
+  onWallFinish: () => void;
 }
 
 const kg = (v: number | null) => (v == null ? '? kg' : `${Math.round(v * 10) / 10} kg`);
@@ -29,6 +38,10 @@ const unitNo = (i: Item) => Number(/\d+/.exec(i.light?.unitId ?? '')?.[0] ?? 1e9
 
 /** One-line summary under an item's name in the scene list. */
 function summary(item: Item, actors: Actor[]): { sub: string; warn?: string } {
+  if (item.wall) {
+    const n = item.wall.closed ? item.wall.points.length : item.wall.points.length - 1;
+    return { sub: `${n} wall${n > 1 ? 's' : ''} · ${(wallLength(item) / 100).toFixed(1)} m${item.wall.closed ? ' · closed room' : ''}` };
+  }
   if (item.kind === 'light') {
     const f = itemFixture(item);
     if (!f) return { sub: 'Stand-in · pick the real fixture' };
@@ -68,7 +81,9 @@ function SceneList({ items, actors, empty, onSelect }: { items: Item[]; actors: 
           <li key={i.id}>
             <button className="row" onClick={() => onSelect(i.id)}>
               <span className="row-main">
-                <span className="row-title">{displayLabel(i, actors) || i.kind}</span>
+                <span className="row-title">
+                  {displayLabel(i, actors) || itemName(i)}
+                </span>
                 <span className="row-sub">
                   {s.sub}
                   {s.warn && <span className="warn-text"> · {s.warn}</span>}
@@ -88,7 +103,17 @@ function AddGrid({ category, onPlace }: { category: LibraryCategory; onPlace: Pr
   return (
     <div className="tile-grid">
       {entries.map((i) => (
-        <button key={i.id} className="tile" onClick={() => onPlace({ library: i })}>
+        <button
+          key={i.id}
+          className="tile"
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData(DRAG_TYPE, `lib:${i.id}`);
+            e.dataTransfer.effectAllowed = 'copy';
+          }}
+          onClick={() => onPlace({ library: i })}
+          title="Tap to add in the middle of the view, or drag onto the plan"
+        >
           <span>{i.name}</span>
           <span className="tile-sub">
             {i.sizeCm.w} × {i.sizeCm.d} cm
@@ -99,7 +124,8 @@ function AddGrid({ category, onPlace }: { category: LibraryCategory; onPlace: Pr
   );
 }
 
-export function CategoryPanel({ mode, items, actors, kind, gear, onSelect, onPlace, onPlaceActor, onNewPerson }: Props) {
+export function CategoryPanel(props: Props) {
+  const { mode, items, actors, kind, gear, onSelect, onPlace, onPlaceActor, onNewPerson } = props;
   const mine = items.filter((i) => modeOf(i) === mode);
   const list = (empty: string, rows = mine) => <SceneList items={rows} actors={actors} empty={empty} onSelect={onSelect} />;
 
@@ -184,13 +210,42 @@ export function CategoryPanel({ mode, items, actors, kind, gear, onSelect, onPla
               </button>
             </div>
           </Section>
+          <Section title="Build set">
+            {props.wallTool ? (
+              <>
+                <p className="hint-text">
+                  Click on the plan to place corners. Click the first corner to close the room, or double-click / Enter to stop with
+                  open walls. Corners snap to other walls; lines straighten near 0/45/90° (Shift: 15° steps, Alt: free). Esc cancels.
+                </p>
+                <div className="btn-row">
+                  <button className="btn primary" disabled={props.wallDraftCount < 2} onClick={props.onWallFinish}>
+                    Finish walls
+                  </button>
+                  <button id="draw-walls" className="btn on" onClick={() => props.onWallTool(false)}>
+                    Done drawing
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <button id="draw-walls" className="btn primary big" onClick={() => props.onWallTool(true)}>
+                  Draw walls
+                </button>
+                <p className="hint-text">Draw a room corner by corner. Select a wall afterwards to drag its corners or change its thickness.</p>
+              </>
+            )}
+          </Section>
+          <Section title="Doors">
+            <p className="hint-text">Drag onto a wall and it snaps in. Drag the side handles to resize.</p>
+            <AddGrid category="doors" onPlace={onPlace} />
+          </Section>
+          <Section title="Windows">
+            <AddGrid category="windows" onPlace={onPlace} />
+          </Section>
           <Section title="Set & props in this scene" count={others.length}>
             {list('Nothing yet.', others)}
           </Section>
-          <Section title="Add set">
-            <AddGrid category="set" onPlace={onPlace} />
-          </Section>
-          <Section title="Add props">
+          <Section title="Props">
             <AddGrid category="props" onPlace={onPlace} />
           </Section>
         </>
