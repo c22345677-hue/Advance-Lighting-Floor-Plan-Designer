@@ -148,6 +148,9 @@ export function PlanCanvas(p: Props) {
   const pinch = useRef<{ dist: number; center: Vec2 } | null>(null);
   const rot = useRef<RotateSession | null>(null);
   const [dragging, setDragging] = useState<string | null>(null);
+  /** Alt + drag: the originals, drawn in place while their copy is being dragged. */
+  const [ghosts, setGhosts] = useState<Item[]>([]);
+  const ghostOf = (i: Item): Item => ({ ...i, id: `${i.id}~original` });
   const [outlines, setOutlines] = useState<{ id: string; x: number; y: number; width: number; height: number }[]>([]);
   const all = sceneItems(scene);
   const visible = all.filter((i) => !i.hidden);
@@ -546,6 +549,12 @@ export function PlanCanvas(p: Props) {
         onDragStart={() => {
           setDragging(item.id);
           groupDrag.current = groupOf(item).map((o) => ({ id: o.id, item: o }));
+          if (altCopy.current === item.id) {
+            // Alt + drag: the originals stay drawn where they were while the copy is dragged away.
+            const moving = [item, ...groupDrag.current.map((g) => g.item)];
+            const wallIds = new Set(moving.filter((m) => m.wall).map((m) => m.id));
+            setGhosts([...moving, ...all.filter((o) => o.inWall && wallIds.has(o.inWall.wallId) && !moving.includes(o))]);
+          }
         }}
         onDragMove={(e) => {
           const pos = { x: e.target.x(), y: e.target.y() };
@@ -567,6 +576,7 @@ export function PlanCanvas(p: Props) {
         }}
         onDragEnd={(e) => {
           setDragging(null);
+          setGhosts([]);
           setOpeningGuide(null);
           const pos = { x: e.target.x(), y: e.target.y() };
           let patch: Partial<Item>;
@@ -734,8 +744,15 @@ export function PlanCanvas(p: Props) {
         />
         {showGrid && grid}
         {visible.map(beam)}
+        {ghosts.map((g) => beam(ghostOf(g)))}
       </Layer>
       <Layer>
+        {ghosts.map((g) => (
+          <Group key={`${g.id}~original`} x={g.pos.x} y={g.pos.y} rotation={g.rotationDeg} listening={false}>
+            <ItemShape item={g} actors={actors} colors={colors} />
+          </Group>
+        ))}
+        {ghosts.filter((g) => g.id === dragging).map((g) => label(ghostOf(g)))}
         {visible
           .filter((i) => scene.setItems.includes(i))
           .sort((a, b) => Number(!!b.wall) - Number(!!a.wall)) /* walls under doors and windows */
