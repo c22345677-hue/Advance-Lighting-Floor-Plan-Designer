@@ -604,6 +604,7 @@ export function App() {
               wallDraft={wallDraft}
               onWallDraft={setDraft}
               onWallFinish={finishWalls}
+              onWallExit={() => setWallTool(false)}
               wallExtend={wallExtend}
               onWallInsert={insertCorner}
               wallSnap={prefs.wallSnap}

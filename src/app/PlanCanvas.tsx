@@ -107,6 +107,8 @@ interface Props {
   wallDraft: Vec2[];
   onWallDraft: (points: Vec2[], extend?: WallExtend) => void;
   onWallFinish: (closed: boolean) => void;
+  /** Right-click with nothing being drawn: leave the tool. */
+  onWallExit: () => void;
   /** The open wall the draft continues, if it started on one of its ends. */
   wallExtend: WallExtend | null;
   /** Click on a wall (not a corner) with the tool: add a corner there. */
@@ -352,6 +354,13 @@ export function PlanCanvas(p: Props) {
   // clicking corners fast; a double-click here means two clicks on the same spot.
   const lastClick = useRef<{ t: number; x: number; y: number } | null>(null);
   const wallClick = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
+    if ('button' in e.evt && e.evt.button === 2) {
+      // Right-click ends the walls being drawn, or leaves the tool when there are none.
+      lastClick.current = null;
+      if (p.wallDraft.length) p.onWallFinish(false);
+      else p.onWallExit();
+      return;
+    }
     if ('button' in e.evt && e.evt.button !== 0) return;
     const ptr = worldPointer();
     const scr = stageRef.current?.getPointerPosition();
@@ -554,6 +563,7 @@ export function PlanCanvas(p: Props) {
       scaleX={view.scale}
       scaleY={view.scale}
       onWheel={onWheel}
+      onContextMenu={(e) => p.wallTool && e.evt.preventDefault()}
       onMouseMove={(e) => rot.current && moveRotate(e.evt.shiftKey)}
       onMouseUp={endRotate}
       onTouchMove={onTouchMove}

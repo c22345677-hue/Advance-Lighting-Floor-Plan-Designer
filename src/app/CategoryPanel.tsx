@@ -225,7 +225,7 @@ export function CategoryPanel(props: Props) {
                   <li>Click on the plan to place corners. Click the first corner to close the room.</li>
                   <li>Click the end of an open wall to continue it.</li>
                   <li>Click on a wall to add a corner to it; click that corner to start a new wall from there.</li>
-                  <li>Double-click or Enter ends open walls so you can start another. Esc cancels.</li>
+                  <li>Right-click, double-click or Enter ends open walls so you can start another. Right-click again to stop drawing. Esc cancels.</li>
                 </ul>
               </>
             ) : (
