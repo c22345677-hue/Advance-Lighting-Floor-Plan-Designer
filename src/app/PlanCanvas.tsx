@@ -152,6 +152,8 @@ export function PlanCanvas(p: Props) {
   const [hover, setHover] = useState<Vec2 | null>(null);
   /** What a click would do on an existing wall, shown next to the pointer. */
   const [hoverHint, setHoverHint] = useState<string | null>(null);
+  /** Wall segment a new corner would split (its two lengths are shown live). */
+  const [hoverSplit, setHoverSplit] = useState<[Vec2, Vec2] | null>(null);
   const snapRadius = 14 / view.scale;
 
   const node = (id: string) => stageRef.current?.findOne((n: Konva.Node) => n.id() === id);
@@ -419,7 +421,14 @@ export function PlanCanvas(p: Props) {
     if (end) return { kind: 'continue' as const, end };
     if (onWallCorner(ptr, walls, snapRadius)) return null;
     const hit = nearestWall(ptr, walls, Math.max(snapRadius, DEFAULT_WALL_CM / 2));
-    return hit ? { kind: 'insert' as const, hit } : null;
+    const seg = hit && wallSegments(walls.find((w) => w.id === hit.wallId)!)[hit.seg];
+    if (!hit || !seg) return null;
+    // Whole centimetres from the first corner, so the readouts are exact.
+    const len = Math.hypot(seg[1].x - seg[0].x, seg[1].y - seg[0].y);
+    const offsetCm = Math.min(len, Math.max(0, Math.round(hit.offsetCm)));
+    const t = len ? offsetCm / len : 0;
+    const point = { x: seg[0].x + (seg[1].x - seg[0].x) * t, y: seg[0].y + (seg[1].y - seg[0].y) * t };
+    return { kind: 'insert' as const, hit: { ...hit, offsetCm, point }, seg };
   };
   // Konva's own dblclick fires for two quick clicks anywhere, which would end a wall while
   // clicking corners fast; a double-click here means two clicks on the same spot.
@@ -766,6 +775,7 @@ export function PlanCanvas(p: Props) {
                 const act = ptr ? wallAction(ptr, e.evt) : null;
                 setHover(!ptr ? null : act?.kind === 'continue' ? act.end.point : act ? act.hit.point : snapDraft(ptr, e.evt));
                 setHoverHint(act?.kind === 'continue' ? 'Continue this wall' : act ? 'Add a corner' : null);
+                setHoverSplit(act?.kind === 'insert' ? act.seg : null);
               }}
               onMouseEnter={() => setCursor('crosshair')}
               onMouseLeave={() => setHover(null)}
@@ -778,6 +788,7 @@ export function PlanCanvas(p: Props) {
               draft={p.wallDraft}
               hover={hover}
               hint={hoverHint}
+              split={hoverSplit}
               closeAt={hover && closesRoom(hover) ? closeTarget() : null}
               scale={view.scale}
               colors={colors}
@@ -861,6 +872,7 @@ function WallDraft({
   draft,
   hover,
   hint,
+  split,
   closeAt,
   scale,
   colors: c,
@@ -868,6 +880,7 @@ function WallDraft({
   draft: Vec2[];
   hover: Vec2 | null;
   hint: string | null;
+  split: [Vec2, Vec2] | null;
   closeAt: Vec2 | null;
   scale: number;
   colors: CanvasColors;
@@ -885,6 +898,33 @@ function WallDraft({
         <Circle key={i} x={q.x} y={q.y} radius={5 * px} fill={c.select} />
       ))}
       {closeAt && <Circle x={closeAt.x} y={closeAt.y} radius={13 * px} stroke={c.select} strokeWidth={3 * px} />}
+      {hover &&
+        split &&
+        split.map((end, i) => {
+          const len = Math.hypot(end.x - hover.x, end.y - hover.y);
+          if (len < 1) return null;
+          // Each part's length beside its middle, pushed off the wall.
+          const segLen = Math.hypot(split[1].x - split[0].x, split[1].y - split[0].y) || 1;
+          const nx = -(split[1].y - split[0].y) / segLen;
+          const ny = (split[1].x - split[0].x) / segLen;
+          const off = 22 * px;
+          return (
+            <Group key={`split${i}`}>
+              <Line points={[hover.x, hover.y, end.x, end.y]} stroke={c.select} strokeWidth={2 * px} />
+              <Circle x={end.x} y={end.y} radius={4 * px} fill={c.select} />
+              <Text
+                x={(hover.x + end.x) / 2 + nx * off - 30 * px}
+                y={(hover.y + end.y) / 2 + ny * off - 7 * px}
+                width={60 * px}
+                align="center"
+                text={`${(len / 100).toFixed(2)} m`}
+                fontSize={13 * px}
+                fontFamily="'IBM Plex Mono', monospace"
+                fill={c.label}
+              />
+            </Group>
+          );
+        })}
       {hover && hint && (
         <>
           <Circle x={hover.x} y={hover.y} radius={9 * px} stroke={c.select} strokeWidth={2 * px} />
