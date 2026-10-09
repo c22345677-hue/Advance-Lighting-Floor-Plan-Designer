@@ -269,6 +269,15 @@ export function App() {
     finishWalls(false);
     setWallTool(false);
   };
+  /** Any other action (selecting, adding, another tool, a dialog) ends wall drawing, keeping what was drawn. */
+  const leaveWalls = () => wallTool && doneWalls();
+  const chooseTool = (t: Tool) => {
+    leaveWalls();
+    setTool(t);
+  };
+  useEffect(() => {
+    if (selection.length || dialog) leaveWalls();
+  }, [selection, dialog]);
 
   const deleteSelected = () => {
     if (selection.length) sd({ type: 'delete', ids: selection });
@@ -281,6 +290,7 @@ export function App() {
   };
 
   const addItem = (item: Item) => {
+    leaveWalls();
     const isSet = item.kind === 'set';
     sd({ type: 'add', setItems: isSet ? [item] : [], items: isSet ? [] : [item] });
     setMode(modeOf(item));
@@ -403,6 +413,7 @@ export function App() {
   };
 
   const exportPng = () => {
+    leaveWalls();
     const url = exportRef.current?.();
     if (!url) return;
     const a = document.createElement('a');
@@ -446,9 +457,9 @@ export function App() {
         e.preventDefault();
         setDialog('help');
       } else if (k === 'w') {
-        setTool('move');
+        chooseTool('move');
       } else if (k === 'r') {
-        setTool('rotate');
+        chooseTool('rotate');
       } else if (k >= '1' && k <= '4') {
         switchMode(EDIT_MODES[Number(k) - 1]!.id);
       } else if (k === 'escape') {
@@ -531,7 +542,7 @@ export function App() {
             role="radio"
             aria-checked={tool === 'move'}
             className={`tool-btn ${tool === 'move' ? 'on' : ''}`}
-            onClick={() => setTool('move')}
+            onClick={() => chooseTool('move')}
             title="Move: drag items (W)"
           >
             <IconMove /> <span className="lbl">Move</span> <kbd>W</kbd>
@@ -541,7 +552,7 @@ export function App() {
             role="radio"
             aria-checked={tool === 'rotate'}
             className={`tool-btn rotate ${tool === 'rotate' ? 'on' : ''}`}
-            onClick={() => setTool('rotate')}
+            onClick={() => chooseTool('rotate')}
             title="Rotate: drag an item to turn it (R)"
           >
             <IconRotate /> <span className="lbl">Rotate</span> <kbd>R</kbd>
@@ -577,6 +588,7 @@ export function App() {
                 confirm: 'Reset',
               });
               if (ok) {
+                leaveWalls();
                 sd({ type: 'reset' });
                 setSelected(null);
                 if (scene.baseline) setView(null);
