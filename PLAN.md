@@ -43,8 +43,8 @@ Project (production)
   view by accident); zoom with the wheel. Tablets: two-finger drag and pinch.
 - Tap a library item to place it. You can then drag, rotate (handle or two-finger twist),
   resize where it makes sense, duplicate, delete, lock and hide it.
-- Box select, multi-select, align and distribute, copy/paste, plus snap to grid or to other
-  objects (toggle).
+- Box select, multi-select, align and distribute, copy/paste. No snapping: items are placed
+  freely. The grid can be shown or hidden.
 - Undo/redo, with on-screen buttons because tablets have no keyboard.
 - Labels with leader lines (as in the reference), and free text notes and arrows.
 - Layers panel with lock and visibility per layer and per category.
@@ -285,7 +285,7 @@ Start a plan from a ready-made setup, then adjust it.
   item: name → what it is (fixture/modifiers/stand, fabric, focus, person) → position → actions.
 - **Templates and Gear list** open as dialogs (project setup, not per category). A new project
   opens Templates first.
-- **View controls** (zoom, fit, snap) float bottom-right on the plan; the tool badge sits top-left.
+- **View controls** (zoom, fit, show/hide grid) float bottom-right on the plan; the tool badge sits top-left.
 - **Phones**: three short top rows; the side panel becomes a bottom sheet whose header is always
   visible.
 

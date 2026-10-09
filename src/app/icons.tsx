@@ -71,7 +71,7 @@ export const IconFit = () => (
     <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
   </Svg>
 );
-export const IconSnap = () => (
+export const IconGrid = () => (
   <Svg>
     <path d="M4 8h16M4 16h16M8 4v16M16 4v16" />
   </Svg>

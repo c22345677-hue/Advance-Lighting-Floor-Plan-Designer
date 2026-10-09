@@ -33,12 +33,12 @@ import {
   IconRedo,
   IconReset,
   IconRotate,
-  IconSnap,
+  IconGrid,
   IconTemplates,
   IconUndo,
 } from './icons';
 import { Inspector } from './Inspector';
-import { clampScale, displayLabel, PlanCanvas, snap, zoomAt, type ExportPng, type Tool, type View } from './PlanCanvas';
+import { clampScale, displayLabel, PlanCanvas, zoomAt, type ExportPng, type Tool, type View } from './PlanCanvas';
 import { ProjectMenu } from './ProjectMenu';
 import { deleteProject, listProjects, loadGearLists, loadProject, loadStartProject, saveGearLists, saveProject } from './storage';
 import { TemplatePanel } from './TemplatePanel';
@@ -119,19 +119,18 @@ function scaleBar(scale: number): { cm: number; px: number; label: string } {
 
 const fmtM = (cm: number) => `${(cm / 100).toFixed(2)} m`;
 
-const SNAP_CM = 25;
 
 /** Small per-device settings, kept in localStorage. */
 interface Prefs {
-  snap: boolean;
+  grid: boolean;
   volts: 230 | 120;
 }
 const PREFS_KEY = 'lfpd.prefs.v1';
 function loadPrefs(): Prefs {
   try {
-    return { snap: true, volts: 230, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') };
+    return { grid: true, volts: 230, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') };
   } catch {
-    return { snap: true, volts: 230 };
+    return { grid: true, volts: 230 };
   }
 }
 
@@ -225,7 +224,6 @@ export function App() {
     const v = view ?? { x: 0, y: 0, scale: 1 };
     return { x: (size.width / 2 - v.x) / v.scale, y: (size.height / 2 - v.y) / v.scale };
   };
-  const snapCm = prefs.snap ? SNAP_CM : null;
 
   const addItem = (item: Item) => {
     const isSet = item.kind === 'set';
@@ -235,7 +233,7 @@ export function App() {
   };
 
   const place = (req: PlaceRequest) => {
-    const pos = snap(viewCenter(), snapCm);
+    const pos = viewCenter();
     addItem(
       'fixture' in req
         ? { id: uid(), kind: 'light', catalogId: req.fixture.id, pos, rotationDeg: 0, light: { unitId: nextUnitId(items) } }
@@ -251,7 +249,7 @@ export function App() {
   };
 
   const placeActor = (actorId: string) =>
-    addItem({ id: uid(), kind: 'person', catalogId: 'generic.person', actorId, pos: snap(viewCenter(), snapCm), rotationDeg: 180 });
+    addItem({ id: uid(), kind: 'person', catalogId: 'generic.person', actorId, pos: viewCenter(), rotationDeg: 180 });
 
   /** Create a new cast member and put them in the scene. */
   const newPerson = (role: CastRole) => {
@@ -484,7 +482,7 @@ export function App() {
               selected={selected}
               onSelect={setSelected}
               colors={colors}
-              snapCm={snapCm}
+              showGrid={prefs.grid}
               mode={mode}
               tool={tool}
               exportRef={exportRef}
@@ -508,14 +506,14 @@ export function App() {
             </button>
             <span className="vsep" aria-hidden="true" />
             <button
-              id="snap"
-              className={`icon-btn ${prefs.snap ? 'on' : ''}`}
-              aria-pressed={prefs.snap}
-              onClick={() => setPrefs((p) => ({ ...p, snap: !p.snap }))}
-              aria-label="Snap to 25 cm grid"
-              title={prefs.snap ? 'Snap to 25 cm: on' : 'Snap to 25 cm: off'}
+              id="grid-toggle"
+              className={`icon-btn ${prefs.grid ? 'on' : ''}`}
+              aria-pressed={prefs.grid}
+              onClick={() => setPrefs((p) => ({ ...p, grid: !p.grid }))}
+              aria-label={prefs.grid ? 'Hide grid' : 'Show grid'}
+              title={prefs.grid ? 'Hide grid' : 'Show grid'}
             >
-              <IconSnap />
+              <IconGrid />
             </button>
           </div>
 

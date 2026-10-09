@@ -41,8 +41,6 @@ export function zoomAt(view: View, factor: number, at: Vec2): View {
   return { scale, x: at.x - wx * scale, y: at.y - wy * scale };
 }
 
-export const snap = (p: Vec2, step: number | null): Vec2 =>
-  step ? { x: Math.round(p.x / step) * step, y: Math.round(p.y / step) * step } : p;
 
 /** Beam angle for a light: set on the item, else the library default, else 60°. */
 export const beamDegOf = (item: Item): number =>
@@ -76,7 +74,8 @@ interface Props {
   selected: string | null;
   onSelect: (id: string | null) => void;
   colors: CanvasColors;
-  snapCm: number | null;
+  /** Show the 50 cm grid (hidden it gives a clean plan; it is also left out of exports then). */
+  showGrid: boolean;
   mode: EditMode;
   tool: Tool;
   exportRef: MutableRefObject<ExportPng | null>;
@@ -91,7 +90,7 @@ interface RotateSession {
 }
 
 export function PlanCanvas(p: Props) {
-  const { width, height, view, onView, scene, actors, dispatch, selected, onSelect, colors, snapCm, mode, tool } = p;
+  const { width, height, view, onView, scene, actors, dispatch, selected, onSelect, colors, showGrid, mode, tool } = p;
   const stageRef = useRef<Konva.Stage>(null);
   const trRef = useRef<Konva.Transformer>(null);
   const pinch = useRef<{ dist: number; center: Vec2 } | null>(null);
@@ -308,8 +307,7 @@ export function PlanCanvas(p: Props) {
         onDragMove={(e) => follow(item, { x: e.target.x(), y: e.target.y() })}
         onDragEnd={(e) => {
           setDragging(null);
-          const pos = snap({ x: e.target.x(), y: e.target.y() }, snapCm);
-          e.target.position(pos);
+          const pos = { x: e.target.x(), y: e.target.y() };
           follow(item, pos);
           dispatch({ type: 'move', id: item.id, pos });
         }}
@@ -391,7 +389,7 @@ export function PlanCanvas(p: Props) {
           height={height / view.scale}
           fill={colors.canvas}
         />
-        {grid}
+        {showGrid && grid}
         {visible.map(beam)}
       </Layer>
       <Layer>
