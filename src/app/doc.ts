@@ -26,7 +26,7 @@ export type Action =
   | { type: 'addActor'; actor: Actor }
   | { type: 'updateActor'; id: string; patch: Partial<Omit<Actor, 'id'>> }
   | { type: 'deleteActor'; id: string }
-  | { type: 'setProject'; patch: Partial<Pick<Project, 'name' | 'gearListId' | 'gearLimit'>> }
+  | { type: 'setProject'; patch: Partial<Pick<Project, 'name' | 'kind' | 'gearListId' | 'gearLimit'>> }
   | { type: 'load'; project: Project }
   | { type: 'undo' }
   | { type: 'redo' };

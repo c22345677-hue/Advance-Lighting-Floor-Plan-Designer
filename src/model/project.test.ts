@@ -73,11 +73,22 @@ describe('project', () => {
 
   it('sorts items into edit modes', () => {
     expect(modeOf(item('l', { kind: 'light' }))).toBe('lights');
-    expect(modeOf(item('g', { kind: 'grip' }))).toBe('lights');
+    expect(modeOf(item('g', { kind: 'grip' }))).toBe('grip');
     expect(modeOf(item('c', { kind: 'camera' }))).toBe('camera');
     expect(modeOf(item('d', { kind: 'set', catalogId: 'generic.camera.dolly' }))).toBe('camera');
     expect(modeOf(item('p', { kind: 'person' }))).toBe('scene');
     expect(modeOf(item('w', { kind: 'set', catalogId: 'generic.set.wall' }))).toBe('scene');
+  });
+});
+
+describe('cast roles', () => {
+  it('names new people by role and counts each role separately', () => {
+    const a = newActor([]);
+    expect(a).toMatchObject({ name: 'Actor 1', role: 'actor' });
+    const ee = newActor([a], { role: 'interviewee' });
+    expect(ee.name).toBe('Interviewee 1');
+    expect(newActor([a, ee], { role: 'interviewee' }).name).toBe('Interviewee 2');
+    expect(newActor([a, ee], { role: 'interviewer', gender: 'female' })).toMatchObject({ name: 'Interviewer 1', gender: 'female' });
   });
 });
 

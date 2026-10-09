@@ -76,6 +76,8 @@ export interface TemplateDefinition {
   id: string;
   name: string;
   description: string;
+  /** Production types it is offered for (picked first in the Templates panel). */
+  kinds: ('narrative' | 'doc')[];
   /** True until its real layout has been defined; the UI can label it "draft". */
   placeholder?: boolean;
   options: OptionDef[];

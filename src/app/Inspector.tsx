@@ -13,6 +13,7 @@ import {
   standCheck,
   standsFor,
 } from '../model/gear';
+import type { ProjectKind } from '../model/project';
 import type { Actor, Item, LightProps } from '../model/types';
 import { ActorEditor } from './ActorsPanel';
 import { avail, limitingList, type GearScope } from './gearScope';
@@ -24,6 +25,7 @@ interface Props {
   /** Everything in the scene (for camera focus targets). */
   sceneItems: Item[];
   actors: Actor[];
+  kind: ProjectKind;
   gear: GearScope;
   onUpdate: (patch: Partial<Omit<Item, 'id'>>) => void;
   onUpdateActor: (id: string, patch: Partial<Omit<Actor, 'id'>>) => void;
@@ -34,7 +36,7 @@ interface Props {
 const kg = (v: number | null | undefined) => (v == null ? '?' : `${Math.round(v * 100) / 100} kg`);
 
 export function Inspector(props: Props) {
-  const { item, sceneItems, actors, gear, onUpdate, onUpdateActor, onDuplicate, onDelete } = props;
+  const { item, sceneItems, actors, kind, gear, onUpdate, onUpdateActor, onDuplicate, onDelete } = props;
   const setLight = (patch: Partial<LightProps>) => onUpdate({ light: { ...item.light, ...patch } });
   const name = itemFixture(item)?.model ?? libraryItem(item.catalogId)?.name ?? item.kind;
   const actor = item.actorId ? actors.find((a) => a.id === item.actorId) : undefined;
@@ -47,7 +49,7 @@ export function Inspector(props: Props) {
       {actor ? (
         <>
           <p className="muted small">Changes apply to {actor.name} in every scene.</p>
-          <ActorEditor actor={actor} onUpdate={(patch) => onUpdateActor(actor.id, patch)} />
+          <ActorEditor actor={actor} kind={kind} onUpdate={(patch) => onUpdateActor(actor.id, patch)} />
         </>
       ) : (
       <label className="field">
@@ -105,7 +107,7 @@ function CameraSection({ item, sceneItems, actors, onUpdate }: Pick<Props, 'item
           onChange={(e) => setFocus(e.target.checked ? inScene[0]?.id : undefined)}
         />
       </label>
-      {inScene.length === 0 && <p className="muted small">Place an actor in this scene to focus on them.</p>}
+      {inScene.length === 0 && <p className="muted small">Place a person in this scene to focus on them.</p>}
       {focus && (
         <>
           <select value={focus} onChange={(e) => setFocus(e.target.value)} aria-label="Focus on actor">
@@ -116,7 +118,7 @@ function CameraSection({ item, sceneItems, actors, onUpdate }: Pick<Props, 'item
             ))}
             {!inScene.some((a) => a.id === focus) && <option value={focus}>(not in this scene)</option>}
           </select>
-          <p className="muted small">The camera turns to face this actor whenever either of them moves.</p>
+          <p className="muted small">The camera turns to face this person whenever either of them moves.</p>
         </>
       )}
     </section>

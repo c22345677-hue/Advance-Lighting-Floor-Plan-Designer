@@ -256,12 +256,16 @@ Start a plan from a ready-made setup, then adjust it.
 ---
 
 ### 2.16 Edit categories, tools, cast and job gear
-- **Top menu categories**: LIGHTS (lights and grip), CAMERA (cameras, dolly, video village) and
-  SCENE (actors, set pieces, props). Only items of the active category can be selected and
-  moved; everything else is locked and dimmed. Keys 1–3 switch category.
+- **Top menu categories**: LIGHTS, GRIP (flags, frames, stands, sandbags), CAMERA (cameras,
+  dolly, video village) and SCENE (people, set pieces, props). Only items of the active
+  category can be selected and moved; everything else is locked and dimmed. Keys 1–4.
 - **Tools**: `W` select and move, `R` select and drag to rotate (5° steps, Shift = 45°).
-- **Actors** belong to the project and persist across all its scenes: name, colour and gender
-  (male/female icons). Each scene places the actors it needs.
+- **Production type** (picked first in Templates): **Narrative** — people are Actors (default);
+  **Doc** — people are Interviewees and Interviewers. The role is only a name: every person keeps
+  name, colour and gender (male/female icon) across all scenes, and cameras can focus on any.
+  The Add section (SCENE) has "+ Actor" or "+ Interviewee / + Interviewer"; a person's role can
+  be switched later. The Interview template always places at least one interviewee and one
+  interviewer (beside camera A).
 - **Camera focus on**: a camera can follow one actor; it turns to face them whenever either moves.
 - **Job gear list**: a saved list of fixtures, modifiers and stands with quantities. With
   "Only use this list" on, the library, modifier and stand pickers only offer that gear, and

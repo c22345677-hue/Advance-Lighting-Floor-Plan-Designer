@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import type { ProjectKind } from '../model/project';
 import {
   listTemplates,
   repeatItemLabel,
@@ -11,26 +12,48 @@ import {
 } from '../templates';
 
 interface Props {
+  kind: ProjectKind;
+  onKind: (kind: ProjectKind) => void;
   onAdd: (template: TemplateDefinition, values: TemplateValues) => void;
 }
 
-export function TemplatePanel({ onAdd }: Props) {
-  const templates = listTemplates();
+const KINDS: { id: ProjectKind; label: string; hint: string }[] = [
+  { id: 'narrative', label: 'Narrative', hint: 'People are actors.' },
+  { id: 'doc', label: 'Doc', hint: 'People are interviewees and interviewers.' },
+];
+
+export function TemplatePanel({ kind, onKind, onAdd }: Props) {
+  const templates = listTemplates().filter((t) => t.kinds.includes(kind));
   const [templateId, setTemplateId] = useState(templates[0]?.id ?? '');
   const [input, setInput] = useState<Record<string, Partial<TemplateValues>>>({});
-  const template = templates.find((t) => t.id === templateId);
+  const template = templates.find((t) => t.id === templateId) ?? templates[0];
   const values = useMemo(
     () => (template ? resolveOptions(template.options, input[template.id]) : {}),
     [template, input],
   );
 
-  if (!template) return null;
+  const kindPicker = (
+    <div className="kind-picker">
+      <span className="field-label">Production</span>
+      <div className="segmented" role="radiogroup" aria-label="Production type">
+        {KINDS.map((k) => (
+          <button key={k.id} id={`kind-${k.id}`} role="radio" aria-checked={kind === k.id} onClick={() => onKind(k.id)} title={k.hint}>
+            {k.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  if (!template) return <div className="panel-body">{kindPicker}</div>;
 
   const set = (key: string, v: ScalarValue | ScalarValues[]) =>
     setInput((all) => ({ ...all, [template.id]: { ...values, [key]: v } }));
 
   return (
     <div className="panel-body">
+      {kindPicker}
+      <p className="muted small">{KINDS.find((k) => k.id === kind)!.hint}</p>
       <div className="template-list" role="tablist" aria-label="Templates">
         {templates.map((t) => (
           <button

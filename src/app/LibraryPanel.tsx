@@ -3,7 +3,8 @@ import { isWeatherSealed, SIZE_CLASSES, sizeClass, type SizeClass } from '../cat
 import type { Fixture } from '../catalog/schema';
 import { CATEGORY_LABELS, LIBRARY, type LibraryCategory, type LibraryItem } from '../library/items';
 import { BRANDS, filterFixtures, RIGGING_PICKS } from '../model/gear';
-import type { EditMode } from '../model/project';
+import { KIND_ROLES, ROLE_LABEL, roleOf, type EditMode, type ProjectKind } from '../model/project';
+import type { Actor, CastRole } from '../model/types';
 import { avail, limitingList, NO_GEAR, type GearScope } from './gearScope';
 
 export type PlaceRequest = { library: LibraryItem } | { fixture: Fixture };
@@ -12,16 +13,23 @@ interface Props {
   mode: EditMode;
   gear: GearScope;
   onPlace: (req: PlaceRequest) => void;
+  /** Cast, for the People category. */
+  kind: ProjectKind;
+  actors: Actor[];
+  placed: Set<string>;
+  onNewPerson: (role: CastRole) => void;
+  onPlaceActor: (id: string) => void;
 }
 
-/** Library categories offered in each edit mode. Actors are placed from the Actors tab. */
+/** Library categories offered in each edit mode. */
 const MODE_CATEGORIES: Record<EditMode, LibraryCategory[]> = {
-  lights: ['lights', 'grip'],
+  lights: ['lights'],
+  grip: ['grip'],
   camera: ['camera'],
-  scene: ['set', 'props', 'people'],
+  scene: ['people', 'set', 'props'],
 };
 
-export function LibraryPanel({ mode, gear, onPlace }: Props) {
+export function LibraryPanel({ mode, gear, onPlace, kind, actors, placed, onNewPerson, onPlaceActor }: Props) {
   const categories = MODE_CATEGORIES[mode];
   const [picked, setCategory] = useState<LibraryCategory>(categories[0]!);
   const category = categories.includes(picked) ? picked : categories[0]!;
@@ -37,7 +45,34 @@ export function LibraryPanel({ mode, gear, onPlace }: Props) {
         ))}
       </div>
       {category === 'lights' && <FixtureSearch gear={gear} onPick={(fixture) => onPlace({ fixture })} />}
-      {category === 'people' && <p className="muted small">Actors are added and placed from the Actors tab.</p>}
+      {category === 'people' && (
+        <div className="cast-add">
+          <div className="btn-row">
+            {KIND_ROLES[kind].map((r) => (
+              <button key={r} id={`new-${r}`} className="primary" onClick={() => onNewPerson(r)}>
+                + {ROLE_LABEL[r]}
+              </button>
+            ))}
+          </div>
+          {actors.some((a) => !placed.has(a.id)) && (
+            <>
+              <p className="muted small">Not in this scene yet:</p>
+              <div className="lib-grid">
+                {actors
+                  .filter((a) => !placed.has(a.id))
+                  .map((a) => (
+                    <button key={a.id} className="lib-item" onClick={() => onPlaceActor(a.id)}>
+                      <span>
+                        <span className="dot" style={{ background: a.color }} /> {a.name}
+                      </span>
+                      <span className="lib-size">{ROLE_LABEL[roleOf(a)]}</span>
+                    </button>
+                  ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
       <div className="lib-grid">
         {generic.map((i) => (
           <button key={i.id} className="lib-item" onClick={() => onPlace({ library: i })}>

@@ -6,6 +6,7 @@ export const greenScreen: TemplateDefinition = {
   id: 'green-screen',
   name: 'Green screen',
   description: 'Subjects in front of a chroma key screen.',
+  kinds: ['doc', 'narrative'],
   placeholder: true,
   options: [
     countOption('subjects', 'Subjects', 1, 4),

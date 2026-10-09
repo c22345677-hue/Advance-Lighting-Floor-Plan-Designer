@@ -2,16 +2,19 @@ import { useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } fro
 import { nextUnitId, powerTotals } from '../model/gear';
 import { gearUsage, type GearList } from '../model/gearList';
 import {
+  castTitle,
   EDIT_MODES,
+  KIND_ROLES,
   modeOf,
   newActor,
   newProject,
   sceneItems,
   type EditMode,
   type Project,
+  type ProjectKind,
   type SceneDoc,
 } from '../model/project';
-import type { Actor, Item } from '../model/types';
+import type { Actor, CastRole, Item } from '../model/types';
 import { applyTemplate, getTemplate, type TemplateDefinition, type TemplateValues } from '../templates';
 import { ActorsPanel } from './ActorsPanel';
 import { reducer, type SceneAction } from './doc';
@@ -29,33 +32,40 @@ import { useCanvasColors } from './theme';
 const uid = () => crypto.randomUUID();
 
 /**
- * Template people become project actors: an actor with the same name is reused when they
- * aren't already in the scene, otherwise a new actor is created.
+ * Template people join the project's cast. Their role comes from the template (interviewer,
+ * interviewee) or the production type; a cast member with the same name is reused when not
+ * already in the scene, otherwise a new one is created.
  */
-function castTemplateItems(items: Item[], actors: Actor[], scene: Item[]): { items: Item[]; added: Actor[] } {
+function castTemplateItems(
+  items: Item[],
+  actors: Actor[],
+  scene: Item[],
+  kind: ProjectKind,
+): { items: Item[]; added: Actor[] } {
   const added: Actor[] = [];
   const taken = new Set(scene.map((i) => i.actorId).filter(Boolean));
   const out = items.map((i) => {
-    if (i.kind !== 'person' || !i.label) return i;
+    if (i.kind !== 'person') return i;
+    const { label, castRole, ...rest } = i;
+    const role: CastRole = castRole ?? KIND_ROLES[kind][0]!;
     const roster = [...actors, ...added];
-    let actor = roster.find((a) => a.name === i.label && !taken.has(a.id));
+    let actor = label ? roster.find((a) => a.name === label && !taken.has(a.id)) : undefined;
     if (!actor) {
-      actor = newActor(roster, 'male', i.label);
+      actor = newActor(roster, { role, name: label });
       added.push(actor);
     }
     taken.add(actor.id);
-    const { label: _label, ...rest } = i;
     return { ...rest, actorId: actor.id };
   });
   return { items: out, added };
 }
 
 function sampleProject(): Project {
-  const p = newProject('Sample interview');
+  const p: Project = { ...newProject('Sample interview'), kind: 'doc' };
   const t = getTemplate('interview');
   if (!t) return p;
-  const r = applyTemplate(t, { interviewees: 1, cameras: 2 }, { origin: { x: 0, y: 0 } });
-  const cast = castTemplateItems(r.shots.flatMap((s) => s.items), [], []);
+  const r = applyTemplate(t, { interviewees: 1, interviewers: 1, cameras: 2 }, { origin: { x: 0, y: 0 } });
+  const cast = castTemplateItems(r.shots.flatMap((s) => s.items), [], [], 'doc');
   p.actors = cast.added;
   p.scenes[0] = { ...p.scenes[0]!, setItems: r.setItems, items: cast.items };
   return p;
@@ -92,7 +102,7 @@ const fmtM = (cm: number) => `${(cm / 100).toFixed(2)} m`;
 type PanelTab = 'add' | 'actors' | 'gear' | 'templates';
 const PANEL_TABS: { id: PanelTab; label: string }[] = [
   { id: 'add', label: 'Add' },
-  { id: 'actors', label: 'Actors' },
+  { id: 'actors', label: 'Cast' },
   { id: 'gear', label: 'Gear list' },
   { id: 'templates', label: 'Templates' },
 ];
@@ -223,7 +233,14 @@ export function App() {
     addItem({ id: uid(), kind: 'person', catalogId: 'generic.person', actorId, pos: snap(viewCenter(), snapCm), rotationDeg: 180 });
   };
 
-  const addActor = () => dispatch({ type: 'addActor', actor: newActor(project.actors) });
+  const kind: ProjectKind = project.kind ?? 'narrative';
+  const addActor = (role: CastRole) => dispatch({ type: 'addActor', actor: newActor(project.actors, { role }) });
+  /** Add section: create a new person and put them in the scene. */
+  const newPerson = (role: CastRole) => {
+    const actor = newActor(project.actors, { role });
+    dispatch({ type: 'addActor', actor });
+    addItem({ id: uid(), kind: 'person', catalogId: 'generic.person', actorId: actor.id, pos: snap(viewCenter(), snapCm), rotationDeg: 180 });
+  };
 
   const duplicate = (src: Item) => {
     if (src.actorId) return; // an actor appears once per scene
@@ -266,7 +283,7 @@ export function App() {
 
   const addTemplate = (t: TemplateDefinition, values: TemplateValues) => {
     const r = applyTemplate(t, values, { origin: viewCenter() });
-    const cast = castTemplateItems(r.shots.flatMap((s) => s.items), project.actors, items);
+    const cast = castTemplateItems(r.shots.flatMap((s) => s.items), project.actors, items, kind);
     for (const actor of cast.added) dispatch({ type: 'addActor', actor });
     sd({ type: 'add', setItems: r.setItems, items: cast.items });
     setPanelOpen(false);
@@ -294,7 +311,7 @@ export function App() {
         setTool('move');
       } else if (k === 'r') {
         setTool('rotate');
-      } else if (k === '1' || k === '2' || k === '3') {
+      } else if (k === '1' || k === '2' || k === '3' || k === '4') {
         setMode(EDIT_MODES[Number(k) - 1]!.id);
       } else if (k === 'escape') {
         setSelected(null);
@@ -473,7 +490,7 @@ export function App() {
               <div className="panel-tabs" role="tablist">
                 {PANEL_TABS.map((t) => (
                   <button key={t.id} id={`tab-${t.id}`} role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}>
-                    {t.label}
+                    {t.id === 'actors' ? castTitle(kind) : t.label}
                   </button>
                 ))}
               </div>
@@ -488,6 +505,7 @@ export function App() {
               item={selectedItem}
               sceneItems={items}
               actors={project.actors}
+              kind={kind}
               gear={gear}
               onUpdate={(patch) => sd({ type: 'update', id: selectedItem.id, patch })}
               onUpdateActor={(id, patch) => dispatch({ type: 'updateActor', id, patch })}
@@ -495,9 +513,19 @@ export function App() {
               onDelete={deleteSelected}
             />
           ) : tab === 'add' ? (
-            <LibraryPanel mode={mode} gear={gear} onPlace={place} />
+            <LibraryPanel
+              mode={mode}
+              gear={gear}
+              onPlace={place}
+              kind={kind}
+              actors={project.actors}
+              placed={placedActors}
+              onNewPerson={newPerson}
+              onPlaceActor={placeActor}
+            />
           ) : tab === 'actors' ? (
             <ActorsPanel
+              kind={kind}
               actors={project.actors}
               placed={placedActors}
               onAdd={addActor}
@@ -525,7 +553,7 @@ export function App() {
               }}
             />
           ) : (
-            <TemplatePanel onAdd={addTemplate} />
+            <TemplatePanel kind={kind} onKind={(k) => dispatch({ type: 'setProject', patch: { kind: k } })} onAdd={addTemplate} />
           )}
         </aside>
       </main>
@@ -554,7 +582,7 @@ export function App() {
         ) : (
           <span className="hint">
             {tool === 'rotate' ? 'Rotate: drag an item to turn it (Shift = 45° steps)' : 'Move: drag items'} · only{' '}
-            {mode} items can be picked · W move · R rotate · 1–3 category
+            {mode} items can be picked · W move · R rotate · 1–4 category
           </span>
         )}
       </footer>

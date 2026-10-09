@@ -628,6 +628,27 @@ kbd {
   cursor: pointer;
 }
 
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.cast-add {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kind-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 /* ---- Gear list ---- */
 .gear-row {
   display: flex;

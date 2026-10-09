@@ -12,6 +12,7 @@ const fixture: TemplateDefinition = {
   id: 'fixture',
   name: 'Fixture',
   description: '',
+  kinds: ['narrative'],
   options: [],
   build: () => ({
     setItems: [{ kind: 'set', pos: { x: 0, y: -100 }, rotationDeg: 0 }],
@@ -102,7 +103,11 @@ describe('template library', () => {
       { origin: { x: 0, y: 0 } },
     );
     const items = r.shots[0]!.items;
-    expect(items.filter((i) => i.kind === 'person')).toHaveLength(2);
+    const people = items.filter((i) => i.kind === 'person');
+    expect(people.filter((i) => i.castRole === 'interviewee').map((i) => i.label)).toEqual(['Interviewee 1', 'Interviewee 2']);
+    // At least one interviewer is always placed, facing the interviewees.
+    const [interviewer] = people.filter((i) => i.castRole === 'interviewer');
+    expect(interviewer?.label).toBe('Interviewer');
     const cams = items.filter((i) => i.kind === 'camera');
     expect(cams).toHaveLength(3);
     expect(r.values.cameraSetup).toEqual([

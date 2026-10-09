@@ -5,6 +5,7 @@ export const pieceToCamera: TemplateDefinition = {
   id: 'piece-to-camera',
   name: 'Piece to camera',
   description: 'Presenter talking straight into the lens.',
+  kinds: ['doc', 'narrative'],
   placeholder: true,
   options: [
     countOption('presenters', 'Presenters', 1, 3),

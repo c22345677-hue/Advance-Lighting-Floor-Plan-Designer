@@ -29,6 +29,7 @@ const defs: OptionDef[] = [
 const tmpl = (options: OptionDef[]): TemplateDefinition => ({
   id: 't',
   name: 'T',
+  kinds: ['narrative'],
   description: '',
   options,
   build: () => ({ shots: [] }),

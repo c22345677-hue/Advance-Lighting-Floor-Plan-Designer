@@ -48,6 +48,8 @@ export interface Item {
   light?: LightProps;
   /** People placed as cast: points at the project's actor list (name, colour, gender live there). */
   actorId?: string;
+  /** Templates only: the cast role a template person becomes (stripped when placed). */
+  castRole?: CastRole;
   camera?: CameraProps;
   path?: { points: Vec2[]; style: PathStyle };
 }
@@ -61,12 +63,21 @@ export interface CameraProps {
 
 export type Gender = 'male' | 'female';
 
+/**
+ * What a person on the plan is called. Only a name: every role behaves the same (colour,
+ * gender, kept across scenes, cameras can focus on them). Narrative projects use actors,
+ * doc projects interviewees and interviewers.
+ */
+export type CastRole = 'actor' | 'interviewee' | 'interviewer';
+
 /** Cast member, shared by every scene of a project. */
 export interface Actor {
   id: string;
   name: string;
   color: string;
   gender: Gender;
+  /** Missing = 'actor' (projects saved before roles existed). */
+  role?: CastRole;
 }
 
 export type StringAim =
