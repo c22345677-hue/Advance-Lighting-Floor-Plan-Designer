@@ -1,4 +1,4 @@
-// Placeholder catalogue IDs for generic items until the real catalogue lands (PLAN.md §3).
+// Catalogue IDs of generic library items used by templates (see src/library/items.ts).
 export const GENERIC = {
   person: 'generic.person',
   camera: 'generic.camera',
@@ -6,7 +6,7 @@ export const GENERIC = {
   cob: 'generic.light.cob',
   tube: 'generic.light.tube',
   flag: 'generic.grip.flag',
-  frame: 'generic.grip.frame',
+  frame: 'generic.grip.frame-4x4',
   greenScreen: 'generic.set.green-screen',
   chair: 'generic.prop.chair',
 } as const;

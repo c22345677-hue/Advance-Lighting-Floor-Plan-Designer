@@ -16,6 +16,7 @@ export interface History {
 export type Action =
   | { type: 'add'; setItems: Item[]; items: Item[] }
   | { type: 'move'; id: string; pos: Vec2 }
+  | { type: 'update'; id: string; patch: Partial<Omit<Item, 'id'>> }
   | { type: 'rotate'; id: string; rotationDeg: number }
   | { type: 'rotateBy'; ids: string[]; deg: number }
   | { type: 'delete'; ids: string[] }
@@ -39,6 +40,8 @@ function edit(doc: PlanDoc, action: Action): PlanDoc {
       };
     case 'move':
       return mapItems(doc, (i) => (i.id === action.id ? { ...i, pos: action.pos } : i));
+    case 'update':
+      return mapItems(doc, (i) => (i.id === action.id ? { ...i, ...action.patch } : i));
     case 'rotate':
       return mapItems(doc, (i) =>
         i.id === action.id ? { ...i, rotationDeg: normDeg(action.rotationDeg) } : i,

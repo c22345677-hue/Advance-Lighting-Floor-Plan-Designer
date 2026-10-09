@@ -10,7 +10,10 @@ export interface LightProps {
   cct?: number;
   gel?: string;
   diffusion?: string;
-  modifier?: string;
+  /** Catalogue modifiers attached, in stacking order. */
+  modifierIds?: string[];
+  /** Catalogue stand the light sits on. */
+  standId?: string;
   intensityPct?: number;
   beamDeg?: number;
   throwCm?: number;

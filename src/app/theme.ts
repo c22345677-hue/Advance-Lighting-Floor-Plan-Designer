@@ -13,6 +13,11 @@ export interface CanvasColors {
   select: string;
   chroma: string;
   set: string;
+  light: string;
+  beam: string;
+  grip: string;
+  prop: string;
+  warn: string;
 }
 
 const TOKENS: Record<keyof CanvasColors, string> = {
@@ -27,6 +32,11 @@ const TOKENS: Record<keyof CanvasColors, string> = {
   select: '--accent',
   chroma: '--plan-chroma',
   set: '--plan-set',
+  light: '--plan-light',
+  beam: '--plan-beam',
+  grip: '--plan-grip',
+  prop: '--plan-prop',
+  warn: '--danger',
 };
 
 function read(): CanvasColors {

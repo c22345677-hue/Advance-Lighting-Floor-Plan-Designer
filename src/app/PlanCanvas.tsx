@@ -1,7 +1,10 @@
 import Konva from 'konva';
 import type { KonvaEventObject } from 'konva/lib/Node';
-import { useEffect, useMemo, useRef } from 'react';
-import { Circle, Ellipse, Group, Layer, Line, Rect, Stage, Text, Transformer, Wedge } from 'react-konva';
+import { useEffect, useMemo, useRef, type MutableRefObject } from 'react';
+import { Arc, Circle, Ellipse, Group, Layer, Line, Rect, Stage, Text, Transformer, Wedge } from 'react-konva';
+import type { Modifier } from '../catalog/schema';
+import { libraryItem } from '../library/items';
+import { itemFixture, itemLook, itemModifiers } from '../model/gear';
 import type { Item, Vec2 } from '../model/types';
 import type { Action, PlanDoc } from './doc';
 import type { CanvasColors } from './theme';
@@ -18,6 +21,7 @@ export interface View {
 export const MIN_SCALE = 0.05;
 export const MAX_SCALE = 8;
 const GRID_CM = 50;
+const DEFAULT_THROW_CM = 300;
 
 export const clampScale = (s: number) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
 
@@ -29,6 +33,23 @@ export function zoomAt(view: View, factor: number, at: Vec2): View {
   return { scale, x: at.x - wx * scale, y: at.y - wy * scale };
 }
 
+export const snap = (p: Vec2, step: number | null): Vec2 =>
+  step ? { x: Math.round(p.x / step) * step, y: Math.round(p.y / step) * step } : p;
+
+/** Beam angle for a light: set on the item, else the library default, else 60°. */
+export const beamDegOf = (item: Item): number =>
+  item.light?.beamDeg ?? libraryItem(item.catalogId)?.beamDeg ?? 60;
+
+/** Text shown under an item: "L1 · LS 600d Pro" for lights, the label otherwise. */
+export function displayLabel(item: Item): string {
+  const name = item.label ?? itemFixture(item)?.model ?? libraryItem(item.catalogId)?.name ?? '';
+  const unit = item.light?.unitId;
+  return unit ? (name ? `${unit} · ${name}` : unit) : name;
+}
+
+/** Renders the plan to a PNG data URL, without selection handles. */
+export type ExportPng = () => string | null;
+
 interface Props {
   width: number;
   height: number;
@@ -39,9 +60,12 @@ interface Props {
   selected: string | null;
   onSelect: (id: string | null) => void;
   colors: CanvasColors;
+  snapCm: number | null;
+  exportRef: MutableRefObject<ExportPng | null>;
 }
 
-export function PlanCanvas({ width, height, view, onView, doc, dispatch, selected, onSelect, colors }: Props) {
+export function PlanCanvas(p: Props) {
+  const { width, height, view, onView, doc, dispatch, selected, onSelect, colors, snapCm } = p;
   const stageRef = useRef<Konva.Stage>(null);
   const trRef = useRef<Konva.Transformer>(null);
   const pinch = useRef<{ dist: number; center: Vec2 } | null>(null);
@@ -51,15 +75,29 @@ export function PlanCanvas({ width, height, view, onView, doc, dispatch, selecte
     const stage = stageRef.current;
     if (!tr || !stage) return;
     const node = selected ? stage.findOne(`#${CSS.escape(selected)}`) : undefined;
-    tr.nodes(node ? [node] : []);
+    const item = [...doc.setItems, ...doc.items].find((i) => i.id === selected);
+    tr.nodes(node && !item?.locked ? [node] : []);
     tr.getLayer()?.batchDraw();
   }, [selected, doc]);
 
+  useEffect(() => {
+    p.exportRef.current = () => {
+      const stage = stageRef.current;
+      const tr = trRef.current;
+      if (!stage) return null;
+      const nodes = tr?.nodes() ?? [];
+      tr?.nodes([]);
+      const url = stage.toDataURL({ pixelRatio: 2, mimeType: 'image/png' });
+      tr?.nodes(nodes);
+      return url;
+    };
+  });
+
   const onWheel = (e: KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault();
-    const p = stageRef.current?.getPointerPosition();
-    if (!p) return;
-    onView(zoomAt(view, Math.exp(-e.evt.deltaY * 0.0015), p));
+    const pt = stageRef.current?.getPointerPosition();
+    if (!pt) return;
+    onView(zoomAt(view, Math.exp(-e.evt.deltaY * 0.0015), pt));
   };
 
   const onTouchMove = (e: KonvaEventObject<TouchEvent>) => {
@@ -82,6 +120,8 @@ export function PlanCanvas({ width, height, view, onView, doc, dispatch, selecte
 
   const grid = useMemo(() => gridLines(view, width, height, colors), [view, width, height, colors]);
   const labelSize = Math.min(28, Math.max(9, 12 / view.scale));
+  const all = [...doc.setItems, ...doc.items];
+  const visible = all.filter((i) => !i.hidden);
 
   const renderItem = (item: Item) => (
     <Group
@@ -99,22 +139,49 @@ export function PlanCanvas({ width, height, view, onView, doc, dispatch, selecte
         e.cancelBubble = true;
         onSelect(item.id);
       }}
-      onDragEnd={(e) => dispatch({ type: 'move', id: item.id, pos: { x: e.target.x(), y: e.target.y() } })}
+      onDragEnd={(e) => {
+        const pos = snap({ x: e.target.x(), y: e.target.y() }, snapCm);
+        e.target.position(pos);
+        dispatch({ type: 'move', id: item.id, pos });
+      }}
       onTransformEnd={(e) => dispatch({ type: 'rotate', id: item.id, rotationDeg: e.target.rotation() })}
     >
       <ItemShape item={item} colors={colors} />
     </Group>
   );
 
-  const label = (item: Item) =>
-    item.label ? (
+  const beam = (item: Item) => {
+    if (item.kind !== 'light') return null;
+    const throwCm = item.light?.throwCm ?? DEFAULT_THROW_CM;
+    const deg = Math.min(360, beamDegOf(item));
+    const gradient = {
+      fillRadialGradientStartPoint: { x: 0, y: 0 },
+      fillRadialGradientStartRadius: 0,
+      fillRadialGradientEndPoint: { x: 0, y: 0 },
+      fillRadialGradientEndRadius: throwCm,
+      fillRadialGradientColorStops: [0, colors.beam, 1, 'rgba(0,0,0,0)'],
+    };
+    return (
+      <Group key={`${item.id}-beam`} x={item.pos.x} y={item.pos.y} rotation={item.rotationDeg} listening={false}>
+        {deg >= 360 ? (
+          <Circle radius={throwCm} {...gradient} />
+        ) : (
+          <Wedge radius={throwCm} angle={deg} rotation={-90 - deg / 2} {...gradient} />
+        )}
+      </Group>
+    );
+  };
+
+  const label = (item: Item) => {
+    const text = displayLabel(item);
+    return text ? (
       <Text
         key={`${item.id}-label`}
         x={item.pos.x - 200}
         y={item.pos.y + labelOffset(item)}
         width={400}
         align="center"
-        text={item.label}
+        text={text}
         fontSize={labelSize}
         fontFamily="'Barlow Semi Condensed', 'Arial Narrow', sans-serif"
         fontStyle="600"
@@ -122,8 +189,7 @@ export function PlanCanvas({ width, height, view, onView, doc, dispatch, selecte
         listening={false}
       />
     ) : null;
-
-  const all = [...doc.setItems, ...doc.items];
+  };
 
   return (
     <Stage
@@ -153,11 +219,12 @@ export function PlanCanvas({ width, height, view, onView, doc, dispatch, selecte
           fill={colors.canvas}
         />
         {grid}
+        {visible.map(beam)}
       </Layer>
       <Layer>
-        {doc.setItems.map(renderItem)}
-        {doc.items.map(renderItem)}
-        {all.map(label)}
+        {visible.filter((i) => doc.setItems.includes(i)).map(renderItem)}
+        {visible.filter((i) => doc.items.includes(i)).map(renderItem)}
+        {visible.map(label)}
         <Transformer
           ref={trRef}
           resizeEnabled={false}
@@ -176,8 +243,9 @@ export function PlanCanvas({ width, height, view, onView, doc, dispatch, selecte
 }
 
 function labelOffset(item: Item): number {
-  if (item.kind === 'set' && item.sizeCm) return item.sizeCm.d / 2 + 10;
-  return item.kind === 'camera' ? 30 : 26;
+  const { d, shape } = itemLook(item);
+  if (shape === 'person') return 18;
+  return Math.max(18, d / 2 + 8);
 }
 
 /** Grid lines for the visible area: 50 cm squares, stronger every 1 m and 5 m. */
@@ -220,45 +288,159 @@ function gridLines(view: View, width: number, height: number, c: CanvasColors) {
   return lines;
 }
 
-/** Simple top-down symbols, drawn at real size facing up (-y). Placeholder art. */
-function ItemShape({ item, colors }: { item: Item; colors: CanvasColors }) {
-  switch (item.kind) {
-    case 'person':
+/** Softboxes, domes and lanterns drawn in front of the light (towards -y). */
+function ModifierShapes({ mods, front, c }: { mods: Modifier[]; front: number; c: CanvasColors }) {
+  let y = front;
+  const out = [];
+  for (const m of mods) {
+    const size = m.sizeCm;
+    const dia = Math.max(size?.l ?? 0, size?.w ?? 0);
+    if (!dia) continue;
+    if (m.type === 'lantern') {
+      out.push(<Circle key={m.id} y={y - dia / 2} radius={dia / 2} fill={c.label} opacity={0.18} stroke={c.light} strokeWidth={1.5} />);
+      y -= dia;
+    } else if (m.type === 'softbox' || m.type === 'dome' || m.type === 'parallel-beam') {
+      const depth = size?.h ?? dia * 0.5;
+      out.push(
+        <Line
+          key={m.id}
+          points={[-8, y, 8, y, dia / 2, y - depth, -dia / 2, y - depth]}
+          closed
+          fill={c.label}
+          opacity={0.18}
+          stroke={c.light}
+          strokeWidth={1.5}
+        />,
+      );
+      y -= depth;
+    }
+  }
+  return <>{out}</>;
+}
+
+/** Simple top-down symbols, drawn at real size facing up (-y). */
+function ItemShape({ item, colors: c }: { item: Item; colors: CanvasColors }) {
+  const { shape, w, d } = itemLook(item);
+  const hw = w / 2;
+  const hd = d / 2;
+  const mods = item.kind === 'light' ? <ModifierShapes mods={itemModifiers(item)} front={-hd} c={c} /> : null;
+  switch (shape) {
+    case 'cob':
       return (
         <>
-          <Ellipse radiusX={24} radiusY={13} fill={colors.person} opacity={0.9} />
-          <Circle radius={10} fill={colors.person} stroke={colors.canvas} strokeWidth={2} />
-          <Line points={[-5, -12, 0, -20, 5, -12]} closed fill={colors.person} />
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={3} fill={c.light} />
+          <Rect x={-hw * 0.8} y={-hd} width={w * 0.8} height={Math.min(4, d * 0.15)} fill={c.canvas} opacity={0.5} />
+          {mods}
         </>
       );
+    case 'fresnel':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={3} fill={c.light} />
+          <Rect x={-hw - 3} y={-hd - 3} width={w + 6} height={6} cornerRadius={2} fill={c.label} opacity={0.6} />
+          {mods}
+        </>
+      );
+    case 'panel':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={2} fill={c.light} />
+          <Line points={[-hw, -hd, hw, -hd]} stroke={c.label} strokeWidth={2} />
+          {mods}
+        </>
+      );
+    case 'mat':
+    case 'tube':
+      return (
+        <>
+          <Rect x={-hw} y={-Math.max(hd, 2.5)} width={w} height={Math.max(d, 5)} cornerRadius={2.5} fill={c.light} />
+          {mods}
+        </>
+      );
+    case 'bulb':
+      return <Circle radius={Math.max(hw, 8)} fill={c.light} stroke={c.label} strokeWidth={1.5} />;
+    case 'inflatable':
+      return (
+        <>
+          <Circle radius={hw} fill={c.light} opacity={0.75} />
+          <Circle radius={hw * 0.6} stroke={c.label} strokeWidth={1.5} opacity={0.5} />
+        </>
+      );
+    case 'spacelight':
+      return (
+        <>
+          <Circle radius={hw} stroke={c.light} strokeWidth={3} dash={[8, 6]} />
+          <Circle radius={hw * 0.55} fill={c.light} />
+        </>
+      );
+    case 'flag':
+      return <Rect x={-hw} y={-Math.max(hd, 3)} width={w} height={Math.max(d, 6)} fill={c.grip} cornerRadius={1} />;
+    case 'frame':
+      return (
+        <Rect x={-hw} y={-Math.max(hd, 3)} width={w} height={Math.max(d, 6)} fill={c.label} opacity={0.55} stroke={c.grip} strokeWidth={2} />
+      );
+    case 'stand':
+      return (
+        <>
+          {[0, 120, 240].map((a) => {
+            const r = (a * Math.PI) / 180;
+            return <Line key={a} points={[0, 0, Math.sin(r) * hw, -Math.cos(r) * hw]} stroke={c.grip} strokeWidth={4} lineCap="round" />;
+          })}
+          <Circle radius={5} fill={c.grip} />
+        </>
+      );
+    case 'sandbag':
+      return <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={hd} fill={c.prop} stroke={c.grip} strokeWidth={1} />;
     case 'camera':
       return (
         <>
-          <Wedge radius={220} angle={44} rotation={-90 - 22} fill={colors.cameraFov} listening={false} />
-          <Rect x={-13} y={-14} width={26} height={34} cornerRadius={3} fill={colors.camera} />
-          <Rect x={-8} y={-26} width={16} height={13} cornerRadius={2} fill={colors.camera} />
-          <Rect x={-9} y={-6} width={18} height={14} cornerRadius={2} fill={colors.canvas} opacity={0.35} />
+          <Wedge radius={220} angle={44} rotation={-90 - 22} fill={c.cameraFov} listening={false} />
+          <Rect x={-13} y={-14} width={26} height={34} cornerRadius={3} fill={c.camera} />
+          <Rect x={-8} y={-26} width={16} height={13} cornerRadius={2} fill={c.camera} />
+          <Rect x={-9} y={-6} width={18} height={14} cornerRadius={2} fill={c.canvas} opacity={0.35} />
         </>
       );
-    case 'set': {
-      const w = item.sizeCm?.w ?? 100;
-      const d = item.sizeCm?.d ?? 20;
-      const chroma = item.catalogId?.includes('green-screen');
+    case 'dolly':
       return (
-        <Rect
-          x={-w / 2}
-          y={-d / 2}
-          width={w}
-          height={d}
-          fill={chroma ? colors.chroma : colors.set}
-          cornerRadius={2}
-        />
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={6} stroke={c.camera} strokeWidth={3} />
+          <Line points={[0, hd - 15, 0, -hd + 15]} stroke={c.camera} strokeWidth={3} />
+          <Line points={[-12, -hd + 30, 0, -hd + 15, 12, -hd + 30]} stroke={c.camera} strokeWidth={3} />
+        </>
+      );
+    case 'person': {
+      const crew = item.catalogId === 'generic.person.crew';
+      const fill = crew ? c.prop : c.person;
+      return (
+        <>
+          <Ellipse radiusX={24} radiusY={13} fill={fill} opacity={0.9} />
+          <Circle radius={10} fill={fill} stroke={c.canvas} strokeWidth={2} />
+          <Line points={[-5, -12, 0, -20, 5, -12]} closed fill={fill} />
+        </>
       );
     }
-    default: {
-      const w = item.sizeCm?.w ?? 40;
-      const d = item.sizeCm?.d ?? 40;
-      return <Rect x={-w / 2} y={-d / 2} width={w} height={d} fill={colors.set} cornerRadius={4} />;
+    case 'wall': {
+      const chroma = item.catalogId?.includes('green-screen');
+      return <Rect x={-hw} y={-hd} width={w} height={d} fill={chroma ? c.chroma : c.set} cornerRadius={1} />;
     }
+    case 'door':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} fill={c.canvas} stroke={c.set} strokeWidth={2} />
+          <Line points={[-hw, 0, -hw, -w]} stroke={c.set} strokeWidth={3} />
+          <Arc x={-hw} y={0} innerRadius={w} outerRadius={w} angle={90} rotation={-90} stroke={c.set} strokeWidth={1.5} dash={[6, 5]} />
+        </>
+      );
+    case 'window':
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} fill={c.canvas} stroke={c.set} strokeWidth={3} />
+          <Line points={[-hw, 0, hw, 0]} stroke={c.set} strokeWidth={1.5} />
+        </>
+      );
+    case 'round':
+      return <Circle radius={hw} fill={c.prop} />;
+    default:
+      return <Rect x={-hw} y={-hd} width={w} height={d} fill={item.kind === 'set' ? c.set : c.prop} cornerRadius={4} />;
   }
 }
