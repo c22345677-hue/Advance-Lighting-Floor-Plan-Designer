@@ -38,7 +38,6 @@ import {
 import { Inspector } from './Inspector';
 import { clampScale, displayLabel, PlanCanvas, snap, zoomAt, type ExportPng, type Tool, type View } from './PlanCanvas';
 import { ProjectMenu } from './ProjectMenu';
-import { SceneBar } from './SceneBar';
 import { deleteProject, listProjects, loadGearLists, loadProject, loadStartProject, saveGearLists, saveProject } from './storage';
 import { TemplatePanel } from './TemplatePanel';
 import { useCanvasColors } from './theme';
@@ -347,6 +346,21 @@ export function App() {
           <span className="brand-mark" aria-hidden="true" />
           <ProjectMenu
             project={project}
+            scene={scene}
+            onSelectScene={(id) => {
+              setSceneId(id);
+              setSelected(null);
+            }}
+            onAddScene={() => {
+              const s = { id: uid(), name: `Scene ${project.scenes.length + 1}`, setItems: [], items: [] };
+              dispatch({ type: 'addScene', scene: s });
+              setSceneId(s.id);
+              setSelected(null);
+            }}
+            onRenameScene={(id, name) => dispatch({ type: 'renameScene', id, name })}
+            onDuplicateScene={duplicateScene}
+            onClearScene={(id) => dispatch({ type: 'scene', sceneId: id, action: { type: 'clear' } })}
+            onDeleteScene={(id) => dispatch({ type: 'deleteScene', id })}
             onRename={(name) => dispatch({ type: 'setProject', patch: { name } })}
             onKind={(k) => dispatch({ type: 'setProject', patch: { kind: k } })}
             onOpen={(id) => {
@@ -425,23 +439,6 @@ export function App() {
         </div>
       </header>
 
-      <SceneBar
-        scenes={project.scenes}
-        activeId={scene.id}
-        onSelect={(id) => {
-          setSceneId(id);
-          setSelected(null);
-        }}
-        onAdd={() => {
-          const s = { id: uid(), name: `Scene ${project.scenes.length + 1}`, setItems: [], items: [] };
-          dispatch({ type: 'addScene', scene: s });
-          setSceneId(s.id);
-        }}
-        onRename={(id, name) => dispatch({ type: 'renameScene', id, name })}
-        onDuplicate={duplicateScene}
-        onClear={(id) => dispatch({ type: 'scene', sceneId: id, action: { type: 'clear' } })}
-        onDelete={(id) => dispatch({ type: 'deleteScene', id })}
-      />
 
       <main className="workspace">
         <div className={`stage tool-${tool}`} ref={stageBox}>

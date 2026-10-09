@@ -274,9 +274,10 @@ Start a plan from a ready-made setup, then adjust it.
   duplicate or delete it).
 
 ### 2.17 Screen layout
-- **Top bar**: project menu (name, Narrative/Doc, other projects) · category LIGHTS / GRIP /
-  CAMERA / SCENE · tool Move (W) / Rotate (R) · undo/redo · Templates, Gear list, Export.
-- **Scene tabs** under it; the active scene's "⋯" holds rename, duplicate, clear and delete.
+- **Top bar**: "Project › Scene" menu · category LIGHTS / GRIP / CAMERA / SCENE · tool Move (W) /
+  Rotate (R) · undo/redo · Templates, Gear list, Export.
+- **Project › Scene menu**: scenes (switch, add, rename, duplicate, clear, delete), project name
+  and Narrative/Doc, new/delete project, open another project.
 - **Side panel always matches the category**: "In this scene" list (tap to select) and the ways
   to add that kind of item. SCENE also holds the cast (people) list. Selecting an item swaps the
   panel to its settings, with "‹ Category" to go back. Settings follow one order for every

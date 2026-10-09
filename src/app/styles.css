@@ -112,7 +112,7 @@ body {
 .app {
   height: 100%;
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-rows: auto 1fr auto;
 }
 
 /* =========================================================================================
@@ -347,13 +347,30 @@ select {
   font-family: var(--font-label);
   font-weight: 600;
   font-size: 17px;
-  max-width: 240px;
-  padding: 0 6px;
+  max-width: 340px;
+  padding: 0 8px;
+  gap: 6px;
+  border-color: var(--line);
 }
 
 .project-name {
+  color: var(--muted);
+  font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
+  flex-shrink: 4; /* the scene name stays readable longest */
+}
+
+.crumb-sep {
+  color: var(--muted);
+}
+
+.scene-name {
+  color: var(--accent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .popover {
@@ -361,8 +378,11 @@ select {
   top: calc(100% + 6px);
   left: 0;
   z-index: 30;
-  width: 320px;
+  width: 340px;
   max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  box-sizing: border-box;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -455,73 +475,6 @@ select {
 
 .top-action.on {
   color: var(--accent);
-}
-
-/* =========================================================================================
-   Scene tabs
-   ========================================================================================= */
-.scenebar {
-  background: var(--surface);
-  border-bottom: 1px solid var(--line);
-  padding: 6px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.scene-tabs {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.scene-tab {
-  display: flex;
-  align-items: center;
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  flex-shrink: 0;
-}
-
-.scene-tab button {
-  min-height: 30px;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.scene-tab.on {
-  border-color: var(--accent);
-}
-
-.scene-tab.on button {
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.scene-more {
-  width: 30px;
-  padding: 0;
-  border-left: 1px solid var(--line) !important;
-  border-radius: 0 6px 6px 0;
-}
-
-.scene-add {
-  min-height: 30px;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.scene-edit {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.scene-edit .text-input {
-  width: 220px;
 }
 
 /* =========================================================================================
@@ -846,6 +799,10 @@ select {
   font-family: var(--font-data);
   font-size: 12px;
   color: var(--muted);
+}
+
+.row.current {
+  background: var(--surface-2);
 }
 
 .row-meta {
@@ -1260,6 +1217,26 @@ select {
 
   .topbar-left {
     flex: 1;
+    min-width: 0;
+  }
+
+  .project-menu {
+    min-width: 0;
+  }
+
+  .project-btn {
+    max-width: 100%;
+    font-size: 16px;
+  }
+
+  .popover {
+    position: fixed;
+    top: 52px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    max-width: none;
+    max-height: calc(100vh - 64px);
   }
 
   .topbar-right {
