@@ -442,7 +442,20 @@ export function App() {
       />
 
       <main className="workspace">
-        <div className="stage" ref={stageBox}>
+        <div className={`stage tool-${tool}`} ref={stageBox}>
+          <div className={`tool-badge ${tool}`} role="status" aria-live="polite">
+            {tool === 'move' ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M20 12a8 8 0 1 1-2.34-5.66" />
+                <path d="M20 4v5h-5" />
+              </svg>
+            )}
+            {tool === 'move' ? 'Move' : 'Rotate'} <kbd>{tool === 'move' ? 'W' : 'R'}</kbd>
+          </div>
           {view && size.width > 0 && (
             <PlanCanvas
               width={size.width}

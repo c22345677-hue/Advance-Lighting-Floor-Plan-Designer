@@ -16,6 +16,7 @@ export type Shape =
   | 'spacelight'
   | 'flag'
   | 'frame'
+  | 'polyboard'
   | 'stand'
   | 'sandbag'
   | 'camera'
@@ -76,7 +77,7 @@ export const LIBRARY: LibraryItem[] = [
   I('grip', 'grip', 'grip.frame-8x8', 'Frame 8×8', 'frame', 240, 4),
   I('grip', 'grip', 'grip.frame-12x12', 'Frame 12×12', 'frame', 360, 4),
   I('grip', 'grip', 'grip.vflat', 'V-flat', 'frame', 120, 8),
-  I('grip', 'grip', 'grip.polyboard', 'Polyboard', 'frame', 120, 5),
+  I('grip', 'grip', 'grip.polyboard', 'Polyboard', 'polyboard', 120, 5),
   I('grip', 'grip', 'grip.c-stand', 'C-stand', 'stand', 70, 70),
   I('grip', 'grip', 'grip.sandbag', 'Sandbag', 'sandbag', 40, 20),
   I('camera', 'camera', 'camera', 'Camera', 'camera', 26, 34),

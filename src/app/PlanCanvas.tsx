@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
-import { Arc, Circle, Ellipse, Group, Layer, Line, Rect, Stage, Text, Transformer, Wedge } from 'react-konva';
+import { Arc, Arrow, Circle, Ellipse, Group, Layer, Line, Rect, Stage, Text, Transformer, Wedge } from 'react-konva';
 import type { Modifier } from '../catalog/schema';
 import { libraryItem } from '../library/items';
 import { itemFixture, itemLook, itemModifiers } from '../model/gear';
@@ -98,12 +98,23 @@ export function PlanCanvas(p: Props) {
   const node = (id: string) => stageRef.current?.findOne((n: Konva.Node) => n.id() === id);
 
   useEffect(() => {
+    // Move tool: box around the selection. Rotate tool: a ring instead (drawn below).
     const tr = trRef.current;
     if (!tr) return;
-    const n = selected ? node(selected) : undefined;
+    const n = selected && tool === 'move' ? node(selected) : undefined;
     tr.nodes(n ? [n] : []);
     tr.getLayer()?.batchDraw();
-  }, [selected, scene]);
+  }, [selected, scene, tool]);
+
+  useEffect(() => {
+    const el = stageRef.current?.container();
+    if (el) el.style.cursor = '';
+  }, [tool, mode]);
+
+  const setCursor = (c: string) => {
+    const el = stageRef.current?.container();
+    if (el && !rot.current) el.style.cursor = c;
+  };
 
   useEffect(() => {
     p.exportRef.current = () => {
@@ -112,7 +123,10 @@ export function PlanCanvas(p: Props) {
       if (!stage) return null;
       const nodes = tr?.nodes() ?? [];
       tr?.nodes([]);
+      const uiOnly = stage.find('.ui-only');
+      uiOnly.forEach((n) => n.hide());
       const url = stage.toDataURL({ pixelRatio: 2, mimeType: 'image/png' });
+      uiOnly.forEach((n) => n.show());
       tr?.nodes(nodes);
       return url;
     };
@@ -220,6 +234,8 @@ export function PlanCanvas(p: Props) {
         draggable={active && tool === 'move' && !item.locked}
         onMouseDown={press}
         onTouchStart={press}
+        onMouseEnter={() => active && !item.locked && setCursor(tool === 'move' ? 'move' : ROTATE_CURSOR)}
+        onMouseLeave={() => setCursor('')}
         onDragStart={() => setDragging(item.id)}
         onDragMove={(e) => follow(item, { x: e.target.x(), y: e.target.y() })}
         onDragEnd={(e) => {
@@ -318,6 +334,10 @@ export function PlanCanvas(p: Props) {
         {visible.filter((i) => scene.setItems.includes(i)).map(renderItem)}
         {visible.filter((i) => scene.items.includes(i)).map(renderItem)}
         {visible.map(label)}
+        {tool === 'rotate' && selected && (() => {
+          const sel = visible.find((i) => i.id === selected);
+          return sel ? <RotateRing item={sel} scale={view.scale} color={colors.rotate} /> : null;
+        })()}
         <Transformer
           ref={trRef}
           resizeEnabled={false}
@@ -328,6 +348,34 @@ export function PlanCanvas(p: Props) {
         />
       </Layer>
     </Stage>
+  );
+}
+
+/** Mouse cursor for the rotate tool: a circular arrow (hotspot in the middle). */
+const ROTATE_CURSOR = `url("data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><g fill="none" stroke-linecap="round"><path d="M22 14a8 8 0 1 1-2.3-5.6" stroke="#000" stroke-width="5"/><path d="M22 14a8 8 0 1 1-2.3-5.6" stroke="#fff" stroke-width="2.5"/></g><path d="M23.5 4.5l-.5 6.5-6.5-.5z" fill="#fff" stroke="#000" stroke-width="1"/></svg>',
+)}") 14 14, crosshair`;
+
+/** Rotate tool selection: a dashed ring with two curved arrows around the item. */
+function RotateRing({ item, scale, color }: { item: Item; scale: number; color: string }) {
+  const { w, d, shape } = itemLook(item);
+  const px = 1 / scale;
+  const r = (shape === 'person' ? 26 : Math.max(w, d) / 2) + 14 * px;
+  const arc = (from: number, to: number) => {
+    const pts: number[] = [];
+    for (let i = 0; i <= 8; i++) {
+      const a = ((from + ((to - from) * i) / 8) * Math.PI) / 180;
+      pts.push(Math.sin(a) * r, -Math.cos(a) * r);
+    }
+    return pts;
+  };
+  const arrow = { stroke: color, fill: color, strokeWidth: 3 * px, pointerLength: 9 * px, pointerWidth: 9 * px, tension: 0.4 };
+  return (
+    <Group name="ui-only" x={item.pos.x} y={item.pos.y} listening={false}>
+      <Circle radius={r} stroke={color} strokeWidth={1.5 * px} dash={[6 * px, 5 * px]} />
+      <Arrow points={arc(20, 70)} {...arrow} />
+      <Arrow points={arc(200, 250)} {...arrow} />
+    </Group>
   );
 }
 
@@ -464,6 +512,8 @@ function ItemShape({ item, actors, colors: c }: { item: Item; actors: readonly A
       );
     case 'flag':
       return <Rect x={-hw} y={-Math.max(hd, 3)} width={w} height={Math.max(d, 6)} fill={c.grip} cornerRadius={1} />;
+    case 'polyboard':
+      return <Rect x={-hw} y={-Math.max(hd, 3)} width={w} height={Math.max(d, 6)} fill="#ffffff" />;
     case 'frame':
       return (
         <Rect x={-hw} y={-Math.max(hd, 3)} width={w} height={Math.max(d, 6)} fill={c.label} opacity={0.55} stroke={c.grip} strokeWidth={2} />

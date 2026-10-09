@@ -18,6 +18,7 @@ export interface CanvasColors {
   grip: string;
   prop: string;
   warn: string;
+  rotate: string;
 }
 
 const TOKENS: Record<keyof CanvasColors, string> = {
@@ -37,6 +38,7 @@ const TOKENS: Record<keyof CanvasColors, string> = {
   grip: '--plan-grip',
   prop: '--plan-prop',
   warn: '--danger',
+  rotate: '--tool-rotate',
 };
 
 function read(): CanvasColors {
