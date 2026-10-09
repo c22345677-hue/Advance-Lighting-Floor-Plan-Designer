@@ -7,6 +7,7 @@ import { FABRIC_FILL, fabricById } from '../library/fabrics';
 import { libraryItem } from '../library/items';
 import { itemFixture, itemLook, itemModifiers } from '../model/gear';
 import { aimAt } from '../model/geometry';
+import { DEFAULT_LENS_MM, horizontalFovDeg } from '../model/lens';
 import { modeOf, sceneItems, type EditMode, type SceneDoc } from '../model/project';
 import type { Actor, Item, Vec2 } from '../model/types';
 import type { SceneAction } from './doc';
@@ -30,6 +31,7 @@ const GRID_CM = 50;
 /** People are drawn 1.5× their base symbol so they read clearly next to lights and gear. */
 const PERSON_SCALE = 1.5;
 const DEFAULT_THROW_CM = 300;
+const CAMERA_CONE_CM = 660;
 
 export const clampScale = (s: number) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
 
@@ -607,7 +609,11 @@ function ItemShape({ item, actors, colors: c }: { item: Item; actors: readonly A
     case 'camera':
       return (
         <>
-          <Wedge radius={220} angle={44} rotation={-90 - 22} fill={c.cameraFov} listening={false} />
+          {(() => {
+            // Angle of view from the lens; drawn 6.6 m long.
+            const fov = horizontalFovDeg(item.camera?.focalMm ?? DEFAULT_LENS_MM);
+            return <Wedge radius={CAMERA_CONE_CM} angle={fov} rotation={-90 - fov / 2} fill={c.cameraFov} listening={false} />;
+          })()}
           <Rect x={-13} y={-14} width={26} height={34} cornerRadius={3} fill={c.camera} />
           <Rect x={-8} y={-26} width={16} height={13} cornerRadius={2} fill={c.camera} />
           <Rect x={-9} y={-6} width={18} height={14} cornerRadius={2} fill={c.canvas} opacity={0.35} />

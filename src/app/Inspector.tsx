@@ -17,11 +17,12 @@ import {
 import { ROLE_LABEL, roleOf, type ProjectKind } from '../model/project';
 import type { Actor, Item, LightProps } from '../model/types';
 import { FixtureSearch } from './FixtureSearch';
+import { COMMON_LENSES_MM, DEFAULT_LENS_MM, horizontalFovDeg, LENS_RANGE_MM } from '../model/lens';
 import { avail, limitingList, type GearScope } from './gearScope';
 import { useConfirm } from './confirm';
 import { IconClose } from './icons';
 import { PersonEditor } from './PersonEditor';
-import { beamDegOf, displayLabel, isFocusLocked } from './PlanCanvas';
+import { beamDegOf, displayLabel } from './PlanCanvas';
 
 interface Props {
   item: Item;
@@ -59,7 +60,6 @@ export function Inspector(props: Props) {
   const lib = libraryItem(item.catalogId);
   const name = fixture?.model ?? lib?.name ?? item.kind;
   const actor = item.actorId ? actors.find((a) => a.id === item.actorId) : undefined;
-  const rotationLocked = isFocusLocked(item, sceneItems);
   const confirm = useConfirm();
   const subtitle = actor
     ? `${ROLE_LABEL[roleOf(actor)]} · same in every scene`
@@ -116,29 +116,10 @@ export function Inspector(props: Props) {
       )}
       {item.kind === 'camera' && <CameraSection item={item} sceneItems={sceneItems} actors={actors} onUpdate={onUpdate} />}
 
-      <Section title="Position">
-        <label className="field">
-          <span className="field-label">Rotation</span>
-          <span className="input-unit">
-            <input
-              className="text-input num"
-              type="number"
-              step={15}
-              disabled={rotationLocked}
-              value={Math.round(item.rotationDeg)}
-              onChange={(e) => onUpdate({ rotationDeg: ((Number(e.target.value) % 360) + 360) % 360 })}
-            />
-            <span className="unit">°</span>
-          </span>
-        </label>
-        {rotationLocked && <p className="hint-text">Turns automatically to face its focus person.</p>}
-        <label className="field toggle">
-          <span className="field-label">Lock in place</span>
-          <input type="checkbox" checked={!!item.locked} onChange={(e) => onUpdate({ locked: e.target.checked || undefined })} />
-        </label>
-      </Section>
-
       <div className="insp-actions">
+        <button className={`btn ${item.locked ? 'on' : ''}`} aria-pressed={!!item.locked} onClick={() => onUpdate({ locked: !item.locked || undefined })}>
+          {item.locked ? 'Unlock' : 'Lock'}
+        </button>
         {actor ? (
           <>
             <button className="btn" onClick={onDelete}>
@@ -173,11 +154,72 @@ export function Inspector(props: Props) {
   );
 }
 
+function LensSection({ item, onUpdate }: Pick<Props, 'item' | 'onUpdate'>) {
+  const mm = item.camera?.focalMm ?? DEFAULT_LENS_MM;
+  const [custom, setCustom] = useState(!COMMON_LENSES_MM.includes(mm));
+  const setMm = (v: number) =>
+    onUpdate({ camera: { ...item.camera, focalMm: Math.min(LENS_RANGE_MM.max, Math.max(LENS_RANGE_MM.min, Math.round(v))) } });
+  return (
+    <Section title="Lens">
+      <label className="field">
+        <span className="field-label">Focal length</span>
+        <select
+          aria-label="Lens"
+          value={custom ? 'custom' : String(mm)}
+          onChange={(e) => {
+            if (e.target.value === 'custom') setCustom(true);
+            else {
+              setCustom(false);
+              setMm(Number(e.target.value));
+            }
+          }}
+        >
+          {COMMON_LENSES_MM.map((l) => (
+            <option key={l} value={l}>
+              {l} mm
+            </option>
+          ))}
+          <option value="custom">Custom…</option>
+        </select>
+      </label>
+      {custom && (
+        <div className="lens-custom">
+          <input
+            type="range"
+            aria-label="Custom focal length"
+            min={LENS_RANGE_MM.min}
+            max={LENS_RANGE_MM.max}
+            value={mm}
+            onChange={(e) => setMm(Number(e.target.value))}
+          />
+          <span className="input-unit">
+            <input
+              className="text-input num"
+              type="number"
+              aria-label="Focal length in mm"
+              min={LENS_RANGE_MM.min}
+              max={LENS_RANGE_MM.max}
+              value={mm}
+              onChange={(e) => e.target.value !== '' && setMm(Number(e.target.value))}
+            />
+            <span className="unit">mm</span>
+          </span>
+        </div>
+      )}
+      <p className="hint-text">
+        {Math.round(horizontalFovDeg(mm))}° horizontal angle of view on a Super 35 sensor. The cone on the plan follows the lens.
+      </p>
+    </Section>
+  );
+}
+
 function CameraSection({ item, sceneItems, actors, onUpdate }: Pick<Props, 'item' | 'sceneItems' | 'actors' | 'onUpdate'>) {
   const inScene = actors.filter((a) => sceneItems.some((i) => i.actorId === a.id));
   const focus = item.camera?.focusActorId;
   const setFocus = (focusActorId: string | undefined) => onUpdate({ camera: { ...item.camera, focusActorId } });
   return (
+    <>
+    <LensSection item={item} onUpdate={onUpdate} />
     <Section title="Camera">
       <label className="field toggle">
         <span className="field-label">Camera focus on</span>
@@ -203,6 +245,7 @@ function CameraSection({ item, sceneItems, actors, onUpdate }: Pick<Props, 'item
         </>
       )}
     </Section>
+    </>
   );
 }
 

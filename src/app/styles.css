@@ -733,6 +733,17 @@ select {
   min-width: 0;
 }
 
+.lens-custom {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lens-custom input[type='range'] {
+  flex: 1;
+  accent-color: var(--accent);
+}
+
 .inline select {
   width: auto;
   min-width: 150px;
