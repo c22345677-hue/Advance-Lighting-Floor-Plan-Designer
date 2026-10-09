@@ -46,8 +46,27 @@ export interface Item {
   locked?: boolean;
   hidden?: boolean;
   light?: LightProps;
-  camera?: { sensor: string; focalMm: number };
+  /** People placed as cast: points at the project's actor list (name, colour, gender live there). */
+  actorId?: string;
+  camera?: CameraProps;
   path?: { points: Vec2[]; style: PathStyle };
+}
+
+export interface CameraProps {
+  sensor?: string;
+  focalMm?: number;
+  /** When set, the camera always turns to face this actor (project actor id). */
+  focusActorId?: string;
+}
+
+export type Gender = 'male' | 'female';
+
+/** Cast member, shared by every scene of a project. */
+export interface Actor {
+  id: string;
+  name: string;
+  color: string;
+  gender: Gender;
 }
 
 export type StringAim =

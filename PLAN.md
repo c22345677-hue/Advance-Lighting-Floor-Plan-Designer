@@ -255,6 +255,20 @@ Start a plan from a ready-made setup, then adjust it.
 
 ---
 
+### 2.16 Edit categories, tools, cast and job gear
+- **Top menu categories**: LIGHTS (lights and grip), CAMERA (cameras, dolly, video village) and
+  SCENE (actors, set pieces, props). Only items of the active category can be selected and
+  moved; everything else is locked and dimmed. Keys 1–3 switch category.
+- **Tools**: `W` select and move, `R` select and drag to rotate (5° steps, Shift = 45°).
+- **Actors** belong to the project and persist across all its scenes: name, colour and gender
+  (male/female icons). Each scene places the actors it needs.
+- **Camera focus on**: a camera can follow one actor; it turns to face them whenever either moves.
+- **Job gear list**: a saved list of fixtures, modifiers and stands with quantities. With
+  "Only use this list" on, the library, modifier and stand pickers only offer that gear, and
+  show how many are left in the current scene.
+- A project holds several scenes (tabs under the top bar; tap the active one to rename,
+  duplicate or delete it).
+
 ## 3. Gear catalogue & illustrations
 
 ### Catalogue data

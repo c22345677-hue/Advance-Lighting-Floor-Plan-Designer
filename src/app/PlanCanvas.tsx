@@ -1,12 +1,14 @@
 import Konva from 'konva';
 import type { KonvaEventObject } from 'konva/lib/Node';
-import { useEffect, useMemo, useRef, type MutableRefObject } from 'react';
+import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import { Arc, Circle, Ellipse, Group, Layer, Line, Rect, Stage, Text, Transformer, Wedge } from 'react-konva';
 import type { Modifier } from '../catalog/schema';
 import { libraryItem } from '../library/items';
 import { itemFixture, itemLook, itemModifiers } from '../model/gear';
-import type { Item, Vec2 } from '../model/types';
-import type { Action, PlanDoc } from './doc';
+import { aimAt } from '../model/geometry';
+import { modeOf, sceneItems, type EditMode, type SceneDoc } from '../model/project';
+import type { Actor, Item, Vec2 } from '../model/types';
+import type { SceneAction } from './doc';
 import type { CanvasColors } from './theme';
 
 Konva.hitOnDragEnabled = true; // lets a second finger start a pinch while dragging
@@ -17,6 +19,9 @@ export interface View {
   y: number;
   scale: number;
 }
+
+/** W = move items, R = drag an item to rotate it. */
+export type Tool = 'move' | 'rotate';
 
 export const MIN_SCALE = 0.05;
 export const MAX_SCALE = 8;
@@ -40,12 +45,17 @@ export const snap = (p: Vec2, step: number | null): Vec2 =>
 export const beamDegOf = (item: Item): number =>
   item.light?.beamDeg ?? libraryItem(item.catalogId)?.beamDeg ?? 60;
 
-/** Text shown under an item: "L1 · LS 600d Pro" for lights, the label otherwise. */
-export function displayLabel(item: Item): string {
-  const name = item.label ?? itemFixture(item)?.model ?? libraryItem(item.catalogId)?.name ?? '';
+/** Text shown under an item: "L1 · LS 600d Pro" for lights, the actor's name for cast. */
+export function displayLabel(item: Item, actors: readonly Actor[] = []): string {
+  const actor = item.actorId ? actors.find((a) => a.id === item.actorId) : undefined;
+  const name = actor?.name ?? item.label ?? itemFixture(item)?.model ?? libraryItem(item.catalogId)?.name ?? '';
   const unit = item.light?.unitId;
   return unit ? (name ? `${unit} · ${name}` : unit) : name;
 }
+
+/** A camera whose rotation is driven by its focus actor (when that actor is in the scene). */
+export const isFocusLocked = (item: Item, all: readonly Item[]): boolean =>
+  !!item.camera?.focusActorId && all.some((a) => a.actorId === item.camera!.focusActorId);
 
 /** Renders the plan to a PNG data URL, without selection handles. */
 export type ExportPng = () => string | null;
@@ -55,30 +65,45 @@ interface Props {
   height: number;
   view: View;
   onView: (v: View) => void;
-  doc: PlanDoc;
-  dispatch: (a: Action) => void;
+  scene: SceneDoc;
+  actors: readonly Actor[];
+  dispatch: (a: SceneAction) => void;
   selected: string | null;
   onSelect: (id: string | null) => void;
   colors: CanvasColors;
   snapCm: number | null;
+  mode: EditMode;
+  tool: Tool;
   exportRef: MutableRefObject<ExportPng | null>;
 }
 
+interface RotateSession {
+  id: string;
+  center: Vec2;
+  startAngle: number;
+  startRot: number;
+  current: number;
+}
+
 export function PlanCanvas(p: Props) {
-  const { width, height, view, onView, doc, dispatch, selected, onSelect, colors, snapCm } = p;
+  const { width, height, view, onView, scene, actors, dispatch, selected, onSelect, colors, snapCm, mode, tool } = p;
   const stageRef = useRef<Konva.Stage>(null);
   const trRef = useRef<Konva.Transformer>(null);
   const pinch = useRef<{ dist: number; center: Vec2 } | null>(null);
+  const rot = useRef<RotateSession | null>(null);
+  const [dragging, setDragging] = useState<string | null>(null);
+  const all = sceneItems(scene);
+  const visible = all.filter((i) => !i.hidden);
+
+  const node = (id: string) => stageRef.current?.findOne((n: Konva.Node) => n.id() === id);
 
   useEffect(() => {
     const tr = trRef.current;
-    const stage = stageRef.current;
-    if (!tr || !stage) return;
-    const node = selected ? stage.findOne(`#${CSS.escape(selected)}`) : undefined;
-    const item = [...doc.setItems, ...doc.items].find((i) => i.id === selected);
-    tr.nodes(node && !item?.locked ? [node] : []);
+    if (!tr) return;
+    const n = selected ? node(selected) : undefined;
+    tr.nodes(n ? [n] : []);
     tr.getLayer()?.batchDraw();
-  }, [selected, doc]);
+  }, [selected, scene]);
 
   useEffect(() => {
     p.exportRef.current = () => {
@@ -93,6 +118,54 @@ export function PlanCanvas(p: Props) {
     };
   });
 
+  /** While an item is dragged, keep its beam and any cameras watching it in step. */
+  const follow = (moved: Item, pos: Vec2) => {
+    node(`${moved.id}-beam`)?.position(pos);
+    if (moved.actorId) {
+      for (const cam of all) {
+        if (cam.kind === 'camera' && cam.camera?.focusActorId === moved.actorId) node(cam.id)?.rotation(aimAt(cam.pos, pos));
+      }
+    }
+    if (moved.kind === 'camera' && moved.camera?.focusActorId) {
+      const target = all.find((a) => a.actorId === moved.camera!.focusActorId);
+      if (target) node(moved.id)?.rotation(aimAt(pos, target.pos));
+    }
+  };
+
+  const worldPointer = (): Vec2 | null => stageRef.current?.getRelativePointerPosition() ?? null;
+
+  const startRotate = (item: Item) => {
+    const ptr = worldPointer();
+    if (!ptr) return;
+    rot.current = {
+      id: item.id,
+      center: item.pos,
+      startAngle: aimAt(item.pos, ptr),
+      startRot: item.rotationDeg,
+      current: item.rotationDeg,
+    };
+    stageRef.current?.draggable(false);
+  };
+
+  const moveRotate = (shift: boolean) => {
+    const r = rot.current;
+    const ptr = worldPointer();
+    if (!r || !ptr) return;
+    const step = shift ? 45 : 5;
+    const raw = r.startRot + aimAt(r.center, ptr) - r.startAngle;
+    r.current = Math.round(raw / step) * step;
+    node(r.id)?.rotation(r.current);
+    node(`${r.id}-beam`)?.rotation(r.current);
+  };
+
+  const endRotate = () => {
+    const r = rot.current;
+    if (!r) return;
+    rot.current = null;
+    stageRef.current?.draggable(true);
+    if (r.current !== r.startRot) dispatch({ type: 'rotate', id: r.id, rotationDeg: r.current });
+  };
+
   const onWheel = (e: KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault();
     const pt = stageRef.current?.getPointerPosition();
@@ -102,6 +175,11 @@ export function PlanCanvas(p: Props) {
 
   const onTouchMove = (e: KonvaEventObject<TouchEvent>) => {
     const [t1, t2] = [e.evt.touches[0], e.evt.touches[1]];
+    if (rot.current && !t2) {
+      e.evt.preventDefault();
+      moveRotate(false);
+      return;
+    }
     if (!t1 || !t2) return;
     e.evt.preventDefault();
     const stage = stageRef.current!;
@@ -120,35 +198,42 @@ export function PlanCanvas(p: Props) {
 
   const grid = useMemo(() => gridLines(view, width, height, colors), [view, width, height, colors]);
   const labelSize = Math.min(28, Math.max(9, 12 / view.scale));
-  const all = [...doc.setItems, ...doc.items];
-  const visible = all.filter((i) => !i.hidden);
 
-  const renderItem = (item: Item) => (
-    <Group
-      key={item.id}
-      id={item.id}
-      x={item.pos.x}
-      y={item.pos.y}
-      rotation={item.rotationDeg}
-      draggable={!item.locked}
-      onMouseDown={(e) => {
-        e.cancelBubble = true;
-        onSelect(item.id);
-      }}
-      onTouchStart={(e) => {
-        e.cancelBubble = true;
-        onSelect(item.id);
-      }}
-      onDragEnd={(e) => {
-        const pos = snap({ x: e.target.x(), y: e.target.y() }, snapCm);
-        e.target.position(pos);
-        dispatch({ type: 'move', id: item.id, pos });
-      }}
-      onTransformEnd={(e) => dispatch({ type: 'rotate', id: item.id, rotationDeg: e.target.rotation() })}
-    >
-      <ItemShape item={item} colors={colors} />
-    </Group>
-  );
+  const renderItem = (item: Item) => {
+    const active = modeOf(item) === mode;
+    const canRotate = tool === 'rotate' && active && !item.locked && !isFocusLocked(item, all);
+    const press = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
+      if (!active) return;
+      e.cancelBubble = true;
+      onSelect(item.id);
+      if (canRotate) startRotate(item);
+    };
+    return (
+      <Group
+        key={item.id}
+        id={item.id}
+        x={item.pos.x}
+        y={item.pos.y}
+        rotation={item.rotationDeg}
+        listening={active}
+        opacity={active ? 1 : 0.5}
+        draggable={active && tool === 'move' && !item.locked}
+        onMouseDown={press}
+        onTouchStart={press}
+        onDragStart={() => setDragging(item.id)}
+        onDragMove={(e) => follow(item, { x: e.target.x(), y: e.target.y() })}
+        onDragEnd={(e) => {
+          setDragging(null);
+          const pos = snap({ x: e.target.x(), y: e.target.y() }, snapCm);
+          e.target.position(pos);
+          follow(item, pos);
+          dispatch({ type: 'move', id: item.id, pos });
+        }}
+      >
+        <ItemShape item={item} actors={actors} colors={colors} />
+      </Group>
+    );
+  };
 
   const beam = (item: Item) => {
     if (item.kind !== 'light') return null;
@@ -162,7 +247,7 @@ export function PlanCanvas(p: Props) {
       fillRadialGradientColorStops: [0, colors.beam, 1, 'rgba(0,0,0,0)'],
     };
     return (
-      <Group key={`${item.id}-beam`} x={item.pos.x} y={item.pos.y} rotation={item.rotationDeg} listening={false}>
+      <Group key={`${item.id}-beam`} id={`${item.id}-beam`} x={item.pos.x} y={item.pos.y} rotation={item.rotationDeg} listening={false}>
         {deg >= 360 ? (
           <Circle radius={throwCm} {...gradient} />
         ) : (
@@ -173,8 +258,9 @@ export function PlanCanvas(p: Props) {
   };
 
   const label = (item: Item) => {
-    const text = displayLabel(item);
-    return text ? (
+    const text = displayLabel(item, actors);
+    if (!text || item.id === dragging) return null; // hidden while the item is being moved
+    return (
       <Text
         key={`${item.id}-label`}
         x={item.pos.x - 200}
@@ -186,9 +272,10 @@ export function PlanCanvas(p: Props) {
         fontFamily="'Barlow Semi Condensed', 'Arial Narrow', sans-serif"
         fontStyle="600"
         fill={colors.label}
+        opacity={modeOf(item) === mode ? 1 : 0.6}
         listening={false}
       />
-    ) : null;
+    );
   };
 
   return (
@@ -205,8 +292,14 @@ export function PlanCanvas(p: Props) {
         if (e.target === stageRef.current) onView({ ...view, x: e.target.x(), y: e.target.y() });
       }}
       onWheel={onWheel}
+      onMouseMove={(e) => rot.current && moveRotate(e.evt.shiftKey)}
+      onMouseUp={endRotate}
       onTouchMove={onTouchMove}
-      onTouchEnd={() => (pinch.current = null)}
+      onTouchEnd={() => {
+        pinch.current = null;
+        endRotate();
+      }}
+      onMouseLeave={endRotate}
       onMouseDown={(e) => e.target === stageRef.current && onSelect(null)}
       onTouchStart={(e) => e.target === stageRef.current && onSelect(null)}
     >
@@ -222,19 +315,15 @@ export function PlanCanvas(p: Props) {
         {visible.map(beam)}
       </Layer>
       <Layer>
-        {visible.filter((i) => doc.setItems.includes(i)).map(renderItem)}
-        {visible.filter((i) => doc.items.includes(i)).map(renderItem)}
+        {visible.filter((i) => scene.setItems.includes(i)).map(renderItem)}
+        {visible.filter((i) => scene.items.includes(i)).map(renderItem)}
         {visible.map(label)}
         <Transformer
           ref={trRef}
           resizeEnabled={false}
-          rotateAnchorOffset={28}
-          rotationSnaps={[0, 45, 90, 135, 180, 225, 270, 315]}
-          rotationSnapTolerance={4}
-          anchorSize={14}
+          rotateEnabled={false}
           borderStroke={colors.select}
-          anchorStroke={colors.select}
-          anchorFill={colors.canvas}
+          borderStrokeWidth={2}
           padding={6}
         />
       </Layer>
@@ -319,7 +408,7 @@ function ModifierShapes({ mods, front, c }: { mods: Modifier[]; front: number; c
 }
 
 /** Simple top-down symbols, drawn at real size facing up (-y). */
-function ItemShape({ item, colors: c }: { item: Item; colors: CanvasColors }) {
+function ItemShape({ item, actors, colors: c }: { item: Item; actors: readonly Actor[]; colors: CanvasColors }) {
   const { shape, w, d } = itemLook(item);
   const hw = w / 2;
   const hd = d / 2;
@@ -409,11 +498,19 @@ function ItemShape({ item, colors: c }: { item: Item; colors: CanvasColors }) {
         </>
       );
     case 'person': {
-      const crew = item.catalogId === 'generic.person.crew';
-      const fill = crew ? c.prop : c.person;
-      return (
+      const actor = item.actorId ? actors.find((a) => a.id === item.actorId) : undefined;
+      const fill = actor?.color ?? (item.catalogId === 'generic.person.crew' ? c.prop : c.person);
+      return actor?.gender === 'female' ? (
         <>
-          <Ellipse radiusX={24} radiusY={13} fill={fill} opacity={0.9} />
+          <Ellipse radiusX={19} radiusY={11} fill={fill} opacity={0.9} />
+          <Circle y={12} radius={5} fill={c.grip} opacity={0.85} />
+          <Circle y={2} radius={11} fill={c.grip} opacity={0.85} />
+          <Circle radius={8.5} fill={fill} stroke={c.canvas} strokeWidth={1.5} />
+          <Line points={[-4, -9, 0, -16, 4, -9]} closed fill={fill} />
+        </>
+      ) : (
+        <>
+          <Rect x={-25} y={-11} width={50} height={22} cornerRadius={11} fill={fill} opacity={0.9} />
           <Circle radius={10} fill={fill} stroke={c.canvas} strokeWidth={2} />
           <Line points={[-5, -12, 0, -20, 5, -12]} closed fill={fill} />
         </>

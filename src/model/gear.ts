@@ -73,12 +73,15 @@ export interface FixtureFilter {
   sizeClass?: SizeClass;
   rigging?: boolean;
   sealed?: boolean;
+  /** Limit to these fixture ids (a job gear list). */
+  ids?: ReadonlySet<string>;
 }
 
 /** Catalogue search: every query word must hit brand, model or an alias. Sorted by power. */
 export function filterFixtures(f: FixtureFilter, limit = 60): Fixture[] {
   const words = (f.query ?? '').toLowerCase().split(/\s+/).filter(Boolean);
   const hits = FIXTURES.filter((x) => {
+    if (f.ids && !f.ids.has(x.id)) return false;
     if (f.brand && x.brand !== f.brand) return false;
     if (f.sizeClass && sizeClass(x) !== f.sizeClass) return false;
     if (f.rigging && !RIGGING_PICKS.has(x.id)) return false;

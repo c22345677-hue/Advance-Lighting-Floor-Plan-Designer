@@ -13,27 +13,43 @@ import {
   standCheck,
   standsFor,
 } from '../model/gear';
-import type { Item, LightProps } from '../model/types';
+import type { Actor, Item, LightProps } from '../model/types';
+import { ActorEditor } from './ActorsPanel';
+import { avail, limitingList, type GearScope } from './gearScope';
 import { FixtureSearch } from './LibraryPanel';
-import { beamDegOf, displayLabel } from './PlanCanvas';
+import { beamDegOf, displayLabel, isFocusLocked } from './PlanCanvas';
 
 interface Props {
   item: Item;
+  /** Everything in the scene (for camera focus targets). */
+  sceneItems: Item[];
+  actors: Actor[];
+  gear: GearScope;
   onUpdate: (patch: Partial<Omit<Item, 'id'>>) => void;
+  onUpdateActor: (id: string, patch: Partial<Omit<Actor, 'id'>>) => void;
   onDuplicate: () => void;
   onDelete: () => void;
 }
 
 const kg = (v: number | null | undefined) => (v == null ? '?' : `${Math.round(v * 100) / 100} kg`);
 
-export function Inspector({ item, onUpdate, onDuplicate, onDelete }: Props) {
+export function Inspector(props: Props) {
+  const { item, sceneItems, actors, gear, onUpdate, onUpdateActor, onDuplicate, onDelete } = props;
   const setLight = (patch: Partial<LightProps>) => onUpdate({ light: { ...item.light, ...patch } });
   const name = itemFixture(item)?.model ?? libraryItem(item.catalogId)?.name ?? item.kind;
+  const actor = item.actorId ? actors.find((a) => a.id === item.actorId) : undefined;
+  const rotationLocked = isFocusLocked(item, sceneItems);
 
   return (
     <div className="panel-body">
-      <h3 className="insp-title">{displayLabel(item) || name}</h3>
+      <h3 className="insp-title">{displayLabel(item, actors) || name}</h3>
 
+      {actor ? (
+        <>
+          <p className="muted small">Changes apply to {actor.name} in every scene.</p>
+          <ActorEditor actor={actor} onUpdate={(patch) => onUpdateActor(actor.id, patch)} />
+        </>
+      ) : (
       <label className="field">
         <span className="field-label">Label</span>
         <input
@@ -43,12 +59,15 @@ export function Inspector({ item, onUpdate, onDuplicate, onDelete }: Props) {
           onChange={(e) => onUpdate({ label: e.target.value || undefined })}
         />
       </label>
+      )}
       <label className="field">
         <span className="field-label">Rotation</span>
         <input
           className="text-input num"
           type="number"
           step={15}
+          disabled={rotationLocked}
+          title={rotationLocked ? 'Follows its focus actor' : undefined}
           value={Math.round(item.rotationDeg)}
           onChange={(e) => onUpdate({ rotationDeg: ((Number(e.target.value) % 360) + 360) % 360 })}
         />
@@ -60,21 +79,58 @@ export function Inspector({ item, onUpdate, onDuplicate, onDelete }: Props) {
           {item.locked ? 'Unlock' : 'Lock'}
         </button>
         <button className="danger" onClick={onDelete}>
-          Delete
+          {actor ? 'Remove from scene' : 'Delete'}
         </button>
       </div>
 
-      {item.kind === 'light' && <LightSection item={item} setLight={setLight} onUpdate={onUpdate} />}
+      {item.kind === 'camera' && <CameraSection item={item} sceneItems={sceneItems} actors={actors} onUpdate={onUpdate} />}
+      {item.kind === 'light' && <LightSection item={item} gear={gear} setLight={setLight} onUpdate={onUpdate} />}
     </div>
+  );
+}
+
+function CameraSection({ item, sceneItems, actors, onUpdate }: Pick<Props, 'item' | 'sceneItems' | 'actors' | 'onUpdate'>) {
+  const inScene = actors.filter((a) => sceneItems.some((i) => i.actorId === a.id));
+  const focus = item.camera?.focusActorId;
+  const setFocus = (focusActorId: string | undefined) => onUpdate({ camera: { ...item.camera, focusActorId } });
+  return (
+    <section className="insp-section">
+      <h4>Camera</h4>
+      <label className="field toggle">
+        <span className="field-label">Camera focus on</span>
+        <input
+          type="checkbox"
+          checked={!!focus}
+          disabled={inScene.length === 0}
+          onChange={(e) => setFocus(e.target.checked ? inScene[0]?.id : undefined)}
+        />
+      </label>
+      {inScene.length === 0 && <p className="muted small">Place an actor in this scene to focus on them.</p>}
+      {focus && (
+        <>
+          <select value={focus} onChange={(e) => setFocus(e.target.value)} aria-label="Focus on actor">
+            {inScene.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.name}
+              </option>
+            ))}
+            {!inScene.some((a) => a.id === focus) && <option value={focus}>(not in this scene)</option>}
+          </select>
+          <p className="muted small">The camera turns to face this actor whenever either of them moves.</p>
+        </>
+      )}
+    </section>
   );
 }
 
 function LightSection({
   item,
+  gear,
   setLight,
   onUpdate,
 }: {
   item: Item;
+  gear: GearScope;
   setLight: (p: Partial<LightProps>) => void;
   onUpdate: Props['onUpdate'];
 }) {
@@ -102,14 +158,14 @@ function LightSection({
         ) : (
           <>
             <p className="muted small">Pick the real light to get its power, weight and fitting modifiers.</p>
-            <FixtureSearch onPick={pick} compact />
+            <FixtureSearch onPick={pick} compact gear={gear} keepId={fixture?.id} />
             {fixture && <button onClick={() => setPicking(false)}>Cancel</button>}
           </>
         )}
       </section>
 
-      {fixture && <ModifierSection item={item} fixture={fixture} setLight={setLight} />}
-      {fixture && <StandSection item={item} setLight={setLight} />}
+      {fixture && <ModifierSection item={item} fixture={fixture} gear={gear} setLight={setLight} />}
+      {fixture && <StandSection item={item} gear={gear} setLight={setLight} />}
 
       <section className="insp-section">
         <h4>Beam</h4>
@@ -177,11 +233,23 @@ function FixtureCard({ f }: { f: Fixture }) {
   );
 }
 
-function ModifierSection({ item, fixture, setLight }: { item: Item; fixture: Fixture; setLight: (p: Partial<LightProps>) => void }) {
+function ModifierSection({
+  item,
+  fixture,
+  gear,
+  setLight,
+}: {
+  item: Item;
+  fixture: Fixture;
+  gear: GearScope;
+  setLight: (p: Partial<LightProps>) => void;
+}) {
   const attached = itemModifiers(item);
   const ids = item.light?.modifierIds ?? [];
+  const list = limitingList(gear);
   const options = modifiersFor(fixture, MODIFIERS)
     .filter((m) => !ids.includes(m.id))
+    .filter((m) => !list || (avail(gear, 'modifier', m.id)?.left ?? 0) > 0)
     .sort((a, b) => a.type.localeCompare(b.type) || (a.weightKg ?? 99) - (b.weightKg ?? 99));
   const rig = itemRigWeightKg(item);
 
@@ -212,7 +280,9 @@ function ModifierSection({ item, fixture, setLight }: { item: Item; fixture: Fix
           ))}
         </select>
       ) : (
-        <p className="muted small">No catalogued modifiers fit this light{fixture.mount ? ` (${fixture.mount} mount)` : ''}.</p>
+        <p className="muted small">
+          {list ? 'No modifiers left on the gear list that fit this light.' : `No catalogued modifiers fit this light${fixture.mount ? ` (${fixture.mount} mount)` : ''}.`}
+        </p>
       )}
       <div className="rig-weight">
         Rig weight <b>{kg(rig)}</b>
@@ -222,11 +292,17 @@ function ModifierSection({ item, fixture, setLight }: { item: Item; fixture: Fix
   );
 }
 
-function StandSection({ item, setLight }: { item: Item; setLight: (p: Partial<LightProps>) => void }) {
+function StandSection({ item, gear, setLight }: { item: Item; gear: GearScope; setLight: (p: Partial<LightProps>) => void }) {
   const rig = itemRigWeightKg(item);
   const current = standById(item.light?.standId);
   const check = standCheck(item);
-  const options = standsFor(rig).slice(0, 60);
+  const list = limitingList(gear);
+  const options = list
+    ? list.entries
+        .filter((e) => e.kind === 'stand' && (avail(gear, 'stand', e.id)?.left ?? 0) > 0)
+        .map((e) => standById(e.id))
+        .filter((s): s is NonNullable<typeof s> => !!s)
+    : standsFor(rig).slice(0, 60);
   if (current && !options.includes(current)) options.unshift(current);
 
   return (
@@ -240,7 +316,9 @@ function StandSection({ item, setLight }: { item: Item; setLight: (p: Partial<Li
           </option>
         ))}
       </select>
-      <p className="muted small">Lightest stands that carry {rig != null ? kg(rig) : 'this light'} are listed first.</p>
+      <p className="muted small">
+        {list ? 'Stands left on the gear list.' : `Lightest stands that carry ${rig != null ? kg(rig) : 'this light'} are listed first.`}
+      </p>
       {check === 'over' && <p className="warn">Over the stand's load capacity.</p>}
       {check === 'unknown' && <p className="muted small">Can't check the load: a weight is unknown.</p>}
       {check === 'ok' && current && (

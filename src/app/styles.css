@@ -108,7 +108,7 @@ body {
 .app {
   height: 100%;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto;
 }
 
 /* ---- Top strip ---- */
@@ -428,6 +428,224 @@ button.danger {
 }
 
 
+
+/* ---- Edit categories, tools ---- */
+.modes {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.modes button {
+  border-radius: 0;
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  padding: 0 14px;
+}
+
+.modes button + button {
+  border-left: 1px solid var(--line);
+}
+
+.modes button[aria-selected='true'] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+kbd {
+  font-family: var(--font-data);
+  font-size: 10px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 0 3px;
+  margin-left: 4px;
+  color: var(--muted);
+}
+
+/* ---- Project menu ---- */
+.project-menu {
+  position: relative;
+}
+
+.project-btn {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 17px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  width: 300px;
+  max-width: calc(100vw - 32px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pop-head {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.project-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.project-list button {
+  width: 100%;
+  text-align: left;
+}
+
+/* ---- Scene tabs ---- */
+.scenebar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding: 4px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scene-tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.scene-tab {
+  border: 1px solid var(--line);
+  min-height: 30px;
+  font-size: 13px;
+}
+
+.scene-tab[aria-selected='true'] {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.scene-add {
+  min-height: 30px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.scene-edit {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.scene-edit .text-input {
+  flex: 1;
+  min-width: 140px;
+  max-width: 260px;
+}
+
+.scene-edit button {
+  border: 1px solid var(--line);
+}
+
+/* ---- Actors ---- */
+.actor-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.actor-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.actor-editor .segmented {
+  align-self: flex-start;
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.swatch {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+
+.swatch[aria-checked='true'] {
+  border-color: var(--fg);
+  box-shadow: 0 0 0 2px var(--surface) inset;
+}
+
+.swatch.custom {
+  position: relative;
+  background: conic-gradient(#e5484d, #f5a524, #2fae55, #3e8ef7, #a855f7, #e5484d);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.swatch.custom input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* ---- Gear list ---- */
+.gear-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.gear-name {
+  min-width: 0;
+}
+
+.gear-row .stepper button {
+  min-width: 32px;
+  min-height: 30px;
+}
+
 /* ---- Library, inspector ---- */
 .panel-tabs {
   display: flex;
@@ -439,9 +657,9 @@ button.danger {
   font-weight: 600;
   font-size: 13px;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
   color: var(--muted);
-  padding: 0 8px;
+  padding: 0 6px;
 }
 
 .panel-tabs button[aria-selected='true'] {
@@ -780,6 +998,24 @@ select:focus-visible {
 
   .brand-slate {
     display: none;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+
+  .tools {
+    order: 3;
+    flex-basis: 100%;
+  }
+
+  .project-btn {
+    max-width: 140px;
+  }
+
+  .modes button {
+    padding: 0 10px;
   }
 
   .panel {
