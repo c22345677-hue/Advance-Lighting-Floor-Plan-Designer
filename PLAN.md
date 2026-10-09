@@ -234,7 +234,7 @@ and in which direction.
 
 ### 2.14 Templates
 Start a plan from a ready-made setup, then adjust it.
-- Examples: **Interview**, **Piece to camera**, **Green screen** (more to be defined).
+- Examples: **Interview**, **Teleprompter** (doc), **Green screen** (more to be defined).
 - Each template has its own options. For example, Interview asks for the number of
   interviewees and the number of cameras.
 - Options can repeat per element. "Number of cameras" can give each camera its own settings.

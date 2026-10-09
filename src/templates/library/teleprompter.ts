@@ -1,11 +1,11 @@
 import type { TemplateDefinition } from '../types';
 import { countOption, framingOption, subjectsFacingCameras } from './shared';
 
-export const pieceToCamera: TemplateDefinition = {
-  id: 'piece-to-camera',
-  name: 'Piece to camera',
-  description: 'Presenter talking straight into the lens.',
-  kinds: ['doc', 'narrative'],
+export const teleprompter: TemplateDefinition = {
+  id: 'teleprompter',
+  name: 'Teleprompter',
+  description: 'Presenter reading a teleprompter, talking straight into the lens.',
+  kinds: ['doc'],
   placeholder: true,
   options: [
     countOption('presenters', 'Presenters', 1, 3),
@@ -22,7 +22,7 @@ export const pieceToCamera: TemplateDefinition = {
   build: (o) => ({
     shots: [
       {
-        name: 'Piece to camera',
+        name: 'Teleprompter',
         items: subjectsFacingCameras(
           'Presenter',
           o.number('presenters'),

@@ -1,11 +1,11 @@
 import { greenScreen } from './library/greenScreen';
 import { interview } from './library/interview';
-import { pieceToCamera } from './library/pieceToCamera';
+import { teleprompter } from './library/teleprompter';
 import { validateDefinition } from './options';
 import type { TemplateDefinition } from './types';
 
 // To add a template: create a file in ./library and list it here.
-const TEMPLATES: TemplateDefinition[] = [interview, pieceToCamera, greenScreen];
+const TEMPLATES: TemplateDefinition[] = [interview, teleprompter, greenScreen];
 
 const byId = new Map<string, TemplateDefinition>();
 for (const t of TEMPLATES) {
