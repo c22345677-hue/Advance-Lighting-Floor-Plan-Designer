@@ -16,6 +16,7 @@ import {
 import type { Actor, CastRole, Item } from '../model/types';
 import { applyTemplate, getTemplate, type TemplateDefinition, type TemplateValues } from '../templates';
 import { CategoryPanel, type PlaceRequest } from './CategoryPanel';
+import { useConfirm } from './confirm';
 import { Dialog } from './Dialog';
 import { reducer, type SceneAction } from './doc';
 import { GearListPanel } from './GearListPanel';
@@ -167,6 +168,7 @@ export function App() {
   const exportRef = useRef<ExportPng | null>(null);
   const stageBox = useRef<HTMLDivElement>(null);
   const colors = useCanvasColors();
+  const confirm = useConfirm();
 
   const sd = (action: SceneAction) => dispatch({ type: 'scene', sceneId: scene.id, action });
   const kind: ProjectKind = project.kind ?? 'narrative';
@@ -310,7 +312,7 @@ export function App() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (dialog || (e.target as HTMLElement).closest('input, textarea, select')) return;
+      if (dialog || document.querySelector('.dialog') || (e.target as HTMLElement).closest('input, textarea, select')) return;
       const mod = e.ctrlKey || e.metaKey;
       const k = e.key.toLowerCase();
       if (mod && k === 'z') {
@@ -440,9 +442,15 @@ export function App() {
             id="reset-scene"
             className="top-action"
             disabled={items.length === 0 && !scene.baseline}
-            onClick={() => {
-              const to = scene.baseline ? 'its template layout' : 'an empty plan';
-              if (window.confirm(`Reset ${scene.name} to ${to}? (Undo can bring your changes back.)`)) {
+            onClick={async () => {
+              const ok = await confirm({
+                title: `Reset ${scene.name}?`,
+                message: scene.baseline
+                  ? 'The scene goes back to its template layout. Undo can bring your changes back.'
+                  : 'The scene goes back to an empty plan. Undo can bring your changes back.',
+                confirm: 'Reset',
+              });
+              if (ok) {
                 sd({ type: 'reset' });
                 setSelected(null);
                 if (scene.baseline) setView(null);

@@ -18,6 +18,7 @@ import { ROLE_LABEL, roleOf, type ProjectKind } from '../model/project';
 import type { Actor, Item, LightProps } from '../model/types';
 import { FixtureSearch } from './FixtureSearch';
 import { avail, limitingList, type GearScope } from './gearScope';
+import { useConfirm } from './confirm';
 import { IconClose } from './icons';
 import { PersonEditor } from './PersonEditor';
 import { beamDegOf, displayLabel, isFocusLocked } from './PlanCanvas';
@@ -59,6 +60,7 @@ export function Inspector(props: Props) {
   const name = fixture?.model ?? lib?.name ?? item.kind;
   const actor = item.actorId ? actors.find((a) => a.id === item.actorId) : undefined;
   const rotationLocked = isFocusLocked(item, sceneItems);
+  const confirm = useConfirm();
   const subtitle = actor
     ? `${ROLE_LABEL[roleOf(actor)]} · same in every scene`
     : item.kind === 'light'
@@ -144,7 +146,14 @@ export function Inspector(props: Props) {
             </button>
             <button
               className="btn danger"
-              onClick={() => window.confirm(`Remove ${actor.name} from the whole project (every scene)?`) && onDeleteActor(actor.id)}
+              onClick={async () =>
+                (await confirm({
+                  title: `Remove ${actor.name}?`,
+                  message: 'They are taken out of every scene in this project.',
+                  confirm: 'Remove from project',
+                  danger: true,
+                })) && onDeleteActor(actor.id)
+              }
             >
               Remove from project
             </button>

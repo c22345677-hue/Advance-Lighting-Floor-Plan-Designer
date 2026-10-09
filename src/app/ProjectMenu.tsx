@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Project, ProjectKind, SceneDoc } from '../model/project';
+import { useConfirm } from './confirm';
 import { IconChevron } from './icons';
 import { listProjects } from './storage';
 
@@ -31,6 +32,7 @@ export function ProjectMenu(props: Props) {
   const kind = project.kind ?? 'narrative';
   const isEmpty = scene.items.length + scene.setItems.length === 0;
   const close = () => setOpen(false);
+  const confirm = useConfirm();
 
   useEffect(() => {
     if (!open) return;
@@ -114,8 +116,13 @@ export function ProjectMenu(props: Props) {
               <button
                 className="btn"
                 disabled={isEmpty}
-                onClick={() =>
-                  window.confirm(`Remove everything from ${scene.name}? (Undo can bring it back.)`) && props.onClearScene(scene.id)
+                onClick={async () =>
+                  (await confirm({
+                    title: `Clear ${scene.name}?`,
+                    message: 'Everything in this scene is removed. Undo can bring it back.',
+                    confirm: 'Clear scene',
+                    danger: true,
+                  })) && props.onClearScene(scene.id)
                 }
               >
                 Clear
@@ -123,7 +130,10 @@ export function ProjectMenu(props: Props) {
               <button
                 className="btn danger"
                 disabled={project.scenes.length < 2}
-                onClick={() => window.confirm(`Delete ${scene.name}?`) && props.onDeleteScene(scene.id)}
+                onClick={async () =>
+                  (await confirm({ title: `Delete ${scene.name}?`, message: 'Undo can bring it back.', confirm: 'Delete scene', danger: true })) &&
+                  props.onDeleteScene(scene.id)
+                }
               >
                 Delete
               </button>
@@ -158,11 +168,15 @@ export function ProjectMenu(props: Props) {
               </button>
               <button
                 className="btn danger"
-                onClick={() => {
-                  if (window.confirm(`Delete "${project.name}" from this device?`)) {
-                    onDelete();
-                    close();
-                  }
+                onClick={async () => {
+                  close();
+                  const ok = await confirm({
+                    title: `Delete "${project.name || 'Untitled project'}"?`,
+                    message: 'The project and all its scenes are removed from this device. This cannot be undone.',
+                    confirm: 'Delete project',
+                    danger: true,
+                  });
+                  if (ok) onDelete();
                 }}
               >
                 Delete project

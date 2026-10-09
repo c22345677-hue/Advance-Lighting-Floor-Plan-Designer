@@ -7,22 +7,28 @@ interface Props {
   children: ReactNode;
   /** Optional footer (main action). */
   footer?: ReactNode;
+  /** Narrow confirm-style dialog. */
+  small?: boolean;
 }
 
 /** Centered dialog on wide screens, full-screen sheet on phones. Esc or the backdrop closes it. */
-export function Dialog({ title, onClose, children, footer }: Props) {
+export function Dialog({ title, onClose, children, footer, small }: Props) {
   const box = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     window.addEventListener('keydown', onKey);
-    box.current?.focus();
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
+  useEffect(() => {
+    // Focus the dialog once, unless a control inside already took focus (autoFocus).
+    if (!box.current?.contains(document.activeElement)) box.current?.focus();
+  }, []);
+
   return (
     <div className="dialog-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="dialog" role="dialog" aria-modal="true" aria-label={title} ref={box} tabIndex={-1}>
+      <div className={`dialog ${small ? 'small' : ''}`} role="dialog" aria-modal="true" aria-label={title} ref={box} tabIndex={-1}>
         <header className="dialog-head">
           <h2>{title}</h2>
           <button className="icon-btn" onClick={onClose} aria-label="Close">

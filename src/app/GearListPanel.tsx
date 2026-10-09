@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { MODIFIERS, STANDS } from '../catalog/data';
 import { fixtureById, modifierById, standById } from '../model/gear';
 import { availability, setQty, type GearKind, type GearList } from '../model/gearList';
+import { useConfirm } from './confirm';
 import { FixtureSearch } from './FixtureSearch';
 
 interface Props {
@@ -26,6 +27,7 @@ function gearName(kind: GearKind, id: string): string {
 /** The job's gear: what is on the truck, and how many. Lists are saved and reusable across projects. */
 export function GearListPanel({ lists, active, limit, usage, onSelect, onLimit, onSave, onCreate, onDelete }: Props) {
   const [adding, setAdding] = useState<GearKind | null>(null);
+  const confirm = useConfirm();
 
   return (
     <div className="stack-lg">
@@ -114,7 +116,10 @@ export function GearListPanel({ lists, active, limit, usage, onSelect, onLimit, 
           })}
 
           <div className="insp-actions">
-            <button className="btn danger" onClick={() => window.confirm(`Delete the gear list "${active.name}"?`) && onDelete(active.id)}>
+            <button className="btn danger" onClick={async () =>
+                (await confirm({ title: `Delete "${active.name}"?`, message: 'The list is removed from every project that uses it.', confirm: 'Delete list', danger: true })) &&
+                onDelete(active.id)
+              }>
               Delete this list
             </button>
           </div>
