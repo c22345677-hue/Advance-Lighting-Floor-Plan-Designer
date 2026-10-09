@@ -38,6 +38,8 @@ export interface LibraryItem {
   sizeCm: { w: number; d: number };
   /** Lights: typical beam angle, used for the cone until a fixture is picked. */
   beamDeg?: number;
+  /** Known to the app (templates use it) but not offered in the Add list. */
+  unlisted?: boolean;
 }
 
 const L = (id: string, name: string, shape: Shape, w: number, d: number, beamDeg: number): LibraryItem => ({
@@ -88,7 +90,8 @@ export const LIBRARY: LibraryItem[] = [
   I('set', 'set', 'set.wall', 'Wall 1 m', 'wall', 100, 15),
   I('set', 'set', 'set.door', 'Door', 'door', 90, 10),
   I('set', 'set', 'set.window', 'Window', 'window', 120, 15),
-  I('set', 'set', 'set.green-screen', 'Green screen', 'wall', 400, 10),
+  // Green screen comes from the Green screen template or a frame's fabric, not the Set list.
+  { ...I('set', 'set', 'set.green-screen', 'Green screen', 'wall', 400, 10), unlisted: true },
   I('props', 'prop', 'prop.table', 'Table', 'box', 180, 90),
   I('props', 'prop', 'prop.chair', 'Chair', 'box', 50, 50),
   I('props', 'prop', 'prop.sofa', 'Sofa', 'box', 200, 90),

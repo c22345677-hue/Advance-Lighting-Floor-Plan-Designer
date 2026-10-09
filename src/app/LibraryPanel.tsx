@@ -34,7 +34,7 @@ export function LibraryPanel({ mode, gear, onPlace, kind, actors, placed, onNewP
   const [picked, setCategory] = useState<LibraryCategory>(categories[0]!);
   const category = categories.includes(picked) ? picked : categories[0]!;
   const limited = !!limitingList(gear);
-  const generic = LIBRARY.filter((i) => i.category === category && !(limited && i.category === 'lights') && i.id !== 'generic.person');
+  const generic = LIBRARY.filter((i) => !i.unlisted && i.category === category && !(limited && i.category === 'lights') && i.id !== 'generic.person');
   return (
     <div className="panel-body">
       <div className="template-list" role="tablist" aria-label="Library categories">
