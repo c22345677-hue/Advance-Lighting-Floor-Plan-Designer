@@ -613,6 +613,37 @@ function ItemShape({ item, actors, colors: c }: { item: Item; actors: readonly A
           <Rect x={-9} y={-6} width={18} height={14} cornerRadius={2} fill={c.canvas} opacity={0.35} />
         </>
       );
+    case 'monitor':
+      // Screen on a stand; the light edge is the screen side.
+      return (
+        <>
+          <Rect x={-6} y={0} width={12} height={hd} fill={c.camera} opacity={0.7} />
+          <Rect x={-hw * 0.35} y={hd - 6} width={hw * 0.7} height={6} cornerRadius={3} fill={c.camera} opacity={0.7} />
+          <Rect x={-hw} y={-hd} width={w} height={8} cornerRadius={2} fill={c.camera} />
+          <Line points={[-hw + 3, -hd, hw - 3, -hd]} stroke={c.label} strokeWidth={2} />
+        </>
+      );
+    case 'video-village': {
+      // Large monitor at the front, two people behind it watching (facing it), one colour.
+      const mw = Math.min(w * 0.7, 110);
+      const viewer = (x: number) => (
+        <Group key={x} x={x} y={hd - 26}>
+          <Rect x={-22} y={-10} width={44} height={20} cornerRadius={10} fill={c.camera} opacity={0.85} />
+          <Circle radius={9} fill={c.camera} stroke={c.canvas} strokeWidth={2} />
+          <Line points={[-4, -11, 0, -18, 4, -11]} closed fill={c.camera} />
+        </Group>
+      );
+      return (
+        <>
+          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={8} stroke={c.camera} strokeWidth={1.5} dash={[6, 5]} opacity={0.6} />
+          <Rect x={-mw / 2} y={-hd + 6} width={mw} height={9} cornerRadius={2} fill={c.camera} />
+          <Line points={[-mw / 2 + 3, -hd + 15, mw / 2 - 3, -hd + 15]} stroke={c.label} strokeWidth={2} />
+          <Rect x={-7} y={-hd + 15} width={14} height={14} fill={c.camera} opacity={0.7} />
+          {viewer(-w * 0.22)}
+          {viewer(w * 0.22)}
+        </>
+      );
+    }
     case 'dolly':
       return (
         <>
