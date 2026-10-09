@@ -88,9 +88,9 @@ export const LIBRARY: LibraryItem[] = [
   I('camera', 'set', 'camera.dolly', 'Dolly', 'dolly', 70, 120),
   I('camera', 'prop', 'camera.monitor', 'Monitor', 'monitor', 60, 20),
   // One element: a large monitor with two people watching it.
-  I('camera', 'prop', 'camera.video-village', 'Video village', 'video-village', 150, 120),
-  I('people', 'person', 'person', 'Actor', 'person', 48, 26),
-  I('people', 'person', 'person.crew', 'Crew', 'person', 48, 26),
+  I('camera', 'prop', 'camera.video-village', 'Video village', 'video-village', 190, 150),
+  I('people', 'person', 'person', 'Actor', 'person', 75, 40),
+  I('people', 'person', 'person.crew', 'Crew', 'person', 75, 40),
   I('set', 'set', 'set.wall', 'Wall 1 m', 'wall', 100, 15),
   I('set', 'set', 'set.door', 'Door', 'door', 90, 10),
   I('set', 'set', 'set.window', 'Window', 'window', 120, 15),

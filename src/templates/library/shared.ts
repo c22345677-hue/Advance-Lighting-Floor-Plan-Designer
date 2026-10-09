@@ -83,7 +83,7 @@ export function interviewersBesideCamera(count: number, camera: Vec2, subjects: 
   const fwd = { x: toSubject.x / len, y: toSubject.y / len };
   const side = { x: -fwd.y, y: fwd.x };
   return Array.from({ length: count }, (_, i) => {
-    const offset = (i % 2 === 0 ? 1 : -1) * (55 + Math.floor(i / 2) * 60);
+    const offset = (i % 2 === 0 ? 1 : -1) * (75 + Math.floor(i / 2) * 80);
     const pos = { x: camera.x + fwd.x * 40 + side.x * offset, y: camera.y + fwd.y * 40 + side.y * offset };
     return person(pos, aimAt(pos, subjects), count > 1 ? `Interviewer ${i + 1}` : 'Interviewer', 'interviewer');
   });

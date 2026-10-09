@@ -27,6 +27,8 @@ export type Tool = 'move' | 'rotate';
 export const MIN_SCALE = 0.05;
 export const MAX_SCALE = 8;
 const GRID_CM = 50;
+/** People are drawn 1.5× their base symbol so they read clearly next to lights and gear. */
+const PERSON_SCALE = 1.5;
 const DEFAULT_THROW_CM = 300;
 
 export const clampScale = (s: number) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
@@ -422,7 +424,7 @@ const ROTATE_CURSOR = `url("data:image/svg+xml,${encodeURIComponent(
 function RotateRing({ item, scale, color }: { item: Item; scale: number; color: string }) {
   const { w, d, shape } = itemLook(item);
   const px = 1 / scale;
-  const r = (shape === 'person' ? 26 : Math.max(w, d) / 2) + 14 * px;
+  const r = (shape === 'person' ? 26 * PERSON_SCALE : Math.max(w, d) / 2) + 14 * px;
   const arc = (from: number, to: number) => {
     const pts: number[] = [];
     for (let i = 0; i <= 8; i++) {
@@ -443,7 +445,7 @@ function RotateRing({ item, scale, color }: { item: Item; scale: number; color: 
 
 function labelOffset(item: Item): number {
   const { d, shape } = itemLook(item);
-  if (shape === 'person') return 18;
+  if (shape === 'person') return 18 * PERSON_SCALE;
   return Math.max(18, d / 2 + 8);
 }
 
@@ -625,9 +627,9 @@ function ItemShape({ item, actors, colors: c }: { item: Item; actors: readonly A
       );
     case 'video-village': {
       // Large monitor at the front, two people behind it watching (facing it), one colour.
-      const mw = Math.min(w * 0.7, 110);
+      const mw = Math.min(w * 0.7, 130);
       const viewer = (x: number) => (
-        <Group key={x} x={x} y={hd - 26}>
+        <Group key={x} x={x} y={hd - 36} scaleX={PERSON_SCALE} scaleY={PERSON_SCALE}>
           <Rect x={-22} y={-10} width={44} height={20} cornerRadius={10} fill={c.camera} opacity={0.85} />
           <Circle radius={9} fill={c.camera} stroke={c.canvas} strokeWidth={2} />
           <Line points={[-4, -11, 0, -18, 4, -11]} closed fill={c.camera} />
@@ -639,8 +641,8 @@ function ItemShape({ item, actors, colors: c }: { item: Item; actors: readonly A
           <Rect x={-mw / 2} y={-hd + 6} width={mw} height={9} cornerRadius={2} fill={c.camera} />
           <Line points={[-mw / 2 + 3, -hd + 15, mw / 2 - 3, -hd + 15]} stroke={c.label} strokeWidth={2} />
           <Rect x={-7} y={-hd + 15} width={14} height={14} fill={c.camera} opacity={0.7} />
-          {viewer(-w * 0.22)}
-          {viewer(w * 0.22)}
+          {viewer(-w * 0.24)}
+          {viewer(w * 0.24)}
         </>
       );
     }
@@ -656,19 +658,19 @@ function ItemShape({ item, actors, colors: c }: { item: Item; actors: readonly A
       const actor = item.actorId ? actors.find((a) => a.id === item.actorId) : undefined;
       const fill = actor?.color ?? (item.catalogId === 'generic.person.crew' ? c.prop : c.person);
       return actor?.gender === 'female' ? (
-        <>
+        <Group scaleX={PERSON_SCALE} scaleY={PERSON_SCALE}>
           <Ellipse radiusX={19} radiusY={11} fill={fill} opacity={0.9} />
           <Circle y={12} radius={5} fill={c.grip} opacity={0.85} />
           <Circle y={2} radius={11} fill={c.grip} opacity={0.85} />
           <Circle radius={8.5} fill={fill} stroke={c.canvas} strokeWidth={1.5} />
           <Line points={[-4, -9, 0, -16, 4, -9]} closed fill={fill} />
-        </>
+        </Group>
       ) : (
-        <>
+        <Group scaleX={PERSON_SCALE} scaleY={PERSON_SCALE}>
           <Rect x={-25} y={-11} width={50} height={22} cornerRadius={11} fill={fill} opacity={0.9} />
           <Circle radius={10} fill={fill} stroke={c.canvas} strokeWidth={2} />
           <Line points={[-5, -12, 0, -20, 5, -12]} closed fill={fill} />
-        </>
+        </Group>
       );
     }
     case 'wall': {
