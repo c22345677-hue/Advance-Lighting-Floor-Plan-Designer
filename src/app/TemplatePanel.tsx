@@ -15,6 +15,8 @@ interface Props {
   kind: ProjectKind;
   onKind: (kind: ProjectKind) => void;
   onAdd: (template: TemplateDefinition, values: TemplateValues) => void;
+  /** Where the template goes, for the button text. */
+  sceneName: string;
 }
 
 const KINDS: { id: ProjectKind; label: string; hint: string }[] = [
@@ -22,7 +24,7 @@ const KINDS: { id: ProjectKind; label: string; hint: string }[] = [
   { id: 'doc', label: 'Doc', hint: 'People are interviewees and interviewers.' },
 ];
 
-export function TemplatePanel({ kind, onKind, onAdd }: Props) {
+export function TemplatePanel({ kind, onKind, onAdd, sceneName }: Props) {
   const templates = listTemplates().filter((t) => t.kinds.includes(kind));
   const [templateId, setTemplateId] = useState(templates[0]?.id ?? '');
   const [input, setInput] = useState<Record<string, Partial<TemplateValues>>>({});
@@ -33,35 +35,36 @@ export function TemplatePanel({ kind, onKind, onAdd }: Props) {
   );
 
   const kindPicker = (
-    <div className="kind-picker">
-      <span className="field-label">Production</span>
-      <div className="segmented" role="radiogroup" aria-label="Production type">
+    <section className="section">
+      <h3 className="section-title">1 · Production type</h3>
+      <div className="segmented wide" role="radiogroup" aria-label="Production type">
         {KINDS.map((k) => (
-          <button key={k.id} id={`kind-${k.id}`} role="radio" aria-checked={kind === k.id} onClick={() => onKind(k.id)} title={k.hint}>
+          <button key={k.id} id={`kind-${k.id}`} role="radio" aria-checked={kind === k.id} onClick={() => onKind(k.id)}>
             {k.label}
           </button>
         ))}
       </div>
-    </div>
+      <p className="hint-text">{KINDS.find((k) => k.id === kind)!.hint}</p>
+    </section>
   );
 
-  if (!template) return <div className="panel-body">{kindPicker}</div>;
+  if (!template) return <div className="stack-lg">{kindPicker}</div>;
 
   const set = (key: string, v: ScalarValue | ScalarValues[]) =>
     setInput((all) => ({ ...all, [template.id]: { ...values, [key]: v } }));
 
   return (
-    <div className="panel-body">
+    <div className="stack-lg">
       {kindPicker}
-      <p className="muted small">{KINDS.find((k) => k.id === kind)!.hint}</p>
-      <div className="template-list" role="tablist" aria-label="Templates">
+      <section className="section">
+      <h3 className="section-title">2 · Template</h3>
+      <div className="chip-tabs" role="tablist" aria-label="Templates">
         {templates.map((t) => (
           <button
             key={t.id}
             id={`tpl-${t.id}`}
             role="tab"
             aria-selected={t.id === template.id}
-            className="template-tab"
             onClick={() => setTemplateId(t.id)}
           >
             {t.name}
@@ -69,13 +72,17 @@ export function TemplatePanel({ kind, onKind, onAdd }: Props) {
         ))}
       </div>
 
-      <p className="template-desc">{template.description}</p>
+      <p className="hint-text">{template.description}</p>
       {template.placeholder && (
-        <p className="draft-note">
+        <p className="hint-text">
           <span className="chip">Draft layout</span> Positions are placeholders until this template is defined.
         </p>
       )}
 
+      </section>
+
+      <section className="section">
+      <h3 className="section-title">3 · Options</h3>
       <div className="options">
         {template.options.map((o) => {
           if (o.type !== 'repeat') {
@@ -112,9 +119,10 @@ export function TemplatePanel({ kind, onKind, onAdd }: Props) {
           );
         })}
       </div>
+      </section>
 
-      <button id="add-template" className="primary" onClick={() => onAdd(template, values)}>
-        Add {template.name.toLowerCase()} to plan
+      <button id="add-template" className="btn primary big" onClick={() => onAdd(template, values)}>
+        Add {template.name.toLowerCase()} to {sceneName}
       </button>
     </div>
   );

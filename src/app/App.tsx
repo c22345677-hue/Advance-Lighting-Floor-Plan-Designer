@@ -2,7 +2,6 @@ import { useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } fro
 import { nextUnitId, powerTotals } from '../model/gear';
 import { gearUsage, type GearList } from '../model/gearList';
 import {
-  castTitle,
   EDIT_MODES,
   KIND_ROLES,
   modeOf,
@@ -16,12 +15,27 @@ import {
 } from '../model/project';
 import type { Actor, CastRole, Item } from '../model/types';
 import { applyTemplate, getTemplate, type TemplateDefinition, type TemplateValues } from '../templates';
-import { ActorsPanel } from './ActorsPanel';
+import { CategoryPanel, type PlaceRequest } from './CategoryPanel';
+import { Dialog } from './Dialog';
 import { reducer, type SceneAction } from './doc';
 import { GearListPanel } from './GearListPanel';
 import type { GearScope } from './gearScope';
+import {
+  IconBack,
+  IconChevron,
+  IconExport,
+  IconFit,
+  IconGearList,
+  IconMinus,
+  IconMove,
+  IconPlus,
+  IconRedo,
+  IconRotate,
+  IconSnap,
+  IconTemplates,
+  IconUndo,
+} from './icons';
 import { Inspector } from './Inspector';
-import { LibraryPanel, type PlaceRequest } from './LibraryPanel';
 import { clampScale, displayLabel, PlanCanvas, snap, zoomAt, type ExportPng, type Tool, type View } from './PlanCanvas';
 import { ProjectMenu } from './ProjectMenu';
 import { SceneBar } from './SceneBar';
@@ -99,13 +113,6 @@ function scaleBar(scale: number): { cm: number; px: number; label: string } {
 
 const fmtM = (cm: number) => `${(cm / 100).toFixed(2)} m`;
 
-type PanelTab = 'add' | 'actors' | 'gear' | 'templates';
-const PANEL_TABS: { id: PanelTab; label: string }[] = [
-  { id: 'add', label: 'Add' },
-  { id: 'actors', label: 'Cast' },
-  { id: 'gear', label: 'Gear list' },
-  { id: 'templates', label: 'Templates' },
-];
 const SNAP_CM = 25;
 
 /** Small per-device settings, kept in localStorage. */
@@ -121,6 +128,16 @@ function loadPrefs(): Prefs {
     return { snap: true, volts: 230 };
   }
 }
+
+const MODE_LABEL: Record<EditMode, string> = { lights: 'Lights', grip: 'Grip', camera: 'Camera', scene: 'Scene' };
+const MODE_HINT: Record<EditMode, string> = {
+  lights: 'Only lights can be picked and moved',
+  grip: 'Only grip can be picked and moved',
+  camera: 'Only camera gear can be picked and moved',
+  scene: 'Only people, set and props can be picked and moved',
+};
+
+type DialogKind = 'templates' | 'gear' | null;
 
 export function App() {
   const [history, dispatch] = useReducer(reducer, undefined, () => ({
@@ -138,16 +155,16 @@ export function App() {
   const [selected, setSelected] = useState<string | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [view, setView] = useState<View | null>(null);
-  const [panelOpen, setPanelOpen] = useState(false);
-  const [tab, setTab] = useState<PanelTab>('add');
+  const [sheetOpen, setSheetOpen] = useState(false); // phones: side panel as a bottom sheet
+  const [dialog, setDialog] = useState<DialogKind>(null);
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
   const [gearLists, setGearLists] = useState<GearList[]>(loadGearLists);
-  const [confirmClear, setConfirmClear] = useState(false);
   const exportRef = useRef<ExportPng | null>(null);
   const stageBox = useRef<HTMLDivElement>(null);
   const colors = useCanvasColors();
 
   const sd = (action: SceneAction) => dispatch({ type: 'scene', sceneId: scene.id, action });
+  const kind: ProjectKind = project.kind ?? 'narrative';
 
   useEffect(() => saveProject(project), [project]);
   useEffect(() => saveGearLists(gearLists), [gearLists]);
@@ -187,6 +204,11 @@ export function App() {
   const usage = useMemo(() => gearUsage(items), [items]);
   const gear: GearScope = { list: activeList, limit: !!project.gearLimit && !!activeList, usage };
 
+  const switchMode = (m: EditMode) => {
+    setMode(m);
+    setSelected(null);
+  };
+
   const deleteSelected = () => {
     if (selected) sd({ type: 'delete', ids: [selected] });
     setSelected(null);
@@ -203,7 +225,6 @@ export function App() {
     sd({ type: 'add', setItems: isSet ? [item] : [], items: isSet ? [] : [item] });
     setMode(modeOf(item));
     setSelected(item.id);
-    setPanelOpen(false);
   };
 
   const place = (req: PlaceRequest) => {
@@ -222,28 +243,18 @@ export function App() {
     );
   };
 
-  const placeActor = (actorId: string) => {
-    const existing = items.find((i) => i.actorId === actorId);
-    if (existing) {
-      setMode('scene');
-      setSelected(existing.id);
-      setPanelOpen(false);
-      return;
-    }
+  const placeActor = (actorId: string) =>
     addItem({ id: uid(), kind: 'person', catalogId: 'generic.person', actorId, pos: snap(viewCenter(), snapCm), rotationDeg: 180 });
-  };
 
-  const kind: ProjectKind = project.kind ?? 'narrative';
-  const addActor = (role: CastRole) => dispatch({ type: 'addActor', actor: newActor(project.actors, { role }) });
-  /** Add section: create a new person and put them in the scene. */
+  /** Create a new cast member and put them in the scene. */
   const newPerson = (role: CastRole) => {
     const actor = newActor(project.actors, { role });
     dispatch({ type: 'addActor', actor });
-    addItem({ id: uid(), kind: 'person', catalogId: 'generic.person', actorId: actor.id, pos: snap(viewCenter(), snapCm), rotationDeg: 180 });
+    placeActor(actor.id);
   };
 
   const duplicate = (src: Item) => {
-    if (src.actorId) return; // an actor appears once per scene
+    if (src.actorId) return; // a person appears once per scene
     const copy: Item = structuredClone({ ...src, id: uid(), pos: { x: src.pos.x + 50, y: src.pos.y + 50 }, locked: undefined });
     if (copy.light) copy.light.unitId = nextUnitId(items);
     const isSet = scene.setItems.some((i) => i.id === src.id);
@@ -286,14 +297,15 @@ export function App() {
     const cast = castTemplateItems(r.shots.flatMap((s) => s.items), project.actors, items, kind);
     for (const actor of cast.added) dispatch({ type: 'addActor', actor });
     sd({ type: 'add', setItems: r.setItems, items: cast.items });
-    setPanelOpen(false);
+    setDialog(null);
+    setView(null); // fit the new layout
   };
 
   const saveList = (list: GearList) => setGearLists((ls) => ls.map((l) => (l.id === list.id ? list : l)));
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement).closest('input, textarea, select')) return;
+      if (dialog || (e.target as HTMLElement).closest('input, textarea, select')) return;
       const mod = e.ctrlKey || e.metaKey;
       const k = e.key.toLowerCase();
       if (mod && k === 'z') {
@@ -311,8 +323,8 @@ export function App() {
         setTool('move');
       } else if (k === 'r') {
         setTool('rotate');
-      } else if (k === '1' || k === '2' || k === '3' || k === '4') {
-        setMode(EDIT_MODES[Number(k) - 1]!.id);
+      } else if (k >= '1' && k <= '4') {
+        switchMode(EDIT_MODES[Number(k) - 1]!.id);
       } else if (k === 'escape') {
         setSelected(null);
       } else if (e.key === 'Delete' || e.key === 'Backspace') {
@@ -325,23 +337,26 @@ export function App() {
 
   const zoomBy = (f: number) => view && setView(zoomAt(view, f, { x: size.width / 2, y: size.height / 2 }));
   const bar = view ? scaleBar(view.scale) : null;
-  const count = items.length;
   const power = powerTotals(items, prefs.volts);
-  const placedActors = new Set(items.map((i) => i.actorId).filter((x): x is string => !!x));
+  const sheetTitle = selectedItem ? displayLabel(selectedItem, project.actors) || MODE_LABEL[mode] : MODE_LABEL[mode];
 
   return (
     <div className="app">
       <header className="topbar">
-        <div className="brand">
+        <div className="topbar-left">
           <span className="brand-mark" aria-hidden="true" />
           <ProjectMenu
             project={project}
             onRename={(name) => dispatch({ type: 'setProject', patch: { name } })}
+            onKind={(k) => dispatch({ type: 'setProject', patch: { kind: k } })}
             onOpen={(id) => {
               const p = loadProject(id);
               if (p) openProject(p);
             }}
-            onNew={() => openProject(newProject(`Project ${listProjects().length + 1}`))}
+            onNew={() => {
+              openProject(newProject(`Project ${listProjects().length + 1}`));
+              setDialog('templates'); // start a new project by choosing narrative/doc and a layout
+            }}
             onDelete={() => {
               deleteProject(project.id);
               const next = listProjects()[0];
@@ -349,79 +364,65 @@ export function App() {
             }}
           />
         </div>
-        <div className="modes" role="tablist" aria-label="Edit category">
+
+        <div className="modes" role="tablist" aria-label="Category">
           {EDIT_MODES.map((m, i) => (
             <button
               key={m.id}
               id={`mode-${m.id}`}
               role="tab"
               aria-selected={mode === m.id}
-              onClick={() => setMode(m.id)}
-              title={`${m.label}: only ${m.label.toLowerCase()} items can be moved (${i + 1})`}
+              onClick={() => switchMode(m.id)}
+              title={`${MODE_HINT[m.id]} (${i + 1})`}
             >
               {m.label}
             </button>
           ))}
         </div>
-        <div className="tools" role="toolbar" aria-label="Edit">
-          <button id="tool-move" className={tool === 'move' ? 'on' : ''} aria-pressed={tool === 'move'} onClick={() => setTool('move')} title="Select and move (W)">
-            Move <kbd>W</kbd>
-          </button>
-          <button id="tool-rotate" className={tool === 'rotate' ? 'on' : ''} aria-pressed={tool === 'rotate'} onClick={() => setTool('rotate')} title="Select and drag to rotate (R)">
-            Rotate <kbd>R</kbd>
-          </button>
-          <span className="sep" aria-hidden="true" />
-          <button id="undo" onClick={() => dispatch({ type: 'undo' })} disabled={!history.past.length} title="Undo (Ctrl+Z)">
-            Undo
-          </button>
-          <button id="redo" onClick={() => dispatch({ type: 'redo' })} disabled={!history.future.length} title="Redo (Ctrl+Shift+Z)">
-            Redo
-          </button>
-          <span className="sep" aria-hidden="true" />
-          <button id="duplicate" onClick={() => selectedItem && duplicate(selectedItem)} disabled={!selectedItem || !!selectedItem.actorId} title="Duplicate (Ctrl+D)">
-            Duplicate
-          </button>
-          <button id="delete" onClick={deleteSelected} disabled={!selected} title="Delete (Del)">
-            Delete
-          </button>
-          <span className="sep" aria-hidden="true" />
-          <button id="zoom-out" onClick={() => zoomBy(1 / 1.25)} aria-label="Zoom out">
-            −
-          </button>
-          <button id="fit" onClick={() => setView(fitView(items, size.width, size.height))} title="Fit plan to screen">
-            Fit
-          </button>
-          <button id="zoom-in" onClick={() => zoomBy(1.25)} aria-label="Zoom in">
-            +
-          </button>
-          <span className="sep" aria-hidden="true" />
-          <button id="snap" aria-pressed={prefs.snap} className={prefs.snap ? 'on' : ''} onClick={() => setPrefs((p) => ({ ...p, snap: !p.snap }))} title="Snap to 25 cm">
-            Snap
-          </button>
-          <button id="export-png" onClick={exportPng} disabled={count === 0} title="Download this scene as PNG">
-            PNG
-          </button>
-          <span className="sep" aria-hidden="true" />
+
+        <div className="tool-group" role="radiogroup" aria-label="Tool">
           <button
-            id="clear"
-            className={confirmClear ? 'danger' : ''}
-            onClick={() => {
-              if (confirmClear) {
-                sd({ type: 'clear' });
-                setConfirmClear(false);
-              } else {
-                setConfirmClear(true);
-                setTimeout(() => setConfirmClear(false), 3000);
-              }
-            }}
-            disabled={count === 0}
+            id="tool-move"
+            role="radio"
+            aria-checked={tool === 'move'}
+            className={`tool-btn ${tool === 'move' ? 'on' : ''}`}
+            onClick={() => setTool('move')}
+            title="Move: drag items (W)"
           >
-            {confirmClear ? 'Tap again to clear scene' : 'Clear'}
+            <IconMove /> <span className="lbl">Move</span> <kbd>W</kbd>
+          </button>
+          <button
+            id="tool-rotate"
+            role="radio"
+            aria-checked={tool === 'rotate'}
+            className={`tool-btn rotate ${tool === 'rotate' ? 'on' : ''}`}
+            onClick={() => setTool('rotate')}
+            title="Rotate: drag an item to turn it (R)"
+          >
+            <IconRotate /> <span className="lbl">Rotate</span> <kbd>R</kbd>
           </button>
         </div>
-        <button id="open-panel" className="primary templates-btn" onClick={() => setPanelOpen((o) => !o)} aria-expanded={panelOpen}>
-          {selectedItem ? 'Edit' : 'Add'}
-        </button>
+
+        <div className="btn-pair">
+          <button id="undo" className="icon-btn" onClick={() => dispatch({ type: 'undo' })} disabled={!history.past.length} aria-label="Undo" title="Undo (Ctrl+Z)">
+            <IconUndo />
+          </button>
+          <button id="redo" className="icon-btn" onClick={() => dispatch({ type: 'redo' })} disabled={!history.future.length} aria-label="Redo" title="Redo (Ctrl+Shift+Z)">
+            <IconRedo />
+          </button>
+        </div>
+
+        <div className="topbar-right">
+          <button id="open-templates" className="top-action" onClick={() => setDialog('templates')} title="Start the scene from a layout">
+            <IconTemplates /> <span className="lbl">Templates</span>
+          </button>
+          <button id="open-gear" className={`top-action ${gear.limit ? 'on' : ''}`} onClick={() => setDialog('gear')} title="The gear on this job">
+            <IconGearList /> <span className="lbl">Gear list</span>
+          </button>
+          <button id="export-png" className="top-action" onClick={exportPng} disabled={items.length === 0} title="Download this scene as PNG">
+            <IconExport /> <span className="lbl">Export</span>
+          </button>
+        </div>
       </header>
 
       <SceneBar
@@ -438,24 +439,12 @@ export function App() {
         }}
         onRename={(id, name) => dispatch({ type: 'renameScene', id, name })}
         onDuplicate={duplicateScene}
+        onClear={(id) => dispatch({ type: 'scene', sceneId: id, action: { type: 'clear' } })}
         onDelete={(id) => dispatch({ type: 'deleteScene', id })}
       />
 
       <main className="workspace">
         <div className={`stage tool-${tool}`} ref={stageBox}>
-          <div className={`tool-badge ${tool}`} role="status" aria-live="polite">
-            {tool === 'move' ? (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M20 12a8 8 0 1 1-2.34-5.66" />
-                <path d="M20 4v5h-5" />
-              </svg>
-            )}
-            {tool === 'move' ? 'Move' : 'Rotate'} <kbd>{tool === 'move' ? 'W' : 'R'}</kbd>
-          </div>
           {view && size.width > 0 && (
             <PlanCanvas
               width={size.width}
@@ -474,100 +463,89 @@ export function App() {
               exportRef={exportRef}
             />
           )}
-          {count === 0 && (
+
+          <div className={`tool-badge ${tool}`} role="status" aria-live="polite">
+            {tool === 'move' ? <IconMove /> : <IconRotate />}
+            {tool === 'move' ? 'Move' : 'Rotate'} <kbd>{tool === 'move' ? 'W' : 'R'}</kbd>
+          </div>
+
+          <div className="view-controls" role="toolbar" aria-label="View">
+            <button className="icon-btn" onClick={() => zoomBy(1 / 1.25)} aria-label="Zoom out" title="Zoom out">
+              <IconMinus />
+            </button>
+            <button className="icon-btn" onClick={() => setView(fitView(items, size.width, size.height))} aria-label="Fit plan" title="Fit plan to screen">
+              <IconFit />
+            </button>
+            <button className="icon-btn" onClick={() => zoomBy(1.25)} aria-label="Zoom in" title="Zoom in">
+              <IconPlus />
+            </button>
+            <span className="vsep" aria-hidden="true" />
+            <button
+              id="snap"
+              className={`icon-btn ${prefs.snap ? 'on' : ''}`}
+              aria-pressed={prefs.snap}
+              onClick={() => setPrefs((p) => ({ ...p, snap: !p.snap }))}
+              aria-label="Snap to 25 cm grid"
+              title={prefs.snap ? 'Snap to 25 cm: on' : 'Snap to 25 cm: off'}
+            >
+              <IconSnap />
+            </button>
+          </div>
+
+          {items.length === 0 && (
             <div className="empty">
               <p>{scene.name} is empty.</p>
-              <button
-                className="primary"
-                onClick={() => {
-                  setTab('templates');
-                  setPanelOpen(true);
-                }}
-              >
+              <button className="btn primary" onClick={() => setDialog('templates')}>
                 Start from a template
               </button>
+              <p className="hint-text">or add items from the {MODE_LABEL[mode].toLowerCase()} panel.</p>
             </div>
           )}
         </div>
 
-        <aside className={`panel ${panelOpen ? 'open' : ''}`} aria-label={selectedItem ? 'Inspector' : 'Add to plan'}>
+        <aside className={`panel ${sheetOpen ? 'open' : ''}`} aria-label={`${MODE_LABEL[mode]} panel`}>
           <div className="panel-head">
             {selectedItem ? (
-              <>
-                <h2>Selected</h2>
-                <button className="link" onClick={() => setSelected(null)}>
-                  Done
-                </button>
-              </>
+              <button id="panel-back" className="back-btn" onClick={() => setSelected(null)}>
+                <IconBack /> {MODE_LABEL[mode]}
+              </button>
             ) : (
-              <div className="panel-tabs" role="tablist">
-                {PANEL_TABS.map((t) => (
-                  <button key={t.id} id={`tab-${t.id}`} role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}>
-                    {t.id === 'actors' ? castTitle(kind) : t.label}
-                  </button>
-                ))}
-              </div>
+              <h2 className="panel-title">{MODE_LABEL[mode]}</h2>
             )}
-            <button id="close-panel" className="close" onClick={() => setPanelOpen(false)} aria-label="Close panel">
-              ×
+            <button className="sheet-toggle" onClick={() => setSheetOpen((o) => !o)} aria-expanded={sheetOpen}>
+              <span className="sheet-label">{sheetTitle}</span>
+              <IconChevron up={!sheetOpen} />
             </button>
           </div>
-          {selectedItem ? (
-            <Inspector
-              key={selectedItem.id}
-              item={selectedItem}
-              sceneItems={items}
-              actors={project.actors}
-              kind={kind}
-              gear={gear}
-              onUpdate={(patch) => sd({ type: 'update', id: selectedItem.id, patch })}
-              onUpdateActor={(id, patch) => dispatch({ type: 'updateActor', id, patch })}
-              onDuplicate={() => duplicate(selectedItem)}
-              onDelete={deleteSelected}
-            />
-          ) : tab === 'add' ? (
-            <LibraryPanel
-              mode={mode}
-              gear={gear}
-              onPlace={place}
-              kind={kind}
-              actors={project.actors}
-              placed={placedActors}
-              onNewPerson={newPerson}
-              onPlaceActor={placeActor}
-            />
-          ) : tab === 'actors' ? (
-            <ActorsPanel
-              kind={kind}
-              actors={project.actors}
-              placed={placedActors}
-              onAdd={addActor}
-              onUpdate={(id, patch) => dispatch({ type: 'updateActor', id, patch })}
-              onDelete={(id) => dispatch({ type: 'deleteActor', id })}
-              onPlace={placeActor}
-            />
-          ) : tab === 'gear' ? (
-            <GearListPanel
-              lists={gearLists}
-              active={activeList}
-              limit={!!project.gearLimit}
-              usage={usage}
-              onSelect={(id) => dispatch({ type: 'setProject', patch: { gearListId: id } })}
-              onLimit={(on) => dispatch({ type: 'setProject', patch: { gearLimit: on } })}
-              onSave={saveList}
-              onCreate={() => {
-                const list: GearList = { id: uid(), name: `Gear list ${gearLists.length + 1}`, entries: [] };
-                setGearLists((ls) => [...ls, list]);
-                dispatch({ type: 'setProject', patch: { gearListId: list.id } });
-              }}
-              onDelete={(id) => {
-                setGearLists((ls) => ls.filter((l) => l.id !== id));
-                dispatch({ type: 'setProject', patch: { gearListId: undefined, gearLimit: false } });
-              }}
-            />
-          ) : (
-            <TemplatePanel kind={kind} onKind={(k) => dispatch({ type: 'setProject', patch: { kind: k } })} onAdd={addTemplate} />
-          )}
+          <div className="panel-body">
+            {selectedItem ? (
+              <Inspector
+                key={selectedItem.id}
+                item={selectedItem}
+                sceneItems={items}
+                actors={project.actors}
+                kind={kind}
+                gear={gear}
+                onUpdate={(patch) => sd({ type: 'update', id: selectedItem.id, patch })}
+                onUpdateActor={(id, patch) => dispatch({ type: 'updateActor', id, patch })}
+                onDeleteActor={(id) => dispatch({ type: 'deleteActor', id })}
+                onDuplicate={() => duplicate(selectedItem)}
+                onDelete={deleteSelected}
+              />
+            ) : (
+              <CategoryPanel
+                mode={mode}
+                items={items}
+                actors={project.actors}
+                kind={kind}
+                gear={gear}
+                onSelect={setSelected}
+                onPlace={place}
+                onPlaceActor={placeActor}
+                onNewPerson={newPerson}
+              />
+            )}
+          </div>
         </aside>
       </main>
 
@@ -578,27 +556,57 @@ export function App() {
             <span>{bar.label}</span>
           </div>
         )}
-        <span className="stat">Grid 50 cm</span>
         <button
-          className="stat power"
+          className="stat-btn"
           onClick={() => setPrefs((p) => ({ ...p, volts: p.volts === 230 ? 120 : 230 }))}
           title="Total light power in this scene. Tap to switch 230 V / 120 V."
         >
-          {power.watts} W | {power.amps.toFixed(2)} A @ {prefs.volts} V{power.unknown ? ` · ${power.unknown} unknown` : ''}
+          {power.watts} W · {power.amps.toFixed(1)} A @ {prefs.volts} V{power.unknown ? ` · ${power.unknown} unknown` : ''}
         </button>
-        {gear.limit && <span className="stat chip">Gear list: {activeList?.name}</span>}
+        {gear.limit && <span className="stat accent">Gear list: {activeList?.name}</span>}
         {selectedItem ? (
-          <span className="stat selected-info">
-            {displayLabel(selectedItem, project.actors) || selectedItem.kind} · x {fmtM(selectedItem.pos.x)} · y {fmtM(selectedItem.pos.y)} ·{' '}
-            {Math.round(selectedItem.rotationDeg)}°
+          <span className="stat accent">
+            {displayLabel(selectedItem, project.actors) || selectedItem.kind} · x {fmtM(selectedItem.pos.x)} · y {fmtM(selectedItem.pos.y)} · {Math.round(selectedItem.rotationDeg)}°
           </span>
         ) : (
-          <span className="hint">
-            {tool === 'rotate' ? 'Rotate: drag an item to turn it (Shift = 45° steps)' : 'Move: drag items'} · only{' '}
-            {mode} items can be picked · W move · R rotate · 1–4 category
+          <span className="stat hint">
+            {MODE_HINT[mode]} · W move · R rotate · 1–4 category
           </span>
         )}
       </footer>
+
+      {dialog === 'templates' && (
+        <Dialog title="Templates" onClose={() => setDialog(null)}>
+          <TemplatePanel
+            kind={kind}
+            onKind={(k) => dispatch({ type: 'setProject', patch: { kind: k } })}
+            onAdd={addTemplate}
+            sceneName={scene.name}
+          />
+        </Dialog>
+      )}
+      {dialog === 'gear' && (
+        <Dialog title="Gear list" onClose={() => setDialog(null)}>
+          <GearListPanel
+            lists={gearLists}
+            active={activeList}
+            limit={!!project.gearLimit}
+            usage={usage}
+            onSelect={(id) => dispatch({ type: 'setProject', patch: { gearListId: id } })}
+            onLimit={(on) => dispatch({ type: 'setProject', patch: { gearLimit: on } })}
+            onSave={saveList}
+            onCreate={() => {
+              const list: GearList = { id: uid(), name: `Gear list ${gearLists.length + 1}`, entries: [] };
+              setGearLists((ls) => [...ls, list]);
+              dispatch({ type: 'setProject', patch: { gearListId: list.id } });
+            }}
+            onDelete={(id) => {
+              setGearLists((ls) => ls.filter((l) => l.id !== id));
+              dispatch({ type: 'setProject', patch: { gearListId: undefined, gearLimit: false } });
+            }}
+          />
+        </Dialog>
+      )}
     </div>
   );
 }

@@ -77,7 +77,22 @@ export interface FixtureFilter {
   ids?: ReadonlySet<string>;
 }
 
-/** Catalogue search: every query word must hit brand, model or an alias. Sorted by power. */
+/** How well a fixture matches the query: whole-word hits beat word starts beat substrings. */
+function relevance(x: Fixture, words: string[]): number {
+  const tokens = `${x.brand} ${x.model} ${(x.aliases ?? []).join(' ')}`.toLowerCase().split(/[\s\-/]+/);
+  let score = 0;
+  for (const w of words) {
+    if (tokens.includes(w)) score += 3;
+    else if (tokens.some((t) => t.startsWith(w))) score += 2;
+    else score += 1;
+  }
+  return score;
+}
+
+/**
+ * Catalogue search: every query word must hit brand, model or an alias. Best matches first
+ * ("600d" finds the LS 600d before the 600DSA), then by power.
+ */
 export function filterFixtures(f: FixtureFilter, limit = 60): Fixture[] {
   const words = (f.query ?? '').toLowerCase().split(/\s+/).filter(Boolean);
   const hits = FIXTURES.filter((x) => {
@@ -89,7 +104,8 @@ export function filterFixtures(f: FixtureFilter, limit = 60): Fixture[] {
     const hay = `${x.brand} ${x.model} ${(x.aliases ?? []).join(' ')}`.toLowerCase();
     return words.every((w) => hay.includes(w));
   });
-  hits.sort((a, b) => (a.powerW ?? Infinity) - (b.powerW ?? Infinity));
+  const score = new Map(hits.map((x) => [x.id, words.length ? relevance(x, words) : 0]));
+  hits.sort((a, b) => score.get(b.id)! - score.get(a.id)! || (a.powerW ?? Infinity) - (b.powerW ?? Infinity));
   return hits.slice(0, limit);
 }
 

@@ -273,6 +273,20 @@ Start a plan from a ready-made setup, then adjust it.
 - A project holds several scenes (tabs under the top bar; tap the active one to rename,
   duplicate or delete it).
 
+### 2.17 Screen layout
+- **Top bar**: project menu (name, Narrative/Doc, other projects) · category LIGHTS / GRIP /
+  CAMERA / SCENE · tool Move (W) / Rotate (R) · undo/redo · Templates, Gear list, Export.
+- **Scene tabs** under it; the active scene's "⋯" holds rename, duplicate, clear and delete.
+- **Side panel always matches the category**: "In this scene" list (tap to select) and the ways
+  to add that kind of item. SCENE also holds the cast (people) list. Selecting an item swaps the
+  panel to its settings, with "‹ Category" to go back. Settings follow one order for every
+  item: name → what it is (fixture/modifiers/stand, fabric, focus, person) → position → actions.
+- **Templates and Gear list** open as dialogs (project setup, not per category). A new project
+  opens Templates first.
+- **View controls** (zoom, fit, snap) float bottom-right on the plan; the tool badge sits top-left.
+- **Phones**: three short top rows; the side panel becomes a bottom sheet whose header is always
+  visible.
+
 ## 3. Gear catalogue & illustrations
 
 ### Catalogue data

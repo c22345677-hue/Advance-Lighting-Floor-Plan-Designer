@@ -42,6 +42,8 @@ describe('gear', () => {
   it('searches by every word', () => {
     expect(searchFixtures('600d pro').map((f) => f.id)).toContain('aputure.ls-600d-pro');
     expect(searchFixtures('')).toEqual([]);
+    // Whole-word model matches come first.
+    expect(searchFixtures('600d')[0]!.model).toMatch(/\b600d\b/i);
   });
 
   it('filters by brand, size class and tags', () => {
