@@ -92,7 +92,9 @@ export function Inspector(props: Props) {
         </label>
       )}
 
-      {item.kind === 'light' && <LightSection item={item} gear={gear} setLight={setLight} onUpdate={onUpdate} />}
+      {item.kind === 'light' && (
+        <LightSection item={item} gear={gear} sceneItems={sceneItems} actors={actors} setLight={setLight} onUpdate={onUpdate} />
+      )}
       {takesFabric(item.catalogId) && (
         <Section title="Fabric">
           <select
@@ -213,38 +215,61 @@ function LensSection({ item, onUpdate }: Pick<Props, 'item' | 'onUpdate'>) {
   );
 }
 
-function CameraSection({ item, sceneItems, actors, onUpdate }: Pick<Props, 'item' | 'sceneItems' | 'actors' | 'onUpdate'>) {
+/** "Follow a person": a camera's focus or a light's aim. Turns the item to face them as either moves. */
+function FollowPerson({
+  label,
+  hint,
+  value,
+  sceneItems,
+  actors,
+  onChange,
+}: {
+  label: string;
+  hint: string;
+  value: string | undefined;
+  sceneItems: Item[];
+  actors: Actor[];
+  onChange: (actorId: string | undefined) => void;
+}) {
   const inScene = actors.filter((a) => sceneItems.some((i) => i.actorId === a.id));
-  const focus = item.camera?.focusActorId;
-  const setFocus = (focusActorId: string | undefined) => onUpdate({ camera: { ...item.camera, focusActorId } });
   return (
     <>
-    <LensSection item={item} onUpdate={onUpdate} />
-    <Section title="Camera">
       <label className="field toggle">
-        <span className="field-label">Camera focus on</span>
-        <input
-          type="checkbox"
-          checked={!!focus}
-          disabled={inScene.length === 0}
-          onChange={(e) => setFocus(e.target.checked ? inScene[0]?.id : undefined)}
-        />
+        <span className="field-label">{label}</span>
+        <input type="checkbox" checked={!!value} disabled={inScene.length === 0 && !value} onChange={(e) => onChange(e.target.checked ? inScene[0]?.id : undefined)} />
       </label>
-      {inScene.length === 0 && <p className="hint-text">Place a person in this scene to focus on them.</p>}
-      {focus && (
+      {inScene.length === 0 && !value && <p className="hint-text">Place a person in this scene to use this.</p>}
+      {value && (
         <>
-          <select value={focus} onChange={(e) => setFocus(e.target.value)} aria-label="Focus on actor">
+          <select value={value} onChange={(e) => onChange(e.target.value)} aria-label={label}>
             {inScene.map((a) => (
               <option key={a.id} value={a.id}>
                 {a.name}
               </option>
             ))}
-            {!inScene.some((a) => a.id === focus) && <option value={focus}>(not in this scene)</option>}
+            {!inScene.some((a) => a.id === value) && <option value={value}>(not in this scene)</option>}
           </select>
-          <p className="hint-text">The camera turns to face this person whenever either of them moves.</p>
+          <p className="hint-text">{hint}</p>
         </>
       )}
-    </Section>
+    </>
+  );
+}
+
+function CameraSection({ item, sceneItems, actors, onUpdate }: Pick<Props, 'item' | 'sceneItems' | 'actors' | 'onUpdate'>) {
+  return (
+    <>
+      <LensSection item={item} onUpdate={onUpdate} />
+      <Section title="Camera">
+        <FollowPerson
+          label="Camera focus on"
+          hint="The camera turns to face this person whenever either of them moves."
+          value={item.camera?.focusActorId}
+          sceneItems={sceneItems}
+          actors={actors}
+          onChange={(focusActorId) => onUpdate({ camera: { ...item.camera, focusActorId } })}
+        />
+      </Section>
     </>
   );
 }
@@ -252,11 +277,15 @@ function CameraSection({ item, sceneItems, actors, onUpdate }: Pick<Props, 'item
 function LightSection({
   item,
   gear,
+  sceneItems,
+  actors,
   setLight,
   onUpdate,
 }: {
   item: Item;
   gear: GearScope;
+  sceneItems: Item[];
+  actors: Actor[];
   setLight: (p: Partial<LightProps>) => void;
   onUpdate: Props['onUpdate'];
 }) {
@@ -297,6 +326,17 @@ function LightSection({
 
       {fixture && <ModifierSection item={item} fixture={fixture} gear={gear} setLight={setLight} />}
       {fixture && <StandSection item={item} gear={gear} setLight={setLight} />}
+
+      <Section title="Aim">
+        <FollowPerson
+          label="Light aimed at"
+          hint="The light turns to face this person whenever either of them moves."
+          value={item.light?.aimActorId}
+          sceneItems={sceneItems}
+          actors={actors}
+          onChange={(aimActorId) => setLight({ aimActorId })}
+        />
+      </Section>
 
       <Section title="Beam">
         <label className="field">

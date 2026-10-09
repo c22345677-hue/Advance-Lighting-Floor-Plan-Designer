@@ -96,13 +96,21 @@ export function modeOf(item: Item): EditMode {
 // ---- Camera focus -------------------------------------------------------------------
 
 /**
- * Turns every camera that focuses on an actor to face that actor's position in the scene.
+ * Turns every camera with "focus on" and every light with "aimed at" to face that actor's position in the scene.
  * Returns the same array when nothing changes.
  */
+/** The person an item follows: a camera's "focus on" or a light's "aimed at". */
+export function followsActorId(i: Item): string | undefined {
+  if (i.kind === 'camera') return i.camera?.focusActorId;
+  if (i.kind === 'light') return i.light?.aimActorId;
+  return undefined;
+}
+
 export function applyCameraFocus(items: Item[], all: readonly Item[] = items): Item[] {
   let changed = false;
   const out = items.map((i) => {
-    const target = i.kind === 'camera' && i.camera?.focusActorId ? all.find((a) => a.actorId === i.camera!.focusActorId) : undefined;
+    const who = followsActorId(i);
+    const target = who ? all.find((a) => a.actorId === who) : undefined;
     if (!target) return i;
     const rotationDeg = aimAt(i.pos, target.pos);
     if (Math.abs(rotationDeg - i.rotationDeg) < 1e-6) return i;

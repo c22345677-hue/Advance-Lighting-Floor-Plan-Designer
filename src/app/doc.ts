@@ -110,7 +110,11 @@ function edit(p: Project, a: Action): Project {
     case 'deleteActor': {
       // Removing an actor takes them out of every scene and frees cameras focused on them.
       const scrub = (i: Item): Item =>
-        i.camera?.focusActorId === a.id ? { ...i, camera: { ...i.camera, focusActorId: undefined } } : i;
+        i.camera?.focusActorId === a.id
+          ? { ...i, camera: { ...i.camera, focusActorId: undefined } }
+          : i.light?.aimActorId === a.id
+            ? { ...i, light: { ...i.light, aimActorId: undefined } }
+            : i;
       return {
         ...p,
         actors: p.actors.filter((x) => x.id !== a.id),

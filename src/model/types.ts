@@ -14,6 +14,8 @@ export interface LightProps {
   modifierIds?: string[];
   /** Catalogue stand the light sits on. */
   standId?: string;
+  /** When set, the light always turns to face this person (project actor id). */
+  aimActorId?: string;
   intensityPct?: number;
   beamDeg?: number;
   throwCm?: number;

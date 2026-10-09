@@ -1,10 +1,10 @@
 // Camera lenses: focal length → horizontal angle of view, for the cone drawn in front of a camera.
 
 /** Common prime focal lengths offered in the lens menu, mm. */
-export const COMMON_LENSES_MM = [14, 18, 24, 28, 35, 50, 85, 100, 135, 200];
+export const COMMON_LENSES_MM = [10, 12, 14, 18, 24, 28, 35, 50, 85, 100, 135, 200];
 
 export const DEFAULT_LENS_MM = 35;
-export const LENS_RANGE_MM = { min: 8, max: 300 };
+export const LENS_RANGE_MM = { min: 2, max: 300 };
 
 /** Super 35 sensor width (mm), the usual cinema format; used until cameras get a sensor setting. */
 export const SUPER35_WIDTH_MM = 24.89;

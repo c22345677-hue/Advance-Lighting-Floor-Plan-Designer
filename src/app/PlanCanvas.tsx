@@ -8,7 +8,7 @@ import { libraryItem } from '../library/items';
 import { itemFixture, itemLook, itemModifiers } from '../model/gear';
 import { aimAt } from '../model/geometry';
 import { DEFAULT_LENS_MM, horizontalFovDeg } from '../model/lens';
-import { modeOf, sceneItems, type EditMode, type SceneDoc } from '../model/project';
+import { followsActorId, modeOf, sceneItems, type EditMode, type SceneDoc } from '../model/project';
 import type { Actor, Item, Vec2 } from '../model/types';
 import type { SceneAction } from './doc';
 import type { CanvasColors } from './theme';
@@ -60,7 +60,7 @@ export function displayLabel(item: Item, actors: readonly Actor[] = []): string 
 
 /** A camera whose rotation is driven by its focus actor (when that actor is in the scene). */
 export const isFocusLocked = (item: Item, all: readonly Item[]): boolean =>
-  !!item.camera?.focusActorId && all.some((a) => a.actorId === item.camera!.focusActorId);
+  !!followsActorId(item) && all.some((a) => a.actorId === followsActorId(item));
 
 /** Renders the plan to a PNG data URL, without selection handles. */
 export type ExportPng = () => string | null;
@@ -206,15 +206,16 @@ export function PlanCanvas(p: Props) {
   /** While an item is dragged, keep its beam and any cameras watching it in step. */
   const follow = (moved: Item, pos: Vec2) => {
     node(`${moved.id}-beam`)?.position(pos);
+    const turn = (id: string, deg: number) => {
+      node(id)?.rotation(deg);
+      node(`${id}-beam`)?.rotation(deg);
+    };
     if (moved.actorId) {
-      for (const cam of all) {
-        if (cam.kind === 'camera' && cam.camera?.focusActorId === moved.actorId) node(cam.id)?.rotation(aimAt(cam.pos, pos));
-      }
+      for (const f of all) if (followsActorId(f) === moved.actorId) turn(f.id, aimAt(f.pos, pos));
     }
-    if (moved.kind === 'camera' && moved.camera?.focusActorId) {
-      const target = all.find((a) => a.actorId === moved.camera!.focusActorId);
-      if (target) node(moved.id)?.rotation(aimAt(pos, target.pos));
-    }
+    const who = followsActorId(moved);
+    const target = who ? all.find((a) => a.actorId === who) : undefined;
+    if (target) turn(moved.id, aimAt(pos, target.pos));
   };
 
   const worldPointer = (): Vec2 | null => stageRef.current?.getRelativePointerPosition() ?? null;

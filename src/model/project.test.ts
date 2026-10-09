@@ -44,6 +44,12 @@ describe('camera focus', () => {
   });
 });
 
+it('turns a light aimed at an actor to face them', () => {
+  const actor = item('a', { kind: 'person', actorId: 'act1', pos: { x: 0, y: 100 } });
+  const lamp = item('l', { kind: 'light', light: { aimActorId: 'act1' } });
+  expect(applyCameraFocus([actor, lamp])[1]!.rotationDeg).toBeCloseTo(180); // actor is below
+});
+
 describe('project', () => {
   it('keeps actors across scenes and removes them everywhere on delete', () => {
     const p = newProject();
