@@ -151,7 +151,6 @@ export function PlanCanvas(p: Props) {
   /** Alt + drag: the originals, drawn in place while their copy is being dragged. */
   const [ghosts, setGhosts] = useState<Item[]>([]);
   const ghostOf = (i: Item): Item => ({ ...i, id: `${i.id}~original` });
-  const [outlines, setOutlines] = useState<{ id: string; x: number; y: number; width: number; height: number }[]>([]);
   const all = sceneItems(scene);
   const visible = all.filter((i) => !i.hidden);
   const walls = all.filter((i) => i.wall);
@@ -175,24 +174,14 @@ export function PlanCanvas(p: Props) {
     // Move tool: box around the selection. Rotate tool: a ring instead (drawn below).
     const tr = trRef.current;
     if (!tr) return;
-    // One item: Konva's transformer box. Several: our own outlines (the transformer would drag
-    // the others itself and fight the group move).
-    const nodes = tool === 'move' && selected ? [node(selected)].filter((n): n is Konva.Node => !!n) : [];
-    const layer = tr.getLayer();
-    setOutlines(
-      multi && layer && tool === 'move'
-        ? selection.flatMap((id) => {
-            const n = node(id);
-            return n ? [{ id, ...n.getClientRect({ relativeTo: layer, skipShadow: true }) }] : [];
-          })
-        : [],
-    );
+    // Selected items get a tight outline (SelectOutline); the transformer is only kept for the
+    // side handles that resize a door or window.
     const sel = all.find((i) => i.id === selected);
     // Doors and windows resize along the wall from their side handles.
     const resizable = !!sel && tool === 'move' && isOpening(sel.catalogId) && !sel.locked;
     tr.resizeEnabled(resizable);
     tr.enabledAnchors(resizable ? ['middle-left', 'middle-right'] : []);
-    tr.nodes(nodes);
+    tr.nodes(resizable ? [node(sel.id)].filter((n): n is Konva.Node => !!n) : []);
     tr.getLayer()?.batchDraw();
   }, [selection, scene, tool]);
 
@@ -649,6 +638,9 @@ export function PlanCanvas(p: Props) {
           });
         }}
       >
+        {selection.includes(item.id) && (
+          <SelectOutline item={item} actors={actors} colors={colors} scale={view.scale} color={tool === 'rotate' ? colors.rotate : colors.select} />
+        )}
         <ItemShape item={item} actors={actors} colors={colors} />
       </Group>
     );
@@ -834,20 +826,6 @@ export function PlanCanvas(p: Props) {
           </>
         )}
         {openingGuide && <OpeningDims {...openingGuide} scale={view.scale} colors={colors} />}
-        {!dragging &&
-          outlines.map((o) => (
-            <Rect
-              key={`${o.id}-outline`}
-              name="ui-only"
-              listening={false}
-              x={o.x - 6 / view.scale}
-              y={o.y - 6 / view.scale}
-              width={o.width + 12 / view.scale}
-              height={o.height + 12 / view.scale}
-              stroke={colors.select}
-              strokeWidth={2 / view.scale}
-            />
-          ))}
         {box && (
           <Rect
             name="ui-only"
@@ -869,12 +847,73 @@ export function PlanCanvas(p: Props) {
           keepRatio={false}
           ignoreStroke
           boundBoxFunc={(oldBox, newBox) => (newBox.width < 20 ? oldBox : newBox)}
-          borderStroke={colors.select}
-          borderStrokeWidth={2}
+          borderEnabled={false}
           padding={6}
         />
       </Layer>
     </Stage>
+  );
+}
+
+const OUTLINE_DIRS = Array.from({ length: 12 }, (_, i) => [Math.cos((i * Math.PI) / 6), Math.sin((i * Math.PI) / 6)] as const);
+
+/**
+ * Selection outline that hugs the item's actual shape: the shape drawn a few times, shifted
+ * outward in every direction and flattened to one colour, behind the item itself. A thin dark
+ * ring inside the coloured one keeps it readable on items of the same colour.
+ */
+function SelectOutline(p: { item: Item; actors: readonly Actor[]; colors: CanvasColors; scale: number; color: string }) {
+  return (
+    <>
+      <OutlineRing {...p} widthPx={6} />
+      <OutlineRing {...p} color="#141518" widthPx={1.6} />
+    </>
+  );
+}
+
+function OutlineRing({
+  item,
+  actors,
+  colors,
+  scale,
+  color,
+  widthPx,
+}: {
+  item: Item;
+  actors: readonly Actor[];
+  colors: CanvasColors;
+  scale: number;
+  color: string;
+  widthPx: number;
+}) {
+  const ref = useRef<Konva.Group>(null);
+  const d = widthPx / scale;
+  const rgb = /^#?([0-9a-f]{6})$/i.exec(color);
+  const n = rgb ? parseInt(rgb[1]!, 16) : 0xf0a23b;
+  useEffect(() => {
+    const g = ref.current;
+    if (!g) return;
+    g.clearCache();
+    // Cache sharp at the current zoom (capped so huge walls don't make huge bitmaps).
+    const box = g.getClientRect({ skipTransform: true });
+    const ratio = Math.min(scale * (window.devicePixelRatio || 1), 4096 / Math.max(1, box.width, box.height));
+    g.cache({ pixelRatio: Math.max(0.5, ratio) });
+    g.getLayer()?.batchDraw();
+  }, [item, scale, color, actors]);
+  return (
+    <Group ref={ref} name="ui-only" listening={false} filters={[Konva.Filters.RGBA]} red={n >> 16} green={(n >> 8) & 255} blue={n & 255} alpha={1}>
+      {OUTLINE_DIRS.map(([dx, dy], i) => (
+        <Group key={i} x={dx * d} y={dy * d}>
+          <ItemShape item={item} actors={actors} colors={colors} bodyOnly />
+        </Group>
+      ))}
+      {/* Cut the shape itself out, so see-through parts (diffusion, glass) don't pick up the colour. */}
+      {[0, 1, 2, 3].map((i) => (
+        <Group key={`cut${i}`} globalCompositeOperation="destination-out">
+          <ItemShape item={item} actors={actors} colors={colors} bodyOnly />
+        </Group>
+      ))}
+    </Group>
   );
 }
 
@@ -1434,7 +1473,18 @@ function ModifierShapes({ mods, front, c }: { mods: Modifier[]; front: number; c
 }
 
 /** Simple top-down symbols, drawn at real size facing up (-y). */
-function ItemShape({ item, actors, colors: c }: { item: Item; actors: readonly Actor[]; colors: CanvasColors }) {
+function ItemShape({
+  item,
+  actors,
+  colors: c,
+  bodyOnly,
+}: {
+  item: Item;
+  actors: readonly Actor[];
+  colors: CanvasColors;
+  /** Leave out the camera's angle-of-view cone (for the selection outline). */
+  bodyOnly?: boolean;
+}) {
   const { shape, w, d } = itemLook(item);
   const hw = w / 2;
   const hd = d / 2;
@@ -1523,7 +1573,7 @@ function ItemShape({ item, actors, colors: c }: { item: Item; actors: readonly A
     case 'camera':
       return (
         <>
-          {(() => {
+          {!bodyOnly && (() => {
             // Angle of view from the lens; drawn 6.6 m long.
             const fov = horizontalFovDeg(item.camera?.focalMm ?? DEFAULT_LENS_MM);
             return <Wedge radius={CAMERA_CONE_CM} angle={fov} rotation={-90 - fov / 2} fill={c.cameraFov} listening={false} />;
