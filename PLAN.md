@@ -39,7 +39,8 @@ Project (production)
 ## 2. Features
 
 ### 2.1 Canvas & editing
-- Pan and zoom with mouse, trackpad, pinch, and two-finger drag.
+- Pan with the middle mouse button or Space + drag (left-drag never pans, so it can't move the
+  view by accident); zoom with the wheel. Tablets: two-finger drag and pinch.
 - Tap a library item to place it. You can then drag, rotate (handle or two-finger twist),
   resize where it makes sense, duplicate, delete, lock and hide it.
 - Box select, multi-select, align and distribute, copy/paste, plus snap to grid or to other

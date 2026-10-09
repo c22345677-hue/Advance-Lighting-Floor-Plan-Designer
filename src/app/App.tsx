@@ -567,7 +567,7 @@ export function App() {
           </span>
         ) : (
           <span className="stat hint">
-            {MODE_HINT[mode]} · W move · R rotate · 1–4 category
+            {MODE_HINT[mode]} · pan: middle mouse or Space + drag · W move · R rotate · 1–4 category
           </span>
         )}
       </footer>

@@ -116,8 +116,73 @@ export function PlanCanvas(p: Props) {
 
   const setCursor = (c: string) => {
     const el = stageRef.current?.container();
-    if (el && !rot.current) el.style.cursor = c;
+    if (el && !rot.current && !space.current) el.style.cursor = c;
   };
+
+  // ---- Panning: middle mouse button, or hold Space and drag (anywhere, items stay put) ----
+  const space = useRef(false);
+  const pan = useRef<{ x: number; y: number; view: View } | null>(null);
+  const live = useRef({ view, onView });
+  live.current = { view, onView };
+
+  useEffect(() => {
+    const el = stageRef.current?.container();
+    if (!el) return;
+    const typing = (t: EventTarget | null) => !!(t as HTMLElement | null)?.closest?.('input, textarea, select');
+    const setSpace = (on: boolean) => {
+      space.current = on;
+      if (!pan.current) el.style.cursor = on ? 'grab' : '';
+    };
+    const keyDown = (e: KeyboardEvent) => {
+      if (e.code !== 'Space' || typing(e.target)) return;
+      e.preventDefault(); // no page scroll, no "click" on a focused button
+      if (!e.repeat) setSpace(true);
+    };
+    const keyUp = (e: KeyboardEvent) => e.code === 'Space' && setSpace(false);
+    const blur = () => setSpace(false);
+    const wantsPan = (e: MouseEvent) => e.button === 1 || (e.button === 0 && space.current);
+    // Capture phase on the container runs before Konva, so a pan never selects or drags an item.
+    const pointerDown = (e: PointerEvent) => {
+      if (!wantsPan(e)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      pan.current = { x: e.clientX, y: e.clientY, view: live.current.view };
+      el.style.cursor = 'grabbing';
+    };
+    const swallow = (e: MouseEvent) => {
+      if (!wantsPan(e)) return;
+      e.preventDefault(); // middle button: no browser autoscroll / paste
+      e.stopPropagation();
+    };
+    const move = (e: PointerEvent) => {
+      const s = pan.current;
+      if (s) live.current.onView({ ...s.view, x: s.view.x + e.clientX - s.x, y: s.view.y + e.clientY - s.y });
+    };
+    const up = (e: PointerEvent) => {
+      if (!pan.current) return;
+      move(e); // land exactly where the pointer was released
+      pan.current = null;
+      el.style.cursor = space.current ? 'grab' : '';
+    };
+    window.addEventListener('keydown', keyDown);
+    window.addEventListener('keyup', keyUp);
+    window.addEventListener('blur', blur);
+    el.addEventListener('pointerdown', pointerDown, true);
+    el.addEventListener('mousedown', swallow, true);
+    el.addEventListener('auxclick', swallow, true);
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+    return () => {
+      window.removeEventListener('keydown', keyDown);
+      window.removeEventListener('keyup', keyUp);
+      window.removeEventListener('blur', blur);
+      el.removeEventListener('pointerdown', pointerDown, true);
+      el.removeEventListener('mousedown', swallow, true);
+      el.removeEventListener('auxclick', swallow, true);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+  }, []);
 
   useEffect(() => {
     p.exportRef.current = () => {
@@ -161,7 +226,6 @@ export function PlanCanvas(p: Props) {
       startRot: item.rotationDeg,
       current: item.rotationDeg,
     };
-    stageRef.current?.draggable(false);
   };
 
   const moveRotate = (shift: boolean) => {
@@ -179,7 +243,6 @@ export function PlanCanvas(p: Props) {
     const r = rot.current;
     if (!r) return;
     rot.current = null;
-    stageRef.current?.draggable(true);
     if (r.current !== r.startRot) dispatch({ type: 'rotate', id: r.id, rotationDeg: r.current });
   };
 
@@ -306,10 +369,6 @@ export function PlanCanvas(p: Props) {
       y={view.y}
       scaleX={view.scale}
       scaleY={view.scale}
-      draggable
-      onDragMove={(e) => {
-        if (e.target === stageRef.current) onView({ ...view, x: e.target.x(), y: e.target.y() });
-      }}
       onWheel={onWheel}
       onMouseMove={(e) => rot.current && moveRotate(e.evt.shiftKey)}
       onMouseUp={endRotate}
