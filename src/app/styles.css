@@ -112,7 +112,11 @@ body {
 .app {
   height: 100%;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  /* minmax(0, …): the columns and rows never grow to fit their content (the plan canvas has a
+     fixed pixel size), so shrinking the window shrinks the plan instead of pushing the side panel
+     off screen. */
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
 /* =========================================================================================
@@ -315,8 +319,9 @@ select {
    ========================================================================================= */
 .topbar {
   display: flex;
+  flex-wrap: wrap; /* narrower windows: wrap to a second row instead of overflowing */
   align-items: center;
-  gap: 12px;
+  gap: 8px 12px;
   padding: 8px 12px;
   background: var(--surface);
   border-bottom: 1px solid var(--line);
@@ -471,6 +476,7 @@ select {
 
 .top-action {
   color: var(--fg);
+  padding: 0 8px;
 }
 
 .top-action.on {
@@ -490,6 +496,7 @@ select {
   position: relative;
   flex: 1;
   min-width: 0;
+  contain: size layout; /* size comes from the layout, never from the canvas inside */
   background: var(--canvas);
   touch-action: none;
   overflow: hidden;
@@ -1364,12 +1371,36 @@ select {
   text-overflow: ellipsis;
 }
 
+/* Laptop widths: drop the key hints in the tool buttons (the badge on the plan shows them). */
+@media (max-width: 1440px) {
+  .tool-btn kbd {
+    display: none;
+  }
+}
+
 /* =========================================================================================
    Tablets in portrait: icon-only setup actions
    ========================================================================================= */
-@media (max-width: 1180px) {
-  .top-action .lbl,
-  .tool-btn kbd {
+@media (max-width: 1280px) {
+  .top-action .lbl {
+    display: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .panel {
+    width: 320px;
+  }
+
+  .project-btn {
+    max-width: 200px;
+  }
+
+  .modes button {
+    padding: 0 10px;
+  }
+
+  .tool-btn .lbl {
     display: none;
   }
 }
