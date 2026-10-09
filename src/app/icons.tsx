@@ -98,3 +98,9 @@ export const IconChevron = ({ up }: { up?: boolean }) => (
     <path d={up ? 'm6 15 6-6 6 6' : 'm6 9 6 6 6-6'} />
   </Svg>
 );
+export const IconReset = () => (
+  <Svg>
+    <path d="M4 12a8 8 0 1 0 2.34-5.66" />
+    <path d="M4 4v5h5" />
+  </Svg>
+);

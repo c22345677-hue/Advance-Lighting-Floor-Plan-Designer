@@ -9,6 +9,8 @@ export interface SceneDoc {
   /** Walls, screens and other set pieces. */
   setItems: Item[];
   items: Item[];
+  /** Layout right after the last template was added; Reset returns to it (none = empty). */
+  baseline?: { setItems: Item[]; items: Item[] };
 }
 
 /** Production type, picked first in Templates. Decides what people are called. */

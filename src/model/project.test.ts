@@ -65,6 +65,23 @@ describe('project', () => {
     expect(h.present.scenes.every((s) => s.items.length === 0)).toBe(true);
   });
 
+  it('resets a scene to its template layout, or to empty without one', () => {
+    const p = newProject();
+    const sceneId = p.scenes[0]!.id;
+    let h: History = { past: [], present: p, future: [] };
+    const scene = () => h.present.scenes[0]!;
+    h = reducer(h, { type: 'scene', sceneId, action: { type: 'add', setItems: [], items: [item('x', {})] } });
+    h = reducer(h, { type: 'scene', sceneId, action: { type: 'reset' } });
+    expect(scene().items).toHaveLength(0);
+    h = reducer(h, { type: 'scene', sceneId, action: { type: 'applyTemplate', setItems: [], items: [item('t', { pos: { x: 0, y: 0 } })] } });
+    h = reducer(h, { type: 'scene', sceneId, action: { type: 'move', id: 't', pos: { x: 99, y: 0 } } });
+    h = reducer(h, { type: 'scene', sceneId, action: { type: 'add', setItems: [], items: [item('extra', {})] } });
+    h = reducer(h, { type: 'scene', sceneId, action: { type: 'reset' } });
+    expect(scene().items.map((i) => [i.id, i.pos.x])).toEqual([['t', 0]]);
+    h = reducer(h, { type: 'undo' });
+    expect(scene().items).toHaveLength(2);
+  });
+
   it('never deletes the last scene', () => {
     const p = newProject();
     const h = reducer({ past: [], present: p, future: [] }, { type: 'deleteScene', id: p.scenes[0]!.id });

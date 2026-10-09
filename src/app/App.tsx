@@ -30,6 +30,7 @@ import {
   IconMove,
   IconPlus,
   IconRedo,
+  IconReset,
   IconRotate,
   IconSnap,
   IconTemplates,
@@ -80,7 +81,12 @@ function sampleProject(): Project {
   const r = applyTemplate(t, { interviewees: 1, interviewers: 1, cameras: 2 }, { origin: { x: 0, y: 0 } });
   const cast = castTemplateItems(r.shots.flatMap((s) => s.items), [], [], 'doc');
   p.actors = cast.added;
-  p.scenes[0] = { ...p.scenes[0]!, setItems: r.setItems, items: cast.items };
+  p.scenes[0] = {
+    ...p.scenes[0]!,
+    setItems: r.setItems,
+    items: cast.items,
+    baseline: structuredClone({ setItems: r.setItems, items: cast.items }),
+  };
   return p;
 }
 
@@ -295,7 +301,7 @@ export function App() {
     const r = applyTemplate(t, values, { origin: viewCenter() });
     const cast = castTemplateItems(r.shots.flatMap((s) => s.items), project.actors, items, kind);
     for (const actor of cast.added) dispatch({ type: 'addActor', actor });
-    sd({ type: 'add', setItems: r.setItems, items: cast.items });
+    sd({ type: 'applyTemplate', setItems: r.setItems, items: cast.items });
     setDialog(null);
     setView(null); // fit the new layout
   };
@@ -429,6 +435,22 @@ export function App() {
         <div className="topbar-right">
           <button id="open-templates" className="top-action" onClick={() => setDialog('templates')} title="Start the scene from a layout">
             <IconTemplates /> <span className="lbl">Templates</span>
+          </button>
+          <button
+            id="reset-scene"
+            className="top-action"
+            disabled={items.length === 0 && !scene.baseline}
+            onClick={() => {
+              const to = scene.baseline ? 'its template layout' : 'an empty plan';
+              if (window.confirm(`Reset ${scene.name} to ${to}? (Undo can bring your changes back.)`)) {
+                sd({ type: 'reset' });
+                setSelected(null);
+                if (scene.baseline) setView(null);
+              }
+            }}
+            title={scene.baseline ? 'Back to the template layout' : 'Back to an empty plan'}
+          >
+            <IconReset /> <span className="lbl">Reset</span>
           </button>
           <button id="open-gear" className={`top-action ${gear.limit ? 'on' : ''}`} onClick={() => setDialog('gear')} title="The gear on this job">
             <IconGearList /> <span className="lbl">Gear list</span>

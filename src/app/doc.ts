@@ -16,7 +16,11 @@ export type SceneAction =
   | { type: 'rotate'; id: string; rotationDeg: number }
   | { type: 'rotateBy'; ids: string[]; deg: number }
   | { type: 'delete'; ids: string[] }
-  | { type: 'clear' };
+  | { type: 'clear' }
+  /** Add a template's items and remember the result as the scene's reset point. */
+  | { type: 'applyTemplate'; setItems: Item[]; items: Item[] }
+  /** Back to the template layout, or empty when the scene never had one. */
+  | { type: 'reset' };
 
 export type Action =
   | { type: 'scene'; sceneId: string; action: SceneAction }
@@ -59,6 +63,17 @@ function editScene(s: SceneDoc, a: SceneAction): SceneDoc {
       };
     case 'clear':
       return { ...s, setItems: [], items: [] };
+    case 'applyTemplate': {
+      const setItems = [...s.setItems, ...a.setItems];
+      const items = [...s.items, ...a.items];
+      return { ...s, setItems, items, baseline: structuredClone({ setItems, items }) };
+    }
+    case 'reset':
+      return {
+        ...s,
+        setItems: structuredClone(s.baseline?.setItems ?? []),
+        items: structuredClone(s.baseline?.items ?? []),
+      };
   }
 }
 
