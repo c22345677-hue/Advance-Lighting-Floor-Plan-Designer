@@ -31,6 +31,8 @@ interface Props {
   wallDraftCount: number;
   onWallTool: (on: boolean) => void;
   onWallFinish: () => void;
+  /** Doors and windows need a wall to go into. */
+  hasWalls: boolean;
 }
 
 const kg = (v: number | null) => (v == null ? '? kg' : `${Math.round(v * 10) / 10} kg`);
@@ -98,7 +100,7 @@ function SceneList({ items, actors, empty, onSelect }: { items: Item[]; actors: 
   );
 }
 
-function AddGrid({ category, onPlace }: { category: LibraryCategory; onPlace: Props['onPlace'] }) {
+function AddGrid({ category, onPlace, disabled }: { category: LibraryCategory; onPlace: Props['onPlace']; disabled?: boolean }) {
   const entries = LIBRARY.filter((i) => i.category === category && !i.unlisted && i.kind !== 'person');
   return (
     <div className="tile-grid">
@@ -106,7 +108,8 @@ function AddGrid({ category, onPlace }: { category: LibraryCategory; onPlace: Pr
         <button
           key={i.id}
           className="tile"
-          draggable
+          disabled={disabled}
+          draggable={!disabled}
           onDragStart={(e) => {
             e.dataTransfer.setData(DRAG_TYPE, `lib:${i.id}`);
             e.dataTransfer.effectAllowed = 'copy';
@@ -213,18 +216,13 @@ export function CategoryPanel(props: Props) {
           <Section title="Build set">
             {props.wallTool ? (
               <>
+                <button id="draw-walls" className="btn primary big" onClick={props.onWallFinish}>
+                  Finish
+                </button>
                 <p className="hint-text">
-                  Click on the plan to place corners. Click the first corner to close the room, or double-click / Enter to stop with
-                  open walls. Corners snap to other walls; lines straighten near 0/45/90° (Shift: 15° steps, Alt: free). Esc cancels.
+                  Click on the plan to place corners. Click the first corner to close the room; double-click or Enter ends open walls so you
+                  can start another. Corners snap to other walls; lines straighten near 0/45/90° (Shift: 15° steps, Alt: free). Esc cancels.
                 </p>
-                <div className="btn-row">
-                  <button className="btn primary" disabled={props.wallDraftCount < 2} onClick={props.onWallFinish}>
-                    Finish walls
-                  </button>
-                  <button id="draw-walls" className="btn on" onClick={() => props.onWallTool(false)}>
-                    Done drawing
-                  </button>
-                </div>
               </>
             ) : (
               <>
@@ -236,11 +234,15 @@ export function CategoryPanel(props: Props) {
             )}
           </Section>
           <Section title="Doors">
-            <p className="hint-text">Drag onto a wall and it snaps in. Drag the side handles to resize.</p>
-            <AddGrid category="doors" onPlace={onPlace} />
+            <p className="hint-text">
+              {props.hasWalls
+                ? 'They sit in the nearest wall and slide along walls when dragged. Drag the side handles to resize.'
+                : 'Draw walls first: doors and windows go into walls.'}
+            </p>
+            <AddGrid category="doors" onPlace={onPlace} disabled={!props.hasWalls} />
           </Section>
           <Section title="Windows">
-            <AddGrid category="windows" onPlace={onPlace} />
+            <AddGrid category="windows" onPlace={onPlace} disabled={!props.hasWalls} />
           </Section>
           <Section title="Set & props in this scene" count={others.length}>
             {list('Nothing yet.', others)}

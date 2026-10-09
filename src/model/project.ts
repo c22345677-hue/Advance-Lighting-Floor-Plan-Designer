@@ -1,6 +1,7 @@
 // A project: several scenes, one cast (actors) shared by all of them, and the gear list in use.
 import { libraryItem } from '../library/items';
 import { aimAt } from './geometry';
+import { attachOpenings } from './walls';
 import type { EquipmentState } from './equipment';
 import type { Actor, CastRole, Gender, Item } from './types';
 
@@ -121,8 +122,11 @@ export function applyCameraFocus(items: Item[], all: readonly Item[] = items): I
 }
 
 export function focusScene(s: SceneDoc): SceneDoc {
-  const all = sceneItems(s);
+  let all = sceneItems(s);
+  // Doors and windows first follow their walls, then cameras and lights turn to their people.
+  const seated = attachOpenings(s.setItems, all);
+  if (seated !== s.setItems) all = [...seated, ...s.items];
   const items = applyCameraFocus(s.items, all);
-  const setItems = applyCameraFocus(s.setItems, all);
+  const setItems = applyCameraFocus(seated, all);
   return items === s.items && setItems === s.setItems ? s : { ...s, items, setItems };
 }

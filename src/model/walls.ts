@@ -47,6 +47,9 @@ export interface WallHit {
   angleDeg: number;
   dist: number;
   thicknessCm: number;
+  /** Which segment of the chain, and how far along it (cm from its first corner). */
+  seg: number;
+  offsetCm: number;
 }
 
 /** The nearest wall to `p` within `maxDist` cm, for snapping doors and windows into it. */
@@ -54,7 +57,7 @@ export function nearestWall(p: Vec2, items: readonly Item[], maxDist: number): W
   let best: WallHit | null = null;
   for (const w of items) {
     if (!w.wall) continue;
-    for (const [a, b] of wallSegments(w)) {
+    wallSegments(w).forEach(([a, b], seg) => {
       const h = projectOnSegment(p, a, b);
       if (h.dist <= maxDist && (!best || h.dist < best.dist)) {
         best = {
@@ -62,12 +65,72 @@ export function nearestWall(p: Vec2, items: readonly Item[], maxDist: number): W
           point: h.point,
           angleDeg: (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI,
           dist: h.dist,
-          thicknessCm: w.wall.thicknessCm ?? DEFAULT_WALL_CM,
+          thicknessCm: w.wall!.thicknessCm ?? DEFAULT_WALL_CM,
+          seg,
+          offsetCm: h.t * dist(a, b),
         };
       }
-    }
+    });
   }
   return best;
+}
+
+const norm = (deg: number) => ((deg % 360) + 360) % 360;
+
+/** Patch that puts a door or window into the wall it was dropped on (keeps its width). */
+export function seatOpening(item: Item, hit: WallHit, width: number): Partial<Item> {
+  const flip = !!item.inWall?.flip;
+  return {
+    pos: hit.point,
+    rotationDeg: norm(hit.angleDeg + (flip ? 180 : 0)),
+    sizeCm: { w: width, d: hit.thicknessCm },
+    inWall: { wallId: hit.wallId, seg: hit.seg, offsetCm: hit.offsetCm, flip },
+  };
+}
+
+/**
+ * Moves doors and windows to follow their wall after it was moved, rotated or reshaped.
+ * They keep their distance from the segment's first corner and their width (pulled back inside
+ * when the segment got too short). An opening whose wall is gone stays put, unlinked.
+ * Returns the same array when nothing changes.
+ */
+export function attachOpenings(items: Item[], all: readonly Item[] = items): Item[] {
+  let changed = false;
+  const out = items.map((i) => {
+    if (!i.inWall) return i;
+    const w = all.find((x) => x.id === i.inWall!.wallId && x.wall);
+    const seg = w ? wallSegments(w)[i.inWall.seg] : undefined;
+    if (!w || !seg) {
+      changed = true;
+      const { inWall: _, ...rest } = i;
+      return rest;
+    }
+    const next = placeInSegment(i, seg, w.wall!.thicknessCm ?? DEFAULT_WALL_CM);
+    const same =
+      Math.abs(next.pos.x - i.pos.x) < 1e-6 &&
+      Math.abs(next.pos.y - i.pos.y) < 1e-6 &&
+      Math.abs(next.rotationDeg - i.rotationDeg) < 1e-6 &&
+      next.sizeCm.d === i.sizeCm?.d;
+    if (same) return i;
+    changed = true;
+    return { ...i, ...next };
+  });
+  return changed ? out : items;
+}
+
+/** Where an attached opening sits on segment [a, b]. */
+export function placeInSegment(i: Item, [a, b]: [Vec2, Vec2], thicknessCm: number) {
+  const len = dist(a, b);
+  const w = i.sizeCm?.w ?? 0;
+  const off = len <= w ? len / 2 : Math.min(len - w / 2, Math.max(w / 2, i.inWall!.offsetCm));
+  const ux = len ? (b.x - a.x) / len : 1;
+  const uy = len ? (b.y - a.y) / len : 0;
+  const angle = (Math.atan2(uy, ux) * 180) / Math.PI;
+  return {
+    pos: { x: a.x + ux * off, y: a.y + uy * off },
+    rotationDeg: norm(angle + (i.inWall!.flip ? 180 : 0)),
+    sizeCm: { w, d: thicknessCm },
+  };
 }
 
 export interface SnapOptions {

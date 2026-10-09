@@ -14,7 +14,7 @@ import {
   type SceneDoc,
 } from '../model/project';
 import type { Actor, CastRole, Item, Vec2 } from '../model/types';
-import { nearestWall, wallFromChain } from '../model/walls';
+import { nearestWall, seatOpening, wallFromChain } from '../model/walls';
 import { isOpening, libraryItem } from '../library/items';
 import { fixtureById } from '../model/gear';
 import { applyTemplate, getTemplate, type TemplateDefinition, type TemplateValues } from '../templates';
@@ -239,6 +239,11 @@ export function App() {
     if (wall) sd({ type: 'add', setItems: [wall], items: [] });
     setWallDraft([]); // keep the tool on to draw the next room
   };
+  /** The Finish button: keep what was drawn and leave the tool. */
+  const doneWalls = () => {
+    finishWalls(false);
+    setWallTool(false);
+  };
 
   const deleteSelected = () => {
     if (selected) sd({ type: 'delete', ids: [selected] });
@@ -261,15 +266,11 @@ export function App() {
     const pos = at ?? viewCenter();
     if ('library' in req && isOpening(req.library.id)) {
       // A door or window dropped on (or placed near) a wall goes into it.
-      const hit = nearestWall(pos, items, 60);
-      addItem({
-        id: uid(),
-        kind: 'set',
-        catalogId: req.library.id,
-        pos: hit?.point ?? pos,
-        rotationDeg: hit ? ((hit.angleDeg % 360) + 360) % 360 : 0,
-        sizeCm: { w: req.library.sizeCm.w, d: hit?.thicknessCm ?? req.library.sizeCm.d },
-      });
+      // Doors and windows only live in walls: they go into the nearest one.
+      const hit = nearestWall(pos, items, Infinity);
+      if (!hit) return;
+      const base: Item = { id: uid(), kind: 'set', catalogId: req.library.id, pos, rotationDeg: 0, sizeCm: { ...req.library.sizeCm } };
+      addItem({ ...base, ...seatOpening(base, hit, req.library.sizeCm.w) });
       return;
     }
     addItem(
@@ -296,24 +297,44 @@ export function App() {
     placeActor(actor.id);
   };
 
-  const duplicate = (src: Item) => {
+  /** Ctrl+D (next to the original) or Alt + drag (`patch` = where it was dropped). */
+  const duplicate = (src: Item, patch?: Partial<Item>) => {
     if (src.actorId) return; // a person appears once per scene
-    const copy: Item = structuredClone({ ...src, id: uid(), pos: { x: src.pos.x + 50, y: src.pos.y + 50 }, locked: undefined });
+    const copy: Item = structuredClone({
+      ...src,
+      id: uid(),
+      locked: undefined,
+      ...(patch ?? { pos: { x: src.pos.x + 50, y: src.pos.y + 50 } }),
+    });
     if (copy.light) copy.light.unitId = nextUnitId(items);
+    // A door or window copy goes next to the original in the same wall.
+    if (!patch && copy.inWall) copy.inWall.offsetCm += (copy.sizeCm?.w ?? 90) + 20;
+    // A wall copy brings its doors and windows.
+    const openings = src.wall
+      ? scene.setItems
+          .filter((i) => i.inWall?.wallId === src.id)
+          .map((i) => structuredClone({ ...i, id: uid(), inWall: { ...i.inWall!, wallId: copy.id } }))
+      : [];
     const isSet = scene.setItems.some((i) => i.id === src.id);
-    sd({ type: 'add', setItems: isSet ? [copy] : [], items: isSet ? [] : [copy] });
+    sd({ type: 'add', setItems: isSet ? [copy, ...openings] : [], items: isSet ? [] : [copy] });
     setSelected(copy.id);
   };
 
   const duplicateScene = (id: string) => {
     const src = project.scenes.find((s) => s.id === id);
     if (!src) return;
+    const ids = new Map([...src.setItems, ...src.items].map((i) => [i.id, uid()]));
+    const renew = (i: Item): Item => ({
+      ...i,
+      id: ids.get(i.id)!,
+      ...(i.inWall ? { inWall: { ...i.inWall, wallId: ids.get(i.inWall.wallId) ?? i.inWall.wallId } } : {}),
+    });
     const copy: SceneDoc = structuredClone({
       ...src,
       id: uid(),
       name: `${src.name} copy`,
-      setItems: src.setItems.map((i) => ({ ...i, id: uid() })),
-      items: src.items.map((i) => ({ ...i, id: uid() })),
+      setItems: src.setItems.map(renew),
+      items: src.items.map(renew),
     });
     dispatch({ type: 'addScene', scene: copy, afterId: id });
     setSceneId(copy.id);
@@ -557,6 +578,7 @@ export function App() {
               wallDraft={wallDraft}
               onWallDraft={setWallDraft}
               onWallFinish={finishWalls}
+              onDuplicate={duplicate}
             />
           )}
 
@@ -648,7 +670,8 @@ export function App() {
                 wallTool={wallTool}
                 wallDraftCount={wallDraft.length}
                 onWallTool={setWallTool}
-                onWallFinish={() => finishWalls(false)}
+                onWallFinish={doneWalls}
+                hasWalls={items.some((i) => i.wall)}
               />
             )}
           </div>
@@ -676,7 +699,7 @@ export function App() {
           </span>
         ) : (
           <span className="stat hint">
-            {MODE_HINT[mode]} · pan: middle mouse or Space + drag · W move · R rotate · 1–4 category
+            {MODE_HINT[mode]} · pan: middle mouse or Space + drag · W move · R rotate · Alt + drag copy · 1–4 category
           </span>
         )}
       </footer>

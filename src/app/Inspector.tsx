@@ -146,7 +146,7 @@ export function Inspector(props: Props) {
               <span className="unit">cm</span>
             </span>
           </label>
-          <button className="btn" onClick={() => onUpdate({ rotationDeg: (item.rotationDeg + 180) % 360 })}>
+          <button className="btn" onClick={() => onUpdate({ rotationDeg: (item.rotationDeg + 180) % 360, ...(item.inWall ? { inWall: { ...item.inWall, flip: !item.inWall.flip } } : {}) })}>
             Flip side
           </button>
           <p className="hint-text">Drag it onto a wall to snap in. On the plan, drag the side handles to resize.</p>

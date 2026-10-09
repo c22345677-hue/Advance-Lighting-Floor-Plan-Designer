@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { cleanChain, nearestWall, snapWallPoint, wallFromChain, wallLength, wallSegments } from './walls';
+import { attachOpenings, cleanChain, nearestWall, seatOpening, snapWallPoint, wallFromChain, wallLength, wallSegments } from './walls';
+import type { Item } from './types';
 
 describe('walls', () => {
   it('builds a closed room from a drawn chain and drops the repeated last corner', () => {
@@ -42,5 +43,39 @@ describe('walls', () => {
     expect(hit.point).toEqual({ x: 400, y: 150 });
     expect(hit.angleDeg).toBeCloseTo(90); // the right-hand wall runs downwards
     expect(nearestWall({ x: 200, y: 200 }, [room], 50)).toBeNull();
+  });
+});
+
+describe('doors and windows in walls', () => {
+  const wall = wallFromChain('w', [{ x: 0, y: 0 }, { x: 400, y: 0 }], false)!;
+  const door: Item = { id: 'd', kind: 'set', catalogId: 'generic.door.single', pos: { x: 0, y: 0 }, rotationDeg: 0, sizeCm: { w: 90, d: 15 } };
+  const seated = { ...door, ...seatOpening(door, nearestWall({ x: 100, y: 10 }, [wall], 60)!, 90) } as Item;
+
+  it('remembers where along the wall it sits', () => {
+    expect(seated.inWall).toMatchObject({ wallId: 'w', seg: 0 });
+    expect(seated.inWall!.offsetCm).toBeCloseTo(100);
+  });
+
+  it('follows a moved or rotated wall', () => {
+    const moved = { ...wall, pos: { x: 50, y: 200 }, rotationDeg: 90 };
+    const [d] = attachOpenings([seated], [moved, seated]);
+    expect(d!.pos.x).toBeCloseTo(50);
+    expect(d!.pos.y).toBeCloseTo(300);
+    expect(d!.rotationDeg).toBeCloseTo(90);
+  });
+
+  it('keeps its width and distance when the wall gets longer', () => {
+    const longer = { ...wall, wall: { ...wall.wall!, points: [{ x: 0, y: 0 }, { x: 900, y: 0 }] } };
+    const [d] = attachOpenings([seated], [longer, seated]);
+    expect(d!.pos.x).toBeCloseTo(100);
+    expect(d!.sizeCm!.w).toBe(90);
+  });
+
+  it('stays inside a wall that got shorter, and unlinks when the wall is deleted', () => {
+    const shorter = { ...wall, wall: { ...wall.wall!, points: [{ x: 0, y: 0 }, { x: 80, y: 0 }] } };
+    expect(attachOpenings([seated], [shorter, seated])[0]!.pos.x).toBeCloseTo(40);
+    const far = { ...seated, inWall: { ...seated.inWall!, offsetCm: 380 } };
+    expect(attachOpenings([far], [wall, far])[0]!.pos.x).toBeCloseTo(355);
+    expect(attachOpenings([seated], [seated])[0]!.inWall).toBeUndefined();
   });
 });

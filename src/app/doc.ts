@@ -58,7 +58,8 @@ function editScene(s: SceneDoc, a: SceneAction): SceneDoc {
     case 'delete':
       return {
         ...s,
-        setItems: s.setItems.filter((i) => !a.ids.includes(i.id)),
+        // Doors and windows go with their wall.
+        setItems: s.setItems.filter((i) => !a.ids.includes(i.id) && !(i.inWall && a.ids.includes(i.inWall.wallId))),
         items: s.items.filter((i) => !a.ids.includes(i.id)),
       };
     case 'clear':

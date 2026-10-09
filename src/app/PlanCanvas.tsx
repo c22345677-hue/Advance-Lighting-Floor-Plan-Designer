@@ -10,7 +10,7 @@ import { aimAt, normDeg } from '../model/geometry';
 import { DEFAULT_LENS_MM, horizontalFovDeg } from '../model/lens';
 import { followsActorId, modeOf, sceneItems, type EditMode, type SceneDoc } from '../model/project';
 import type { Actor, Item, Vec2 } from '../model/types';
-import { DEFAULT_WALL_CM, nearestWall, snapWallPoint, toLocal, wallPoints } from '../model/walls';
+import { DEFAULT_WALL_CM, nearestWall, placeInSegment, seatOpening, snapWallPoint, toLocal, wallPoints, wallSegments } from '../model/walls';
 import type { SceneAction } from './doc';
 import type { CanvasColors } from './theme';
 
@@ -33,8 +33,6 @@ const GRID_CM = 50;
 const PERSON_SCALE = 1.5;
 const DEFAULT_THROW_CM = 300;
 const CAMERA_CONE_CM = 660;
-/** How close (cm) a dragged door or window must come to a wall to snap into it. */
-const OPENING_SNAP_CM = 45;
 
 export const clampScale = (s: number) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
 
@@ -98,6 +96,8 @@ interface Props {
   wallDraft: Vec2[];
   onWallDraft: (points: Vec2[]) => void;
   onWallFinish: (closed: boolean) => void;
+  /** Alt + drag: leave the item where it was and add a copy where it was dropped. */
+  onDuplicate: (item: Item, patch: Partial<Item>) => void;
 }
 
 interface RotateSession {
@@ -243,6 +243,21 @@ export function PlanCanvas(p: Props) {
     if (target) turn(moved.id, aimAt(pos, target.pos));
   };
 
+  /** Item being Alt + dragged (copied on drop). */
+  const altCopy = useRef<string | null>(null);
+
+  /** While a wall is dragged or reshaped, its doors and windows move with it. */
+  const liveOpenings = (wall: Item) => {
+    const segs = wallSegments(wall);
+    for (const o of all) {
+      const seg = o.inWall?.wallId === wall.id ? segs[o.inWall.seg] : undefined;
+      if (!seg) continue;
+      const at = placeInSegment(o, seg, wall.wall?.thicknessCm ?? DEFAULT_WALL_CM);
+      node(o.id)?.position(at.pos);
+      node(o.id)?.rotation(at.rotationDeg);
+    }
+  };
+
   const worldPointer = (): Vec2 | null => stageRef.current?.getRelativePointerPosition() ?? null;
 
   const startRotate = (item: Item) => {
@@ -346,6 +361,8 @@ export function PlanCanvas(p: Props) {
       e.cancelBubble = true;
       onSelect(item.id);
       if (canRotate) startRotate(item);
+      // A person appears once per scene, so Alt + drag only moves them.
+      altCopy.current = e.evt.altKey && !item.actorId ? item.id : null;
     };
     return (
       <Group
@@ -366,28 +383,37 @@ export function PlanCanvas(p: Props) {
           const pos = { x: e.target.x(), y: e.target.y() };
           if (isOpening(item.catalogId)) {
             // Doors and windows snap into the nearest wall, lined up with it.
-            const hit = nearestWall(pos, walls, OPENING_SNAP_CM);
+            // Doors and windows never leave the walls: they slide along the nearest one.
+            const hit = nearestWall(pos, walls, Infinity);
             if (hit) {
               e.target.position(hit.point);
-              e.target.rotation(hit.angleDeg);
+              e.target.rotation(seatOpening(item, hit, itemLook(item).w).rotationDeg!);
             }
             return;
           }
+          if (item.wall) liveOpenings({ ...item, pos });
           follow(item, pos);
         }}
         onDragEnd={(e) => {
           setDragging(null);
           const pos = { x: e.target.x(), y: e.target.y() };
+          let patch: Partial<Item>;
           if (isOpening(item.catalogId)) {
-            const hit = nearestWall(pos, walls, OPENING_SNAP_CM);
-            const look = itemLook(item);
-            dispatch({
-              type: 'update',
-              id: item.id,
-              patch: hit
-                ? { pos: hit.point, rotationDeg: normDeg(hit.angleDeg), sizeCm: { w: look.w, d: hit.thicknessCm } }
-                : { pos, rotationDeg: normDeg(e.target.rotation()) },
-            });
+            const hit = nearestWall(pos, walls, Infinity);
+            patch = hit ? seatOpening(item, hit, itemLook(item).w) : { pos, rotationDeg: normDeg(e.target.rotation()) };
+          } else patch = { pos };
+          if (altCopy.current === item.id) {
+            // Put the original back (with anything that followed it) and drop a copy here.
+            altCopy.current = null;
+            e.target.position(item.pos);
+            e.target.rotation(item.rotationDeg);
+            follow(item, item.pos);
+            if (item.wall) liveOpenings(item);
+            p.onDuplicate(item, patch);
+            return;
+          }
+          if (isOpening(item.catalogId)) {
+            dispatch({ type: 'update', id: item.id, patch });
             return;
           }
           follow(item, pos);
@@ -400,10 +426,14 @@ export function PlanCanvas(p: Props) {
           n.scaleX(1);
           n.scaleY(1);
           const look = itemLook(item);
+          const w = Math.max(30, Math.round(look.w * sx));
+          const pos = { x: n.x(), y: n.y() };
+          // Still in its wall: remember the new distance along it.
+          const hit = item.inWall ? nearestWall(pos, walls.filter((x) => x.id === item.inWall!.wallId), Infinity) : null;
           dispatch({
             type: 'update',
             id: item.id,
-            patch: { pos: { x: n.x(), y: n.y() }, sizeCm: { w: Math.max(30, Math.round(look.w * sx)), d: look.d } },
+            patch: hit ? seatOpening(item, hit, w) : { pos, sizeCm: { w, d: look.d } },
           });
         }}
       >
@@ -522,6 +552,7 @@ export function PlanCanvas(p: Props) {
                 const local = sel.wall!.points.slice();
                 local[idx] = toLocal(sel, at);
                 (node(sel.id) as Konva.Group | undefined)?.findOne<Konva.Line>('.wall-line')?.points(local.flatMap((q) => [q.x, q.y]));
+                liveOpenings({ ...sel, wall: { ...sel.wall!, points: local } });
               }}
               onDragEnd={(e) => {
                 const local = sel.wall!.points.slice();

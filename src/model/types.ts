@@ -50,6 +50,9 @@ export interface Item {
   light?: LightProps;
   /** Walls: a chain of corners relative to `pos` (a room when closed). */
   wall?: { points: Vec2[]; closed: boolean; thicknessCm?: number };
+  /** Doors and windows: the wall segment they sit in, the distance (cm) of their centre from the
+   *  segment's first corner, and which side they open to. They follow the wall; their width never changes. */
+  inWall?: { wallId: string; seg: number; offsetCm: number; flip?: boolean };
   /** Frames: the fabric stretched on it (see library/fabrics.ts). */
   grip?: { fabric?: string };
   /** People placed as cast: points at the project's actor list (name, colour, gender live there). */
