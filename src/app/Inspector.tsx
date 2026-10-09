@@ -3,6 +3,7 @@ import { bestBatteryOutputPct, isFullyWeatherSealed, isWeatherSealed, sizeClass 
 import { modifiersFor } from '../catalog/modifiers';
 import { MODIFIERS } from '../catalog/data';
 import type { Fixture } from '../catalog/schema';
+import { FABRIC_KIND_LABEL, FABRICS, takesFabric, type FabricKind } from '../library/fabrics';
 import { libraryItem } from '../library/items';
 import {
   itemFixture,
@@ -85,6 +86,28 @@ export function Inspector(props: Props) {
         </button>
       </div>
 
+      {takesFabric(item.catalogId) && (
+        <section className="insp-section">
+          <h4>Fabric</h4>
+          <select
+            value={item.grip?.fabric ?? ''}
+            onChange={(e) => onUpdate({ grip: { ...item.grip, fabric: e.target.value || undefined } })}
+            aria-label="Fabric"
+          >
+            <option value="">Empty frame</option>
+            {(Object.keys(FABRIC_KIND_LABEL) as FabricKind[]).map((k) => (
+              <optgroup key={k} label={FABRIC_KIND_LABEL[k]}>
+                {FABRICS.filter((f) => f.kind === k).map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.name}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+          <p className="muted small">Black shows black, diffusion see-through grey, bounce white, chroma screens in green or blue.</p>
+        </section>
+      )}
       {item.kind === 'camera' && <CameraSection item={item} sceneItems={sceneItems} actors={actors} onUpdate={onUpdate} />}
       {item.kind === 'light' && <LightSection item={item} gear={gear} setLight={setLight} onUpdate={onUpdate} />}
     </div>

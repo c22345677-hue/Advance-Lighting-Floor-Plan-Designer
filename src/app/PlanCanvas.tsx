@@ -3,6 +3,7 @@ import type { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import { Arc, Arrow, Circle, Ellipse, Group, Layer, Line, Rect, Stage, Text, Transformer, Wedge } from 'react-konva';
 import type { Modifier } from '../catalog/schema';
+import { FABRIC_FILL, fabricById } from '../library/fabrics';
 import { libraryItem } from '../library/items';
 import { itemFixture, itemLook, itemModifiers } from '../model/gear';
 import { aimAt } from '../model/geometry';
@@ -48,7 +49,9 @@ export const beamDegOf = (item: Item): number =>
 /** Text shown under an item: "L1 · LS 600d Pro" for lights, the actor's name for cast. */
 export function displayLabel(item: Item, actors: readonly Actor[] = []): string {
   const actor = item.actorId ? actors.find((a) => a.id === item.actorId) : undefined;
-  const name = actor?.name ?? item.label ?? itemFixture(item)?.model ?? libraryItem(item.catalogId)?.name ?? '';
+  const fabric = fabricById(item.grip?.fabric);
+  const base = itemFixture(item)?.model ?? libraryItem(item.catalogId)?.name ?? '';
+  const name = actor?.name ?? item.label ?? (fabric ? `${base} · ${fabric.name}` : base);
   const unit = item.light?.unitId;
   return unit ? (name ? `${unit} · ${name}` : unit) : name;
 }
@@ -514,10 +517,22 @@ function ItemShape({ item, actors, colors: c }: { item: Item; actors: readonly A
       return <Rect x={-hw} y={-Math.max(hd, 3)} width={w} height={Math.max(d, 6)} fill={c.grip} cornerRadius={1} />;
     case 'polyboard':
       return <Rect x={-hw} y={-Math.max(hd, 3)} width={w} height={Math.max(d, 6)} fill="#ffffff" />;
-    case 'frame':
+    case 'frame': {
+      const fabric = fabricById(item.grip?.fabric);
+      if (fabric) {
+        const look = FABRIC_FILL[fabric.kind];
+        const h = Math.max(d, 6);
+        return (
+          <>
+            <Rect x={-hw} y={-h / 2} width={w} height={h} fill={look.fill} opacity={look.opacity} />
+            <Rect x={-hw} y={-h / 2} width={w} height={h} stroke={c.grip} strokeWidth={1.5} />
+          </>
+        );
+      }
       return (
         <Rect x={-hw} y={-Math.max(hd, 3)} width={w} height={Math.max(d, 6)} fill={c.label} opacity={0.55} stroke={c.grip} strokeWidth={2} />
       );
+    }
     case 'stand':
       return (
         <>

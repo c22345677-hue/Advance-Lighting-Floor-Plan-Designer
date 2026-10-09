@@ -46,6 +46,8 @@ export interface Item {
   locked?: boolean;
   hidden?: boolean;
   light?: LightProps;
+  /** Frames: the fabric stretched on it (see library/fabrics.ts). */
+  grip?: { fabric?: string };
   /** People placed as cast: points at the project's actor list (name, colour, gender live there). */
   actorId?: string;
   /** Templates only: the cast role a template person becomes (stripped when placed). */
