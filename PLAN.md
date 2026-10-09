@@ -170,6 +170,15 @@ possible with a normal lens.
   drops off the rental list.
 - Each line shows where it came from: `auto` (from the plan), `kit`, `rule` or `manual`.
 
+**Built (first pass):** Equipment window from the top bar. Whole project or one scene; quantity =
+most any one scene needs; departments Lighting, Grip, Electric, Camera, Expendables, Art/set;
+accessory rules (stinger per light; stand + 2 sandbags per light on a stand; C-stand + sandbag
+per flag/4×4, 2 combo stands + 2 sandbags per 6×6, 2 high rollers + 4 sandbags per 8×8/12×12),
+switchable; Small/Medium/Large kits; items added by hand; quantity edits and "owned"; warnings
+(overloaded stands, stand-ins, gear-list shortfalls); known weight; peak power and generator size;
+CSV download and copy as text. Still to do: custom kits, notes per line, per-day breakdown,
+circuits/distro assignment, PDF.
+
 ### 2.9 Kits & accessory rules
 **Kits** (your "add to equipment list" presets) are named, reusable lists with quantities,
 added with one button. For example:

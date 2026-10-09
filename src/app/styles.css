@@ -769,6 +769,7 @@ select {
 
 .row {
   width: 100%;
+  box-sizing: border-box;
   min-height: 48px;
   justify-content: flex-start;
   gap: 10px;
@@ -1107,14 +1108,18 @@ select {
   inset: 0;
   z-index: 50;
   background: rgba(0, 0, 0, 0.45);
-  display: grid;
-  place-items: center;
+  /* Flex, not grid: a grid row would grow to the dialog's full content and push it off screen. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 24px;
+  box-sizing: border-box;
 }
 
 .dialog {
   width: min(560px, 100%);
   max-height: min(820px, 100%);
+  min-height: 0;
   display: flex;
   flex-direction: column;
   background: var(--surface);
@@ -1122,6 +1127,144 @@ select {
   border-radius: 14px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
   outline: none;
+}
+
+.dialog.wide {
+  width: min(860px, 100%);
+}
+
+.eq-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.eq-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--bg);
+}
+
+.stat-card b {
+  font-family: var(--font-data);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.stat-label {
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.stat-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.warn-box {
+  margin: 0;
+  padding: 10px 12px 10px 28px;
+  border: 1px solid var(--danger);
+  border-radius: 9px;
+  color: var(--danger);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.eq-row {
+  gap: 12px;
+  padding: 6px 12px;
+  min-height: 52px;
+}
+
+.eq-row .qty {
+  width: 64px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.eq-row.owned .row-title {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.owned-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.owned-toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  margin: 0;
+}
+
+.small-btn {
+  min-height: 30px;
+  font-size: 12px;
+  padding: 0 8px;
+}
+
+.kit-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.kit-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+
+.kit-card.on {
+  border-color: var(--accent);
+}
+
+.kit-count {
+  font-family: var(--font-data);
+  color: var(--accent);
+  align-self: center;
+}
+
+.add-line {
+  display: grid;
+  grid-template-columns: 1fr 150px 72px auto;
+  gap: 8px;
+}
+
+.eq-text {
+  font-family: var(--font-data);
+  font-size: 13px;
+  padding: 8px 10px;
+  resize: vertical;
 }
 
 .dialog.small {
@@ -1169,6 +1312,7 @@ select {
 .dialog-body {
   padding: 20px;
   overflow-y: auto;
+  min-height: 0; /* lets a long body scroll inside the dialog instead of overflowing the screen */
 }
 
 .dialog-foot {
@@ -1363,6 +1507,19 @@ select {
 
   .dialog-backdrop {
     padding: 0;
+  }
+
+  .eq-summary,
+  .kit-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .add-line {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .eq-row {
+    flex-wrap: wrap;
   }
 
   .dialog:not(.small) {

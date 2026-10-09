@@ -9,10 +9,12 @@ interface Props {
   footer?: ReactNode;
   /** Narrow confirm-style dialog. */
   small?: boolean;
+  /** Wide dialog for lists (equipment). */
+  wide?: boolean;
 }
 
 /** Centered dialog on wide screens, full-screen sheet on phones. Esc or the backdrop closes it. */
-export function Dialog({ title, onClose, children, footer, small }: Props) {
+export function Dialog({ title, onClose, children, footer, small, wide }: Props) {
   const box = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,7 +30,7 @@ export function Dialog({ title, onClose, children, footer, small }: Props) {
 
   return (
     <div className="dialog-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className={`dialog ${small ? 'small' : ''}`} role="dialog" aria-modal="true" aria-label={title} ref={box} tabIndex={-1}>
+      <div className={`dialog ${small ? 'small' : ''} ${wide ? 'wide' : ''}`} role="dialog" aria-modal="true" aria-label={title} ref={box} tabIndex={-1}>
         <header className="dialog-head">
           <h2>{title}</h2>
           <button className="icon-btn" onClick={onClose} aria-label="Close">

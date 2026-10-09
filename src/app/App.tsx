@@ -18,12 +18,14 @@ import { applyTemplate, getTemplate, type TemplateDefinition, type TemplateValue
 import { CategoryPanel, type PlaceRequest } from './CategoryPanel';
 import { useConfirm } from './confirm';
 import { Dialog } from './Dialog';
+import { EquipmentPanel } from './EquipmentPanel';
 import { reducer, type SceneAction } from './doc';
 import { GearListPanel } from './GearListPanel';
 import type { GearScope } from './gearScope';
 import {
   IconBack,
   IconChevron,
+  IconEquipment,
   IconExport,
   IconFit,
   IconGearList,
@@ -142,7 +144,7 @@ const MODE_HINT: Record<EditMode, string> = {
   scene: 'Only people, set and props can be picked and moved',
 };
 
-type DialogKind = 'templates' | 'gear' | null;
+type DialogKind = 'templates' | 'gear' | 'equipment' | null;
 
 export function App() {
   const [history, dispatch] = useReducer(reducer, undefined, () => ({
@@ -461,8 +463,11 @@ export function App() {
           <button id="open-gear" className={`top-action ${gear.limit ? 'on' : ''}`} onClick={() => setDialog('gear')} title="The gear on this job">
             <IconGearList /> <span className="lbl">Gear list</span>
           </button>
+          <button id="open-equipment" className="top-action" onClick={() => setDialog('equipment')} title="Equipment list for the job">
+            <IconEquipment /> <span className="lbl">Equipment</span>
+          </button>
           <button id="export-png" className="top-action" onClick={exportPng} disabled={items.length === 0} title="Download this scene as PNG">
-            <IconExport /> <span className="lbl">Export</span>
+            <IconExport /> <span className="lbl">PNG</span>
           </button>
         </div>
       </header>
@@ -607,6 +612,17 @@ export function App() {
             onKind={(k) => dispatch({ type: 'setProject', patch: { kind: k } })}
             onAdd={addTemplate}
             sceneName={scene.name}
+          />
+        </Dialog>
+      )}
+      {dialog === 'equipment' && (
+        <Dialog title="Equipment" onClose={() => setDialog(null)} wide>
+          <EquipmentPanel
+            project={project}
+            scene={scene}
+            volts={prefs.volts}
+            gearList={activeList}
+            onChange={(equipment) => dispatch({ type: 'setProject', patch: { equipment } })}
           />
         </Dialog>
       )}

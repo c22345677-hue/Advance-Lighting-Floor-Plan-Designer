@@ -1,6 +1,7 @@
 // A project: several scenes, one cast (actors) shared by all of them, and the gear list in use.
 import { libraryItem } from '../library/items';
 import { aimAt } from './geometry';
+import type { EquipmentState } from './equipment';
 import type { Actor, CastRole, Gender, Item } from './types';
 
 export interface SceneDoc {
@@ -26,6 +27,8 @@ export interface Project {
   /** Saved gear list used on this job (see gearList.ts), and whether to limit picks to it. */
   gearListId?: string;
   gearLimit?: boolean;
+  /** Equipment list edits: rules on/off, kits, hand-added lines, overrides. */
+  equipment?: EquipmentState;
 }
 
 const uid = () => crypto.randomUUID();
