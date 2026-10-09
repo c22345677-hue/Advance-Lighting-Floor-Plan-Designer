@@ -75,6 +75,17 @@ export function nearestWall(p: Vec2, items: readonly Item[], maxDist: number): W
   return best;
 }
 
+/** The same hit moved along its segment so an opening `width` wide stays inside the wall. */
+export function clampHit(hit: WallHit, items: readonly Item[], width: number): WallHit {
+  const w = items.find((x) => x.id === hit.wallId);
+  const seg = w && wallSegments(w)[hit.seg];
+  if (!seg) return hit;
+  const len = dist(seg[0], seg[1]);
+  const offsetCm = len <= width ? len / 2 : Math.min(len - width / 2, Math.max(width / 2, hit.offsetCm));
+  const t = len ? offsetCm / len : 0;
+  return { ...hit, offsetCm, point: { x: seg[0].x + (seg[1].x - seg[0].x) * t, y: seg[0].y + (seg[1].y - seg[0].y) * t } };
+}
+
 const norm = (deg: number) => ((deg % 360) + 360) % 360;
 
 /** Patch that puts a door or window into the wall it was dropped on (keeps its width). */

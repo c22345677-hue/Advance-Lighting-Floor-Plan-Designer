@@ -11,6 +11,7 @@ import { DEFAULT_LENS_MM, horizontalFovDeg } from '../model/lens';
 import { followsActorId, modeOf, sceneItems, type EditMode, type SceneDoc } from '../model/project';
 import type { Actor, Item, Vec2 } from '../model/types';
 import {
+  clampHit,
   DEFAULT_WALL_CM,
   nearestWall,
   onWallCorner,
@@ -154,6 +155,13 @@ export function PlanCanvas(p: Props) {
   const [hoverHint, setHoverHint] = useState<string | null>(null);
   /** Wall segment a new corner would split (its two lengths are shown live). */
   const [hoverSplit, setHoverSplit] = useState<[Vec2, Vec2] | null>(null);
+  /** Door or window being moved or resized: its wall segment, centre and width. */
+  const [openingGuide, setOpeningGuide] = useState<{ seg: [Vec2, Vec2]; center: Vec2; w: number } | null>(null);
+  const guideFor = (hit: { wallId: string; seg: number }, center: Vec2, w: number) => {
+    const wall = walls.find((x) => x.id === hit.wallId);
+    const seg = wall && wallSegments(wall)[hit.seg];
+    setOpeningGuide(seg ? { seg, center, w } : null);
+  };
   const snapRadius = 14 / view.scale;
 
   const node = (id: string) => stageRef.current?.findOne((n: Konva.Node) => n.id() === id);
@@ -542,10 +550,12 @@ export function PlanCanvas(p: Props) {
           if (isOpening(item.catalogId)) {
             // Doors and windows snap into the nearest wall, lined up with it.
             // Doors and windows never leave the walls: they slide along the nearest one.
-            const hit = nearestWall(pos, walls, Infinity);
+            const near = nearestWall(pos, walls, Infinity);
+            const hit = near && clampHit(near, walls, itemLook(item).w);
             if (hit) {
               e.target.position(hit.point);
               e.target.rotation(seatOpening(item, hit, itemLook(item).w).rotationDeg!);
+              guideFor(hit, hit.point, itemLook(item).w);
             }
             return;
           }
@@ -555,10 +565,12 @@ export function PlanCanvas(p: Props) {
         }}
         onDragEnd={(e) => {
           setDragging(null);
+          setOpeningGuide(null);
           const pos = { x: e.target.x(), y: e.target.y() };
           let patch: Partial<Item>;
           if (isOpening(item.catalogId)) {
-            const hit = nearestWall(pos, walls, Infinity);
+            const near = nearestWall(pos, walls, Infinity);
+            const hit = near && clampHit(near, walls, itemLook(item).w);
             patch = hit ? seatOpening(item, hit, itemLook(item).w) : { pos, rotationDeg: normDeg(e.target.rotation()) };
           } else patch = { pos };
           const group = groupDrag.current;
@@ -600,7 +612,14 @@ export function PlanCanvas(p: Props) {
           follow(item, pos);
           dispatch({ type: 'move', id: item.id, pos });
         }}
+        onTransform={(e) => {
+          // Live lengths while a door or window is stretched.
+          if (!item.inWall) return;
+          const n = e.target;
+          guideFor(item.inWall, { x: n.x(), y: n.y() }, itemLook(item).w * n.scaleX());
+        }}
         onTransformEnd={(e) => {
+          setOpeningGuide(null);
           // Side handles stretch the opening; store the new width and keep the scale at 1.
           const n = e.target;
           const sx = n.scaleX();
@@ -795,6 +814,7 @@ export function PlanCanvas(p: Props) {
             />
           </>
         )}
+        {openingGuide && <OpeningDims {...openingGuide} scale={view.scale} colors={colors} />}
         {!dragging &&
           outlines.map((o) => (
             <Rect
@@ -898,33 +918,7 @@ function WallDraft({
         <Circle key={i} x={q.x} y={q.y} radius={5 * px} fill={c.select} />
       ))}
       {closeAt && <Circle x={closeAt.x} y={closeAt.y} radius={13 * px} stroke={c.select} strokeWidth={3 * px} />}
-      {hover &&
-        split &&
-        split.map((end, i) => {
-          const len = Math.hypot(end.x - hover.x, end.y - hover.y);
-          if (len < 1) return null;
-          // Each part's length beside its middle, pushed off the wall.
-          const segLen = Math.hypot(split[1].x - split[0].x, split[1].y - split[0].y) || 1;
-          const nx = -(split[1].y - split[0].y) / segLen;
-          const ny = (split[1].x - split[0].x) / segLen;
-          const off = 22 * px;
-          return (
-            <Group key={`split${i}`}>
-              <Line points={[hover.x, hover.y, end.x, end.y]} stroke={c.select} strokeWidth={2 * px} />
-              <Circle x={end.x} y={end.y} radius={4 * px} fill={c.select} />
-              <Text
-                x={(hover.x + end.x) / 2 + nx * off - 30 * px}
-                y={(hover.y + end.y) / 2 + ny * off - 7 * px}
-                width={60 * px}
-                align="center"
-                text={`${(len / 100).toFixed(2)} m`}
-                fontSize={13 * px}
-                fontFamily="'IBM Plex Mono', monospace"
-                fill={c.label}
-              />
-            </Group>
-          );
-        })}
+      {hover && split && <Dims seg={split} parts={split.map((end) => [hover, end] as [Vec2, Vec2])} scale={scale} colors={c} />}
       {hover && hint && (
         <>
           <Circle x={hover.x} y={hover.y} radius={9 * px} stroke={c.select} strokeWidth={2 * px} />
@@ -944,6 +938,67 @@ function WallDraft({
       )}
     </Group>
   );
+}
+
+/**
+ * Measured parts along a wall segment `seg`: a line per part with its length beside it, pushed
+ * off the wall to one side. Used when adding a corner and when moving or resizing doors and windows.
+ */
+function Dims({
+  seg,
+  parts,
+  flip = [],
+  scale,
+  colors: c,
+}: {
+  seg: [Vec2, Vec2];
+  parts: [Vec2, Vec2][];
+  /** Parts whose label goes on the other side of the wall (so short neighbours don't overlap). */
+  flip?: number[];
+  scale: number;
+  colors: CanvasColors;
+}) {
+  const px = 1 / scale;
+  const segLen = Math.hypot(seg[1].x - seg[0].x, seg[1].y - seg[0].y) || 1;
+  const nx = -(seg[1].y - seg[0].y) / segLen;
+  const ny = (seg[1].x - seg[0].x) / segLen;
+  const off = 22 * px;
+  return (
+    <Group name="ui-only" listening={false}>
+      {parts.map(([from, to], i) => {
+        const len = Math.hypot(to.x - from.x, to.y - from.y);
+        if (len < 1) return null;
+        const side = flip.includes(i) ? -1 : 1;
+        return (
+          <Group key={i}>
+            <Line points={[from.x, from.y, to.x, to.y]} stroke={c.select} strokeWidth={2 * px} />
+            <Circle x={from.x} y={from.y} radius={3.5 * px} fill={c.select} />
+            <Circle x={to.x} y={to.y} radius={3.5 * px} fill={c.select} />
+            <Text
+              x={(from.x + to.x) / 2 + nx * off * side - 30 * px}
+              y={(from.y + to.y) / 2 + ny * off * side - 7 * px}
+              width={60 * px}
+              align="center"
+              text={`${(len / 100).toFixed(2)} m`}
+              fontSize={13 * px}
+              fontFamily="'IBM Plex Mono', monospace"
+              fill={c.label}
+            />
+          </Group>
+        );
+      })}
+    </Group>
+  );
+}
+
+/** Measurements for a door or window at `center`, `w` wide, in wall segment `seg`: corner → edge, its width, edge → corner. */
+function OpeningDims({ seg, center, w, scale, colors }: { seg: [Vec2, Vec2]; center: Vec2; w: number; scale: number; colors: CanvasColors }) {
+  const [a, b] = seg;
+  const len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+  const u = { x: (b.x - a.x) / len, y: (b.y - a.y) / len };
+  const e1 = { x: center.x - (u.x * w) / 2, y: center.y - (u.y * w) / 2 };
+  const e2 = { x: center.x + (u.x * w) / 2, y: center.y + (u.y * w) / 2 };
+  return <Dims seg={seg} parts={[[a, e1], [e1, e2], [e2, b]]} flip={[1]} scale={scale} colors={colors} />;
 }
 
 /** Doors, top down, centred, along x; the swing side is -y. */
