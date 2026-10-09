@@ -166,7 +166,10 @@ export function App() {
 
   const [mode, setMode] = useState<EditMode>('lights');
   const [tool, setTool] = useState<Tool>('move');
-  const [selected, setSelected] = useState<string | null>(null);
+  /** Selected items (box-select and Shift+click select several). */
+  const [selection, setSelection] = useState<string[]>([]);
+  const selected = selection.length === 1 ? selection[0]! : null;
+  const setSelected = (id: string | null) => setSelection(id ? [id] : []);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [view, setView] = useState<View | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false); // phones: side panel as a bottom sheet
@@ -210,10 +213,12 @@ export function App() {
   }, [size, view, items]);
 
   const selectedItem: Item | undefined = items.find((i) => i.id === selected);
+  const selectedItems = items.filter((i) => selection.includes(i.id));
   useEffect(() => {
     // Selection only lives inside the active category and scene.
-    if (selected && (!selectedItem || modeOf(selectedItem) !== mode)) setSelected(null);
-  }, [selected, selectedItem, mode]);
+    const keep = selection.filter((id) => items.some((i) => i.id === id && modeOf(i) === mode));
+    if (keep.length !== selection.length) setSelection(keep);
+  }, [selection, items, mode]);
 
   const activeList = gearLists.find((l) => l.id === project.gearListId) ?? null;
   const usage = useMemo(() => gearUsage(items), [items]);
@@ -266,8 +271,8 @@ export function App() {
   };
 
   const deleteSelected = () => {
-    if (selected) sd({ type: 'delete', ids: [selected] });
-    setSelected(null);
+    if (selection.length) sd({ type: 'delete', ids: selection });
+    setSelection([]);
   };
 
   const viewCenter = () => {
@@ -340,6 +345,36 @@ export function App() {
     setSelected(copy.id);
   };
 
+  /** Several items at once (Ctrl+D, or Alt + drag of a selection), moved by `delta`. */
+  const duplicateMany = (ids: string[], delta: Vec2 = { x: 50, y: 50 }) => {
+    const srcs = items.filter((i) => ids.includes(i.id) && !i.actorId);
+    const wallIds = new Map<string, string>();
+    for (const s of srcs) if (s.wall) wallIds.set(s.id, uid());
+    const added: Item[] = [];
+    const toSet = new Set<string>();
+    const picked: string[] = [];
+    const copyOf = (src: Item, id: string, inWall?: Item['inWall']): Item => {
+      if (scene.setItems.some((x) => x.id === src.id)) toSet.add(id);
+      const c: Item = structuredClone({ ...src, id, locked: undefined, pos: { x: src.pos.x + delta.x, y: src.pos.y + delta.y } });
+      if (inWall) c.inWall = inWall;
+      if (c.light) c.light.unitId = nextUnitId([...items, ...added]);
+      added.push(c);
+      return c;
+    };
+    for (const src of srcs) {
+      if (src.inWall && wallIds.has(src.inWall.wallId)) continue; // comes with its wall
+      if (src.wall) {
+        const id = wallIds.get(src.id)!;
+        picked.push(copyOf(src, id).id);
+        for (const o of scene.setItems) if (o.inWall?.wallId === src.id) copyOf(o, uid(), { ...o.inWall, wallId: id });
+      } else if (src.inWall) {
+        picked.push(copyOf(src, uid(), { ...src.inWall, offsetCm: src.inWall.offsetCm + (src.sizeCm?.w ?? 90) + 20 }).id);
+      } else picked.push(copyOf(src, uid()).id);
+    }
+    sd({ type: 'add', setItems: added.filter((i) => toSet.has(i.id)), items: added.filter((i) => !toSet.has(i.id)) });
+    setSelection(picked);
+  };
+
   const duplicateScene = (id: string) => {
     const src = project.scenes.find((s) => s.id === id);
     if (!src) return;
@@ -401,6 +436,10 @@ export function App() {
       } else if (mod && k === 'd') {
         e.preventDefault();
         if (selectedItem) duplicate(selectedItem);
+        else if (selection.length > 1) duplicateMany(selection);
+      } else if (mod && k === 'a') {
+        e.preventDefault();
+        setSelection(items.filter((i) => !i.hidden && modeOf(i) === mode).map((i) => i.id));
       } else if (mod) {
         return;
       } else if (e.key === '?' || k === 'f1') {
@@ -593,8 +632,10 @@ export function App() {
               scene={scene}
               actors={project.actors}
               dispatch={sd}
-              selected={selected}
+              selection={selection}
               onSelect={setSelected}
+              onSelectMany={setSelection}
+              onDuplicateMany={duplicateMany}
               colors={colors}
               showGrid={prefs.grid}
               mode={mode}
@@ -659,7 +700,7 @@ export function App() {
 
         <aside className={`panel ${sheetOpen ? 'open' : ''}`} aria-label={`${MODE_LABEL[mode]} panel`}>
           <div className="panel-head">
-            {selectedItem ? (
+            {selection.length ? (
               <button id="panel-back" className="back-btn" onClick={() => setSelected(null)}>
                 <IconBack /> {MODE_LABEL[mode]}
               </button>
@@ -686,6 +727,42 @@ export function App() {
                 onDuplicate={() => duplicate(selectedItem)}
                 onDelete={deleteSelected}
               />
+            ) : selection.length > 1 ? (
+              <section className="section">
+                <h3 className="section-title">
+                  Selected <span className="count">{selection.length}</span>
+                </h3>
+                <ul className="row-list">
+                  {selectedItems.map((i) => (
+                    <li key={i.id}>
+                      <button className="row" onClick={() => setSelected(i.id)}>
+                        <span className="row-main">
+                          <span className="row-title">{displayLabel(i, project.actors) || itemName(i)}</span>
+                        </span>
+                        {i.locked && <span className="row-meta muted">Locked</span>}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <p className="hint-text">Drag any of them to move them together; Alt + drag copies them. Shift + click adds or removes one.</p>
+                <div className="btn-row">
+                  <button
+                    className="btn"
+                    onClick={() => {
+                      const lock = !selectedItems.every((i) => i.locked);
+                      sd({ type: 'updateMany', patches: selection.map((id) => ({ id, patch: { locked: lock || undefined } })) });
+                    }}
+                  >
+                    {selectedItems.every((i) => i.locked) ? 'Unlock all' : 'Lock all'}
+                  </button>
+                  <button className="btn" onClick={() => duplicateMany(selection)}>
+                    Duplicate
+                  </button>
+                  <button className="btn danger" onClick={deleteSelected}>
+                    Delete
+                  </button>
+                </div>
+              </section>
             ) : (
               <CategoryPanel
                 mode={mode}
@@ -725,13 +802,15 @@ export function App() {
           {power.watts} W · {power.amps.toFixed(1)} A @ {prefs.volts} V{power.unknown ? ` · ${power.unknown} unknown` : ''}
         </button>
         {gear.limit && <span className="stat accent">Gear list: {activeList?.name}</span>}
-        {selectedItem ? (
+        {selection.length > 1 ? (
+          <span className="stat accent">{selection.length} selected</span>
+        ) : selectedItem ? (
           <span className="stat accent">
             {displayLabel(selectedItem, project.actors) || itemName(selectedItem)} · x {fmtM(selectedItem.pos.x)} · y {fmtM(selectedItem.pos.y)} · {Math.round(selectedItem.rotationDeg)}°
           </span>
         ) : (
           <span className="stat hint">
-            {MODE_HINT[mode]} · pan: middle mouse or Space + drag · W move · R rotate · Alt + drag copy · 1–4 category
+            {MODE_HINT[mode]} · pan: middle mouse or Space + drag · W move · R rotate · drag on empty space to select · Alt + drag copy · 1–4 category
           </span>
         )}
       </footer>

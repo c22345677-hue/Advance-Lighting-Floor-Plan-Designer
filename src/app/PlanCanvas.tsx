@@ -94,8 +94,13 @@ interface Props {
   scene: SceneDoc;
   actors: readonly Actor[];
   dispatch: (a: SceneAction) => void;
-  selected: string | null;
+  /** Selected item ids (one, several, or none). */
+  selection: string[];
   onSelect: (id: string | null) => void;
+  /** Box-select, Shift+click. */
+  onSelectMany: (ids: string[]) => void;
+  /** Alt + drag of several selected items: copies moved by `delta`. */
+  onDuplicateMany: (ids: string[], delta: Vec2) => void;
   colors: CanvasColors;
   /** Show the 50 cm grid (hidden it gives a clean plan; it is also left out of exports then). */
   showGrid: boolean;
@@ -127,15 +132,20 @@ interface RotateSession {
   startAngle: number;
   startRot: number;
   current: number;
+  /** Other selected items turning by the same amount, with their starting rotation. */
+  others: { id: string; start: number }[];
 }
 
 export function PlanCanvas(p: Props) {
-  const { width, height, view, onView, scene, actors, dispatch, selected, onSelect, colors, showGrid, mode, tool } = p;
+  const { width, height, view, onView, scene, actors, dispatch, selection, onSelect, colors, showGrid, mode, tool } = p;
+  const selected = selection.length === 1 ? selection[0]! : null;
+  const multi = selection.length > 1;
   const stageRef = useRef<Konva.Stage>(null);
   const trRef = useRef<Konva.Transformer>(null);
   const pinch = useRef<{ dist: number; center: Vec2 } | null>(null);
   const rot = useRef<RotateSession | null>(null);
   const [dragging, setDragging] = useState<string | null>(null);
+  const [outlines, setOutlines] = useState<{ id: string; x: number; y: number; width: number; height: number }[]>([]);
   const all = sceneItems(scene);
   const visible = all.filter((i) => !i.hidden);
   const walls = all.filter((i) => i.wall);
@@ -150,15 +160,26 @@ export function PlanCanvas(p: Props) {
     // Move tool: box around the selection. Rotate tool: a ring instead (drawn below).
     const tr = trRef.current;
     if (!tr) return;
-    const n = selected && tool === 'move' ? node(selected) : undefined;
+    // One item: Konva's transformer box. Several: our own outlines (the transformer would drag
+    // the others itself and fight the group move).
+    const nodes = tool === 'move' && selected ? [node(selected)].filter((n): n is Konva.Node => !!n) : [];
+    const layer = tr.getLayer();
+    setOutlines(
+      multi && layer && tool === 'move'
+        ? selection.flatMap((id) => {
+            const n = node(id);
+            return n ? [{ id, ...n.getClientRect({ relativeTo: layer, skipShadow: true }) }] : [];
+          })
+        : [],
+    );
     const sel = all.find((i) => i.id === selected);
     // Doors and windows resize along the wall from their side handles.
     const resizable = !!sel && tool === 'move' && isOpening(sel.catalogId) && !sel.locked;
     tr.resizeEnabled(resizable);
     tr.enabledAnchors(resizable ? ['middle-left', 'middle-right'] : []);
-    tr.nodes(n ? [n] : []);
+    tr.nodes(nodes);
     tr.getLayer()?.batchDraw();
-  }, [selected, scene, tool]);
+  }, [selection, scene, tool]);
 
   useEffect(() => {
     const el = stageRef.current?.container();
@@ -268,6 +289,49 @@ export function PlanCanvas(p: Props) {
 
   /** Item being Alt + dragged (copied on drop). */
   const altCopy = useRef<string | null>(null);
+  /** Other selected items moving with the dragged one, and where they started. */
+  const groupDrag = useRef<{ id: string; item: Item }[]>([]);
+  /** Selected items that move with `item` (doors and windows follow their walls instead). */
+  const groupOf = (item: Item) =>
+    multi && selection.includes(item.id) && !isOpening(item.catalogId)
+      ? all.filter((o) => o.id !== item.id && selection.includes(o.id) && !o.locked && !isOpening(o.catalogId))
+      : [];
+  const moveGroup = (delta: Vec2) => {
+    for (const { item: o } of groupDrag.current) {
+      const at = { x: o.pos.x + delta.x, y: o.pos.y + delta.y };
+      node(o.id)?.position(at);
+      if (o.wall) liveOpenings({ ...o, pos: at });
+      follow(o, at);
+    }
+  };
+
+  // ---- Box select: drag on empty space (mouse) selects the active category's items ----
+  const [box, setBox] = useState<{ x0: number; y0: number; x1: number; y1: number; add: boolean } | null>(null);
+  const boxRef = useRef(box);
+  boxRef.current = box;
+  const endBox = () => {
+    const b = boxRef.current;
+    if (!b) return;
+    setBox(null);
+    const [l, r, t, btm] = [Math.min(b.x0, b.x1), Math.max(b.x0, b.x1), Math.min(b.y0, b.y1), Math.max(b.y0, b.y1)];
+    if (r - l < 4 && btm - t < 4) {
+      if (!b.add) onSelect(null);
+      return;
+    }
+    const stage = stageRef.current!;
+    const toScreen = (q: Vec2) => stage.getAbsoluteTransform().point(q);
+    const inBox = (q: Vec2) => q.x >= l && q.x <= r && q.y >= t && q.y <= btm;
+    const hits = visible
+      .filter((i) => modeOf(i) === mode)
+      .filter((i) => {
+        // Walls: one of their corners in the box (their bounding box would catch too much).
+        if (i.wall) return wallPoints(i).some((q) => inBox(toScreen(q)));
+        const c = node(i.id)?.getClientRect({ skipShadow: true });
+        return !!c && c.x < r && c.x + c.width > l && c.y < btm && c.y + c.height > t;
+      })
+      .map((i) => i.id);
+    p.onSelectMany(b.add ? [...new Set([...selection, ...hits])] : hits);
+  };
 
   /** While a wall is dragged or reshaped, its doors and windows move with it. */
   const liveOpenings = (wall: Item) => {
@@ -283,7 +347,7 @@ export function PlanCanvas(p: Props) {
 
   const worldPointer = (): Vec2 | null => stageRef.current?.getRelativePointerPosition() ?? null;
 
-  const startRotate = (item: Item) => {
+  const startRotate = (item: Item, group: Item[] = []) => {
     const ptr = worldPointer();
     if (!ptr) return;
     rot.current = {
@@ -292,6 +356,7 @@ export function PlanCanvas(p: Props) {
       startAngle: aimAt(item.pos, ptr),
       startRot: item.rotationDeg,
       current: item.rotationDeg,
+      others: group.map((o) => ({ id: o.id, start: o.rotationDeg })),
     };
   };
 
@@ -304,13 +369,19 @@ export function PlanCanvas(p: Props) {
     r.current = Math.round(raw / step) * step;
     node(r.id)?.rotation(r.current);
     node(`${r.id}-beam`)?.rotation(r.current);
+    for (const o of r.others) {
+      node(o.id)?.rotation(o.start + r.current - r.startRot);
+      node(`${o.id}-beam`)?.rotation(o.start + r.current - r.startRot);
+    }
   };
 
   const endRotate = () => {
     const r = rot.current;
     if (!r) return;
     rot.current = null;
-    if (r.current !== r.startRot) dispatch({ type: 'rotate', id: r.id, rotationDeg: r.current });
+    if (r.current === r.startRot) return;
+    if (r.others.length) dispatch({ type: 'rotateBy', ids: [r.id, ...r.others.map((o) => o.id)], deg: r.current - r.startRot });
+    else dispatch({ type: 'rotate', id: r.id, rotationDeg: r.current });
   };
 
   // ---- Draw walls tool ----
@@ -427,8 +498,15 @@ export function PlanCanvas(p: Props) {
     const press = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
       if (!active) return;
       e.cancelBubble = true;
-      onSelect(item.id);
-      if (canRotate) startRotate(item);
+      if ('button' in e.evt && e.evt.shiftKey) {
+        // Shift + click adds the item to the selection, or takes it out.
+        p.onSelectMany(selection.includes(item.id) ? selection.filter((id) => id !== item.id) : [...selection, item.id]);
+        return;
+      }
+      // Pressing one of several selected items keeps them all (to move or turn them together).
+      if (!(multi && selection.includes(item.id))) onSelect(item.id);
+      const group = multi && selection.includes(item.id) ? all.filter((o) => o.id !== item.id && selection.includes(o.id) && !o.locked && !isFocusLocked(o, all)) : [];
+      if (canRotate) startRotate(item, group);
       // A person appears once per scene, so Alt + drag only moves them.
       altCopy.current = e.evt.altKey && !item.actorId ? item.id : null;
     };
@@ -446,7 +524,10 @@ export function PlanCanvas(p: Props) {
         onTouchStart={press}
         onMouseEnter={() => active && !item.locked && setCursor(tool === 'move' ? 'move' : ROTATE_CURSOR)}
         onMouseLeave={() => setCursor('')}
-        onDragStart={() => setDragging(item.id)}
+        onDragStart={() => {
+          setDragging(item.id);
+          groupDrag.current = groupOf(item).map((o) => ({ id: o.id, item: o }));
+        }}
         onDragMove={(e) => {
           const pos = { x: e.target.x(), y: e.target.y() };
           if (isOpening(item.catalogId)) {
@@ -461,6 +542,7 @@ export function PlanCanvas(p: Props) {
           }
           if (item.wall) liveOpenings({ ...item, pos });
           follow(item, pos);
+          if (groupDrag.current.length) moveGroup({ x: pos.x - item.pos.x, y: pos.y - item.pos.y });
         }}
         onDragEnd={(e) => {
           setDragging(null);
@@ -470,6 +552,28 @@ export function PlanCanvas(p: Props) {
             const hit = nearestWall(pos, walls, Infinity);
             patch = hit ? seatOpening(item, hit, itemLook(item).w) : { pos, rotationDeg: normDeg(e.target.rotation()) };
           } else patch = { pos };
+          const group = groupDrag.current;
+          groupDrag.current = [];
+          if (group.length) {
+            const delta = { x: pos.x - item.pos.x, y: pos.y - item.pos.y };
+            if (altCopy.current === item.id) {
+              // Put the originals back and drop copies of the whole selection here.
+              altCopy.current = null;
+              e.target.position(item.pos);
+              follow(item, item.pos);
+              if (item.wall) liveOpenings(item);
+              groupDrag.current = group;
+              moveGroup({ x: 0, y: 0 });
+              groupDrag.current = [];
+              p.onDuplicateMany([item.id, ...group.map((g) => g.id)], delta);
+              return;
+            }
+            dispatch({
+              type: 'updateMany',
+              patches: [item, ...group.map((g) => g.item)].map((o) => ({ id: o.id, patch: { pos: { x: o.pos.x + delta.x, y: o.pos.y + delta.y } } })),
+            });
+            return;
+          }
           if (altCopy.current === item.id) {
             // Put the original back (with anything that followed it) and drop a copy here.
             altCopy.current = null;
@@ -564,15 +668,30 @@ export function PlanCanvas(p: Props) {
       scaleY={view.scale}
       onWheel={onWheel}
       onContextMenu={(e) => p.wallTool && e.evt.preventDefault()}
-      onMouseMove={(e) => rot.current && moveRotate(e.evt.shiftKey)}
-      onMouseUp={endRotate}
+      onMouseMove={(e) => {
+        if (rot.current) moveRotate(e.evt.shiftKey);
+        const b = boxRef.current;
+        const pt = stageRef.current?.getPointerPosition();
+        if (b && pt) setBox({ ...b, x1: pt.x, y1: pt.y });
+      }}
+      onMouseUp={() => {
+        endRotate();
+        endBox();
+      }}
       onTouchMove={onTouchMove}
       onTouchEnd={() => {
         pinch.current = null;
         endRotate();
       }}
-      onMouseLeave={endRotate}
-      onMouseDown={(e) => e.target === stageRef.current && onSelect(null)}
+      onMouseLeave={() => {
+        endRotate();
+        endBox();
+      }}
+      onMouseDown={(e) => {
+        if (e.target !== stageRef.current || e.evt.button !== 0) return;
+        const pt = stageRef.current.getPointerPosition();
+        if (pt) setBox({ x0: pt.x, y0: pt.y, x1: pt.x, y1: pt.y, add: e.evt.shiftKey });
+      }}
       onTouchStart={(e) => e.target === stageRef.current && onSelect(null)}
     >
       <Layer listening={false}>
@@ -593,10 +712,10 @@ export function PlanCanvas(p: Props) {
           .map(renderItem)}
         {visible.filter((i) => scene.items.includes(i)).map(renderItem)}
         {visible.map(label)}
-        {tool === 'rotate' && selected && (() => {
-          const sel = visible.find((i) => i.id === selected);
-          return sel ? <RotateRing item={sel} scale={view.scale} color={colors.rotate} /> : null;
-        })()}
+        {tool === 'rotate' &&
+          visible
+            .filter((i) => selection.includes(i.id))
+            .map((sel) => <RotateRing key={`${sel.id}-ring`} item={sel} scale={view.scale} color={colors.rotate} />)}
         {(() => {
           // Corner handles on a selected wall (Move tool): drag a corner to reshape the room.
           const sel = visible.find((i) => i.id === selected && i.wall);
@@ -664,6 +783,34 @@ export function PlanCanvas(p: Props) {
               colors={colors}
             />
           </>
+        )}
+        {!dragging &&
+          outlines.map((o) => (
+            <Rect
+              key={`${o.id}-outline`}
+              name="ui-only"
+              listening={false}
+              x={o.x - 6 / view.scale}
+              y={o.y - 6 / view.scale}
+              width={o.width + 12 / view.scale}
+              height={o.height + 12 / view.scale}
+              stroke={colors.select}
+              strokeWidth={2 / view.scale}
+            />
+          ))}
+        {box && (
+          <Rect
+            name="ui-only"
+            listening={false}
+            x={(Math.min(box.x0, box.x1) - view.x) / view.scale}
+            y={(Math.min(box.y0, box.y1) - view.y) / view.scale}
+            width={Math.abs(box.x1 - box.x0) / view.scale}
+            height={Math.abs(box.y1 - box.y0) / view.scale}
+            stroke={colors.select}
+            strokeWidth={1.5 / view.scale}
+            dash={[6 / view.scale, 4 / view.scale]}
+            fill="rgba(128, 160, 255, 0.08)"
+          />
         )}
         <Transformer
           ref={trRef}
