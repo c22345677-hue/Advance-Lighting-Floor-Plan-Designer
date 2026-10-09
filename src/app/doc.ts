@@ -121,7 +121,9 @@ function edit(p: Project, a: Action): Project {
           ? { ...i, camera: { ...i.camera, focusActorId: undefined } }
           : i.light?.aimActorId === a.id
             ? { ...i, light: { ...i.light, aimActorId: undefined } }
-            : i;
+            : i.lookAtActorId === a.id
+              ? { ...i, lookAtActorId: undefined }
+              : i;
       return {
         ...p,
         actors: p.actors.filter((x) => x.id !== a.id),

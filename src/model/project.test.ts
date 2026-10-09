@@ -149,3 +149,15 @@ describe('actor colours', () => {
     expect(nextActorColor([...cast, { ...cast[0]!, id: 'x' }])).toBe(ACTOR_COLORS[1]);
   });
 });
+
+describe('looking at', () => {
+  it('turns a person to face the actor they look at', () => {
+    const a = newActor([]);
+    const b = newActor([a]);
+    const pa: Item = { id: 'pa', kind: 'person', actorId: a.id, pos: { x: 0, y: 0 }, rotationDeg: 0, lookAtActorId: b.id };
+    const pb: Item = { id: 'pb', kind: 'person', actorId: b.id, pos: { x: 100, y: 0 }, rotationDeg: 0, lookAtActorId: a.id };
+    const [ra, rb] = applyCameraFocus([pa, pb]);
+    expect(ra!.rotationDeg).toBeCloseTo(90);
+    expect(rb!.rotationDeg).toBeCloseTo(270);
+  });
+});

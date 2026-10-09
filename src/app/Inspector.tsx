@@ -96,6 +96,20 @@ export function Inspector(props: Props) {
         </label>
       )}
 
+      {item.kind === 'person' && (
+        <Section title="In this scene">
+          <FollowPerson
+            label="Looking at"
+            hint="They turn to face this person, and keep facing them when either of them moves."
+            value={item.lookAtActorId}
+            sceneItems={sceneItems}
+            actors={actors}
+            exclude={item.actorId}
+            onChange={(lookAtActorId) => onUpdate({ lookAtActorId })}
+          />
+        </Section>
+      )}
+
       {item.kind === 'light' && (
         <LightSection item={item} gear={gear} sceneItems={sceneItems} actors={actors} setLight={setLight} onUpdate={onUpdate} />
       )}
@@ -280,6 +294,7 @@ function FollowPerson({
   sceneItems,
   actors,
   onChange,
+  exclude,
 }: {
   label: string;
   hint: string;
@@ -287,15 +302,19 @@ function FollowPerson({
   sceneItems: Item[];
   actors: Actor[];
   onChange: (actorId: string | undefined) => void;
+  /** Left out of the list (a person can't look at themselves). */
+  exclude?: string;
 }) {
-  const inScene = actors.filter((a) => sceneItems.some((i) => i.actorId === a.id));
+  const inScene = actors.filter((a) => a.id !== exclude && sceneItems.some((i) => i.actorId === a.id));
   return (
     <>
       <label className="field toggle">
         <span className="field-label">{label}</span>
         <input type="checkbox" checked={!!value} disabled={inScene.length === 0 && !value} onChange={(e) => onChange(e.target.checked ? inScene[0]?.id : undefined)} />
       </label>
-      {inScene.length === 0 && !value && <p className="hint-text">Place a person in this scene to use this.</p>}
+      {inScene.length === 0 && !value && (
+        <p className="hint-text">{exclude ? 'Place someone else in this scene to use this.' : 'Place a person in this scene to use this.'}</p>
+      )}
       {value && (
         <>
           <select value={value} onChange={(e) => onChange(e.target.value)} aria-label={label}>
