@@ -43,6 +43,8 @@ export const MAX_SCALE = 8;
 const GRID_CM = 50;
 /** People are drawn 1.5× their base symbol so they read clearly next to lights and gear. */
 const PERSON_SCALE = 1.5;
+/** Actors and crew on the plan: 15% bigger again than the people in a video village. */
+const ACTOR_SCALE = PERSON_SCALE * 1.15;
 const DEFAULT_THROW_CM = 300;
 const CAMERA_CONE_CM = 660;
 
@@ -859,6 +861,15 @@ export function PlanCanvas(p: Props) {
   );
 }
 
+/** A darker version of a #rrggbb colour (hair on the people icons). */
+function shade(hex: string, amount: number): string {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex);
+  if (!m) return hex;
+  const n = parseInt(m[1]!, 16);
+  const ch = (v: number) => Math.round(v * (1 - amount));
+  return `rgb(${ch(n >> 16)}, ${ch((n >> 8) & 255)}, ${ch(n & 255)})`;
+}
+
 /** Mouse cursor for the rotate tool: a circular arrow (hotspot in the middle). */
 const ROTATE_CURSOR = `url("data:image/svg+xml,${encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><g fill="none" stroke-linecap="round"><path d="M22 14a8 8 0 1 1-2.3-5.6" stroke="#000" stroke-width="5"/><path d="M22 14a8 8 0 1 1-2.3-5.6" stroke="#fff" stroke-width="2.5"/></g><path d="M23.5 4.5l-.5 6.5-6.5-.5z" fill="#fff" stroke="#000" stroke-width="1"/></svg>',
@@ -868,7 +879,7 @@ const ROTATE_CURSOR = `url("data:image/svg+xml,${encodeURIComponent(
 function RotateRing({ item, scale, color }: { item: Item; scale: number; color: string }) {
   const { w, d, shape } = itemLook(item);
   const px = 1 / scale;
-  const r = (shape === 'person' ? 26 * PERSON_SCALE : Math.max(w, d) / 2) + 14 * px;
+  const r = (shape === 'person' ? 26 * ACTOR_SCALE : Math.max(w, d) / 2) + 14 * px;
   const arc = (from: number, to: number) => {
     const pts: number[] = [];
     for (let i = 0; i <= 8; i++) {
@@ -1331,7 +1342,7 @@ function PropShape({ style, w, d, c }: { style: string; w: number; d: number; c:
 
 function labelOffset(item: Item): number {
   const { d, shape } = itemLook(item);
-  if (shape === 'person') return 18 * PERSON_SCALE;
+  if (shape === 'person') return 18 * ACTOR_SCALE;
   return Math.max(18, d / 2 + 8);
 }
 
@@ -1547,18 +1558,22 @@ function ItemShape({ item, actors, colors: c }: { item: Item; actors: readonly A
     case 'person': {
       const actor = item.actorId ? actors.find((a) => a.id === item.actorId) : undefined;
       const fill = actor?.color ?? (item.catalogId === 'generic.person.crew' ? c.prop : c.person);
+      // Seen from above, facing up (-y). Female: narrower rounded shoulders and long hair
+      // falling down the back; male: broad shoulders, short hair.
+      const hair = shade(fill, 0.45);
       return actor?.gender === 'female' ? (
-        <Group scaleX={PERSON_SCALE} scaleY={PERSON_SCALE}>
-          <Ellipse radiusX={19} radiusY={11} fill={fill} opacity={0.9} />
-          <Circle y={12} radius={5} fill={c.grip} opacity={0.85} />
-          <Circle y={2} radius={11} fill={c.grip} opacity={0.85} />
-          <Circle radius={8.5} fill={fill} stroke={c.canvas} strokeWidth={1.5} />
-          <Line points={[-4, -9, 0, -16, 4, -9]} closed fill={fill} />
+        <Group scaleX={ACTOR_SCALE} scaleY={ACTOR_SCALE}>
+          <Ellipse radiusX={21} radiusY={10.5} fill={fill} opacity={0.9} />
+          <Line points={[-10, -1, -8.5, 9, -3.5, 17, 0, 19, 3.5, 17, 8.5, 9, 10, -1]} closed tension={0.4} fill={hair} />
+          <Circle radius={9} fill={fill} stroke={c.canvas} strokeWidth={1.5} />
+          <Arc radius={9} innerRadius={0} outerRadius={9.6} angle={200} rotation={-10} fill={hair} />
+          <Line points={[-4, -9.5, 0, -16.5, 4, -9.5]} closed fill={fill} />
         </Group>
       ) : (
-        <Group scaleX={PERSON_SCALE} scaleY={PERSON_SCALE}>
+        <Group scaleX={ACTOR_SCALE} scaleY={ACTOR_SCALE}>
           <Rect x={-25} y={-11} width={50} height={22} cornerRadius={11} fill={fill} opacity={0.9} />
           <Circle radius={10} fill={fill} stroke={c.canvas} strokeWidth={2} />
+          <Arc radius={10} innerRadius={0} outerRadius={8} angle={180} fill={hair} />
           <Line points={[-5, -12, 0, -20, 5, -12]} closed fill={fill} />
         </Group>
       );

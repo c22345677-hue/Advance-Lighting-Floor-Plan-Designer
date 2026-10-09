@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { reducer, type History } from '../app/doc';
 import { availability, gearUsage, setQty, type GearList } from './gearList';
-import { applyCameraFocus, modeOf, newActor, newProject } from './project';
+import { ACTOR_COLORS, applyCameraFocus, modeOf, newActor, newProject, nextActorColor } from './project';
 import type { Item } from './types';
 
 const item = (id: string, extra: Partial<Item>): Item => ({ id, kind: 'prop', pos: { x: 0, y: 0 }, rotationDeg: 0, ...extra });
@@ -130,5 +130,22 @@ describe('gear list', () => {
     expect(availability(list, u, 'modifier', 'aputure.light-dome-iii')).toEqual({ qty: 1, used: 1, left: 0 });
     expect(availability(list, u, 'stand', 'x')).toBeNull();
     expect(setQty(list, 'fixture', 'aputure.ls-600d-pro', 0).entries).toHaveLength(1);
+  });
+});
+
+describe('actor colours', () => {
+  it('gives each new actor a colour nobody has, even after colours were changed', () => {
+    const a = newActor([]);
+    const b = newActor([a]);
+    expect(b.color).not.toBe(a.color);
+    // The first actor took the second palette colour: the next one gets the first.
+    const changed = { ...a, color: ACTOR_COLORS[1]! };
+    expect(nextActorColor([changed])).toBe(ACTOR_COLORS[0]);
+    expect(nextActorColor([{ ...a, color: ACTOR_COLORS[0]! }, { ...b, color: ACTOR_COLORS[2]! }])).toBe(ACTOR_COLORS[1]);
+  });
+
+  it('reuses the least used colour when all are taken', () => {
+    const cast = ACTOR_COLORS.map((color, i) => ({ ...newActor([]), color, id: String(i) }));
+    expect(nextActorColor([...cast, { ...cast[0]!, id: 'x' }])).toBe(ACTOR_COLORS[1]);
   });
 });

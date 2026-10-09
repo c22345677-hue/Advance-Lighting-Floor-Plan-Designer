@@ -106,8 +106,8 @@ export const LIBRARY: LibraryItem[] = [
   I('camera', 'prop', 'camera.monitor', 'Monitor', 'monitor', 60, 20),
   // One element: a large monitor with two people watching it.
   I('camera', 'prop', 'camera.video-village', 'Video village', 'video-village', 190, 150),
-  I('people', 'person', 'person', 'Actor', 'person', 75, 40),
-  I('people', 'person', 'person.crew', 'Crew', 'person', 75, 40),
+  I('people', 'person', 'person', 'Actor', 'person', 86, 46),
+  I('people', 'person', 'person.crew', 'Crew', 'person', 86, 46),
   // Walls are drawn with the Draw walls tool; these older single pieces stay for saved plans.
   { ...I('set', 'set', 'set.wall', 'Wall 1 m', 'wall', 100, 15), unlisted: true },
   { ...I('set', 'set', 'set.door', 'Door', 'door', 90, 10), unlisted: true, style: 'single' },

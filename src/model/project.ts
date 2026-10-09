@@ -63,12 +63,23 @@ export const roleOf = (a: Actor): CastRole => a.role ?? 'actor';
 /** What the cast list is called: "Actors" for narrative, "People" for doc. */
 export const castTitle = (kind: ProjectKind | undefined): string => (kind === 'doc' ? 'People' : 'Actors');
 
+/**
+ * A colour no one in the cast has yet (whatever colours they were given or changed to), in
+ * palette order. When all are taken, the one used least.
+ */
+export function nextActorColor(existing: readonly Actor[]): string {
+  const used = (c: string) => existing.filter((a) => a.color.toLowerCase() === c.toLowerCase()).length;
+  let best = ACTOR_COLORS[0]!;
+  for (const c of ACTOR_COLORS) if (used(c) < used(best)) best = c;
+  return best;
+}
+
 export function newActor(
   existing: readonly Actor[],
   opts: { role?: CastRole; gender?: Gender; name?: string } = {},
 ): Actor {
   const role = opts.role ?? 'actor';
-  const color = ACTOR_COLORS[existing.length % ACTOR_COLORS.length]!;
+  const color = nextActorColor(existing);
   const n = existing.filter((a) => roleOf(a) === role).length + 1;
   return { id: uid(), name: opts.name ?? `${ROLE_LABEL[role]} ${n}`, color, gender: opts.gender ?? 'male', role };
 }
