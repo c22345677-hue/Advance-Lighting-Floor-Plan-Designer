@@ -142,6 +142,8 @@ export interface SnapOptions {
   radius: number;
   /** Free angle (no snapping) vs. fine 15° steps; default snaps near 0/45/90°. */
   angle?: 'auto' | 'fine' | 'free';
+  /** Existing wall segments: a corner close to one lands on it (for T-junctions). */
+  lines?: [Vec2, Vec2][];
 }
 
 /**
@@ -152,7 +154,12 @@ export function snapWallPoint(p: Vec2, o: SnapOptions): { point: Vec2; corner: b
   let bestCorner: Vec2 | null = null;
   for (const c of o.corners) if (dist(p, c) <= o.radius && (!bestCorner || dist(p, c) < dist(p, bestCorner))) bestCorner = c;
   if (bestCorner) return { point: bestCorner, corner: true };
-  if (!o.from || o.angle === 'free') return { point: p, corner: false };
+  if (o.angle === 'free') return { point: p, corner: false };
+  for (const [a, b] of o.lines ?? []) {
+    const h = projectOnSegment(p, a, b);
+    if (h.dist <= o.radius) return { point: h.point, corner: false };
+  }
+  if (!o.from) return { point: p, corner: false };
   const dx = p.x - o.from.x;
   const dy = p.y - o.from.y;
   const len = Math.hypot(dx, dy);
@@ -191,4 +198,67 @@ export function wallFromChain(id: string, chain: Vec2[], closed: boolean, thickn
 /** Total length of a wall chain, cm. */
 export function wallLength(item: Item): number {
   return wallSegments(item).reduce((n, [a, b]) => n + dist(a, b), 0);
+}
+
+// ---- Editing existing walls with the Draw walls tool ----------------------------------
+
+export type ItemPatch = { id: string; patch: Partial<Item> };
+
+/** An end corner of an open wall near `p`: clicking it continues that wall. */
+export function openWallEnd(p: Vec2, items: readonly Item[], radius: number): { wallId: string; atStart: boolean; point: Vec2 } | null {
+  let best: { wallId: string; atStart: boolean; point: Vec2; d: number } | null = null;
+  for (const w of items) {
+    if (!w.wall || w.wall.closed) continue;
+    const pts = wallPoints(w);
+    for (const [atStart, q] of [[true, pts[0]!], [false, pts[pts.length - 1]!]] as const) {
+      const d = dist(p, q);
+      if (d <= radius && (!best || d < best.d)) best = { wallId: w.id, atStart, point: q, d };
+    }
+  }
+  return best && { wallId: best.wallId, atStart: best.atStart, point: best.point };
+}
+
+/** Is `p` on one of the wall's corners? */
+export function onWallCorner(p: Vec2, items: readonly Item[], radius: number): boolean {
+  return items.some((w) => wallPoints(w).some((q) => dist(p, q) <= radius));
+}
+
+/**
+ * Adds a corner to a wall where it was clicked (segment `seg`, `offsetCm` along it).
+ * Doors and windows past the new corner move to the second half of the split segment.
+ */
+export function insertWallCorner(wall: Item, seg: number, offsetCm: number, items: readonly Item[]): ItemPatch[] {
+  const segs = wallSegments(wall);
+  const s = segs[seg];
+  if (!s || !wall.wall) return [];
+  const len = dist(s[0], s[1]);
+  const t = len ? offsetCm / len : 0;
+  const at = { x: s[0].x + (s[1].x - s[0].x) * t, y: s[0].y + (s[1].y - s[0].y) * t };
+  const points = wall.wall.points.slice();
+  points.splice(seg + 1, 0, toLocal(wall, at));
+  const out: ItemPatch[] = [{ id: wall.id, patch: { wall: { ...wall.wall, points } } }];
+  for (const i of items) {
+    const iw = i.inWall;
+    if (!iw || iw.wallId !== wall.id || iw.seg < seg) continue;
+    if (iw.seg > seg) out.push({ id: i.id, patch: { inWall: { ...iw, seg: iw.seg + 1 } } });
+    else if (iw.offsetCm > offsetCm) out.push({ id: i.id, patch: { inWall: { ...iw, seg: seg + 1, offsetCm: iw.offsetCm - offsetCm } } });
+  }
+  return out;
+}
+
+/**
+ * Continues an open wall with new corners (world points, the first one is the old end itself).
+ * `close` joins the new last corner back to the wall's other end.
+ */
+export function extendWall(wall: Item, atStart: boolean, chain: Vec2[], close: boolean, items: readonly Item[]): ItemPatch[] {
+  if (!wall.wall) return [];
+  const added = cleanChain(chain).slice(1).map((q) => toLocal(wall, q));
+  if (!added.length && !close) return [];
+  const points = atStart ? [...added.reverse(), ...wall.wall.points] : [...wall.wall.points, ...added];
+  const out: ItemPatch[] = [{ id: wall.id, patch: { wall: { ...wall.wall, points, closed: close && points.length > 2 } } }];
+  // Segments are counted from the first corner, so adding at the start shifts them.
+  if (atStart && added.length)
+    for (const i of items)
+      if (i.inWall?.wallId === wall.id) out.push({ id: i.id, patch: { inWall: { ...i.inWall, seg: i.inWall.seg + added.length } } });
+  return out;
 }

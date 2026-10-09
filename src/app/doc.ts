@@ -13,6 +13,8 @@ export type SceneAction =
   | { type: 'add'; setItems: Item[]; items: Item[] }
   | { type: 'move'; id: string; pos: Vec2 }
   | { type: 'update'; id: string; patch: Partial<Omit<Item, 'id'>> }
+  /** Several item edits as one undo step. */
+  | { type: 'updateMany'; patches: { id: string; patch: Partial<Omit<Item, 'id'>> }[] }
   | { type: 'rotate'; id: string; rotationDeg: number }
   | { type: 'rotateBy'; ids: string[]; deg: number }
   | { type: 'delete'; ids: string[] }
@@ -51,6 +53,10 @@ function editScene(s: SceneDoc, a: SceneAction): SceneDoc {
       return mapItems(s, (i) => (i.id === a.id ? { ...i, pos: a.pos } : i));
     case 'update':
       return mapItems(s, (i) => (i.id === a.id ? { ...i, ...a.patch } : i));
+    case 'updateMany': {
+      const by = new Map(a.patches.map((x) => [x.id, x.patch]));
+      return mapItems(s, (i) => (by.has(i.id) ? { ...i, ...by.get(i.id) } : i));
+    }
     case 'rotate':
       return mapItems(s, (i) => (i.id === a.id ? { ...i, rotationDeg: normDeg(a.rotationDeg) } : i));
     case 'rotateBy':

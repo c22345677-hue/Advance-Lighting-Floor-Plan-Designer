@@ -10,7 +10,18 @@ import { aimAt, normDeg } from '../model/geometry';
 import { DEFAULT_LENS_MM, horizontalFovDeg } from '../model/lens';
 import { followsActorId, modeOf, sceneItems, type EditMode, type SceneDoc } from '../model/project';
 import type { Actor, Item, Vec2 } from '../model/types';
-import { DEFAULT_WALL_CM, nearestWall, placeInSegment, seatOpening, snapWallPoint, toLocal, wallPoints, wallSegments } from '../model/walls';
+import {
+  DEFAULT_WALL_CM,
+  nearestWall,
+  onWallCorner,
+  openWallEnd,
+  placeInSegment,
+  seatOpening,
+  snapWallPoint,
+  toLocal,
+  wallPoints,
+  wallSegments,
+} from '../model/walls';
 import type { SceneAction } from './doc';
 import type { CanvasColors } from './theme';
 
@@ -94,11 +105,19 @@ interface Props {
   /** Draw walls tool: corners clicked so far, and callbacks to add a corner or finish. */
   wallTool: boolean;
   wallDraft: Vec2[];
-  onWallDraft: (points: Vec2[]) => void;
+  onWallDraft: (points: Vec2[], extend?: WallExtend) => void;
   onWallFinish: (closed: boolean) => void;
+  /** The open wall the draft continues, if it started on one of its ends. */
+  wallExtend: WallExtend | null;
+  /** Click on a wall (not a corner) with the tool: add a corner there. */
+  onWallInsert: (wallId: string, seg: number, offsetCm: number) => void;
+  /** Snapping while drawing walls (Ctrl / Cmd held turns it off for the moment). */
+  wallSnap: boolean;
   /** Alt + drag: leave the item where it was and add a copy where it was dropped. */
   onDuplicate: (item: Item, patch: Partial<Item>) => void;
 }
+
+export type WallExtend = { wallId: string; atStart: boolean };
 
 interface RotateSession {
   id: string;
@@ -119,6 +138,8 @@ export function PlanCanvas(p: Props) {
   const visible = all.filter((i) => !i.hidden);
   const walls = all.filter((i) => i.wall);
   const [hover, setHover] = useState<Vec2 | null>(null);
+  /** What a click would do on an existing wall, shown next to the pointer. */
+  const [hoverHint, setHoverHint] = useState<string | null>(null);
   const snapRadius = 14 / view.scale;
 
   const node = (id: string) => stageRef.current?.findOne((n: Konva.Node) => n.id() === id);
@@ -292,14 +313,41 @@ export function PlanCanvas(p: Props) {
 
   // ---- Draw walls tool ----
   const corners = (): Vec2[] => [...walls.flatMap(wallPoints), ...p.wallDraft];
-  const snapDraft = (pt: Vec2, e?: MouseEvent | TouchEvent) =>
-    snapWallPoint(pt, {
-      from: p.wallDraft[p.wallDraft.length - 1],
-      corners: corners(),
-      radius: snapRadius,
-      angle: e && 'altKey' in e && e.altKey ? 'free' : e && 'shiftKey' in e && e.shiftKey ? 'fine' : 'auto',
-    }).point;
-  const closesRoom = (pt: Vec2) => p.wallDraft.length >= 3 && Math.hypot(pt.x - p.wallDraft[0]!.x, pt.y - p.wallDraft[0]!.y) <= snapRadius;
+  type PtrEvt = MouseEvent | TouchEvent | undefined;
+  const snapOff = (e: PtrEvt) => !p.wallSnap || (!!e && 'ctrlKey' in e && (e.ctrlKey || e.metaKey));
+  const snapDraft = (pt: Vec2, e: PtrEvt) =>
+    snapOff(e)
+      ? pt
+      : snapWallPoint(pt, {
+          from: p.wallDraft[p.wallDraft.length - 1],
+          corners: corners(),
+          radius: snapRadius,
+          angle: e && 'shiftKey' in e && e.shiftKey ? 'fine' : 'auto',
+          lines: walls.flatMap(wallSegments),
+        }).point;
+  const extended = p.wallExtend ? walls.find((w) => w.id === p.wallExtend!.wallId) : undefined;
+  /** Where a click closes the shape: the first corner, or the far end of the wall being continued. */
+  const closeTarget = (): Vec2 | null => {
+    if (extended) {
+      const pts = wallPoints(extended);
+      if (pts.length + p.wallDraft.length - 1 < 3) return null;
+      return p.wallExtend!.atStart ? pts[pts.length - 1]! : pts[0]!;
+    }
+    return p.wallDraft.length >= 3 ? p.wallDraft[0]! : null;
+  };
+  const closesRoom = (pt: Vec2) => {
+    const t = closeTarget();
+    return !!t && Math.hypot(pt.x - t.x, pt.y - t.y) <= snapRadius;
+  };
+  /** With nothing drawn yet: continue an open wall from its end, or add a corner to a wall. */
+  const wallAction = (ptr: Vec2, e: PtrEvt) => {
+    if (p.wallDraft.length || snapOff(e)) return null;
+    const end = openWallEnd(ptr, walls, snapRadius);
+    if (end) return { kind: 'continue' as const, end };
+    if (onWallCorner(ptr, walls, snapRadius)) return null;
+    const hit = nearestWall(ptr, walls, Math.max(snapRadius, DEFAULT_WALL_CM / 2));
+    return hit ? { kind: 'insert' as const, hit } : null;
+  };
   // Konva's own dblclick fires for two quick clicks anywhere, which would end a wall while
   // clicking corners fast; a double-click here means two clicks on the same spot.
   const lastClick = useRef<{ t: number; x: number; y: number } | null>(null);
@@ -313,6 +361,17 @@ export function PlanCanvas(p: Props) {
     if (prev && e.evt.timeStamp - prev.t < 350 && Math.hypot(scr.x - prev.x, scr.y - prev.y) < 8) {
       lastClick.current = null;
       p.onWallFinish(false);
+      return;
+    }
+    const act = wallAction(ptr, e.evt);
+    if (act?.kind === 'continue') {
+      p.onWallDraft([act.end.point], { wallId: act.end.wallId, atStart: act.end.atStart });
+      setHoverHint(null);
+      return;
+    }
+    if (act?.kind === 'insert') {
+      lastClick.current = null;
+      p.onWallInsert(act.hit.wallId, act.hit.seg, act.hit.offsetCm);
       return;
     }
     const pt = snapDraft(ptr, e.evt);
@@ -547,7 +606,8 @@ export function PlanCanvas(p: Props) {
               onMouseDown={(e) => (e.cancelBubble = true)}
               onTouchStart={(e) => (e.cancelBubble = true)}
               onDragMove={(e) => {
-                const at = snapWallPoint({ x: e.target.x(), y: e.target.y() }, { corners: others, radius: snapRadius, angle: 'free' }).point;
+                const raw = { x: e.target.x(), y: e.target.y() };
+                const at = snapOff(e.evt) ? raw : snapWallPoint(raw, { corners: others, radius: snapRadius, angle: 'free' }).point;
                 e.target.position(at);
                 const local = sel.wall!.points.slice();
                 local[idx] = toLocal(sel, at);
@@ -574,12 +634,25 @@ export function PlanCanvas(p: Props) {
               onTap={wallClick}
               onMouseMove={(e) => {
                 const ptr = worldPointer();
-                setHover(ptr ? snapDraft(ptr, e.evt) : null);
+                const act = ptr ? wallAction(ptr, e.evt) : null;
+                setHover(!ptr ? null : act?.kind === 'continue' ? act.end.point : act ? act.hit.point : snapDraft(ptr, e.evt));
+                setHoverHint(act?.kind === 'continue' ? 'Continue this wall' : act ? 'Add a corner' : null);
               }}
               onMouseEnter={() => setCursor('crosshair')}
               onMouseLeave={() => setHover(null)}
             />
-            <WallDraft draft={p.wallDraft} hover={hover} closing={!!hover && closesRoom(hover)} scale={view.scale} colors={colors} />
+            {/* Existing corners, so added ones are visible and can be clicked to start from. */}
+            {walls.flatMap(wallPoints).map((q, i) => (
+              <Circle key={`wc${i}`} name="ui-only" listening={false} x={q.x} y={q.y} radius={4 / view.scale} fill={colors.select} opacity={0.8} />
+            ))}
+            <WallDraft
+              draft={p.wallDraft}
+              hover={hover}
+              hint={hoverHint}
+              closeAt={hover && closesRoom(hover) ? closeTarget() : null}
+              scale={view.scale}
+              colors={colors}
+            />
           </>
         )}
         <Transformer
@@ -627,7 +700,21 @@ function RotateRing({ item, scale, color }: { item: Item; scale: number; color: 
 }
 
 /** The wall being drawn: placed corners, the next segment to the pointer and its length. */
-function WallDraft({ draft, hover, closing, scale, colors: c }: { draft: Vec2[]; hover: Vec2 | null; closing: boolean; scale: number; colors: CanvasColors }) {
+function WallDraft({
+  draft,
+  hover,
+  hint,
+  closeAt,
+  scale,
+  colors: c,
+}: {
+  draft: Vec2[];
+  hover: Vec2 | null;
+  hint: string | null;
+  closeAt: Vec2 | null;
+  scale: number;
+  colors: CanvasColors;
+}) {
   const px = 1 / scale;
   const pts = hover && draft.length ? [...draft, hover] : draft;
   const last = draft[draft.length - 1];
@@ -640,7 +727,13 @@ function WallDraft({ draft, hover, closing, scale, colors: c }: { draft: Vec2[];
       {draft.map((q, i) => (
         <Circle key={i} x={q.x} y={q.y} radius={5 * px} fill={c.select} />
       ))}
-      {closing && draft[0] && <Circle x={draft[0].x} y={draft[0].y} radius={13 * px} stroke={c.select} strokeWidth={3 * px} />}
+      {closeAt && <Circle x={closeAt.x} y={closeAt.y} radius={13 * px} stroke={c.select} strokeWidth={3 * px} />}
+      {hover && hint && (
+        <>
+          <Circle x={hover.x} y={hover.y} radius={9 * px} stroke={c.select} strokeWidth={2 * px} />
+          <Text x={hover.x + 14 * px} y={hover.y - 22 * px} text={hint} fontSize={13 * px} fontStyle="bold" fill={c.select} />
+        </>
+      )}
       {hover && <Circle x={hover.x} y={hover.y} radius={4 * px} stroke={c.select} strokeWidth={2 * px} />}
       {hover && last && len > 1 && (
         <Text

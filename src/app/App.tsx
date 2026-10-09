@@ -14,7 +14,8 @@ import {
   type SceneDoc,
 } from '../model/project';
 import type { Actor, CastRole, Item, Vec2 } from '../model/types';
-import { nearestWall, seatOpening, wallFromChain } from '../model/walls';
+import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain } from '../model/walls';
+import { HelpPanel } from './HelpPanel';
 import { isOpening, libraryItem } from '../library/items';
 import { fixtureById } from '../model/gear';
 import { applyTemplate, getTemplate, type TemplateDefinition, type TemplateValues } from '../templates';
@@ -32,6 +33,7 @@ import {
   IconExport,
   IconFit,
   IconGearList,
+  IconHelp,
   IconMinus,
   IconMove,
   IconPlus,
@@ -43,7 +45,7 @@ import {
   IconUndo,
 } from './icons';
 import { Inspector } from './Inspector';
-import { clampScale, displayLabel, itemName, PlanCanvas, zoomAt, type ExportPng, type Tool, type View } from './PlanCanvas';
+import { clampScale, displayLabel, itemName, PlanCanvas, zoomAt, type ExportPng, type Tool, type View, type WallExtend } from './PlanCanvas';
 import { ProjectMenu } from './ProjectMenu';
 import { deleteProject, listProjects, loadGearLists, loadProject, loadStartProject, saveGearLists, saveProject } from './storage';
 import { TemplatePanel } from './TemplatePanel';
@@ -129,13 +131,15 @@ const fmtM = (cm: number) => `${(cm / 100).toFixed(2)} m`;
 interface Prefs {
   grid: boolean;
   volts: 230 | 120;
+  /** Draw walls: snap corners and angles. */
+  wallSnap: boolean;
 }
 const PREFS_KEY = 'lfpd.prefs.v1';
 function loadPrefs(): Prefs {
   try {
-    return { grid: true, volts: 230, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') };
+    return { grid: true, volts: 230, wallSnap: true, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') };
   } catch {
-    return { grid: true, volts: 230 };
+    return { grid: true, volts: 230, wallSnap: true };
   }
 }
 
@@ -147,7 +151,7 @@ const MODE_HINT: Record<EditMode, string> = {
   scene: 'Only people, set and props can be picked and moved',
 };
 
-type DialogKind = 'templates' | 'gear' | 'equipment' | null;
+type DialogKind = 'templates' | 'gear' | 'equipment' | 'help' | null;
 
 export function App() {
   const [history, dispatch] = useReducer(reducer, undefined, () => ({
@@ -225,9 +229,15 @@ export function App() {
   // ---- Draw walls tool (SCENE) ----
   const [wallTool, setWallToolState] = useState(false);
   const [wallDraft, setWallDraft] = useState<Vec2[]>([]);
+  const [wallExtend, setWallExtend] = useState<WallExtend | null>(null);
+  const setDraft = (points: Vec2[], extend?: WallExtend) => {
+    setWallDraft(points);
+    if (extend) setWallExtend(extend);
+    else if (!points.length) setWallExtend(null);
+  };
   const setWallTool = (on: boolean) => {
     setWallToolState(on);
-    setWallDraft([]);
+    setDraft([]);
     if (on) {
       setMode('scene');
       setSelected(null);
@@ -235,9 +245,19 @@ export function App() {
     }
   };
   const finishWalls = (closed: boolean) => {
-    const wall = wallFromChain(uid(), wallDraft, closed);
-    if (wall) sd({ type: 'add', setItems: [wall], items: [] });
-    setWallDraft([]); // keep the tool on to draw the next room
+    const extending = wallExtend && items.find((i) => i.id === wallExtend.wallId);
+    if (extending) {
+      const patches = extendWall(extending, wallExtend.atStart, wallDraft, closed, items);
+      if (patches.length) sd({ type: 'updateMany', patches });
+    } else {
+      const wall = wallFromChain(uid(), wallDraft, closed);
+      if (wall) sd({ type: 'add', setItems: [wall], items: [] });
+    }
+    setDraft([]); // keep the tool on to draw the next room
+  };
+  const insertCorner = (wallId: string, seg: number, offsetCm: number) => {
+    const wall = items.find((i) => i.id === wallId);
+    if (wall) sd({ type: 'updateMany', patches: insertWallCorner(wall, seg, offsetCm, items) });
   };
   /** The Finish button: keep what was drawn and leave the tool. */
   const doneWalls = () => {
@@ -383,6 +403,9 @@ export function App() {
         if (selectedItem) duplicate(selectedItem);
       } else if (mod) {
         return;
+      } else if (e.key === '?' || k === 'f1') {
+        e.preventDefault();
+        setDialog('help');
       } else if (k === 'w') {
         setTool('move');
       } else if (k === 'r') {
@@ -390,7 +413,7 @@ export function App() {
       } else if (k >= '1' && k <= '4') {
         switchMode(EDIT_MODES[Number(k) - 1]!.id);
       } else if (k === 'escape') {
-        if (wallTool && wallDraft.length) setWallDraft([]);
+        if (wallTool && wallDraft.length) setDraft([]);
         else if (wallTool) setWallTool(false);
         else setSelected(null);
       } else if (k === 'enter' && wallTool) {
@@ -496,6 +519,9 @@ export function App() {
         </div>
 
         <div className="topbar-right">
+          <button id="open-help" className="top-action" onClick={() => setDialog('help')} title="Keyboard shortcuts and mouse controls (?)">
+            <IconHelp /> <span className="lbl">Help</span>
+          </button>
           <button id="open-templates" className="top-action" onClick={() => setDialog('templates')} title="Start the scene from a layout">
             <IconTemplates /> <span className="lbl">Templates</span>
           </button>
@@ -576,8 +602,11 @@ export function App() {
               exportRef={exportRef}
               wallTool={wallTool}
               wallDraft={wallDraft}
-              onWallDraft={setWallDraft}
+              onWallDraft={setDraft}
               onWallFinish={finishWalls}
+              wallExtend={wallExtend}
+              onWallInsert={insertCorner}
+              wallSnap={prefs.wallSnap}
               onDuplicate={duplicate}
             />
           )}
@@ -671,6 +700,8 @@ export function App() {
                 wallDraftCount={wallDraft.length}
                 onWallTool={setWallTool}
                 onWallFinish={doneWalls}
+                wallSnap={prefs.wallSnap}
+                onWallSnap={(on) => setPrefs((p) => ({ ...p, wallSnap: on }))}
                 hasWalls={items.some((i) => i.wall)}
               />
             )}
@@ -704,6 +735,11 @@ export function App() {
         )}
       </footer>
 
+      {dialog === 'help' && (
+        <Dialog title="Shortcuts" onClose={() => setDialog(null)}>
+          <HelpPanel />
+        </Dialog>
+      )}
       {dialog === 'templates' && (
         <Dialog title="Templates" onClose={() => setDialog(null)}>
           <TemplatePanel

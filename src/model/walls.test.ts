@@ -1,5 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { attachOpenings, cleanChain, nearestWall, seatOpening, snapWallPoint, wallFromChain, wallLength, wallSegments } from './walls';
+import {
+  attachOpenings,
+  cleanChain,
+  extendWall,
+  insertWallCorner,
+  nearestWall,
+  openWallEnd,
+  seatOpening,
+  snapWallPoint,
+  wallFromChain,
+  wallLength,
+  wallSegments,
+} from './walls';
 import type { Item } from './types';
 
 describe('walls', () => {
@@ -77,5 +89,35 @@ describe('doors and windows in walls', () => {
     const far = { ...seated, inWall: { ...seated.inWall!, offsetCm: 380 } };
     expect(attachOpenings([far], [wall, far])[0]!.pos.x).toBeCloseTo(355);
     expect(attachOpenings([seated], [seated])[0]!.inWall).toBeUndefined();
+  });
+});
+
+describe('editing walls with the tool', () => {
+  const wall = wallFromChain('w', [{ x: 0, y: 0 }, { x: 400, y: 0 }, { x: 400, y: 300 }], false)!;
+  const door: Item = {
+    id: 'd',
+    kind: 'set',
+    pos: { x: 300, y: 0 },
+    rotationDeg: 0,
+    sizeCm: { w: 90, d: 15 },
+    inWall: { wallId: 'w', seg: 0, offsetCm: 300 },
+  };
+  const win: Item = { ...door, id: 'win', inWall: { wallId: 'w', seg: 1, offsetCm: 100 } };
+
+  it('adds a corner and keeps doors where they were', () => {
+    const patches = insertWallCorner(wall, 0, 200, [wall, door, win]);
+    expect(patches[0]!.patch.wall!.points).toHaveLength(4);
+    expect(patches.find((x) => x.id === 'd')!.patch.inWall).toMatchObject({ seg: 1, offsetCm: 100 });
+    expect(patches.find((x) => x.id === 'win')!.patch.inWall).toMatchObject({ seg: 2 });
+  });
+
+  it('finds open ends and continues the wall from either end', () => {
+    expect(openWallEnd({ x: 402, y: 298 }, [wall], 10)).toMatchObject({ wallId: 'w', atStart: false });
+    const end = extendWall(wall, false, [{ x: 400, y: 300 }, { x: 0, y: 300 }], true, [wall]);
+    expect(end[0]!.patch.wall).toMatchObject({ closed: true });
+    expect(end[0]!.patch.wall!.points).toHaveLength(4);
+    const start = extendWall(wall, true, [{ x: 0, y: 0 }, { x: 0, y: -200 }], false, [wall, door]);
+    expect(start[0]!.patch.wall!.points[0]).toEqual({ x: 0, y: -200 });
+    expect(start.find((x) => x.id === 'd')!.patch.inWall!.seg).toBe(1);
   });
 });

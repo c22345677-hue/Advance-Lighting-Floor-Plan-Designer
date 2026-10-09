@@ -33,6 +33,8 @@ interface Props {
   onWallFinish: () => void;
   /** Doors and windows need a wall to go into. */
   hasWalls: boolean;
+  wallSnap: boolean;
+  onWallSnap: (on: boolean) => void;
 }
 
 const kg = (v: number | null) => (v == null ? '? kg' : `${Math.round(v * 10) / 10} kg`);
@@ -219,19 +221,32 @@ export function CategoryPanel(props: Props) {
                 <button id="draw-walls" className="btn primary big" onClick={props.onWallFinish}>
                   Finish
                 </button>
-                <p className="hint-text">
-                  Click on the plan to place corners. Click the first corner to close the room; double-click or Enter ends open walls so you
-                  can start another. Corners snap to other walls; lines straighten near 0/45/90° (Shift: 15° steps, Alt: free). Esc cancels.
-                </p>
+                <ul className="hint-list">
+                  <li>Click on the plan to place corners. Click the first corner to close the room.</li>
+                  <li>Click the end of an open wall to continue it.</li>
+                  <li>Click on a wall to add a corner to it; click that corner to start a new wall from there.</li>
+                  <li>Double-click or Enter ends open walls so you can start another. Esc cancels.</li>
+                </ul>
               </>
             ) : (
               <>
                 <button id="draw-walls" className="btn primary big" onClick={() => props.onWallTool(true)}>
                   Draw walls
                 </button>
-                <p className="hint-text">Draw a room corner by corner. Select a wall afterwards to drag its corners or change its thickness.</p>
+                <p className="hint-text">Draw a room corner by corner, or add corners to walls you drew. Select a wall afterwards to drag its corners or change its thickness.</p>
               </>
             )}
+            <button
+              id="wall-snap"
+              className={`btn toggle-btn ${props.wallSnap ? 'on' : ''}`}
+              aria-pressed={props.wallSnap}
+              onClick={() => props.onWallSnap(!props.wallSnap)}
+            >
+              Snapping {props.wallSnap ? 'on' : 'off'}
+            </button>
+            <p className="hint-text">
+              Snaps to corners, walls and 0/45/90°. Hold Ctrl (⌘ on Mac) to place freely; Shift for 15° steps.
+            </p>
           </Section>
           <Section title="Doors">
             <p className="hint-text">
