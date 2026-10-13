@@ -3,7 +3,9 @@ import { nextUnitId, powerTotals } from '../model/gear';
 import { gearUsage, type GearList } from '../model/gearList';
 import {
   EDIT_MODES,
+  focusScene,
   KIND_ROLES,
+  linkInterview,
   modeOf,
   newActor,
   newProject,
@@ -84,7 +86,7 @@ function castTemplateItems(
     taken.add(actor.id);
     return { ...rest, actorId: actor.id };
   });
-  return { items: out, added };
+  return { items: linkInterview(out, [...actors, ...added]), added };
 }
 
 function sampleProject(): Project {
@@ -94,12 +96,8 @@ function sampleProject(): Project {
   const r = applyTemplate(t, { interviewees: 1, interviewers: 1, cameras: 2 }, { origin: { x: 0, y: 0 } });
   const cast = castTemplateItems(r.shots.flatMap((s) => s.items), [], [], 'doc');
   p.actors = cast.added;
-  p.scenes[0] = {
-    ...p.scenes[0]!,
-    setItems: r.setItems,
-    items: cast.items,
-    baseline: structuredClone({ setItems: r.setItems, items: cast.items }),
-  };
+  const scene = focusScene({ ...p.scenes[0]!, setItems: r.setItems, items: cast.items });
+  p.scenes[0] = { ...scene, baseline: structuredClone({ setItems: scene.setItems, items: scene.items }) };
   return p;
 }
 

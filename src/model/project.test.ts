@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { reducer, type History } from '../app/doc';
 import { availability, gearUsage, setQty, type GearList } from './gearList';
-import { ACTOR_COLORS, applyCameraFocus, modeOf, newActor, newProject, nextActorColor } from './project';
+import { ACTOR_COLORS, applyCameraFocus, linkInterview, modeOf, newActor, newProject, nextActorColor } from './project';
 import type { Item } from './types';
 
 const item = (id: string, extra: Partial<Item>): Item => ({ id, kind: 'prop', pos: { x: 0, y: 0 }, rotationDeg: 0, ...extra });
@@ -159,5 +159,20 @@ describe('looking at', () => {
     const [ra, rb] = applyCameraFocus([pa, pb]);
     expect(ra!.rotationDeg).toBeCloseTo(90);
     expect(rb!.rotationDeg).toBeCloseTo(270);
+  });
+});
+
+describe('interview template links', () => {
+  it('locks interviewee and interviewer on each other, camera 1 on the interviewee, camera 2 on the interviewer', () => {
+    const ee = newActor([], { role: 'interviewee' });
+    const er = newActor([ee], { role: 'interviewer' });
+    const person = (id: string, actorId: string, x: number): Item => ({ id, kind: 'person', actorId, pos: { x, y: 0 }, rotationDeg: 0 });
+    const cam = (id: string): Item => ({ id, kind: 'camera', pos: { x: 0, y: 300 }, rotationDeg: 0 });
+    const out = linkInterview([person('a', ee.id, 0), person('b', er.id, 100), cam('c1'), cam('c2'), cam('c3')], [ee, er]);
+    expect(out[0]!.lookAtActorId).toBe(er.id);
+    expect(out[1]!.lookAtActorId).toBe(ee.id);
+    expect(out[2]!.camera?.focusActorId).toBe(ee.id);
+    expect(out[3]!.camera?.focusActorId).toBe(er.id);
+    expect(out[4]!.camera?.focusActorId).toBeUndefined();
   });
 });
