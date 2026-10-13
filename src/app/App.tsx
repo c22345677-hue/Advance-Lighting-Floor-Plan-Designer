@@ -20,6 +20,7 @@ import { DEFAULT_CAMERA, type CameraSettings } from '../model/exposure';
 import { circuitLoads, defaultBreakerA } from '../model/power';
 import { PowerPanel } from './PowerPanel';
 import { SchedulePanel } from './SchedulePanel';
+import { ArrangeTools } from './ArrangeTools';
 import { parseProjectFile, projectFileName, toProjectFile } from '../model/projectFile';
 import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain } from '../model/walls';
 import { HelpPanel } from './HelpPanel';
@@ -892,6 +893,7 @@ export function App() {
                     Delete
                   </button>
                 </div>
+                <ArrangeTools items={selectedItems} scene={items} actors={project.actors} onPatches={(patches) => patches.length && sd({ type: 'updateMany', patches })} />
               </section>
             ) : (
               <CategoryPanel
