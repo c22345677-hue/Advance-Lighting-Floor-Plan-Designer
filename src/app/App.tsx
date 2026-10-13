@@ -48,6 +48,7 @@ import {
   IconClose,
   IconRotate,
   IconGrid,
+  IconShadow,
   IconTemplates,
   IconUndo,
 } from './icons';
@@ -136,13 +137,15 @@ interface Prefs {
   volts: 230 | 120;
   /** Draw walls: snap corners and angles. */
   wallSnap: boolean;
+  /** Shadows cast by the lights. */
+  shadows: boolean;
 }
 const PREFS_KEY = 'lfpd.prefs.v1';
 function loadPrefs(): Prefs {
   try {
-    return { grid: true, volts: 230, wallSnap: true, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') };
+    return { grid: true, volts: 230, wallSnap: true, shadows: true, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') };
   } catch {
-    return { grid: true, volts: 230, wallSnap: true };
+    return { grid: true, volts: 230, wallSnap: true, shadows: true };
   }
 }
 
@@ -684,6 +687,7 @@ export function App() {
               onDuplicateMany={duplicateMany}
               colors={colors}
               showGrid={prefs.grid}
+              showShadows={prefs.shadows}
               mode={mode}
               tool={tool}
               exportRef={exportRef}
@@ -748,6 +752,16 @@ export function App() {
               <IconPlus />
             </button>
             <span className="vsep" aria-hidden="true" />
+            <button
+              id="shadow-toggle"
+              className={`icon-btn ${prefs.shadows ? 'on' : ''}`}
+              aria-pressed={prefs.shadows}
+              onClick={() => setPrefs((p) => ({ ...p, shadows: !p.shadows }))}
+              aria-label={prefs.shadows ? 'Hide shadows' : 'Show shadows'}
+              title={prefs.shadows ? 'Hide shadows' : 'Show shadows'}
+            >
+              <IconShadow />
+            </button>
             <button
               id="grid-toggle"
               className={`icon-btn ${prefs.grid ? 'on' : ''}`}

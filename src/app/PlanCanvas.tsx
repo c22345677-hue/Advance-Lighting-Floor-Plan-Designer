@@ -1,4 +1,5 @@
 import Konva from 'konva';
+import { ShadowLayer, type LivePatch, type ShadowLive } from './ShadowLayer';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import { Arc, Arrow, Circle, Ellipse, Group, Layer, Line, Rect, Stage, Text, Transformer, Wedge } from 'react-konva';
@@ -110,6 +111,8 @@ interface Props {
   colors: CanvasColors;
   /** Show the 50 cm grid (hidden it gives a clean plan; it is also left out of exports then). */
   showGrid: boolean;
+  /** Draw shadows cast by the lights. */
+  showShadows: boolean;
   mode: EditMode;
   tool: Tool;
   exportRef: MutableRefObject<ExportPng | null>;
@@ -279,14 +282,20 @@ export function PlanCanvas(p: Props) {
     };
   });
 
+  /** Live positions and turns for the shadow layer while things move. */
+  const shadowLive = useRef<ShadowLive | null>(null);
+  const liveShadow = (id: string | null, patch?: LivePatch) => p.showShadows && shadowLive.current?.(id, patch);
+
   /** While an item is dragged, keep its beam and any cameras watching it in step. */
   const follow = (moved: Item, pos: Vec2) => {
     node(`${moved.id}-beam`)?.position(pos);
+    liveShadow(moved.id, { pos });
     // The name stays under the item while it moves.
     node(`${moved.id}-label`)?.position({ x: pos.x - 200, y: pos.y + labelOffset(moved) });
     const turn = (id: string, deg: number) => {
       node(id)?.rotation(deg);
       node(`${id}-beam`)?.rotation(deg);
+      liveShadow(id, { rot: deg });
     };
     if (moved.actorId) {
       for (const f of all) if (followsActorId(f) === moved.actorId) turn(f.id, aimAt(f.pos, pos));
@@ -411,9 +420,11 @@ export function PlanCanvas(p: Props) {
     r.current = Math.round(raw / step) * step;
     node(r.id)?.rotation(r.current);
     node(`${r.id}-beam`)?.rotation(r.current);
+    liveShadow(r.id, { rot: r.current });
     for (const o of r.others) {
       node(o.id)?.rotation(o.start + r.current - r.startRot);
       node(`${o.id}-beam`)?.rotation(o.start + r.current - r.startRot);
+      liveShadow(o.id, { rot: o.start + r.current - r.startRot });
     }
   };
 
@@ -421,6 +432,7 @@ export function PlanCanvas(p: Props) {
     const r = rot.current;
     if (!r) return;
     rot.current = null;
+    setTimeout(() => liveShadow(null), 60);
     if (r.current === r.startRot) return;
     if (r.others.length) dispatch({ type: 'rotateBy', ids: [r.id, ...r.others.map((o) => o.id)], deg: r.current - r.startRot });
     else dispatch({ type: 'rotate', id: r.id, rotationDeg: r.current });
@@ -623,6 +635,8 @@ export function PlanCanvas(p: Props) {
         onDragEnd={(e) => {
           setDragging(null);
           setGhosts([]);
+          // Saved positions take over from the live ones (also when nothing was saved).
+          setTimeout(() => liveShadow(null), 60);
           setOpeningGuide(null);
           const pos = { x: e.target.x(), y: e.target.y() };
           let patch: Partial<Item>;
@@ -794,6 +808,7 @@ export function PlanCanvas(p: Props) {
         />
         {showGrid && grid}
         {visible.map(beam)}
+        {p.showShadows && <ShadowLayer items={visible} liveRef={shadowLive} />}
         {ghosts.map((g) => beam(ghostOf(g)))}
       </Layer>
       <Layer>

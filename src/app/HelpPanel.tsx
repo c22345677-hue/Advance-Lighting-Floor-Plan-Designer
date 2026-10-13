@@ -52,6 +52,7 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
       [<>{k('Space')} + drag</>, 'Pan'],
       ['Mouse wheel', 'Zoom'],
       ['Two fingers', 'Pan and zoom (touch)'],
+      ['Shadow button (bottom right)', 'Show or hide the shadows the lights cast'],
     ],
   },
   {

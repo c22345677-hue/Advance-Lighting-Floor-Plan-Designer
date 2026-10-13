@@ -134,3 +134,9 @@ export const IconTrash = () => (
     <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3" />
   </Svg>
 );
+export const IconShadow = () => (
+  <Svg>
+    <circle cx="9" cy="9" r="4" />
+    <path d="M12 12l8 8M11.5 13.5l5 6.5M13.5 11.5l6.5 5" opacity="0.6" />
+  </Svg>
+);

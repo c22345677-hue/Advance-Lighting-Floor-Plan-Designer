@@ -6,6 +6,7 @@ import type { Fixture } from '../catalog/schema';
 import { FABRIC_KIND_LABEL, FABRICS, takesFabric, type FabricKind } from '../library/fabrics';
 import { isOpening, libraryItem } from '../library/items';
 import { DEFAULT_WALL_CM, wallLength } from '../model/walls';
+import { lightSource } from '../model/shadows';
 import { itemLook } from '../model/gear';
 import {
   itemFixture,
@@ -545,7 +546,45 @@ function LightSection({
           </span>
         </label>
       </Section>
+
+      <ShadowSection item={item} sceneItems={sceneItems} setLight={setLight} />
     </>
+  );
+}
+
+const HARDNESS_TEXT = {
+  hard: 'Hard: dark shadows with crisp edges.',
+  medium: 'Medium: lighter shadows with soft edges.',
+  soft: 'Soft: faint shadows that fade out at the edges.',
+};
+
+/** How this light's shadows look, and why; its height sets how long they are. */
+function ShadowSection({ item, sceneItems, setLight }: { item: Item; sceneItems: Item[]; setLight: (p: Partial<LightProps>) => void }) {
+  const src = lightSource(item, sceneItems);
+  if (!src) return null;
+  return (
+    <Section title="Shadows">
+      <p className="hint-text">
+        <strong className={`hardness ${src.hardness}`}>{HARDNESS_TEXT[src.hardness]}</strong> Source about {src.sizeCm} cm across ({src.why}).
+        Bigger sources (softboxes, lanterns, diffusion frames in the beam) soften shadows; fresnels and bare COBs harden them.
+      </p>
+      <label className="field">
+        <span className="field-label">Height</span>
+        <span className="input-unit">
+          <input
+            className="text-input num"
+            type="number"
+            min={20}
+            step={10}
+            aria-label="Light height"
+            value={src.heightCm}
+            onChange={(e) => setLight({ heightCm: Math.max(20, Number(e.target.value) || 20) })}
+          />
+          <span className="unit">cm</span>
+        </span>
+      </label>
+      <p className="hint-text">Lower lights make longer shadows. Anything taller than the light (walls, flags) shadows to the end of the beam.</p>
+    </Section>
   );
 }
 

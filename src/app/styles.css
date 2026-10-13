@@ -736,6 +736,13 @@ select {
   color: var(--muted);
 }
 
+.hardness {
+  font-weight: 600;
+}
+.hardness.hard {
+  color: var(--fg);
+}
+
 .hint-list {
   margin: 0;
   padding-left: 18px;
