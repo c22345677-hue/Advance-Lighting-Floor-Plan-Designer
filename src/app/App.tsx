@@ -16,6 +16,7 @@ import {
   type SceneDoc,
 } from '../model/project';
 import type { Actor, CastRole, Item, Vec2 } from '../model/types';
+import { DEFAULT_CAMERA, type CameraSettings } from '../model/exposure';
 import { parseProjectFile, projectFileName, toProjectFile } from '../model/projectFile';
 import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain } from '../model/walls';
 import { HelpPanel } from './HelpPanel';
@@ -49,6 +50,7 @@ import {
   IconRotate,
   IconGrid,
   IconShadow,
+  IconMeter,
   IconTemplates,
   IconUndo,
 } from './icons';
@@ -139,13 +141,17 @@ interface Prefs {
   wallSnap: boolean;
   /** Shadows cast by the lights. */
   shadows: boolean;
+  /** Light meter readings under each person on the plan. */
+  meter: boolean;
+  /** Camera settings the meter's T-stops are for. */
+  camera: CameraSettings;
 }
 const PREFS_KEY = 'lfpd.prefs.v1';
 function loadPrefs(): Prefs {
   try {
-    return { grid: true, volts: 230, wallSnap: true, shadows: true, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') };
+    return { grid: true, volts: 230, wallSnap: true, shadows: true, meter: true, camera: DEFAULT_CAMERA, ...JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') };
   } catch {
-    return { grid: true, volts: 230, wallSnap: true, shadows: true };
+    return { grid: true, volts: 230, wallSnap: true, shadows: true, meter: true, camera: DEFAULT_CAMERA };
   }
 }
 
@@ -688,6 +694,7 @@ export function App() {
               colors={colors}
               showGrid={prefs.grid}
               showShadows={prefs.shadows}
+              meter={prefs.meter ? prefs.camera : null}
               mode={mode}
               tool={tool}
               exportRef={exportRef}
@@ -753,6 +760,16 @@ export function App() {
             </button>
             <span className="vsep" aria-hidden="true" />
             <button
+              id="meter-toggle"
+              className={`icon-btn ${prefs.meter ? 'on' : ''}`}
+              aria-pressed={prefs.meter}
+              onClick={() => setPrefs((p) => ({ ...p, meter: !p.meter }))}
+              aria-label={prefs.meter ? 'Hide light meter' : 'Show light meter'}
+              title={prefs.meter ? 'Hide light meter readings' : 'Show light meter readings on people'}
+            >
+              <IconMeter />
+            </button>
+            <button
               id="shadow-toggle"
               className={`icon-btn ${prefs.shadows ? 'on' : ''}`}
               aria-pressed={prefs.shadows}
@@ -813,6 +830,8 @@ export function App() {
                 onDeleteActor={(id) => dispatch({ type: 'deleteActor', id })}
                 onDuplicate={() => duplicate(selectedItem)}
                 onDelete={deleteSelected}
+                camera={prefs.camera}
+                onCamera={(camera) => setPrefs((p) => ({ ...p, camera }))}
               />
             ) : selection.length > 1 ? (
               <section className="section">

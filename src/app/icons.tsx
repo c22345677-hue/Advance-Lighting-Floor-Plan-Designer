@@ -140,3 +140,10 @@ export const IconShadow = () => (
     <path d="M12 12l8 8M11.5 13.5l5 6.5M13.5 11.5l6.5 5" opacity="0.6" />
   </Svg>
 );
+export const IconMeter = () => (
+  <Svg>
+    <path d="M4 16a8 8 0 0 1 16 0" />
+    <path d="M12 16l4-5" />
+    <path d="M3 20h18" />
+  </Svg>
+);

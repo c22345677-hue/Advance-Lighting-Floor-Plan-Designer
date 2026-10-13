@@ -7,6 +7,7 @@ import { FABRIC_KIND_LABEL, FABRICS, takesFabric, type FabricKind } from '../lib
 import { isOpening, libraryItem } from '../library/items';
 import { DEFAULT_WALL_CM, wallLength } from '../model/walls';
 import { lightSource } from '../model/shadows';
+import { lightName, meterReadings, type CameraSettings } from '../model/exposure';
 import { COLOR_KIND_LABEL, colorKindOf, displayKelvin, hsToRgb, KIND_RANGE, lightColor, rgbCss, type ColorKind } from '../model/color';
 import { GEL_GROUP_LABEL, gelById, GELS, type Gel, type GelGroup } from '../library/gels';
 import { itemLook } from '../model/gear';
@@ -41,6 +42,9 @@ interface Props {
   onDeleteActor: (id: string) => void;
   onDuplicate: () => void;
   onDelete: () => void;
+  /** Light meter camera settings (ISO, frame rate, shutter). */
+  camera: CameraSettings;
+  onCamera: (c: CameraSettings) => void;
 }
 
 const kg = (v: number | null | undefined) => (v == null ? '?' : `${Math.round(v * 100) / 100} kg`);
@@ -112,6 +116,8 @@ export function Inspector(props: Props) {
           />
         </Section>
       )}
+
+      {item.kind === 'person' && <MeterSection item={item} sceneItems={sceneItems} camera={props.camera} onCamera={props.onCamera} />}
 
       {item.kind === 'light' && (
         <LightSection item={item} gear={gear} sceneItems={sceneItems} actors={actors} setLight={setLight} onUpdate={onUpdate} />
@@ -703,6 +709,69 @@ function ColorWheel({ hue, sat, onChange }: { hue: number; sat: number; onChange
     >
       <span className="color-wheel-dot" style={{ left: `${50 + Math.sin(a) * rr}%`, top: `${50 - Math.cos(a) * rr}%`, background: rgbCss(hsToRgb(hue, sat / 100)) }} />
     </div>
+  );
+}
+
+/** Light falling on this person: total, T-stop, key:fill and each light's share. */
+function MeterSection({ item, sceneItems, camera, onCamera }: { item: Item; sceneItems: Item[]; camera: CameraSettings; onCamera: (c: CameraSettings) => void }) {
+  const r = meterReadings(sceneItems, camera).find((x) => x.personId === item.id);
+  if (!r) return null;
+  const num = (label: string, key: keyof CameraSettings, unit: string, min: number, max: number) => (
+    <label className="field">
+      <span className="field-label">{label}</span>
+      <span className="input-unit">
+        <input
+          className="text-input num"
+          type="number"
+          aria-label={label}
+          min={min}
+          max={max}
+          value={camera[key]}
+          onChange={(e) => e.target.value !== '' && onCamera({ ...camera, [key]: Math.min(max, Math.max(min, Number(e.target.value))) })}
+        />
+        <span className="unit">{unit}</span>
+      </span>
+    </label>
+  );
+  return (
+    <Section title="Light on them">
+      {r.contributions.length === 0 ? (
+        <p className="hint-text">No light reaches them yet.</p>
+      ) : (
+        <>
+          <div className="meter-big">
+            <strong>{r.tStopLabel}</strong>
+            <span>
+              {r.lux} lux · {r.footCandles} fc{r.ratio ? ` · key:fill ${r.ratio}` : ''}
+            </span>
+          </div>
+          <ul className="row-list">
+            {r.contributions.map((c) => {
+              const l = sceneItems.find((i) => i.id === c.lightId)!;
+              return (
+                <li key={c.lightId} className="row static">
+                  <span className="row-main">
+                    <span className="row-title">
+                      {lightName(l)} {c.lightId === r.keyId && r.contributions.length > 1 ? <span className="chip">Key</span> : null}
+                    </span>
+                    <span className="row-sub">
+                      {Math.round(c.lux)} lux{c.blocked ? ' · partly blocked' : ''}
+                    </span>
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+      {num('ISO', 'iso', '', 50, 25600)}
+      {num('Frame rate', 'fps', 'fps', 1, 240)}
+      {num('Shutter', 'shutterDeg', '°', 1, 360)}
+      <p className="hint-text">
+        Estimates for planning, from each light's power, beam, distance and height, modifiers, gels, diffusion and anything in the way.
+        Check with a meter on set.
+      </p>
+    </Section>
   );
 }
 

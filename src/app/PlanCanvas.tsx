@@ -1,5 +1,6 @@
 import Konva from 'konva';
 import { lightColor, rgbCss } from '../model/color';
+import { meterReadings, type CameraSettings } from '../model/exposure';
 import { ShadowLayer, type LivePatch, type ShadowLive } from './ShadowLayer';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
@@ -114,6 +115,8 @@ interface Props {
   showGrid: boolean;
   /** Draw shadows cast by the lights. */
   showShadows: boolean;
+  /** Light meter readings under each person (camera settings), or off. */
+  meter: CameraSettings | null;
   mode: EditMode;
   tool: Tool;
   exportRef: MutableRefObject<ExportPng | null>;
@@ -747,6 +750,30 @@ export function PlanCanvas(p: Props) {
     );
   };
 
+  const readings = useMemo(() => (p.meter ? new Map(meterReadings(visible, p.meter).map((r) => [r.personId, r])) : null), [visible, p.meter]);
+
+  /** Under a person's name: their light meter reading. */
+  const meterLabel = (item: Item) => {
+    const r = readings?.get(item.id);
+    if (!r || item.id === dragging) return null;
+    const text = r.contributions.length ? `${r.tStopLabel} · ${r.lux} lx${r.ratio ? ` · ${r.ratio}` : ''}` : 'no light';
+    return (
+      <Text
+        key={`${item.id}-meter`}
+        name="meter-label"
+        x={item.pos.x - 200}
+        y={item.pos.y + labelOffset(item) + labelSize * 1.25}
+        width={400}
+        align="center"
+        text={text}
+        fontSize={labelSize * 0.9}
+        fontFamily="'IBM Plex Mono', monospace"
+        fill={colors.select}
+        listening={false}
+      />
+    );
+  };
+
   const label = (item: Item) => {
     const text = displayLabel(item, actors, { unit: false });
     if (!text) return null;
@@ -832,6 +859,7 @@ export function PlanCanvas(p: Props) {
           .map(renderItem)}
         {visible.filter((i) => scene.items.includes(i)).map(renderItem)}
         {visible.map(label)}
+        {readings && visible.filter((i) => i.kind === 'person').map(meterLabel)}
         {tool === 'rotate' &&
           visible
             .filter((i) => selection.includes(i.id))

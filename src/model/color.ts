@@ -127,6 +127,8 @@ export function lightColor(item: Item): LightColor {
   // Tint and colour gels filter the light.
   let transmission = 1;
   for (const g of gels) {
+    // Correction gels pass less light the stronger they are (Full CTB about a third, Full CTO about half).
+    if (g.mired) transmission *= g.mired < 0 ? 1 + (g.mired / 131) * 0.64 : 1 - (g.mired / 167) * 0.45;
     if (g.mired && !hsi) continue;
     const f = hexRgb(g.color);
     rgb = [(rgb[0] * f[0]) / 255, (rgb[1] * f[1]) / 255, (rgb[2] * f[2]) / 255];

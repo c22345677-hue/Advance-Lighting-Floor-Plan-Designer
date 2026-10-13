@@ -57,6 +57,8 @@ export interface LightSource {
   sizeCm: number;
   /** Through a diffusion frame: only things farther than this from the fixture are shadowed. */
   minDistCm: number;
+  /** The diffusion frame the light goes through, if any. */
+  frameId?: string;
   /** How dark a full shadow from this light is, 0–1. */
   darkness: number;
   hardness: Hardness;
@@ -161,6 +163,7 @@ export function lightSource(light: Item, all: readonly Item[]): LightSource | nu
     heightCm: lightHeightCm(light),
     sizeCm: Math.round(size),
     minDistCm,
+    frameId: frame?.id,
     darkness: darknessFor(size) * Math.min(1, Math.max(0, intensity)),
     hardness: hardnessFor(size),
     why: what,

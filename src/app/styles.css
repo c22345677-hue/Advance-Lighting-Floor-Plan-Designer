@@ -736,6 +736,18 @@ select {
   color: var(--muted);
 }
 
+.meter-big {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.meter-big strong {
+  font-family: var(--font-label);
+  font-size: 26px;
+  color: var(--accent);
+}
+
 .swatch {
   display: inline-block;
   flex-shrink: 0;
