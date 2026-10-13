@@ -1482,7 +1482,7 @@ kbd {
 }
 
 /* =========================================================================================
-   Phones: three top rows, panel becomes a bottom sheet whose header is always visible
+   Narrow windows: two top rows
    ========================================================================================= */
 @media (max-width: 760px) {
   .topbar {
@@ -1491,9 +1491,17 @@ kbd {
     padding: 8px;
   }
 
+  /* Row 1: project and setup actions. Row 2: category, tool, undo. */
+  .topbar::before {
+    content: '';
+    order: 3;
+    flex-basis: 100%;
+    height: 0;
+  }
+
   .topbar-left {
-    flex: 1;
-    min-width: 0;
+    flex: 1 1 0;
+    min-width: 120px;
   }
 
   .project-menu {
@@ -1520,8 +1528,8 @@ kbd {
   }
 
   .modes {
-    order: 3;
-    flex-basis: 100%;
+    order: 4;
+    flex: 1 1 auto;
   }
 
   .modes button {
@@ -1531,16 +1539,12 @@ kbd {
   }
 
   .tool-group {
-    order: 4;
-    flex: 1;
-  }
-
-  .tool-btn {
-    flex: 1;
+    order: 5;
+    flex: none;
   }
 
   .btn-pair {
-    order: 5;
+    order: 6;
   }
 
   .tool-badge {
@@ -1550,6 +1554,61 @@ kbd {
 
   .tool-badge kbd {
     display: none;
+  }
+
+  /* Narrow windows (a tablet in portrait, or the app in a side frame): keep the panel beside
+     the plan, just narrower, so the menu and the plan stay visible together. */
+  .panel {
+    width: clamp(240px, 38vw, 290px);
+  }
+
+  .stat.hint {
+    display: none;
+  }
+
+  .dialog-backdrop {
+    padding: 0;
+  }
+
+  .eq-summary,
+  .kit-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .add-line {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .eq-row {
+    flex-wrap: wrap;
+  }
+
+  .dialog:not(.small) {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    border-radius: 0;
+  }
+
+  .dialog-backdrop:has(.dialog.small) {
+    padding: 16px;
+  }
+}
+
+/* =========================================================================================
+   Phones: the panel becomes a bottom sheet whose header is always visible
+   ========================================================================================= */
+@media (max-width: 520px) {
+  .modes {
+    flex-basis: 100%;
+  }
+
+  .tool-group {
+    flex: 1;
+  }
+
+  .tool-btn {
+    flex: 1;
   }
 
   .view-controls {
@@ -1606,38 +1665,6 @@ kbd {
   .sheet-label {
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  .stat.hint {
-    display: none;
-  }
-
-  .dialog-backdrop {
-    padding: 0;
-  }
-
-  .eq-summary,
-  .kit-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .add-line {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .eq-row {
-    flex-wrap: wrap;
-  }
-
-  .dialog:not(.small) {
-    width: 100%;
-    height: 100%;
-    max-height: none;
-    border-radius: 0;
-  }
-
-  .dialog-backdrop:has(.dialog.small) {
-    padding: 16px;
   }
 }
 
