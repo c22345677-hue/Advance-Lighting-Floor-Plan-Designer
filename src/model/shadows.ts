@@ -3,6 +3,18 @@
 // fresnel throws dark, crisp shadows. Shadows are cast by people, props, set walls and opaque
 // grip, stretch away from the light (longer for low lights and tall objects) and stay inside
 // the light's beam. A diffusion frame in a beam becomes the source for everything behind it.
+//
+// The physics, simplified for a plan:
+// - How soft a shadow looks depends on the source's apparent size: the angle it covers as seen
+//   from the subject (about size ÷ distance), not its size alone. A 6×6 next to someone is very
+//   soft; the same frame across the room is close to hard.
+// - The soft edge (penumbra) is source size × (subject → floor or wall) ÷ (source → subject): the
+//   sampled sources below draw it, so it grows and shrinks with distance on its own.
+// - Through diffusion, the source is the patch of fabric the light actually covers: the beam's
+//   spread at the frame (2·d·tan(beam/2)), up to the frame's size. A lamp right behind the frame
+//   only lights a small hot spot; pulled back it fills the frame.
+// - Heavy diffusion (216, full grid) scatters fully, so the whole lit patch glows; light ones
+//   (¼ grid, light grid) keep a hot spot and let some of the hard light straight through.
 import { fabricById } from '../library/fabrics';
 import { libraryItem } from '../library/items';
 import { itemFixture, itemLook, itemModifiers } from './gear';
@@ -63,9 +75,19 @@ export interface LightSource {
   clip?: Vec2[];
   /** Occluders this light passes (the wall a window is in). */
   ignore?: string[];
-  /** How dark a full shadow from this light is, 0–1. */
+  /** How dark a full shadow from this light is, 0–1 (on its subject; see shadowDarkness for elsewhere). */
   darkness: number;
   hardness: Hardness;
+  /** Dimmer setting, 0–1 (shadows fade with it). */
+  intensity?: number;
+  /** Distance from the source to its subject, cm, and how big the source looks from there, degrees. */
+  subjectCm?: number;
+  apparentDeg?: number;
+  /** Through diffusion: how much of the frame the light covers, cm, and how fully the fabric scatters (0–1). */
+  litCm?: number;
+  scatter?: number;
+  /** Where the light hits the frame from, cm (lamp to frame). */
+  frameDistCm?: number;
   /** What makes it hard or soft, for the light's panel. */
   why: string;
 }
@@ -107,10 +129,49 @@ function bareSource(i: Item): { size: number; what: string } {
   }
 }
 
-/** Darkness of a full shadow for a source of this size. */
+/** Darkness of a full shadow for a source of this size (seen from about 45 cm: the window skylight). */
 export const darknessFor = (sizeCm: number) => 0.62 / (1 + sizeCm / 40);
 
+/** A size-only guess at hardness (for sources with no subject to measure from). */
 export const hardnessFor = (sizeCm: number): Hardness => (sizeCm < 25 ? 'hard' : sizeCm < 80 ? 'medium' : 'soft');
+
+/** Angle a source of size `sizeCm` covers seen from `distCm` away, degrees. */
+export const apparentDeg = (sizeCm: number, distCm: number) => (2 * Math.atan(sizeCm / 2 / Math.max(1, distCm)) * 180) / Math.PI;
+
+/**
+ * How dark a shadow is from a source of `sizeCm`, on something `distCm` from it: a source that
+ * looks big from there wraps light around the object and fills its shadow in.
+ */
+export const darknessAt = (sizeCm: number, distCm: number) => 0.62 / (1 + (1.1 * sizeCm) / Math.max(20, distCm));
+
+/** Hard below about 8° apparent size, soft from about 20°. */
+export const hardnessAt = (deg: number): Hardness => (deg < 8 ? 'hard' : deg < 20 ? 'medium' : 'soft');
+
+/** How completely a diffusion fabric scatters light (1: the whole lit patch glows evenly). */
+export const FABRIC_SCATTER: Record<string, number> = {
+  '216': 1,
+  'full-grid': 0.95,
+  'magic-cloth': 0.85,
+  '250': 0.8,
+  'half-grid': 0.75,
+  silk: 0.6,
+  'quarter-grid': 0.5,
+  'light-grid': 0.35,
+};
+
+/** Distance from `from` to the nearest person standing in the light's beam past `minDistCm` (or the person it's aimed at). */
+function subjectDistance(light: Item, from: Vec2, beamDeg: number, all: readonly Item[], minDistCm: number): number | null {
+  let best: number | null = null;
+  for (const p of all) {
+    if (p.kind !== 'person' || p.hidden) continue;
+    const aimed = !!p.actorId && p.actorId === light.light?.aimActorId;
+    if (!aimed && !insideBeam(light.pos, light.rotationDeg, beamDeg, 1e6, p.pos)) continue;
+    if (Math.hypot(p.pos.x - light.pos.x, p.pos.y - light.pos.y) <= minDistCm) continue;
+    const d = Math.hypot(p.pos.x - from.x, p.pos.y - from.y);
+    if (best == null || d < best) best = d;
+  }
+  return best;
+}
 
 const insideBeam = (apex: Vec2, rot: number, beamDeg: number, throwCm: number, p: Vec2) => {
   const d = Math.hypot(p.x - apex.x, p.y - apex.y);
@@ -165,16 +226,25 @@ export function lightSource(light: Item, all: readonly Item[]): LightSource | nu
     .filter((f) => f.kind === 'grip' && fabricById(f.grip?.fabric)?.kind === 'diffusion' && insideBeam(light.pos, light.rotationDeg, beamDeg, throwCm, f.pos))
     .sort((a, b) => Math.hypot(a.pos.x - light.pos.x, a.pos.y - light.pos.y) - Math.hypot(b.pos.x - light.pos.x, b.pos.y - light.pos.y));
   const frame = frames[0];
+  let litCm: number | undefined;
+  let scatter: number | undefined;
+  let frameDistCm: number | undefined;
   if (frame) {
+    // The source becomes the patch of fabric the beam covers, spread by how well the fabric scatters.
     const w = itemLook(frame).w;
-    if (w > size) {
-      size = w;
-      what = `through ${fabricById(frame.grip?.fabric)!.name} on a ${libraryItem(frame.catalogId)?.name ?? 'frame'}`;
-    }
+    frameDistCm = Math.hypot(frame.pos.x - light.pos.x, frame.pos.y - light.pos.y);
+    const spread = size + 2 * frameDistCm * Math.tan((Math.min(beamDeg, 170) / 2) * (Math.PI / 180));
+    litCm = Math.min(w, spread);
+    scatter = FABRIC_SCATTER[frame.grip?.fabric ?? ''] ?? 0.7;
+    size = Math.max(size * 0.5, size + (litCm - size) * scatter);
+    what = `${fabricById(frame.grip?.fabric)!.name} on a ${libraryItem(frame.catalogId)?.name ?? 'frame'}`;
     pos = frame.pos;
-    minDistCm = Math.hypot(frame.pos.x - light.pos.x, frame.pos.y - light.pos.y);
+    minDistCm = frameDistCm;
   }
-  const intensity = (light.light?.intensityPct ?? 100) / 100;
+  const intensity = Math.min(1, Math.max(0, (light.light?.intensityPct ?? 100) / 100));
+  const subject = subjectDistance(light, pos, beamDeg, all, minDistCm);
+  const dist = subject ?? DEFAULT_THROW_CM;
+  const deg = apparentDeg(size, dist);
   return {
     lightId: light.id,
     pos,
@@ -186,8 +256,14 @@ export function lightSource(light: Item, all: readonly Item[]): LightSource | nu
     sizeCm: Math.round(size),
     minDistCm,
     frameId: frame?.id,
-    darkness: darknessFor(size) * Math.min(1, Math.max(0, intensity)),
-    hardness: hardnessFor(size),
+    darkness: darknessAt(size, dist) * intensity,
+    hardness: hardnessAt(deg),
+    intensity,
+    subjectCm: subject ?? undefined,
+    apparentDeg: deg,
+    litCm,
+    scatter,
+    frameDistCm,
     why: what,
   };
 }
@@ -317,6 +393,12 @@ export interface ShadowShape {
 /** Shadows run on past the end of the beam (fading out) by this much of the beam's reach. */
 export const SHADOW_REACH = 2.2;
 
+/** How dark a shadow from `s` is on something `distCm` from the source (sunlight keeps its own). */
+export function shadowDarkness(s: LightSource, distCm: number): number {
+  if (s.intensity == null) return s.darkness;
+  return darknessAt(s.sizeCm, distCm) * s.intensity;
+}
+
 /**
  * Every shadow in the scene. A source of some size is sampled at a few points across its width,
  * each casting a faint shadow: where they all overlap is the full (umbra) shadow, the fringe
@@ -332,7 +414,7 @@ export function sceneShadows(items: readonly Item[], extra: LightSource[] = []):
   ].filter((s): s is LightSource => !!s && s.darkness > 0.005);
   for (const s of all) {
     sources.push(s);
-    const samples = s.clip ? 1 : s.sizeCm < 20 ? 1 : Math.min(7, Math.ceil(s.sizeCm / 18));
+    const samples = s.clip ? 1 : s.sizeCm < 20 ? 1 : Math.min(9, Math.ceil(s.sizeCm / 18));
     const across = rotate({ x: 1, y: 0 }, s.rotationDeg); // perpendicular to the beam
     const reach = s.clip ? Math.hypot(s.pos.x - s.apex.x, s.pos.y - s.apex.y) + 2e4 : s.throwCm * SHADOW_REACH;
     for (const o of occ) {
@@ -348,6 +430,21 @@ export function sceneShadows(items: readonly Item[], extra: LightSource[] = []):
         if (![c, ...o.points].some((p) => insideBeam(s.apex, s.rotationDeg, s.beamDeg, s.throwCm, p))) continue;
       }
       if (o.points.some((p) => Math.hypot(p.x - s.pos.x, p.y - s.pos.y) < 1)) continue;
+      // Closer to a big source, the shadow is filled in more (and spread wider by the samples).
+      const dark = shadowDarkness(s, Math.hypot(c.x - s.pos.x, c.y - s.pos.y));
+      // Light diffusion keeps a hot spot: some of the lamp's hard shadow shows through.
+      if (s.frameId && s.scatter != null && s.scatter < 0.9) {
+        const poly = shadowPolygon(s.apex, s.heightCm, o, reach);
+        const d = Math.hypot(c.x - s.apex.x, c.y - s.apex.y) || 1;
+        const tip = poly ? Math.max(...poly.map((q) => Math.hypot(q.x - s.apex.x, q.y - s.apex.y))) : 0;
+        if (poly)
+          shadows.push({
+            lightId: s.lightId,
+            points: poly,
+            opacity: darknessAt(15, d) * (1 - s.scatter) * (s.intensity ?? 1) * 0.8,
+            fade: { from: c, to: { x: s.apex.x + ((c.x - s.apex.x) / d) * tip, y: s.apex.y + ((c.y - s.apex.y) / d) * tip } },
+          });
+      }
       for (let k = 0; k < samples; k++) {
         const t = samples === 1 ? 0 : (k / (samples - 1) - 0.5) * s.sizeCm;
         const src = { x: s.pos.x + across.x * t, y: s.pos.y + across.y * t };
@@ -360,7 +457,7 @@ export function sceneShadows(items: readonly Item[], extra: LightSource[] = []):
           const tip = Math.max(...poly.map((q) => Math.hypot(q.x - src.x, q.y - src.y)));
           fade = { from: c, to: { x: src.x + ((c.x - src.x) / d) * tip, y: src.y + ((c.y - src.y) / d) * tip } };
         }
-        shadows.push({ lightId: s.lightId, points: poly, opacity: s.darkness / samples, fade });
+        shadows.push({ lightId: s.lightId, points: poly, opacity: dark / samples, fade });
       }
     }
   }

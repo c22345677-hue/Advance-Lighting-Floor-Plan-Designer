@@ -21,6 +21,17 @@ describe('light meter', () => {
     expect(away.lux).toBeLessThan(near.lux / 5);
   });
 
+  it('through a big diffusion frame the light falls off more gently than inverse square', () => {
+    const frame = (y: number): Item => ({ id: 'F', kind: 'grip', catalogId: 'generic.grip.frame-6x6', pos: { x: 0, y }, rotationDeg: 0, grip: { fabric: '216' } });
+    // Same lamp-to-frame distance (fills the frame), frame 1.5 m vs 3 m from the subject.
+    const lux = (fy: number) => meterReadings([light('a', 'generic.light.hmi-par', 0, fy + 450, 0, { beamDeg: 40, throwCm: 2000 }), frame(fy), person('p', 0, 0)])[0]!.lux;
+    const near = lux(150);
+    const far = lux(300);
+    const inverseSquare = (300 ** 2 + 40 ** 2) / (150 ** 2 + 40 ** 2);
+    expect(near).toBeGreaterThan(far);
+    expect(near / far).toBeLessThan(inverseSquare);
+  });
+
   it('a softbox and gels cut the light; intensity dims it', () => {
     const bare = meterReadings([light('a', 'generic.light.cob', 0, 200, 0), person('p', 0, 0)])[0]!.lux;
     const gel = meterReadings([light('a', 'generic.light.cob', 0, 200, 0, { gels: ['rosco-3202'] }), person('p', 0, 0)])[0]!.lux;

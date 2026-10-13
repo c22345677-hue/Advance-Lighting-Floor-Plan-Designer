@@ -7,7 +7,7 @@ import { libraryItem } from '../library/items';
 import { lightColor } from './color';
 import { itemFixture, itemModifiers } from './gear';
 import { aimAt } from './geometry';
-import { lightSource, occluders, pointInPolygon, shadowPolygon } from './shadows';
+import { lightSource, occluders, pointInPolygon, shadowDarkness, shadowPolygon } from './shadows';
 import { daylightLux, windowLights, type Sun } from './sun';
 import type { Item, Vec2 } from './types';
 
@@ -110,14 +110,25 @@ export function luxFrom(light: Item, at: Vec2, all: readonly Item[], exclude?: s
   const off = src.beamDeg >= 360 ? 0 : Math.abs(((aimAt(light.pos, at) - light.rotationDeg + 540) % 360) - 180);
   const half = src.beamDeg / 2;
   const inBeam = off <= half ? 1 - 0.5 * (off / half) ** 2 : 0.06;
-  // Through a diffusion frame (only for what's past it).
+  const intensityCd = (lumens / solidAngle(Math.min(360, src.beamDeg))) * pass; // on the beam's axis
+  let lux = (intensityCd * inBeam) / (d * d);
+  // Through a diffusion frame (only for what's past it): the fabric glows like a lit panel the
+  // size of the patch the beam covers. A uniformly lit diffuse disc of radius R gives
+  // E = M·R² / (R² + D²) at distance D: flatter than inverse square close to it, the same far
+  // away. What the fabric doesn't scatter carries on as the lamp's own (dimmed) beam.
   if (src.frameId && horiz > src.minDistCm) {
     const frame = all.find((i) => i.id === src.frameId);
-    pass *= FABRIC_PASS[fabricById(frame?.grip?.fabric)?.id ?? ''] ?? 0.5;
+    const fabricPass = FABRIC_PASS[fabricById(frame?.grip?.fabric)?.id ?? ''] ?? 0.5;
+    const scatter = src.scatter ?? 0.7;
+    const onFabric = intensityCd / Math.max(0.01, ((src.frameDistCm ?? src.minDistCm) / 100) ** 2); // lux on the fabric
+    const r = (src.litCm ?? src.sizeCm) / 200; // m
+    const fromFrame = Math.hypot(Math.hypot(at.x - src.pos.x, at.y - src.pos.y), src.heightCm - FACE_CM) / 100;
+    const glow = (onFabric * fabricPass * r * r) / (r * r + fromFrame * fromFrame);
+    lux = scatter * glow + (1 - scatter) * lux * fabricPass;
   }
-  let lux = ((lumens / solidAngle(Math.min(360, src.beamDeg))) * inBeam * pass) / (d * d);
   // Blocked by someone or something between: hard light is cut, soft light wraps around a bit.
   let blocked = false;
+  let blockAt = 0;
   const fromSrc = Math.hypot(at.x - src.pos.x, at.y - src.pos.y);
   for (const o of occluders(all)) {
     if (o.id === exclude || o.heightCm < FACE_CM * 0.9) continue; // lower than a face: doesn't block it
@@ -126,10 +137,11 @@ export function luxFrom(light: Item, at: Vec2, all: readonly Item[], exclude?: s
     const poly = shadowPolygon(src.pos, src.heightCm, o, fromSrc * 2);
     if (poly && inside(at, poly)) {
       blocked = true;
+      blockAt = nearest;
       break;
     }
   }
-  if (blocked) lux *= Math.max(0.05, 1 - src.darkness / 0.62);
+  if (blocked) lux *= Math.max(0.05, 1 - shadowDarkness(src, blockAt) / 0.62);
   return { lightId: light.id, lux, blocked };
 }
 

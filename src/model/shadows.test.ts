@@ -22,7 +22,7 @@ describe('shadows', () => {
     expect(mat.hardness).toBe('soft');
     expect(fresnel.darkness).toBeGreaterThan(mat.darkness);
     expect(mat.darkness).toBeGreaterThan(0);
-    expect(balloon.darkness).toBeLessThan(0.2);
+    expect(balloon.darkness).toBeLessThan(fresnel.darkness);
     expect(darknessFor(10)).toBeGreaterThan(darknessFor(200));
   });
 
@@ -42,10 +42,49 @@ describe('shadows', () => {
 
   it('a diffusion frame in the beam softens what is behind it', () => {
     const frame: Item = { id: 'F', kind: 'grip', catalogId: 'generic.grip.frame-6x6', pos: { x: 0, y: 200 }, rotationDeg: 0, grip: { fabric: 'full-grid' } };
-    const hard = lightSource(light('generic.light.fresnel'), [])!;
-    const diffused = lightSource(light('generic.light.fresnel'), [frame])!;
-    expect(diffused.sizeCm).toBe(180);
+    const hard = lightSource(light('generic.light.fresnel'), [person])!;
+    const diffused = lightSource(light('generic.light.fresnel'), [frame, person])!;
+    expect(diffused.frameId).toBe('F');
     expect(diffused.darkness).toBeLessThan(hard.darkness);
+    expect(diffused.apparentDeg!).toBeGreaterThan(hard.apparentDeg!);
+  });
+
+  it('the lit patch on the frame grows as the lamp backs off, up to the frame', () => {
+    const frame: Item = { id: 'F', kind: 'grip', catalogId: 'generic.grip.frame-6x6', pos: { x: 0, y: 150 }, rotationDeg: 0, grip: { fabric: '216' } };
+    const at = (y: number) => lightSource(light('generic.light.fresnel', { pos: { x: 0, y }, light: { throwCm: 900, beamDeg: 40 } }), [frame, person])!;
+    const close = at(180);
+    const back = at(400);
+    const far = at(900);
+    expect(back.litCm!).toBeGreaterThan(close.litCm!);
+    expect(far.litCm!).toBe(180); // filled the 6×6
+    expect(back.sizeCm).toBeGreaterThan(close.sizeCm);
+  });
+
+  it('a frame close to the subject is softer than the same frame far from it', () => {
+    const lamp = (y: number) => light('generic.light.fresnel', { pos: { x: 0, y }, light: { throwCm: 2000, beamDeg: 60 } });
+    const frameAt = (y: number): Item => ({ id: 'F', kind: 'grip', catalogId: 'generic.grip.frame-6x6', pos: { x: 0, y }, rotationDeg: 0, grip: { fabric: 'full-grid' } });
+    const near = lightSource(lamp(400), [frameAt(80), person])!; // frame 80 cm from the subject
+    const far = lightSource(lamp(1200), [frameAt(900), person])!; // same lit size, 9 m away
+    expect(near.apparentDeg!).toBeGreaterThan(far.apparentDeg!);
+    expect(near.darkness).toBeLessThan(far.darkness);
+    expect(near.hardness).toBe('soft');
+    expect(far.hardness).not.toBe('soft');
+    // The shadow on the subject's far side follows: fainter close to a big source.
+    const total = (items: Item[]) => sceneShadows(items).shadows.reduce((n, s) => n + s.opacity, 0);
+    expect(total([lamp(400), frameAt(80), person])).toBeLessThan(total([lamp(1200), frameAt(900), person]));
+  });
+
+  it('light diffusion lets some of the hard shadow through, heavy diffusion does not', () => {
+    const frame = (fabric: string): Item => ({ id: 'F', kind: 'grip', catalogId: 'generic.grip.frame-6x6', pos: { x: 0, y: 150 }, rotationDeg: 0, grip: { fabric } });
+    const lamp = light('generic.light.fresnel', { pos: { x: 0, y: 450 } });
+    const heavy = sceneShadows([lamp, frame('216'), person]).shadows;
+    const lightGrid = sceneShadows([lamp, frame('light-grid'), person]).shadows;
+    const samples = (size: number) => (size < 20 ? 1 : Math.min(9, Math.ceil(size / 18)));
+    const lgSize = lightSource(lamp, [frame('light-grid'), person])!.sizeCm;
+    const heavySize = lightSource(lamp, [frame('216'), person])!.sizeCm;
+    expect(lgSize).toBeLessThan(heavySize);
+    expect(heavy.length).toBe(samples(heavySize));
+    expect(lightGrid.length).toBe(samples(lgSize) + 1); // plus the hot spot's hard shadow
   });
 
   it('nothing outside the beam is shadowed, and lower things cast shorter shadows', () => {

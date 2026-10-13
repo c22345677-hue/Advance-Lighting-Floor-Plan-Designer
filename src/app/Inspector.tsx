@@ -204,6 +204,7 @@ export function Inspector(props: Props) {
             ))}
           </select>
           <p className="hint-text">Black shows black, diffusion see-through grey, bounce white, chroma screens green or blue.</p>
+          <FrameDiffusion item={item} sceneItems={sceneItems} />
         </Section>
       )}
       {item.kind === 'camera' && <CameraSection item={item} sceneItems={sceneItems} actors={actors} onUpdate={onUpdate} />}
@@ -906,6 +907,35 @@ function NoteSection({ item, onUpdate }: { item: Item; onUpdate: Props['onUpdate
   );
 }
 
+const m = (cm: number) => `${(cm / 100).toFixed(1)} m`;
+
+/** What a light does through diffusion, in a sentence or two. */
+function diffusionText(src: NonNullable<ReturnType<typeof lightSource>>): string | null {
+  if (!src.frameId || src.litCm == null) return null;
+  const scatter = (src.scatter ?? 1) >= 0.9 ? 'it scatters fully, so the whole lit patch glows evenly' : 'it is light diffusion, so a hot spot and some hard shadow show through';
+  return `From ${m(src.frameDistCm ?? 0)} back, the beam lights about ${Math.round(src.litCm)} cm of the frame; ${scatter}.`;
+}
+
+/** For a diffusion frame: how soft each light through it is on its subject. */
+function FrameDiffusion({ item, sceneItems }: { item: Item; sceneItems: Item[] }) {
+  const through = sceneItems
+    .filter((l) => l.kind === 'light' && !l.hidden)
+    .map((l) => ({ l, src: lightSource(l, sceneItems) }))
+    .filter((x): x is { l: Item; src: NonNullable<typeof x.src> } => x.src?.frameId === item.id);
+  if (!through.length) return null;
+  return (
+    <div className="hint-text">
+      {through.map(({ l, src }) => (
+        <p key={l.id}>
+          <strong className={`hardness ${src.hardness}`}>{l.light?.unitId ?? 'Light'}: {src.hardness}</strong> · lights {Math.round(src.litCm ?? 0)} cm of the frame from {m(src.frameDistCm ?? 0)} back
+          {src.subjectCm != null ? `, looks ${Math.round(src.apparentDeg ?? 0)}° wide from the subject ${m(src.subjectCm)} away` : ''}.
+        </p>
+      ))}
+      <p>Softer: bring the frame closer to the subject, or pull the light back so it fills the frame. Harder: the opposite.</p>
+    </div>
+  );
+}
+
 const HARDNESS_TEXT = {
   hard: 'Hard: dark shadows with crisp edges.',
   medium: 'Medium: lighter shadows with soft edges.',
@@ -919,8 +949,10 @@ function ShadowSection({ item, sceneItems, setLight }: { item: Item; sceneItems:
   return (
     <Section title="Shadows">
       <p className="hint-text">
-        <strong className={`hardness ${src.hardness}`}>{HARDNESS_TEXT[src.hardness]}</strong> Source about {src.sizeCm} cm across ({src.why}).
-        Bigger sources (softboxes, lanterns, diffusion frames in the beam) soften shadows; fresnels and bare COBs harden them.
+        <strong className={`hardness ${src.hardness}`}>{HARDNESS_TEXT[src.hardness]}</strong> Source about {src.sizeCm} cm across ({src.why})
+        {src.subjectCm != null ? `, ${m(src.subjectCm)} from the subject, so it looks ${Math.round(src.apparentDeg ?? 0)}° wide` : ''}.{' '}
+        {diffusionText(src) ?? ''} Softness comes from how big the source looks from the subject: bigger or closer is softer, smaller or farther is harder.
+        {src.frameId ? ' Bring the frame closer to the subject, or pull the light back to fill it, to soften.' : ''}
       </p>
       <label className="field">
         <span className="field-label">Height</span>

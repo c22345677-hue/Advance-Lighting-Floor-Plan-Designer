@@ -3,7 +3,7 @@ import { lightColor, rgbCss } from '../model/color';
 import { marksOf, moveMark } from '../model/blocking';
 import { sunRgb, windowLights, type WindowLight } from '../model/sun';
 import { lightLumens, meterReadings, type CameraSettings } from '../model/exposure';
-import { beamReach } from '../model/shadows';
+import { beamReach, lightSource } from '../model/shadows';
 import { ShadowLayer, type LivePatch, type ShadowLive } from './ShadowLayer';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
@@ -12,7 +12,7 @@ import type { Modifier } from '../catalog/schema';
 import { FABRIC_FILL, fabricById } from '../library/fabrics';
 import { isOpening, libraryItem } from '../library/items';
 import { itemFixture, itemLook, itemModifiers } from '../model/gear';
-import { aimAt, normDeg } from '../model/geometry';
+import { aimAt, normDeg, rotate } from '../model/geometry';
 import { DEFAULT_LENS_MM, horizontalFovDeg } from '../model/lens';
 import { followsActorId, modeOf, sceneItems, twoShotTargets, type EditMode, type SceneDoc } from '../model/project';
 import type { Actor, Item, Vec2 } from '../model/types';
@@ -891,6 +891,29 @@ export function PlanCanvas(p: Props) {
       fillRadialGradientEndRadius: throwCm,
       fillRadialGradientColorStops: [0, rgbCss(rgb, a * k), 0.2, rgbCss(rgb, a * k * 0.75), 0.5, rgbCss(rgb, a * k * 0.4), 0.8, rgbCss(rgb, a * k * 0.15), 1, rgbCss(rgb, 0)],
     });
+    // Through diffusion: the lamp's cone stops at the frame, and the fabric spreads the light wide.
+    const src = lightSource(item, lit);
+    const frame = src?.frameId ? lit.find((f) => f.id === src.frameId) : undefined;
+    if (frame && deg < 360) {
+      const toFrame = Math.hypot(frame.pos.x - item.pos.x, frame.pos.y - item.pos.y);
+      const local = rotate({ x: frame.pos.x - item.pos.x, y: frame.pos.y - item.pos.y }, -item.rotationDeg);
+      const rest = Math.max(150, throwCm - toFrame);
+      const spread = 70 + 90 * (src!.scatter ?? 0.7); // light grid keeps a narrower throw, 216 spreads ~160°
+      const glow = {
+        fillRadialGradientStartPoint: { x: 0, y: 0 },
+        fillRadialGradientStartRadius: 0,
+        fillRadialGradientEndPoint: { x: 0, y: 0 },
+        fillRadialGradientEndRadius: rest,
+        fillRadialGradientColorStops: [0, rgbCss(rgb, a * 0.7), 0.25, rgbCss(rgb, a * 0.45), 0.6, rgbCss(rgb, a * 0.15), 1, rgbCss(rgb, 0)],
+      };
+      const lamp = { ...gradient(0.8), fillRadialGradientEndRadius: toFrame * 1.6 };
+      return (
+        <Group key={`${item.id}-beam`} id={`${item.id}-beam`} x={item.pos.x} y={item.pos.y} rotation={item.rotationDeg} listening={false}>
+          <Wedge radius={toFrame} angle={deg} rotation={-90 - deg / 2} {...lamp} />
+          <Wedge x={local.x} y={local.y} radius={rest} angle={spread} rotation={-90 - spread / 2} {...glow} />
+        </Group>
+      );
+    }
     return (
       <Group key={`${item.id}-beam`} id={`${item.id}-beam`} x={item.pos.x} y={item.pos.y} rotation={item.rotationDeg} listening={false}>
         {deg >= 360 ? (
