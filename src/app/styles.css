@@ -812,6 +812,7 @@ select {
 }
 
 .panel-body {
+  animation: panel-in 0.18s ease-out;
   padding: 16px;
   overflow-y: auto;
   display: flex;
@@ -2282,5 +2283,21 @@ kbd {
   from {
     opacity: 0;
     transform: translateY(-4px);
+  }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel-body,
+  .menu-pop {
+    animation: none;
+  }
+  .selection-bar {
+    transition: none;
   }
 }

@@ -587,7 +587,24 @@ export function App() {
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  const zoomBy = (f: number) => view && setView(zoomAt(view, f, { x: size.width / 2, y: size.height / 2 }));
+  /** Glide to a view (zoom buttons, fit) instead of jumping. */
+  const glide = useRef(0);
+  const animateView = (to: View) => {
+    const from = view;
+    cancelAnimationFrame(glide.current);
+    if (!from || matchMedia('(prefers-reduced-motion: reduce)').matches) return setView(to);
+    const t0 = performance.now();
+    const step = (now: number) => {
+      const k = Math.min(1, (now - t0) / 220);
+      const e = 1 - (1 - k) ** 3; // ease out
+      // Scale moves in log space so zooming feels even; the point under the centre stays put.
+      const scale = from.scale * (to.scale / from.scale) ** e;
+      setView({ scale, x: from.x + (to.x - from.x) * e, y: from.y + (to.y - from.y) * e });
+      if (k < 1) glide.current = requestAnimationFrame(step);
+    };
+    glide.current = requestAnimationFrame(step);
+  };
+  const zoomBy = (f: number) => view && animateView(zoomAt(view, f, { x: size.width / 2, y: size.height / 2 }));
   const power = circuitLoads(items, prefs.volts, prefs.breakerA ?? defaultBreakerA(prefs.volts));
   const powerWarn = power.circuits.some((c) => c.status === 'over');
   const sheetTitle = configuring && selectedItem ? displayLabel(selectedItem, project.actors) || MODE_LABEL[mode] : MODE_LABEL[mode];
@@ -880,7 +897,7 @@ export function App() {
             <button className="icon-btn" onClick={() => zoomBy(1 / 1.25)} aria-label="Zoom out" title="Zoom out">
               <IconMinus />
             </button>
-            <button className="icon-btn" onClick={() => setView(fitView(items, size.width, size.height))} aria-label="Fit plan" title="Fit plan to screen">
+            <button className="icon-btn" onClick={() => animateView(fitView(items, size.width, size.height))} aria-label="Fit plan" title="Fit plan to screen">
               <IconFit />
             </button>
             <button className="icon-btn" onClick={() => zoomBy(1.25)} aria-label="Zoom in" title="Zoom in">
@@ -950,7 +967,7 @@ export function App() {
               <IconChevron up={!sheetOpen} />
             </button>
           </div>
-          <div className="panel-body">
+          <div className="panel-body" key={`${mode}-${configuring ? 'settings' : 'add'}`}>
             {configuring && selectedItem ? (
               <Inspector
                 key={selectedItem.id}
