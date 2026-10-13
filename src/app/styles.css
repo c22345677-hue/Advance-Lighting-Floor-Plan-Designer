@@ -673,6 +673,9 @@ select {
   position: absolute;
   top: 60px; /* under the tool badge, so they never overlap on narrow screens */
   left: 50%;
+  transition:
+    left 0.15s ease-out,
+    top 0.15s ease-out;
   transform: translateX(-50%);
   z-index: 5;
   display: flex;
@@ -1836,6 +1839,12 @@ kbd {
    Tablets in portrait: icon-only setup actions
    ========================================================================================= */
 @media (max-width: 1280px) {
+  /* Help, Templates and Reports keep their names; Reset becomes an icon. */
+  #reset-scene .lbl {
+    display: none;
+  }
+}
+@media (max-width: 960px) {
   .top-action .lbl {
     display: none;
   }
@@ -2206,4 +2215,66 @@ kbd {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+/* Top-bar menus (Reports). */
+.menu-wrap {
+  position: relative;
+}
+.menu-caret {
+  display: inline-flex;
+  margin-left: -2px;
+  opacity: 0.7;
+}
+.menu-caret .icon {
+  width: 14px;
+  height: 14px;
+}
+.menu-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  min-width: 260px;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  animation: pop-in 0.14s ease-out;
+}
+.menu-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  min-height: 48px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--fg);
+  text-align: left;
+}
+.menu-item:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+.menu-item.on {
+  color: var(--accent);
+}
+.menu-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.menu-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
 }

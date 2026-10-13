@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, type CSSProperties } from 'react';
-import { nextUnitId } from '../model/gear';
+import { itemLook, nextUnitId } from '../model/gear';
 import { gearUsage, type GearList } from '../model/gearList';
 import {
   EDIT_MODES,
@@ -23,8 +23,9 @@ import { SchedulePanel } from './SchedulePanel';
 import { ArrangeTools } from './ArrangeTools';
 import { makeSetup, placeSetup } from '../model/setups';
 import { LayersMenu } from './LayersMenu';
+import { MenuButton } from './MenuButton';
 import { parseProjectFile, projectFileName, toProjectFile } from '../model/projectFile';
-import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain } from '../model/walls';
+import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain, wallPoints } from '../model/walls';
 import { HelpPanel } from './HelpPanel';
 import { isOpening, libraryItem } from '../library/items';
 import { fixtureById } from '../model/gear';
@@ -51,6 +52,9 @@ import {
   IconReset,
   IconRotateLeft,
   IconSelect,
+  IconMoon,
+  IconSun,
+  IconAutoTheme,
   IconCopy,
   IconTrash,
   IconClose,
@@ -159,6 +163,8 @@ interface Prefs {
   /** Hidden / locked categories on the plan. */
   layers?: Partial<Record<EditMode, LayerState>>;
   beams?: boolean;
+  /** Light or dark, or follow the device. */
+  theme?: 'auto' | 'light' | 'dark';
 }
 const PREFS_KEY = 'lfpd.prefs.v1';
 function loadPrefs(): Prefs {
@@ -233,6 +239,11 @@ export function App() {
   useEffect(() => saveProject(project), [project]);
   useEffect(() => saveGearLists(gearLists), [gearLists]);
   useEffect(() => {
+    const root = document.documentElement;
+    if (prefs.theme === 'light' || prefs.theme === 'dark') root.dataset.theme = prefs.theme;
+    else delete root.dataset.theme;
+  }, [prefs.theme]);
+  useEffect(() => {
     try {
       localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
     } catch {
@@ -260,6 +271,28 @@ export function App() {
 
   const selectedItem: Item | undefined = items.find((i) => i.id === selected);
   const selectedItems = items.filter((i) => selection.includes(i.id));
+  /** Where the selection bar goes: just above what's selected (below it when there's no room). */
+  const selectionBarAt = (() => {
+    if (!view || !selectedItems.length || !size.width) return null;
+    let [l, t, r, b] = [Infinity, Infinity, -Infinity, -Infinity];
+    for (const i of selectedItems) {
+      const pts = i.wall ? wallPoints(i) : [i.pos];
+      const rad = i.wall ? 0 : (Math.max(itemLook(i).w, itemLook(i).d) / 2) * view.scale;
+      for (const q of pts) {
+        const sx = view.x + q.x * view.scale;
+        const sy = view.y + q.y * view.scale;
+        [l, t, r, b] = [Math.min(l, sx - rad), Math.min(t, sy - rad), Math.max(r, sx + rad), Math.max(b, sy + rad)];
+      }
+    }
+    const BAR_H = 46;
+    const half = Math.min(200, size.width / 2 - 8);
+    const x = Math.min(size.width - half - 8, Math.max(half + 8, (l + r) / 2));
+    // Above, clear of the tool badge row; else below; else pinned to the top.
+    let y = t - BAR_H - 14;
+    if (y < 60) y = b + 14;
+    if (y > size.height - BAR_H - 70) y = 60;
+    return { left: x, top: Math.max(60, y) };
+  })();
   useEffect(() => {
     // Selection only lives inside the active category and scene.
     const keep = selection.filter((id) => items.some((i) => i.id === id && modeOf(i) === mode));
@@ -687,26 +720,36 @@ export function App() {
           >
             <IconReset /> <span className="lbl">Reset</span>
           </button>
-          <button id="open-gear" className={`top-action ${gear.limit ? 'on' : ''}`} onClick={() => setDialog('gear')} title="The gear on this job">
-            <IconGearList /> <span className="lbl">Gear list</span>
-          </button>
-          <button id="open-equipment" className="top-action" onClick={() => setDialog('equipment')} title="Equipment list for the job">
-            <IconEquipment /> <span className="lbl">Equipment</span>
-          </button>
+          <MenuButton
+            id="open-reports"
+            icon={<IconSchedule />}
+            label="Reports"
+            title="Gear list, equipment list, lighting schedule and PNG export"
+            entries={[
+              { id: 'open-gear', icon: <IconGearList />, label: 'Gear list', hint: 'The gear on this job', on: !!gear.limit, onClick: () => setDialog('gear') },
+              { id: 'open-equipment', icon: <IconEquipment />, label: 'Equipment', hint: 'Everything to pack, with weights', onClick: () => setDialog('equipment') },
+              {
+                id: 'open-schedule',
+                icon: <IconSchedule />,
+                label: 'Lighting schedule',
+                hint: 'Plan, lights, cameras, readings and power, printable',
+                onClick: () => {
+                  leaveWalls();
+                  setPlanImage(exportRef.current?.() ?? null);
+                  setDialog('schedule');
+                },
+              },
+              { id: 'export-png', icon: <IconExport />, label: 'Download PNG', hint: 'This scene as an image', disabled: items.length === 0, onClick: exportPng },
+            ]}
+          />
           <button
-            id="open-schedule"
-            className="top-action"
-            onClick={() => {
-              leaveWalls();
-              setPlanImage(exportRef.current?.() ?? null);
-              setDialog('schedule');
-            }}
-            title="Lighting schedule: plan, lights, cameras, readings and power on one printable sheet"
+            id="theme-toggle"
+            className="top-action icon-only"
+            onClick={() => setPrefs((p) => ({ ...p, theme: p.theme === 'dark' ? 'light' : p.theme === 'light' ? 'auto' : 'dark' }))}
+            aria-label={`Theme: ${prefs.theme ?? 'auto'}`}
+            title={`Theme: ${prefs.theme === 'dark' ? 'dark' : prefs.theme === 'light' ? 'light' : 'follows the device'} (click to change)`}
           >
-            <IconSchedule /> <span className="lbl">Schedule</span>
-          </button>
-          <button id="export-png" className="top-action" onClick={exportPng} disabled={items.length === 0} title="Download this scene as PNG">
-            <IconExport /> <span className="lbl">PNG</span>
+            {prefs.theme === 'dark' ? <IconMoon /> : prefs.theme === 'light' ? <IconSun /> : <IconAutoTheme />}
           </button>
         </div>
       </header>
@@ -813,7 +856,7 @@ export function App() {
 
           {selection.length > 0 && !wallTool && (
             // Touch screens: the keyboard and Alt/Shift shortcuts as buttons, for the selection.
-            <div className="selection-bar" role="toolbar" aria-label="Selection">
+            <div className="selection-bar" role="toolbar" aria-label="Selection" style={selectionBarAt ?? undefined}>
               <span className="selection-count">{selection.length > 1 ? `${selection.length} selected` : itemName(selectedItems[0]!)}</span>
               <button id="configure" className={`btn small ${configuring ? 'on' : ''}`} onClick={() => (configuring ? setConfiguring(false) : configure())} title="Settings for the selection (or right-click it)">
                 <IconSliders /> Configure
