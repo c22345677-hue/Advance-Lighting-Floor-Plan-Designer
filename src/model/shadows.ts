@@ -120,11 +120,28 @@ const insideBeam = (apex: Vec2, rot: number, beamDeg: number, throwCm: number, p
   return off <= beamDeg / 2;
 };
 
+/**
+ * How far a light's beam is drawn: its throw (default 3 m), stretched so it always reaches the
+ * nearest person standing in the beam (and whoever it is aimed at).
+ */
+export function beamReach(light: Item, all: readonly Item[]): number {
+  const set = light.light?.throwCm ?? DEFAULT_THROW_CM;
+  const beamDeg = lightBeamDeg(light);
+  let nearest = Infinity;
+  for (const p of all) {
+    if (p.kind !== 'person' || p.hidden) continue;
+    const aimed = !!p.actorId && p.actorId === light.light?.aimActorId;
+    if (!aimed && !insideBeam(light.pos, light.rotationDeg, beamDeg, 1e6, p.pos)) continue;
+    nearest = Math.min(nearest, Math.hypot(p.pos.x - light.pos.x, p.pos.y - light.pos.y));
+  }
+  return nearest === Infinity ? set : Math.max(set, nearest + 80);
+}
+
 /** The light as a shadow source, after its modifiers and any diffusion frame in its beam. */
 export function lightSource(light: Item, all: readonly Item[]): LightSource | null {
   if (light.kind !== 'light') return null;
   const beamDeg = lightBeamDeg(light);
-  const throwCm = light.light?.throwCm ?? DEFAULT_THROW_CM;
+  const throwCm = beamReach(light, all);
   let { size, what } = bareSource(light);
   // Soft modifiers make the source as big as they are.
   for (const m of itemModifiers(light)) {

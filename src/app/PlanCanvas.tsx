@@ -3,6 +3,7 @@ import { lightColor, rgbCss } from '../model/color';
 import { marksOf, moveMark } from '../model/blocking';
 import { sunRgb, windowLights, type WindowLight } from '../model/sun';
 import { meterReadings, type CameraSettings } from '../model/exposure';
+import { beamReach } from '../model/shadows';
 import { ShadowLayer, type LivePatch, type ShadowLive } from './ShadowLayer';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
@@ -50,7 +51,6 @@ const GRID_CM = 50;
 const PERSON_SCALE = 1.5;
 /** Actors and crew on the plan: 15% bigger again than the people in a video village. */
 const ACTOR_SCALE = PERSON_SCALE * 1.15;
-const DEFAULT_THROW_CM = 300;
 const CAMERA_CONE_CM = 660;
 /** Hold a finger this long on an item to add it to the selection. */
 const LONG_PRESS_MS = 500;
@@ -111,6 +111,8 @@ interface Props {
   onSelect: (id: string | null) => void;
   /** Box-select, Shift+click. */
   onSelectMany: (ids: string[]) => void;
+  /** Right-click or double-click an item: open its settings. */
+  onConfigure: (id: string) => void;
   /** Alt + drag of several selected items: copies moved by `delta`. */
   onDuplicateMany: (ids: string[], delta: Vec2) => void;
   colors: CanvasColors;
@@ -617,6 +619,12 @@ export function PlanCanvas(p: Props) {
         draggable={active && tool === 'move' && !item.locked}
         onMouseDown={press}
         onTouchStart={press}
+        onContextMenu={(e) => {
+          e.evt.preventDefault();
+          if (active) p.onConfigure(item.id);
+        }}
+        onDblClick={() => active && p.onConfigure(item.id)}
+        onDblTap={() => active && p.onConfigure(item.id)}
         onMouseEnter={() => active && !item.locked && setCursor(tool === 'move' ? 'move' : ROTATE_CURSOR)}
         onMouseLeave={() => setCursor('')}
         onDragStart={() => {
@@ -815,7 +823,7 @@ export function PlanCanvas(p: Props) {
 
   const beam = (item: Item) => {
     if (item.kind !== 'light') return null;
-    const throwCm = item.light?.throwCm ?? DEFAULT_THROW_CM;
+    const throwCm = beamReach(item, lit);
     const deg = Math.min(360, beamDegOf(item));
     const gradient = {
       fillRadialGradientStartPoint: { x: 0, y: 0 },

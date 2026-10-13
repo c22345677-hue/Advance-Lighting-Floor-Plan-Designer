@@ -56,6 +56,7 @@ import {
   IconRotate,
   IconGrid,
   IconShadow,
+  IconSliders,
   IconSchedule,
   IconMeter,
   IconTemplates,
@@ -194,6 +195,16 @@ export function App() {
   /** Selected items (box-select and Shift+click select several). */
   const [selection, setSelection] = useState<string[]>([]);
   const selected = selection.length === 1 ? selection[0]! : null;
+  /** The side panel shows the selection's settings only when asked (right-click, Configure, a list row); otherwise it stays on adding. */
+  const [configuring, setConfiguring] = useState(false);
+  useEffect(() => {
+    if (!selection.length) setConfiguring(false);
+  }, [selection.length]);
+  const configure = (id?: string) => {
+    if (id && !selection.includes(id)) setSelection([id]);
+    setConfiguring(true);
+    setSheetOpen(true);
+  };
   const setSelected = (id: string | null) => setSelection(id ? [id] : []);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [view, setView] = useState<View | null>(null);
@@ -545,7 +556,7 @@ export function App() {
   const bar = view ? scaleBar(view.scale) : null;
   const power = circuitLoads(items, prefs.volts, prefs.breakerA ?? defaultBreakerA(prefs.volts));
   const powerWarn = power.circuits.some((c) => c.status === 'over');
-  const sheetTitle = selectedItem ? displayLabel(selectedItem, project.actors) || MODE_LABEL[mode] : MODE_LABEL[mode];
+  const sheetTitle = configuring && selectedItem ? displayLabel(selectedItem, project.actors) || MODE_LABEL[mode] : MODE_LABEL[mode];
 
   return (
     <div className="app">
@@ -727,6 +738,7 @@ export function App() {
               selection={selection}
               onSelect={setSelected}
               onSelectMany={setSelection}
+              onConfigure={configure}
               onDuplicateMany={duplicateMany}
               colors={colors}
               showGrid={prefs.grid}
@@ -764,6 +776,9 @@ export function App() {
             // Touch screens: the keyboard and Alt/Shift shortcuts as buttons, for the selection.
             <div className="selection-bar" role="toolbar" aria-label="Selection">
               <span className="selection-count">{selection.length > 1 ? `${selection.length} selected` : itemName(selectedItems[0]!)}</span>
+              <button id="configure" className={`btn small ${configuring ? 'on' : ''}`} onClick={() => (configuring ? setConfiguring(false) : configure())} title="Settings for the selection (or right-click it)">
+                <IconSliders /> Configure
+              </button>
               <button className="icon-btn" onClick={() => turnSelection(-15)} aria-label="Turn left 15°" title="Turn left 15°">
                 <IconRotateLeft />
               </button>
@@ -849,8 +864,8 @@ export function App() {
 
         <aside className={`panel ${sheetOpen ? 'open' : ''}`} aria-label={`${MODE_LABEL[mode]} panel`}>
           <div className="panel-head">
-            {selection.length ? (
-              <button id="panel-back" className="back-btn" onClick={() => setSelected(null)}>
+            {configuring && selection.length ? (
+              <button id="panel-back" className="back-btn" onClick={() => setConfiguring(false)}>
                 <IconBack /> {MODE_LABEL[mode]}
               </button>
             ) : (
@@ -862,7 +877,7 @@ export function App() {
             </button>
           </div>
           <div className="panel-body">
-            {selectedItem ? (
+            {configuring && selectedItem ? (
               <Inspector
                 key={selectedItem.id}
                 item={selectedItem}
@@ -879,7 +894,7 @@ export function App() {
                 onCamera={(camera) => setPrefs((p) => ({ ...p, camera }))}
                 sun={scene.sun}
               />
-            ) : selection.length > 1 ? (
+            ) : configuring && selection.length > 1 ? (
               <section className="section">
                 <h3 className="section-title">
                   Selected <span className="count">{selection.length}</span>
@@ -941,7 +956,7 @@ export function App() {
                 actors={project.actors}
                 kind={kind}
                 gear={gear}
-                onSelect={setSelected}
+                onSelect={(id) => configure(id)}
                 onPlace={place}
                 onPlaceActor={placeActor}
                 onNewPerson={newPerson}

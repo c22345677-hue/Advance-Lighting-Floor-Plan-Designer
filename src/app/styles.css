@@ -564,14 +564,14 @@ select {
   cursor: crosshair;
 }
 
-/* Selection actions as buttons; shown on touch screens (see the pointer: coarse block). */
+/* Selection actions as buttons: configure, turn, duplicate, delete, deselect. */
 .selection-bar {
   position: absolute;
   top: 60px; /* under the tool badge, so they never overlap on narrow screens */
   left: 50%;
   transform: translateX(-50%);
   z-index: 5;
-  display: none;
+  display: flex;
   align-items: center;
   gap: 2px;
   padding: 4px 4px 4px 12px;
@@ -580,6 +580,13 @@ select {
   border: 1px solid var(--line);
   border-radius: 10px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.selection-bar .btn.small {
+  min-height: 34px;
+  padding: 0 10px;
+  margin-right: 4px;
+  gap: 6px;
 }
 
 .selection-count {
@@ -1947,9 +1954,6 @@ kbd {
     display: inline;
   }
 
-  .selection-bar {
-    display: flex;
-  }
 
   .stage {
     -webkit-user-select: none;

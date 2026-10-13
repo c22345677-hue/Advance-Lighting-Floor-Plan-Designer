@@ -6,7 +6,7 @@ import type { Fixture } from '../catalog/schema';
 import { FABRIC_KIND_LABEL, FABRICS, takesFabric, type FabricKind } from '../library/fabrics';
 import { isOpening, libraryItem } from '../library/items';
 import { DEFAULT_WALL_CM, wallLength } from '../model/walls';
-import { lightSource } from '../model/shadows';
+import { beamReach, lightSource } from '../model/shadows';
 import { circuitName, lightWatts } from '../model/power';
 import { DAYLIGHT_ID, lightName, meterReadings, type CameraSettings } from '../model/exposure';
 import type { Sun } from '../model/sun';
@@ -568,6 +568,9 @@ function LightSection({
           <span className="unit">cm</span>
           </span>
         </label>
+        {beamReach(item, sceneItems) > (item.light?.throwCm ?? 300) && (
+          <p className="hint-text">Drawn to {Math.round(beamReach(item, sceneItems) / 10) * 10} cm so it reaches the nearest person in the beam.</p>
+        )}
       </Section>
 
       <ShadowSection item={item} sceneItems={sceneItems} setLight={setLight} />

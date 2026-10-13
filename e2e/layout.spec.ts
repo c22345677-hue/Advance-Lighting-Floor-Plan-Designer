@@ -53,6 +53,10 @@ test('categories switch and an item can be added', async ({ page }) => {
   await page.locator('#mode-scene').click();
   if (vp.width <= PHONE_MAX) await page.locator('.sheet-toggle').click();
   await page.locator('.tile', { hasText: 'Sofa' }).click();
+  // The panel stays on adding; Configure opens the new item's settings.
+  await expect(page.locator('.tile', { hasText: 'Sofa' })).toBeVisible();
+  if (vp.width <= PHONE_MAX) await page.locator('.sheet-toggle').click();
+  await page.locator('#configure').click();
   await expect(page.locator('.insp-title')).toHaveText('Sofa');
 });
 

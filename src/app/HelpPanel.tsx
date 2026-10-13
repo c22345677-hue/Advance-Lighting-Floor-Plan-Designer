@@ -25,7 +25,9 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
   {
     title: 'Selecting',
     rows: [
-      ['Click', 'Select an item of the current category'],
+      ['Click', 'Select an item of the current category (the panel stays on adding)'],
+      ['Right-click or double-click an item', 'Open its settings in the side panel'],
+      ['Configure (bar above the plan)', 'Open the settings of what is selected'],
       ['Drag on empty space', 'Box-select (only the current category)'],
       [<>{k('Shift')} + click</>, 'Add to or remove from the selection'],
       [<>{k('Shift')} + box</>, 'Add to the selection'],
