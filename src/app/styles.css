@@ -98,6 +98,17 @@ body,
   height: 100%;
 }
 
+/* On phones and tablets, 100% can be taller than what's visible while the browser's address bar
+   shows (Chrome/Samsung on Android), which hides the bottom of the app. The dynamic viewport
+   height is always the visible area. */
+@supports (height: 100dvh) {
+  html,
+  body,
+  #root {
+    height: 100dvh;
+  }
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -106,6 +117,10 @@ body {
   font-size: 15px;
   line-height: 1.35;
   overflow: hidden;
+  overscroll-behavior: none; /* no pull-to-refresh or bounce while dragging on the plan */
+  touch-action: manipulation; /* no double-tap zoom on buttons */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -385,7 +400,7 @@ select {
   z-index: 30;
   width: 340px;
   max-width: calc(100vw - 24px);
-  max-height: calc(100vh - 80px);
+  max-height: calc(100dvh - 80px);
   overflow-y: auto;
   box-sizing: border-box;
   background: var(--surface);
@@ -1497,7 +1512,7 @@ kbd {
     right: 8px;
     width: auto;
     max-width: none;
-    max-height: calc(100vh - 64px);
+    max-height: calc(100dvh - 64px);
   }
 
   .topbar-right {
@@ -1629,5 +1644,40 @@ kbd {
 @media (prefers-reduced-motion: reduce) {
   .panel {
     transition: none;
+  }
+}
+
+.stat.hint .touch-only {
+  display: none;
+}
+
+/* =========================================================================================
+   Touch screens (tablets): bigger targets, no mouse-only hints
+   ========================================================================================= */
+@media (pointer: coarse) {
+  .tool-btn kbd,
+  .tool-badge kbd {
+    display: none;
+  }
+
+  .modes button,
+  .tool-btn,
+  .top-action,
+  .icon-btn {
+    min-height: 44px;
+  }
+
+  .stat.hint .mouse-only {
+    display: none;
+  }
+
+  .stat.hint .touch-only {
+    display: inline;
+  }
+
+  .stage {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none; /* no long-press menu on the plan */
   }
 }

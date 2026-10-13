@@ -704,7 +704,7 @@ export function PlanCanvas(p: Props) {
       scaleX={view.scale}
       scaleY={view.scale}
       onWheel={onWheel}
-      onContextMenu={(e) => p.wallTool && e.evt.preventDefault()}
+      onContextMenu={(e) => e.evt.preventDefault()} /* no browser menu on the plan (right-click, long-press) */
       onMouseMove={(e) => {
         if (rot.current) moveRotate(e.evt.shiftKey);
         const b = boxRef.current;

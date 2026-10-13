@@ -822,7 +822,9 @@ export function App() {
           </span>
         ) : (
           <span className="stat hint">
-            {MODE_HINT[mode]} · pan: middle mouse or Space + drag · W move · R rotate · drag on empty space to select · Alt + drag copy · 1–4 category
+            {MODE_HINT[mode]}
+            <span className="mouse-only"> · pan: middle mouse or Space + drag · W move · R rotate · drag on empty space to select · Alt + drag copy · 1–4 category</span>
+            <span className="touch-only"> · two fingers to pan and zoom · tap to select</span>
           </span>
         )}
       </footer>
