@@ -766,6 +766,15 @@ textarea.text-input {
   font: inherit;
 }
 
+.save-setup {
+  display: flex;
+  gap: 8px;
+}
+.save-setup input {
+  flex: 1;
+  min-width: 0;
+}
+
 .layers {
   position: relative;
 }

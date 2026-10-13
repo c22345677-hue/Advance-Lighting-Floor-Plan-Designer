@@ -88,3 +88,26 @@ export function interviewersBesideCamera(count: number, camera: Vec2, subjects: 
     return person(pos, aimAt(pos, subjects), count > 1 ? `Interviewer ${i + 1}` : 'Interviewer', 'interviewer');
   });
 }
+
+/** A light (generic stand-in) at `pos`, aimed at `target`. */
+export const light = (catalogId: string, pos: Vec2, target: Vec2, extra: Partial<DraftItem['light']> = {}): DraftItem => ({
+  kind: 'light',
+  catalogId,
+  pos,
+  rotationDeg: aimAt(pos, target),
+  light: { ...extra },
+});
+
+/** A prop from the library, e.g. "table". */
+export const prop = (id: string, pos: Vec2, rotationDeg = 0): DraftItem => ({ kind: 'prop', catalogId: `generic.prop.${id}`, pos, rotationDeg });
+
+/** A grip item, e.g. "polyboard" or "flag". */
+export const grip = (id: string, pos: Vec2, target: Vec2, extra: Partial<DraftItem> = {}): DraftItem => ({
+  kind: 'grip',
+  catalogId: `generic.grip.${id}`,
+  pos,
+  rotationDeg: aimAt(pos, target),
+  ...extra,
+});
+
+export const lightsOption = { type: 'boolean' as const, key: 'lights', label: 'Starter lights', default: true };

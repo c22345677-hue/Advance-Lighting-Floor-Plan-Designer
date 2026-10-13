@@ -46,6 +46,7 @@ export function applyTemplate(
     item.pos = pt(d.pos);
     item.rotationDeg = normDeg(d.rotationDeg + deg);
     if (item.path) item.path.points = item.path.points.map(pt);
+    if (item.blocking) item.blocking.marks = item.blocking.marks.map(pt);
     return item;
   };
 

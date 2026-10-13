@@ -2,6 +2,7 @@
 import type { GearList } from '../model/gearList';
 import { newProject, newScene, type Project } from '../model/project';
 import type { Item } from '../model/types';
+import type { Setup } from '../model/setups';
 
 export interface ProjectMeta {
   id: string;
@@ -78,3 +79,7 @@ export function loadStartProject(): Project | null {
 
 export const loadGearLists = (): GearList[] => read<GearList[]>(GEAR) ?? [];
 export const saveGearLists = (lists: GearList[]): void => write(GEAR, lists);
+
+const SETUPS = 'lfpd.setups.v1';
+export const loadSetups = (): Setup[] => read<Setup[]>(SETUPS) ?? [];
+export const saveSetups = (setups: Setup[]): void => write(SETUPS, setups);

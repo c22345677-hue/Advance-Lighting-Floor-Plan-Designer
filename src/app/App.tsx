@@ -21,6 +21,7 @@ import { circuitLoads, defaultBreakerA } from '../model/power';
 import { PowerPanel } from './PowerPanel';
 import { SchedulePanel } from './SchedulePanel';
 import { ArrangeTools } from './ArrangeTools';
+import { makeSetup, placeSetup } from '../model/setups';
 import { LayersMenu } from './LayersMenu';
 import { parseProjectFile, projectFileName, toProjectFile } from '../model/projectFile';
 import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain } from '../model/walls';
@@ -63,7 +64,7 @@ import {
 import { Inspector } from './Inspector';
 import { clampScale, displayLabel, isFocusLocked, itemName, PlanCanvas, zoomAt, type ExportPng, type LayerState, type Tool, type View, type WallExtend } from './PlanCanvas';
 import { ProjectMenu } from './ProjectMenu';
-import { deleteProject, listProjects, loadGearLists, loadProject, loadStartProject, saveGearLists, saveProject } from './storage';
+import { deleteProject, listProjects, loadGearLists, loadProject, loadStartProject, saveGearLists, saveProject, loadSetups, saveSetups } from './storage';
 import { TemplatePanel } from './TemplatePanel';
 import { useCanvasColors } from './theme';
 
@@ -202,6 +203,9 @@ export function App() {
   const [gearLists, setGearLists] = useState<GearList[]>(loadGearLists);
   const exportRef = useRef<ExportPng | null>(null);
   const [planImage, setPlanImage] = useState<string | null>(null);
+  const [setups, setSetups] = useState(loadSetups);
+  useEffect(() => saveSetups(setups), [setups]);
+  const [setupName, setSetupName] = useState('');
   const stageBox = useRef<HTMLDivElement>(null);
   const colors = useCanvasColors();
   const confirm = useConfirm();
@@ -480,6 +484,12 @@ export function App() {
   const addTemplate = (t: TemplateDefinition, values: TemplateValues) => {
     const r = applyTemplate(t, values, { origin: viewCenter() });
     const cast = castTemplateItems(r.shots.flatMap((s) => s.items), project.actors, items, kind);
+    // Template lights get the next free numbers.
+    const numbered: Item[] = [];
+    for (const i of cast.items) {
+      if (i.kind === 'light' && !i.light?.unitId) i.light = { ...i.light, unitId: nextUnitId([...items, ...numbered]) };
+      numbered.push(i);
+    }
     for (const actor of cast.added) dispatch({ type: 'addActor', actor });
     sd({ type: 'applyTemplate', setItems: r.setItems, items: cast.items });
     setDialog(null);
@@ -908,6 +918,20 @@ export function App() {
                     Delete
                   </button>
                 </div>
+                <form
+                  className="save-setup"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const name = setupName.trim() || `Setup ${setups.length + 1}`;
+                    setSetups((ss) => [...ss, makeSetup(uid(), name, selectedItems, scene)]);
+                    setSetupName('');
+                  }}
+                >
+                  <input className="text-input" aria-label="Setup name" placeholder="Name, e.g. Soft key + rim" value={setupName} onChange={(e) => setSetupName(e.target.value)} />
+                  <button className="btn" type="submit">
+                    Save as a setup
+                  </button>
+                </form>
                 <ArrangeTools items={selectedItems} scene={items} actors={project.actors} onPatches={(patches) => patches.length && sd({ type: 'updateMany', patches })} />
               </section>
             ) : (
@@ -1019,6 +1043,15 @@ export function App() {
             onKind={(k) => dispatch({ type: 'setProject', patch: { kind: k } })}
             onAdd={addTemplate}
             sceneName={scene.name}
+            setups={setups}
+            onAddSetup={(id) => {
+              const s = setups.find((x) => x.id === id);
+              if (!s) return;
+              const placed = placeSetup(s, viewCenter(), items, project.actors, uid);
+              sd({ type: 'add', ...placed });
+              setDialog(null);
+            }}
+            onDeleteSetup={(id) => setSetups((ss) => ss.filter((s) => s.id !== id))}
           />
         </Dialog>
       )}

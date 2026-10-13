@@ -82,7 +82,7 @@ describe('applyTemplate', () => {
 
 describe('template library', () => {
   it('registers the starter templates', () => {
-    expect(listTemplates().map((t) => t.id)).toEqual(['interview', 'teleprompter', 'green-screen']);
+    expect(listTemplates().map((t) => t.id)).toEqual(['interview', 'teleprompter', 'dialogue', 'dinner-table', 'car-interior', 'walk-and-talk', 'green-screen', 'tabletop']);
   });
 
   it.each(listTemplates().map((t) => [t.id, t] as const))(

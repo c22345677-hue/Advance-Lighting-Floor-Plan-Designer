@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { ProjectKind } from '../model/project';
+import type { Setup } from '../model/setups';
 import {
   listTemplates,
   repeatItemLabel,
@@ -17,6 +18,10 @@ interface Props {
   onAdd: (template: TemplateDefinition, values: TemplateValues) => void;
   /** Where the template goes, for the button text. */
   sceneName: string;
+  /** Setups saved from earlier selections. */
+  setups: Setup[];
+  onAddSetup: (id: string) => void;
+  onDeleteSetup: (id: string) => void;
 }
 
 const KINDS: { id: ProjectKind; label: string; hint: string }[] = [
@@ -24,7 +29,7 @@ const KINDS: { id: ProjectKind; label: string; hint: string }[] = [
   { id: 'doc', label: 'Doc', hint: 'People are interviewees and interviewers.' },
 ];
 
-export function TemplatePanel({ kind, onKind, onAdd, sceneName }: Props) {
+export function TemplatePanel({ kind, onKind, onAdd, sceneName, setups, onAddSetup, onDeleteSetup }: Props) {
   const templates = listTemplates().filter((t) => t.kinds.includes(kind));
   const [templateId, setTemplateId] = useState(templates[0]?.id ?? '');
   const [input, setInput] = useState<Record<string, Partial<TemplateValues>>>({});
@@ -124,6 +129,34 @@ export function TemplatePanel({ kind, onKind, onAdd, sceneName }: Props) {
       <button id="add-template" className="btn primary big" onClick={() => onAdd(template, values)}>
         Add {template.name.toLowerCase()} to {sceneName}
       </button>
+
+      <section className="section">
+        <h3 className="section-title">
+          My setups <span className="count">{setups.length}</span>
+        </h3>
+        {setups.length === 0 ? (
+          <p className="hint-text">Select several things on the plan and use "Save as a setup" to reuse them in any scene or project.</p>
+        ) : (
+          <ul className="row-list">
+            {setups.map((s) => (
+              <li key={s.id} className="row static">
+                <span className="row-main">
+                  <span className="row-title">{s.name}</span>
+                  <span className="row-sub">
+                    {s.items.length} item{s.items.length > 1 ? 's' : ''}
+                  </span>
+                </span>
+                <button className="btn" onClick={() => onAddSetup(s.id)}>
+                  Add
+                </button>
+                <button className="icon-btn" aria-label={`Delete setup ${s.name}`} onClick={() => onDeleteSetup(s.id)}>
+                  ×
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </div>
   );
 }

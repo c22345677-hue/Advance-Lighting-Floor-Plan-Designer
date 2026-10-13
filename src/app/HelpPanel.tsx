@@ -56,6 +56,19 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
     ],
   },
   {
+    title: 'Tools in the app',
+    rows: [
+      ['Gauge button (bottom right)', 'Light meter: T-stop, lux and key:fill under each person'],
+      ['Layers button (bottom right)', 'Show, hide or lock each category; beams on or off'],
+      ['Power total (bottom bar)', 'Circuits, breaker load and auto-assign'],
+      ['Schedule (top bar)', 'Printable sheet: plan, lights, cameras, readings, power'],
+      ['Select several, then Arrange', 'Line up, space evenly, arc around or face a person; save as a setup'],
+      ['Scene → Daylight', 'Sun through the windows: direction, height, overcast'],
+      ['Person → Blocking', 'Marks 1, 2, 3… and go to a mark'],
+      ['Camera → View', 'Sketch of the frame, with gear in shot listed'],
+    ],
+  },
+  {
     title: 'Touch screens',
     rows: [
       ['Tap', 'Select an item of the current category'],
