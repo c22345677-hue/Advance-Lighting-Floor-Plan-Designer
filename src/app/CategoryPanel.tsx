@@ -53,6 +53,8 @@ function summary(item: Item, actors: Actor[]): { sub: string; warn?: string } {
     return { sub: `${f.powerW ?? '?'} W · rig ${kg(itemRigWeightKg(item))}`, warn: over ? 'Stand overloaded' : undefined };
   }
   if (item.kind === 'camera') {
+    const two = item.camera?.twoShot?.map((id) => actors.find((a) => a.id === id)?.name ?? '?');
+    if (two) return { sub: `Two shot: ${two.join(' & ')} · ${item.camera?.focalMm ?? 35} mm` };
     const focus = actors.find((a) => a.id === item.camera?.focusActorId);
     return { sub: focus ? `Focus on ${focus.name}` : 'No focus' };
   }

@@ -70,6 +70,10 @@ export interface CameraProps {
   focalMm?: number;
   /** When set, the camera always turns to face this actor (project actor id). */
   focusActorId?: string;
+  /** Zoom lens: the range it can use (focalMm is then where it's set). Missing = prime. */
+  zoom?: { minMm: number; maxMm: number };
+  /** Two shot: frames both these actors, zooming (and backing away if it must). Wins over focusActorId. */
+  twoShot?: [string, string];
 }
 
 export type Gender = 'male' | 'female';

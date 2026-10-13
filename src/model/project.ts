@@ -2,8 +2,10 @@
 import { libraryItem } from '../library/items';
 import { aimAt } from './geometry';
 import { attachOpenings } from './walls';
+import { DEFAULT_LENS_MM } from './lens';
+import { fitTwoShot } from './twoShot';
 import type { EquipmentState } from './equipment';
-import type { Actor, CastRole, Gender, Item } from './types';
+import type { Actor, CastRole, Gender, Item, Vec2 } from './types';
 
 export interface SceneDoc {
   id: string;
@@ -119,9 +121,30 @@ export function followsActorId(i: Item): string | undefined {
   return undefined;
 }
 
+/** A camera's two shot when both people are in the scene: the two positions. */
+export function twoShotTargets(i: Item, all: readonly Item[]): [Vec2, Vec2] | null {
+  const ids = i.kind === 'camera' ? i.camera?.twoShot : undefined;
+  if (!ids) return null;
+  const a = all.find((x) => x.actorId === ids[0]);
+  const b = all.find((x) => x.actorId === ids[1]);
+  return a && b && a !== b ? [a.pos, b.pos] : null;
+}
+
 export function applyCameraFocus(items: Item[], all: readonly Item[] = items): Item[] {
   let changed = false;
   const out = items.map((i) => {
+    const pair = twoShotTargets(i, all);
+    if (pair) {
+      const fit = fitTwoShot(i.pos, pair[0], pair[1], { focalMm: i.camera?.focalMm ?? DEFAULT_LENS_MM, zoom: i.camera?.zoom });
+      const same =
+        Math.abs(fit.pos.x - i.pos.x) < 1e-6 &&
+        Math.abs(fit.pos.y - i.pos.y) < 1e-6 &&
+        Math.abs(fit.rotationDeg - i.rotationDeg) < 1e-6 &&
+        fit.focalMm === i.camera?.focalMm;
+      if (same) return i;
+      changed = true;
+      return { ...i, pos: fit.pos, rotationDeg: fit.rotationDeg, camera: { ...i.camera, focalMm: fit.focalMm } };
+    }
     const who = followsActorId(i);
     const target = who ? all.find((a) => a.actorId === who) : undefined;
     if (!target) return i;

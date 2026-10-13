@@ -16,10 +16,10 @@ import {
   standCheck,
   standsFor,
 } from '../model/gear';
-import { ROLE_LABEL, roleOf, type ProjectKind } from '../model/project';
+import { ROLE_LABEL, roleOf, twoShotTargets, type ProjectKind } from '../model/project';
 import type { Actor, Item, LightProps } from '../model/types';
 import { FixtureSearch } from './FixtureSearch';
-import { COMMON_LENSES_MM, DEFAULT_LENS_MM, horizontalFovDeg, LENS_RANGE_MM } from '../model/lens';
+import { COMMON_LENSES_MM, COMMON_ZOOMS_MM, DEFAULT_LENS_MM, horizontalFovDeg, LENS_RANGE_MM } from '../model/lens';
 import { avail, limitingList, type GearScope } from './gearScope';
 import { useConfirm } from './confirm';
 import { IconClose } from './icons';
@@ -227,59 +227,116 @@ export function Inspector(props: Props) {
   );
 }
 
-function LensSection({ item, onUpdate }: Pick<Props, 'item' | 'onUpdate'>) {
+function LensSection({ item, sceneItems, onUpdate }: Pick<Props, 'item' | 'sceneItems' | 'onUpdate'>) {
   const mm = item.camera?.focalMm ?? DEFAULT_LENS_MM;
-  const [custom, setCustom] = useState(!COMMON_LENSES_MM.includes(mm));
-  const setMm = (v: number) =>
-    onUpdate({ camera: { ...item.camera, focalMm: Math.min(LENS_RANGE_MM.max, Math.max(LENS_RANGE_MM.min, Math.round(v))) } });
+  const zoom = item.camera?.zoom;
+  const [customPick, setCustom] = useState(false);
+  // A length that isn't in the menu (typed, or left by a zoom) shows the custom controls.
+  const custom = customPick || !COMMON_LENSES_MM.includes(mm);
+  // A two shot sets a zoom lens's focal length itself.
+  const auto = !!zoom && !!twoShotTargets(item, sceneItems);
+  const range = zoom ? { min: zoom.minMm, max: zoom.maxMm } : LENS_RANGE_MM;
+  const setCam = (patch: Partial<NonNullable<Item['camera']>>) => onUpdate({ camera: { ...item.camera, ...patch } });
+  const setMm = (v: number) => setCam({ focalMm: Math.min(range.max, Math.max(range.min, Math.round(v))) });
+  const zoomKey = zoom ? `${zoom.minMm}-${zoom.maxMm}` : '';
+  const isCommonZoom = COMMON_ZOOMS_MM.some((z) => `${z.minMm}-${z.maxMm}` === zoomKey);
+  const setZoom = (z: { minMm: number; maxMm: number }) => {
+    const minMm = Math.max(LENS_RANGE_MM.min, Math.min(z.minMm, z.maxMm));
+    const maxMm = Math.min(LENS_RANGE_MM.max, Math.max(z.minMm, z.maxMm));
+    setCam({ zoom: { minMm, maxMm }, focalMm: Math.min(maxMm, Math.max(minMm, mm)) });
+  };
+  const slider = (
+    <div className="lens-custom">
+      <input type="range" aria-label="Focal length slider" min={range.min} max={range.max} value={mm} disabled={auto} onChange={(e) => setMm(Number(e.target.value))} />
+      <span className="input-unit">
+        <input
+          className="text-input num"
+          type="number"
+          aria-label="Focal length in mm"
+          min={range.min}
+          max={range.max}
+          value={mm}
+          disabled={auto}
+          onChange={(e) => e.target.value !== '' && setMm(Number(e.target.value))}
+        />
+        <span className="unit">mm</span>
+      </span>
+    </div>
+  );
   return (
     <Section title="Lens">
-      <label className="field">
-        <span className="field-label">Focal length</span>
-        <select
-          aria-label="Lens"
-          value={custom ? 'custom' : String(mm)}
-          onChange={(e) => {
-            if (e.target.value === 'custom') setCustom(true);
-            else {
-              setCustom(false);
-              setMm(Number(e.target.value));
-            }
-          }}
-        >
-          {COMMON_LENSES_MM.map((l) => (
-            <option key={l} value={l}>
-              {l} mm
-            </option>
-          ))}
-          <option value="custom">Custom…</option>
-        </select>
-      </label>
-      {custom && (
-        <div className="lens-custom">
-          <input
-            type="range"
-            aria-label="Custom focal length"
-            min={LENS_RANGE_MM.min}
-            max={LENS_RANGE_MM.max}
-            value={mm}
-            onChange={(e) => setMm(Number(e.target.value))}
-          />
-          <span className="input-unit">
-            <input
-              className="text-input num"
-              type="number"
-              aria-label="Focal length in mm"
-              min={LENS_RANGE_MM.min}
-              max={LENS_RANGE_MM.max}
-              value={mm}
-              onChange={(e) => e.target.value !== '' && setMm(Number(e.target.value))}
-            />
-            <span className="unit">mm</span>
-          </span>
+      <div className="field">
+        <span className="field-label">Type</span>
+        <div className="segmented" role="radiogroup" aria-label="Lens type">
+          <button role="radio" aria-checked={!zoom} onClick={() => setCam({ zoom: undefined })}>
+            Prime
+          </button>
+          <button role="radio" aria-checked={!!zoom} onClick={() => !zoom && setZoom({ minMm: 24, maxMm: 70 })}>
+            Zoom
+          </button>
         </div>
+      </div>
+      {zoom ? (
+        <>
+          <label className="field">
+            <span className="field-label">Range</span>
+            <select
+              aria-label="Zoom range"
+              value={isCommonZoom ? zoomKey : 'custom'}
+              onChange={(e) => {
+                const z = COMMON_ZOOMS_MM.find((x) => `${x.minMm}-${x.maxMm}` === e.target.value);
+                if (z) setZoom(z);
+              }}
+            >
+              {COMMON_ZOOMS_MM.map((z) => (
+                <option key={`${z.minMm}-${z.maxMm}`} value={`${z.minMm}-${z.maxMm}`}>
+                  {z.minMm}–{z.maxMm} mm
+                </option>
+              ))}
+              <option value="custom">Custom…</option>
+            </select>
+          </label>
+          {!isCommonZoom && (
+            <div className="field">
+              <span className="field-label">From – to</span>
+              <span className="input-unit">
+                <input className="text-input num" type="number" aria-label="Zoom wide end" value={zoom.minMm} onChange={(e) => setZoom({ ...zoom, minMm: Number(e.target.value) || 1 })} />
+                <span className="unit">–</span>
+                <input className="text-input num" type="number" aria-label="Zoom long end" value={zoom.maxMm} onChange={(e) => setZoom({ ...zoom, maxMm: Number(e.target.value) || 1 })} />
+                <span className="unit">mm</span>
+              </span>
+            </div>
+          )}
+          {slider}
+        </>
+      ) : (
+        <>
+          <label className="field">
+            <span className="field-label">Focal length</span>
+            <select
+              aria-label="Lens"
+              value={custom ? 'custom' : String(mm)}
+              onChange={(e) => {
+                if (e.target.value === 'custom') setCustom(true);
+                else {
+                  setCustom(false);
+                  setMm(Number(e.target.value));
+                }
+              }}
+            >
+              {COMMON_LENSES_MM.map((l) => (
+                <option key={l} value={l}>
+                  {l} mm
+                </option>
+              ))}
+              <option value="custom">Custom…</option>
+            </select>
+          </label>
+          {custom && slider}
+        </>
       )}
       <p className="hint-text">
+        {auto ? `${mm} mm, set by the two shot. ` : ''}
         {Math.round(horizontalFovDeg(mm))}° horizontal angle of view on a Super 35 sensor. The cone on the plan follows the lens.
       </p>
     </Section>
@@ -332,19 +389,63 @@ function FollowPerson({
   );
 }
 
+type Framing = 'none' | 'one' | 'two';
+
 function CameraSection({ item, sceneItems, actors, onUpdate }: Pick<Props, 'item' | 'sceneItems' | 'actors' | 'onUpdate'>) {
+  const cam = item.camera;
+  const inScene = actors.filter((a) => sceneItems.some((i) => i.actorId === a.id));
+  const framing: Framing = cam?.twoShot ? 'two' : cam?.focusActorId ? 'one' : 'none';
+  const setCam = (patch: Partial<NonNullable<Item['camera']>>) => onUpdate({ camera: { ...cam, ...patch } });
+  const choose = (f: Framing) => {
+    if (f === 'none') setCam({ focusActorId: undefined, twoShot: undefined });
+    if (f === 'one') setCam({ twoShot: undefined, focusActorId: cam?.focusActorId ?? inScene[0]?.id });
+    if (f === 'two' && inScene.length >= 2) setCam({ focusActorId: undefined, twoShot: [inScene[0]!.id, inScene[1]!.id] });
+  };
+  const who = (value: string | undefined, onChange: (id: string) => void, label: string, exclude?: string) => (
+    <select value={value} onChange={(e) => onChange(e.target.value)} aria-label={label}>
+      {inScene
+        .filter((a) => a.id !== exclude)
+        .map((a) => (
+          <option key={a.id} value={a.id}>
+            {a.name}
+          </option>
+        ))}
+      {value && !inScene.some((a) => a.id === value) && <option value={value}>(not in this scene)</option>}
+    </select>
+  );
   return (
     <>
-      <LensSection item={item} onUpdate={onUpdate} />
-      <Section title="Camera">
-        <FollowPerson
-          label="Camera focus on"
-          hint="The camera turns to face this person whenever either of them moves."
-          value={item.camera?.focusActorId}
-          sceneItems={sceneItems}
-          actors={actors}
-          onChange={(focusActorId) => onUpdate({ camera: { ...item.camera, focusActorId } })}
-        />
+      <LensSection item={item} sceneItems={sceneItems} onUpdate={onUpdate} />
+      <Section title="Framing">
+        <div className="segmented" role="radiogroup" aria-label="Framing">
+          <button role="radio" aria-checked={framing === 'none'} onClick={() => choose('none')}>
+            Free
+          </button>
+          <button role="radio" aria-checked={framing === 'one'} disabled={!inScene.length && framing !== 'one'} onClick={() => choose('one')}>
+            One person
+          </button>
+          <button role="radio" aria-checked={framing === 'two'} disabled={inScene.length < 2 && framing !== 'two'} onClick={() => choose('two')}>
+            Two shot
+          </button>
+        </div>
+        {framing === 'one' && (
+          <>
+            {who(cam?.focusActorId, (focusActorId) => setCam({ focusActorId }), 'Camera focus on')}
+            <p className="hint-text">The camera turns to face this person whenever either of them moves.</p>
+          </>
+        )}
+        {framing === 'two' && cam?.twoShot && (
+          <>
+            {who(cam.twoShot[0], (id) => setCam({ twoShot: [id, cam.twoShot![1]] }), 'First person', cam.twoShot[1])}
+            {who(cam.twoShot[1], (id) => setCam({ twoShot: [cam.twoShot![0], id] }), 'Second person', cam.twoShot[0])}
+            <p className="hint-text">
+              {cam.zoom
+                ? 'Aims between them and zooms to fit both. If the widest end of the zoom still can\'t fit them, the camera moves back.'
+                : 'Aims between them. With a prime lens the camera moves back when they don\'t both fit.'}
+            </p>
+          </>
+        )}
+        {inScene.length < 2 && framing === 'none' && <p className="hint-text">Place two people in this scene for a two shot.</p>}
       </Section>
     </>
   );

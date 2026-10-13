@@ -8,7 +8,7 @@ import { isOpening, libraryItem } from '../library/items';
 import { itemFixture, itemLook, itemModifiers } from '../model/gear';
 import { aimAt, normDeg } from '../model/geometry';
 import { DEFAULT_LENS_MM, horizontalFovDeg } from '../model/lens';
-import { followsActorId, modeOf, sceneItems, type EditMode, type SceneDoc } from '../model/project';
+import { followsActorId, modeOf, sceneItems, twoShotTargets, type EditMode, type SceneDoc } from '../model/project';
 import type { Actor, Item, Vec2 } from '../model/types';
 import {
   clampHit,
@@ -87,7 +87,7 @@ export function itemName(item: Item): string {
 
 /** A camera whose rotation is driven by its focus actor (when that actor is in the scene). */
 export const isFocusLocked = (item: Item, all: readonly Item[]): boolean =>
-  !!followsActorId(item) && all.some((a) => a.actorId === followsActorId(item));
+  !!twoShotTargets(item, all) || (!!followsActorId(item) && all.some((a) => a.actorId === followsActorId(item)));
 
 /** Renders the plan to a PNG data URL, without selection handles. */
 export type ExportPng = () => string | null;
@@ -290,7 +290,17 @@ export function PlanCanvas(p: Props) {
     };
     if (moved.actorId) {
       for (const f of all) if (followsActorId(f) === moved.actorId) turn(f.id, aimAt(f.pos, pos));
+      // Two-shot cameras keep aiming between their two people (lens and distance settle on drop).
+      for (const f of all) {
+        const ids = f.camera?.twoShot;
+        const pair = twoShotTargets(f, all);
+        if (!ids || !pair || !ids.includes(moved.actorId)) continue;
+        const other = pair[ids[0] === moved.actorId ? 1 : 0];
+        turn(f.id, aimAt(f.pos, { x: (pos.x + other.x) / 2, y: (pos.y + other.y) / 2 }));
+      }
     }
+    const pair = twoShotTargets(moved, all);
+    if (pair) turn(moved.id, aimAt(pos, { x: (pair[0].x + pair[1].x) / 2, y: (pair[0].y + pair[1].y) / 2 }));
     const who = followsActorId(moved);
     const target = who ? all.find((a) => a.actorId === who) : undefined;
     if (target) turn(moved.id, aimAt(pos, target.pos));

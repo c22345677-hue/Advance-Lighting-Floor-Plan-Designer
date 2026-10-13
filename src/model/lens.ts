@@ -13,3 +13,13 @@ export const SUPER35_WIDTH_MM = 24.89;
 export function horizontalFovDeg(focalMm: number, sensorWidthMm = SUPER35_WIDTH_MM): number {
   return (2 * Math.atan(sensorWidthMm / (2 * focalMm)) * 180) / Math.PI;
 }
+
+/** Zoom ranges offered for a zoom lens, mm. */
+export const COMMON_ZOOMS_MM: { minMm: number; maxMm: number }[] = [
+  { minMm: 16, maxMm: 35 },
+  { minMm: 18, maxMm: 55 },
+  { minMm: 24, maxMm: 70 },
+  { minMm: 24, maxMm: 105 },
+  { minMm: 28, maxMm: 135 },
+  { minMm: 70, maxMm: 200 },
+];
