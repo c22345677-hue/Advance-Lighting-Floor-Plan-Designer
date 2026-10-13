@@ -305,7 +305,7 @@ export function equipmentWarnings(project: Project, lines: EquipmentLine[], gear
   for (const s of project.scenes.filter((x) => !sceneIds || sceneIds.includes(x.id))) {
     for (const i of sceneItems(s)) {
       if (i.kind === 'light' && standCheck(i) === 'over') {
-        w.push(`${s.name}: ${i.light?.unitId ?? 'a light'} is too heavy for its stand.`);
+        w.push(`${s.name}: ${itemFixture(i)?.model ?? 'a light'} is too heavy for its stand.`);
       }
     }
   }

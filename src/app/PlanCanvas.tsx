@@ -63,7 +63,7 @@ export function zoomAt(view: View, factor: number, at: Vec2): View {
 export const beamDegOf = (item: Item): number =>
   item.light?.beamDeg ?? libraryItem(item.catalogId)?.beamDeg ?? 60;
 
-/** Text shown under an item: "L1 · LS 600d Pro" for lights, the actor's name for cast. */
+/** Text shown under an item: the fixture name for lights, the actor's name for cast. */
 export function displayLabel(item: Item, actors: readonly Actor[] = []): string {
   const actor = item.actorId ? actors.find((a) => a.id === item.actorId) : undefined;
   const fabric = fabricById(item.grip?.fabric);
@@ -71,9 +71,7 @@ export function displayLabel(item: Item, actors: readonly Actor[] = []): string 
   // Walls, doors and windows are self-explanatory: no label unless one was typed.
   if (!item.label && (item.wall || isOpening(item.catalogId))) return '';
   const base = itemFixture(item)?.model ?? lib?.name ?? '';
-  const name = actor?.name ?? item.label ?? (fabric ? `${base} · ${fabric.name}` : base);
-  const unit = item.light?.unitId;
-  return unit ? (name ? `${unit} · ${name}` : unit) : name;
+  return actor?.name ?? item.label ?? (fabric ? `${base} · ${fabric.name}` : base);
 }
 
 /** What an item is called when it has no label: "Room"/"Walls" for wall chains, else its library name. */
@@ -276,9 +274,10 @@ export function PlanCanvas(p: Props) {
     };
   });
 
-  /** While an item is dragged, keep its beam and any cameras watching it in step. */
+  /** While an item is dragged, keep its beam, its name and any cameras watching it in step. */
   const follow = (moved: Item, pos: Vec2) => {
     node(`${moved.id}-beam`)?.position(pos);
+    node(`${moved.id}-label`)?.position(labelPos(moved, pos));
     const turn = (id: string, deg: number) => {
       node(id)?.rotation(deg);
       node(`${id}-beam`)?.rotation(deg);
@@ -556,6 +555,7 @@ export function PlanCanvas(p: Props) {
               e.target.position(hit.point);
               e.target.rotation(seatOpening(item, hit, itemLook(item).w).rotationDeg!);
               guideFor(hit, hit.point, itemLook(item).w);
+              node(`${item.id}-label`)?.position(labelPos(item, hit.point));
             }
             return;
           }
@@ -670,12 +670,14 @@ export function PlanCanvas(p: Props) {
 
   const label = (item: Item) => {
     const text = displayLabel(item, actors);
-    if (!text || item.id === dragging) return null; // hidden while the item is being moved
+    if (!text) return null;
+    const at = labelPos(item, item.pos);
     return (
       <Text
         key={`${item.id}-label`}
-        x={item.pos.x - 200}
-        y={item.pos.y + labelOffset(item)}
+        id={`${item.id}-label`}
+        x={at.x}
+        y={at.y}
         width={400}
         align="center"
         text={text}
@@ -1394,6 +1396,11 @@ function PropShape({ style, w, d, c }: { style: string; w: number; d: number; c:
     default:
       return <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={4} {...base} />;
   }
+}
+
+/** Top-left of an item's 400-wide, centred name when the item sits at `pos`. */
+function labelPos(item: Item, pos: Vec2): Vec2 {
+  return { x: pos.x - 200, y: pos.y + labelOffset(item) };
 }
 
 function labelOffset(item: Item): number {
