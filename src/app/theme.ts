@@ -11,6 +11,8 @@ export interface CanvasColors {
   camera: string;
   cameraFov: string;
   select: string;
+  /** Light meter readings. */
+  meter: string;
   chroma: string;
   set: string;
   light: string;
@@ -30,7 +32,8 @@ const TOKENS: Record<keyof CanvasColors, string> = {
   person: '--plan-person',
   camera: '--plan-camera',
   cameraFov: '--plan-camera-fov',
-  select: '--accent',
+  select: '--mode',
+  meter: '--accent',
   chroma: '--plan-chroma',
   set: '--plan-set',
   light: '--plan-light',
@@ -50,6 +53,39 @@ function read(): CanvasColors {
   return out;
 }
 
+/** Greyed version of a colour: same lightness, no hue, a bit closer to the canvas. */
+export function greyOf(color: string, canvas = '#808080'): string {
+  const parse = (s: string): [number, number, number, number] | null => {
+    const hex = /^#([0-9a-f]{6})$/i.exec(s.trim());
+    if (hex) {
+      const n = parseInt(hex[1]!, 16);
+      return [n >> 16, (n >> 8) & 255, n & 255, 1];
+    }
+    const m = /^rgba?\(([^)]+)\)$/i.exec(s.trim());
+    if (!m) return null;
+    const v = m[1]!.split(',').map((x) => parseFloat(x));
+    return [v[0] ?? 0, v[1] ?? 0, v[2] ?? 0, v[3] ?? 1];
+  };
+  const c = parse(color);
+  const bg = parse(canvas) ?? [128, 128, 128, 1];
+  if (!c) return color;
+  const y = 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2];
+  const g = Math.round(y * 0.7 + (0.299 * bg[0] + 0.587 * bg[1] + 0.114 * bg[2]) * 0.3);
+  return c[3] < 1 ? `rgba(${g}, ${g}, ${g}, ${c[3]})` : `rgb(${g}, ${g}, ${g})`;
+}
+
+const mutedCache = new WeakMap<CanvasColors, CanvasColors>();
+/** The plan colours greyed out, for items outside the category being edited. */
+export function mutedColors(c: CanvasColors): CanvasColors {
+  let m = mutedCache.get(c);
+  if (!m) {
+    m = { ...c };
+    for (const k of ['person', 'camera', 'cameraFov', 'chroma', 'set', 'light', 'grip', 'prop'] as const) m[k] = greyOf(c[k], c.canvas);
+    mutedCache.set(c, m);
+  }
+  return m;
+}
+
 export function useCanvasColors(): CanvasColors {
   const [colors, setColors] = useState(read);
   useEffect(() => {
@@ -57,7 +93,7 @@ export function useCanvasColors(): CanvasColors {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     mq.addEventListener('change', update);
     const mo = new MutationObserver(update);
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-mode'] });
     return () => {
       mq.removeEventListener('change', update);
       mo.disconnect();

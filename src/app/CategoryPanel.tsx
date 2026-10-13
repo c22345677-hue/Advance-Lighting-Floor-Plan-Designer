@@ -9,6 +9,8 @@ import type { Actor, CastRole, Item } from '../model/types';
 import { wallLength } from '../model/walls';
 import { SUN_PRESETS, sunKelvin, type Sun } from '../model/sun';
 import { FixtureSearch } from './FixtureSearch';
+import { ItemThumb } from './ItemThumb';
+import { useCanvasColors } from './theme';
 import { limitingList, type GearScope } from './gearScope';
 import { displayLabel, itemName } from './PlanCanvas';
 
@@ -152,6 +154,7 @@ function DaylightSection({ sun, onSun, hasWindows }: { sun?: Sun; onSun: (s: Sun
 
 function AddGrid({ category, onPlace, disabled }: { category: LibraryCategory; onPlace: Props['onPlace']; disabled?: boolean }) {
   const entries = LIBRARY.filter((i) => i.category === category && !i.unlisted && i.kind !== 'person');
+  const colors = useCanvasColors();
   return (
     <div className="tile-grid">
       {entries.map((i) => (
@@ -167,9 +170,12 @@ function AddGrid({ category, onPlace, disabled }: { category: LibraryCategory; o
           onClick={() => onPlace({ library: i })}
           title="Tap to add in the middle of the view, or drag onto the plan"
         >
-          <span>{i.name}</span>
-          <span className="tile-sub">
-            {i.sizeCm.w} × {i.sizeCm.d} cm
+          <ItemThumb entry={i} colors={colors} />
+          <span className="tile-text">
+            <span>{i.name}</span>
+            <span className="tile-sub">
+              {i.sizeCm.w} × {i.sizeCm.d} cm
+            </span>
           </span>
         </button>
       ))}

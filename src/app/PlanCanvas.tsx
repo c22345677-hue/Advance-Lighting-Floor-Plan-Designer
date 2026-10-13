@@ -2,7 +2,7 @@ import Konva from 'konva';
 import { lightColor, rgbCss } from '../model/color';
 import { marksOf, moveMark } from '../model/blocking';
 import { sunRgb, windowLights, type WindowLight } from '../model/sun';
-import { meterReadings, type CameraSettings } from '../model/exposure';
+import { lightLumens, meterReadings, type CameraSettings } from '../model/exposure';
 import { beamReach } from '../model/shadows';
 import { ShadowLayer, type LivePatch, type ShadowLive } from './ShadowLayer';
 import type { KonvaEventObject } from 'konva/lib/Node';
@@ -30,7 +30,7 @@ import {
   wallSegments,
 } from '../model/walls';
 import type { SceneAction } from './doc';
-import type { CanvasColors } from './theme';
+import { greyOf, mutedColors, type CanvasColors } from './theme';
 
 Konva.hitOnDragEnabled = true; // lets a second finger start a pinch while dragging
 
@@ -655,7 +655,7 @@ export function PlanCanvas(p: Props) {
         y={item.pos.y}
         rotation={item.rotationDeg}
         listening={active}
-        opacity={active ? 1 : 0.5}
+        opacity={active ? 1 : 0.75}
         draggable={active && tool === 'move' && !item.locked}
         onMouseDown={press}
         onTouchStart={press}
@@ -786,7 +786,7 @@ export function PlanCanvas(p: Props) {
           <SelectOutline item={item} actors={actors} colors={colors} scale={view.scale} color={tool === 'rotate' ? colors.rotate : colors.select} />
         )}
         {coarse && !item.wall && <Circle name="hit-pad" radius={TOUCH_PAD_PX / view.scale} fill="#000" opacity={0} />}
-        <ItemShape item={item} actors={actors} colors={colors} />
+        <ItemShape item={item} actors={actors} colors={colors} muted={!active} />
       </Group>
     );
   };
@@ -865,30 +865,39 @@ export function PlanCanvas(p: Props) {
     );
   };
 
-  const beamColor = (item: Item) => {
+  /** How strong a beam is drawn: dimmer, gels, and the light's output (a 1200 W HMI reads stronger than a small panel). */
+  const beamAlpha = (item: Item) => {
     const c = lightColor(item);
     const strength = Math.min(1, Math.max(0.15, (item.light?.intensityPct ?? 100) / 100));
-    return rgbCss(c.rgb, Math.max(0.05, 0.24 * strength * Math.max(0.3, c.transmission)));
+    const output = Math.min(1.3, Math.max(0.55, 0.85 + 0.25 * Math.log10(lightLumens(item).lumens / 15000)));
+    return Math.max(0.05, 0.3 * strength * output * Math.max(0.3, c.transmission));
   };
 
   const beam = (item: Item) => {
     if (item.kind !== 'light') return null;
     const throwCm = beamReach(item, lit);
     const deg = Math.min(360, beamDegOf(item));
-    const gradient = {
+    // The beam is drawn in the light's colour (temperature, HSI and gels), falling off with
+    // distance roughly as light does: bright near the lamp, fading quickly, then a long tail.
+    const rgb = lightColor(item).rgb;
+    const a = beamAlpha(item);
+    const gradient = (k: number) => ({
       fillRadialGradientStartPoint: { x: 0, y: 0 },
       fillRadialGradientStartRadius: 0,
       fillRadialGradientEndPoint: { x: 0, y: 0 },
       fillRadialGradientEndRadius: throwCm,
-      // The beam is drawn in the light's colour (temperature, HSI and gels), dimmer through dense gels.
-      fillRadialGradientColorStops: [0, beamColor(item), 1, 'rgba(0,0,0,0)'],
-    };
+      fillRadialGradientColorStops: [0, rgbCss(rgb, a * k), 0.2, rgbCss(rgb, a * k * 0.75), 0.5, rgbCss(rgb, a * k * 0.4), 0.8, rgbCss(rgb, a * k * 0.15), 1, rgbCss(rgb, 0)],
+    });
     return (
       <Group key={`${item.id}-beam`} id={`${item.id}-beam`} x={item.pos.x} y={item.pos.y} rotation={item.rotationDeg} listening={false}>
         {deg >= 360 ? (
-          <Circle radius={throwCm} {...gradient} />
+          <Circle radius={throwCm} {...gradient(1)} />
         ) : (
-          <Wedge radius={throwCm} angle={deg} rotation={-90 - deg / 2} {...gradient} />
+          <>
+            {/* Soft edges: the full beam faint, its brighter core inside. */}
+            <Wedge radius={throwCm} angle={deg} rotation={-90 - deg / 2} {...gradient(0.55)} />
+            <Wedge radius={throwCm} angle={deg * 0.6} rotation={-90 - (deg * 0.6) / 2} {...gradient(0.6)} />
+          </>
         )}
       </Group>
     );
@@ -914,7 +923,7 @@ export function PlanCanvas(p: Props) {
         text={text}
         fontSize={labelSize * 0.9}
         fontFamily="'IBM Plex Mono', monospace"
-        fill={colors.select}
+        fill={colors.meter}
         listening={false}
       />
     );
@@ -1781,18 +1790,22 @@ function ModifierShapes({ mods, front, c }: { mods: Modifier[]; front: number; c
 }
 
 /** Simple top-down symbols, drawn at real size facing up (-y). */
-function ItemShape({
+export function ItemShape({
   item,
   actors,
-  colors: c,
+  colors,
   bodyOnly,
+  muted,
 }: {
   item: Item;
   actors: readonly Actor[];
   colors: CanvasColors;
   /** Leave out the camera's angle-of-view cone (for the selection outline). */
   bodyOnly?: boolean;
+  /** Greyed out: not in the category being edited. */
+  muted?: boolean;
 }) {
+  const c = muted ? mutedColors(colors) : colors;
   const { shape, w, d } = itemLook(item);
   const hw = w / 2;
   const hd = d / 2;
@@ -1884,7 +1897,19 @@ function ItemShape({
           {!bodyOnly && (() => {
             // Angle of view from the lens; drawn 6.6 m long.
             const fov = horizontalFovDeg(item.camera?.focalMm ?? DEFAULT_LENS_MM);
-            return <Wedge radius={CAMERA_CONE_CM} angle={fov} rotation={-90 - fov / 2} fill={c.cameraFov} listening={false} />;
+            // A faint fill with dashed edges, so it doesn't cover the plan like a light's beam.
+            const edge = (deg: number) => {
+              const r = ((deg - 90) * Math.PI) / 180;
+              return [0, 0, Math.cos(r) * CAMERA_CONE_CM, Math.sin(r) * CAMERA_CONE_CM];
+            };
+            return (
+              <Group listening={false}>
+                <Wedge radius={CAMERA_CONE_CM} angle={fov} rotation={-90 - fov / 2} fill={c.cameraFov} opacity={0.35} />
+                {[-fov / 2, fov / 2].map((d) => (
+                  <Line key={d} points={edge(d)} stroke={c.camera} strokeWidth={1.5} strokeScaleEnabled={false} dash={[7, 6]} opacity={0.8} />
+                ))}
+              </Group>
+            );
           })()}
           <Rect x={-13} y={-14} width={26} height={34} cornerRadius={3} fill={c.camera} />
           <Rect x={-8} y={-26} width={16} height={13} cornerRadius={2} fill={c.camera} />
@@ -1932,7 +1957,7 @@ function ItemShape({
       );
     case 'person': {
       const actor = item.actorId ? actors.find((a) => a.id === item.actorId) : undefined;
-      const fill = actor?.color ?? (item.catalogId === 'generic.person.crew' ? c.prop : c.person);
+      const fill = (actor?.color && (muted ? greyOf(actor.color, c.canvas) : actor.color)) ?? (item.catalogId === 'generic.person.crew' ? c.prop : c.person);
       // Seen from above, facing up (-y). Female: narrower rounded shoulders and long hair
       // falling down the back; male: broad shoulders, short hair.
       const hair = shade(fill, 0.45);

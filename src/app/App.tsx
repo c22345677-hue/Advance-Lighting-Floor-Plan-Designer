@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, type CSSProperties } from 'react';
 import { nextUnitId } from '../model/gear';
 import { gearUsage, type GearList } from '../model/gearList';
 import {
@@ -193,6 +193,9 @@ export function App() {
 
   const [mode, setMode] = useState<EditMode>('lights');
   const [tool, setTool] = useState<Tool>('move');
+  useEffect(() => {
+    document.documentElement.dataset.mode = mode;
+  }, [mode]);
   /** Select mode (for touch): taps add to the selection or take out, a drag boxes more in. */
   const [pickMode, setPickMode] = useState(false);
   /** Selected items (box-select and Shift+click select several). */
@@ -613,6 +616,7 @@ export function App() {
               id={`mode-${m.id}`}
               role="tab"
               aria-selected={mode === m.id}
+              style={{ '--cat': `var(--cat-${m.id})` } as CSSProperties}
               onClick={() => switchMode(m.id)}
               title={`${MODE_HINT[m.id]} (${i + 1})`}
             >
