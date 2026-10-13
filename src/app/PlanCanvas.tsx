@@ -319,7 +319,7 @@ export function PlanCanvas(p: Props) {
     node(`${moved.id}-beam`)?.position(pos);
     liveShadow(moved.id, { pos });
     // The name stays under the item while it moves.
-    node(`${moved.id}-label`)?.position({ x: pos.x - 200, y: pos.y + labelOffset(moved) });
+    node(`${moved.id}-label`)?.position({ x: pos.x - 200, y: pos.y + labelOffset(moved) + (labelShift.current.get(moved.id)?.shift ?? 0) });
     const turn = (id: string, deg: number) => {
       node(id)?.rotation(deg);
       node(`${id}-beam`)?.rotation(deg);
@@ -342,6 +342,9 @@ export function PlanCanvas(p: Props) {
     const target = who ? all.find((a) => a.actorId === who) : undefined;
     if (target) turn(moved.id, aimAt(pos, target.pos));
   };
+
+  /** Where each name tag was nudged to (so it keeps its place while its item is dragged). */
+  const labelShift = useRef(new Map<string, { shift: number }>());
 
   /** Pending long-press (touch): where the finger went down. */
   const longPress = useRef<{ timer: number; x: number; y: number } | null>(null);
@@ -908,46 +911,122 @@ export function PlanCanvas(p: Props) {
   const windowSources = useMemo(() => windowLit.map((w) => w.source), [windowLit]);
 
   /** Under a person's name: their light meter reading. */
-  const meterLabel = (item: Item) => {
+  const meterText = (item: Item) => {
     const r = readings?.get(item.id);
-    if (!r || item.id === dragging) return null;
-    const text = r.contributions.length ? `${r.tStopLabel} · ${r.lux} lx${r.ratio ? ` · ${r.ratio}` : ''}` : 'no light';
+    if (!r) return null;
+    return r.contributions.length ? `${r.tStopLabel} · ${r.lux} lx${r.ratio ? ` · ${r.ratio}` : ''}` : 'no light';
+  };
+  const NAME_FONT = "600 {px}px 'Barlow Semi Condensed', 'Arial Narrow', sans-serif";
+  const METER_FONT = "{px}px 'IBM Plex Mono', monospace";
+
+  /**
+   * Name tags: each on a soft backing, sized to its text, and nudged down when it would sit on
+   * another one (lights put side by side, people close together).
+   */
+  const labelLayout = useMemo(() => {
+    const out = new Map<string, { name: string; meter: string | null; w: number; h: number; shift: number }>();
+    const placed: { l: number; r: number; t: number; b: number }[] = [];
+    const rows = visible
+      .map((item) => {
+        const name = displayLabel(item, actors, { unit: false });
+        const meter = item.kind === 'person' ? meterText(item) : null;
+        if (!name && !meter) return null;
+        const w = Math.max(textWidth(name, NAME_FONT, labelSize), meter ? textWidth(meter, METER_FONT, labelSize * 0.9) : 0) + labelSize * 0.7;
+        const h = labelSize * 1.2 + (meter ? labelSize * 1.15 : 0);
+        return { item, name, meter, w, h, y: item.pos.y + labelOffset(item) };
+      })
+      .filter((r): r is NonNullable<typeof r> => !!r)
+      .sort((a, b) => a.y - b.y || a.item.pos.x - b.item.pos.x);
+    for (const r of rows) {
+      const l = r.item.pos.x - r.w / 2;
+      let t = r.y - labelSize * 0.1;
+      for (let k = 0; k < 6; k++) {
+        const hit = placed.find((q) => l < q.r && l + r.w > q.l && t < q.b && t + r.h > q.t);
+        if (!hit) break;
+        t = hit.b + labelSize * 0.1;
+      }
+      placed.push({ l, r: l + r.w, t, b: t + r.h });
+      out.set(r.item.id, { name: r.name, meter: r.meter, w: r.w, h: r.h, shift: t - (r.y - labelSize * 0.1) });
+    }
+    return out;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, actors, labelSize, readings]);
+  labelShift.current = labelLayout;
+
+  /** Inside a room: its size (inside the walls) and floor area. */
+  const roomTag = (item: Item) => {
+    const pts = item.wall!.points;
+    if (pts.length < 3) return null;
+    const t = item.wall!.thicknessCm ?? DEFAULT_WALL_CM;
+    const xs = pts.map((q) => q.x);
+    const ys = pts.map((q) => q.y);
+    const w = Math.max(...xs) - Math.min(...xs) - t;
+    const d = Math.max(...ys) - Math.min(...ys) - t;
+    let area = 0;
+    let perim = 0;
+    pts.forEach((a, k) => {
+      const b = pts[(k + 1) % pts.length]!;
+      area += a.x * b.y - b.x * a.y;
+      perim += Math.hypot(b.x - a.x, b.y - a.y);
+    });
+    const m2 = Math.max(0, Math.abs(area) / 2 - (perim * t) / 2) / 1e4;
+    // Just inside the top wall, clear of whatever stands in the middle of the room.
+    const world = wallPoints(item);
+    const c = { x: world.reduce((n, q) => n + q.x, 0) / world.length, y: Math.min(...world.map((q) => q.y)) + t / 2 + labelSize * 1.1 };
     return (
       <Text
-        key={`${item.id}-meter`}
-        name="meter-label"
-        x={item.pos.x - 200}
-        y={item.pos.y + labelOffset(item) + labelSize * 1.25}
-        width={400}
+        key={`${item.id}-room`}
+        name="room-size"
+        x={c.x - 300}
+        y={c.y - labelSize * 0.5}
+        width={600}
         align="center"
-        text={text}
-        fontSize={labelSize * 0.9}
+        text={`${(w / 100).toFixed(2)} × ${(d / 100).toFixed(2)} m  ·  ${m2.toFixed(1)} m²`}
+        fontSize={labelSize * 0.95}
         fontFamily="'IBM Plex Mono', monospace"
-        fill={colors.meter}
+        fill={colors.label}
+        opacity={0.4}
         listening={false}
       />
     );
   };
 
   const label = (item: Item) => {
-    const text = displayLabel(item, actors, { unit: false });
-    if (!text) return null;
+    const lay = labelLayout.get(item.id);
+    const name = lay?.name ?? displayLabel(item, actors, { unit: false });
+    const meter = item.id === dragging ? null : (lay?.meter ?? null);
+    if (!name && !meter) return null;
+    const w = lay?.w ?? textWidth(name, NAME_FONT, labelSize) + labelSize * 0.7;
+    const h = labelSize * 1.2 + (meter ? labelSize * 1.15 : 0);
+    const inMode = modeOf(item) === mode;
     return (
-      <Text
-        key={`${item.id}-label`}
-        id={`${item.id}-label`}
-        x={item.pos.x - 200}
-        y={item.pos.y + labelOffset(item)}
-        width={400}
-        align="center"
-        text={text}
-        fontSize={labelSize}
-        fontFamily="'Barlow Semi Condensed', 'Arial Narrow', sans-serif"
-        fontStyle="600"
-        fill={colors.label}
-        opacity={modeOf(item) === mode ? 1 : 0.6}
-        listening={false}
-      />
+      <Group key={`${item.id}-label`} id={`${item.id}-label`} x={item.pos.x - 200} y={item.pos.y + labelOffset(item) + (lay?.shift ?? 0)} listening={false}>
+        <Rect x={200 - w / 2} y={-labelSize * 0.1} width={w} height={h} cornerRadius={labelSize * 0.35} fill={colors.labelBg} opacity={inMode ? 1 : 0.7} />
+        {name && (
+          <Text
+            width={400}
+            align="center"
+            text={name}
+            fontSize={labelSize}
+            fontFamily="'Barlow Semi Condensed', 'Arial Narrow', sans-serif"
+            fontStyle="600"
+            fill={colors.label}
+            opacity={inMode ? 1 : 0.6}
+          />
+        )}
+        {meter && (
+          <Text
+            name="meter-label"
+            y={name ? labelSize * 1.2 : 0}
+            width={400}
+            align="center"
+            text={meter}
+            fontSize={labelSize * 0.9}
+            fontFamily="'IBM Plex Mono', monospace"
+            fill={colors.meter}
+          />
+        )}
+      </Group>
     );
   };
 
@@ -1034,8 +1113,8 @@ export function PlanCanvas(p: Props) {
           .filter((i) => scene.items.includes(i))
           .sort((a, b) => Number(itemLook(b).shape === 'note-area') - Number(itemLook(a).shape === 'note-area')) /* areas underneath */
           .map(renderItem)}
+        {visible.filter((i) => i.wall?.closed).map(roomTag)}
         {visible.map(label)}
-        {readings && visible.filter((i) => i.kind === 'person').map(meterLabel)}
         {tool === 'rotate' &&
           visible
             .filter((i) => selection.includes(i.id))
@@ -1064,7 +1143,7 @@ export function PlanCanvas(p: Props) {
                 e.target.position(at);
                 const local = sel.wall!.points.slice();
                 local[idx] = toLocal(sel, at);
-                (node(sel.id) as Konva.Group | undefined)?.findOne<Konva.Line>('.wall-line')?.points(local.flatMap((q) => [q.x, q.y]));
+                (node(sel.id) as Konva.Group | undefined)?.find<Konva.Line>('.wall-line').forEach((l) => l.points(local.flatMap((q) => [q.x, q.y])));
                 liveOpenings({ ...sel, wall: { ...sel.wall!, points: local } });
               }}
               onDragEnd={(e) => {
@@ -1111,6 +1190,7 @@ export function PlanCanvas(p: Props) {
           </>
         )}
         {openingGuide && <OpeningDims {...openingGuide} scale={view.scale} colors={colors} />}
+        <PlanCorner view={view} height={height} colors={colors} sun={scene.sun?.on ? scene.sun : undefined} />
         {box && (
           <Rect
             name="ui-only"
@@ -1713,6 +1793,49 @@ function PropShape({ style, w, d, c }: { style: string; w: number; d: number; c:
   }
 }
 
+/** Bottom-left of the plan (and of exports): a north arrow (with the sun when it's on) and a scale bar. */
+function PlanCorner({ view, height, colors: c, sun }: { view: View; height: number; colors: CanvasColors; sun?: { azimuthDeg: number } }) {
+  let cm = 10000;
+  for (const v of [10, 25, 50, 100, 200, 500, 1000, 2000, 5000]) {
+    if (v * view.scale >= 60) {
+      cm = v;
+      break;
+    }
+  }
+  const px = cm * view.scale;
+  const label = cm >= 100 ? `${cm / 100} m` : `${cm} cm`;
+  const r = 20;
+  const sunAt = sun ? { x: Math.sin((sun.azimuthDeg * Math.PI) / 180) * r, y: -Math.cos((sun.azimuthDeg * Math.PI) / 180) * r } : null;
+  return (
+    <Group name="plan-corner" x={(16 - view.x) / view.scale} y={(height - 16 - view.y) / view.scale} scaleX={1 / view.scale} scaleY={1 / view.scale} listening={false}>
+      {/* North: the top of the plan. */}
+      <Group x={r + 2} y={-r - 40}>
+        <Circle radius={r} fill={c.labelBg} stroke={c.label} strokeWidth={1} opacity={0.9} />
+        <Line points={[0, -r + 4, 6, 6, 0, 2, -6, 6]} closed fill={c.label} />
+        <Text x={-10} y={-r - 16} width={20} align="center" text="N" fontSize={12} fontStyle="700" fontFamily="'Barlow Semi Condensed', sans-serif" fill={c.label} />
+        {sunAt && <Circle x={sunAt.x} y={sunAt.y} radius={5} fill="#f5c04a" stroke={c.labelBg} strokeWidth={1.5} />}
+      </Group>
+      {/* Scale: two halves, light and dark. */}
+      <Group y={-8}>
+        <Rect width={px} height={6} fill={c.labelBg} stroke={c.label} strokeWidth={1} />
+        <Rect width={px / 2} height={6} fill={c.label} />
+        <Text y={-15} text="0" fontSize={11} fontFamily="'IBM Plex Mono', monospace" fill={c.label} />
+        <Text x={px - 60} y={-15} width={60} align="right" text={label} fontSize={11} fontFamily="'IBM Plex Mono', monospace" fill={c.label} />
+      </Group>
+    </Group>
+  );
+}
+
+let measureCtx: CanvasRenderingContext2D | null = null;
+/** Width of a line of text in plan units (`font` has {px} for the size). */
+function textWidth(text: string, font: string, size: number): number {
+  if (!text) return 0;
+  measureCtx ??= document.createElement('canvas').getContext('2d');
+  if (!measureCtx) return text.length * size * 0.5;
+  measureCtx.font = font.replace('{px}', '100');
+  return (measureCtx.measureText(text).width / 100) * size;
+}
+
 function labelOffset(item: Item): number {
   const { d, shape } = itemLook(item);
   if (shape === 'person') return 18 * ACTOR_SCALE;
@@ -1984,18 +2107,13 @@ export function ItemShape({
     }
     case 'walls': {
       const t = item.wall?.thicknessCm ?? DEFAULT_WALL_CM;
+      const pts = (item.wall?.points ?? []).flatMap((q) => [q.x, q.y]);
+      // Drawn like an architect's plan: a dark edge on both faces, a solid core.
       return (
-        <Line
-          name="wall-line"
-          points={(item.wall?.points ?? []).flatMap((q) => [q.x, q.y])}
-          closed={!!item.wall?.closed}
-          fillEnabled={false}
-          stroke={c.set}
-          strokeWidth={t}
-          lineJoin="miter"
-          lineCap="square"
-          hitStrokeWidth={Math.max(t, 24)}
-        />
+        <>
+          <Line name="wall-line" points={pts} closed={!!item.wall?.closed} fillEnabled={false} stroke={c.wallEdge} strokeWidth={t} lineJoin="miter" lineCap="square" hitStrokeWidth={Math.max(t, 24)} />
+          <Line name="wall-line" points={pts} closed={!!item.wall?.closed} fillEnabled={false} stroke={c.set} strokeWidth={Math.max(t * 0.5, t - 5)} lineJoin="miter" lineCap="square" listening={false} />
+        </>
       );
     }
     case 'door':

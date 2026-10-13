@@ -7,6 +7,8 @@ export interface CanvasColors {
   gridMajor: string;
   origin: string;
   label: string;
+  /** Backing behind name tags. */
+  labelBg: string;
   person: string;
   camera: string;
   cameraFov: string;
@@ -15,6 +17,8 @@ export interface CanvasColors {
   meter: string;
   chroma: string;
   set: string;
+  /** Wall faces. */
+  wallEdge: string;
   light: string;
   beam: string;
   grip: string;
@@ -29,6 +33,7 @@ const TOKENS: Record<keyof CanvasColors, string> = {
   gridMajor: '--grid-major',
   origin: '--grid-origin',
   label: '--plan-label',
+  labelBg: '--plan-label-bg',
   person: '--plan-person',
   camera: '--plan-camera',
   cameraFov: '--plan-camera-fov',
@@ -36,6 +41,7 @@ const TOKENS: Record<keyof CanvasColors, string> = {
   meter: '--accent',
   chroma: '--plan-chroma',
   set: '--plan-set',
+  wallEdge: '--plan-wall-edge',
   light: '--plan-light',
   beam: '--plan-beam',
   grip: '--plan-grip',
@@ -80,7 +86,7 @@ export function mutedColors(c: CanvasColors): CanvasColors {
   let m = mutedCache.get(c);
   if (!m) {
     m = { ...c };
-    for (const k of ['person', 'camera', 'cameraFov', 'chroma', 'set', 'light', 'grip', 'prop'] as const) m[k] = greyOf(c[k], c.canvas);
+    for (const k of ['person', 'camera', 'cameraFov', 'chroma', 'set', 'wallEdge', 'light', 'grip', 'prop'] as const) m[k] = greyOf(c[k], c.canvas);
     mutedCache.set(c, m);
   }
   return m;

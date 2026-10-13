@@ -136,13 +136,6 @@ function fitView(items: Item[], width: number, height: number): View {
 }
 
 /** Pick a round scale-bar length that draws between ~40 and ~160 px. */
-function scaleBar(scale: number): { cm: number; px: number; label: string } {
-  for (const cm of [10, 25, 50, 100, 200, 500, 1000, 2000, 5000]) {
-    if (cm * scale >= 40) return { cm, px: cm * scale, label: cm >= 100 ? `${cm / 100} m` : `${cm} cm` };
-  }
-  return { cm: 10000, px: 10000 * scale, label: '100 m' };
-}
-
 const fmtM = (cm: number) => `${(cm / 100).toFixed(2)} m`;
 
 
@@ -595,7 +588,6 @@ export function App() {
   });
 
   const zoomBy = (f: number) => view && setView(zoomAt(view, f, { x: size.width / 2, y: size.height / 2 }));
-  const bar = view ? scaleBar(view.scale) : null;
   const power = circuitLoads(items, prefs.volts, prefs.breakerA ?? defaultBreakerA(prefs.volts));
   const powerWarn = power.circuits.some((c) => c.status === 'over');
   const sheetTitle = configuring && selectedItem ? displayLabel(selectedItem, project.actors) || MODE_LABEL[mode] : MODE_LABEL[mode];
@@ -1058,12 +1050,6 @@ export function App() {
       </main>
 
       <footer className="statusbar">
-        {bar && (
-          <div className="scalebar" aria-label={`Scale bar: ${bar.label}`}>
-            <span className="scalebar-line" style={{ width: `${bar.px}px` }} />
-            <span>{bar.label}</span>
-          </div>
-        )}
         <button
           className={`stat-btn ${powerWarn ? "warn" : ""}`}
           onClick={() => setDialog('power')}
