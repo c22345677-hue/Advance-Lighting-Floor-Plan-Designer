@@ -121,8 +121,8 @@ const insideBeam = (apex: Vec2, rot: number, beamDeg: number, throwCm: number, p
 };
 
 /**
- * How far a light's beam is drawn: its throw (default 3 m), stretched so it always reaches the
- * nearest person standing in the beam (and whoever it is aimed at).
+ * How far a light's beam is drawn: its throw (default 3 m), stretched so it always reaches 15%
+ * past the nearest person standing in the beam (or whoever it is aimed at).
  */
 export function beamReach(light: Item, all: readonly Item[]): number {
   const set = light.light?.throwCm ?? DEFAULT_THROW_CM;
@@ -134,7 +134,8 @@ export function beamReach(light: Item, all: readonly Item[]): number {
     if (!aimed && !insideBeam(light.pos, light.rotationDeg, beamDeg, 1e6, p.pos)) continue;
     nearest = Math.min(nearest, Math.hypot(p.pos.x - light.pos.x, p.pos.y - light.pos.y));
   }
-  return nearest === Infinity ? set : Math.max(set, nearest + 80);
+  // 15% past the subject.
+  return nearest === Infinity ? set : Math.max(set, nearest * 1.15);
 }
 
 /** The light as a shadow source, after its modifiers and any diffusion frame in its beam. */
@@ -309,7 +310,12 @@ export interface ShadowShape {
   lightId: string;
   points: Vec2[];
   opacity: number;
+  /** Where the shadow starts (the object) and where it has faded out: drawn as a fade between them. */
+  fade?: { from: Vec2; to: Vec2 };
 }
+
+/** Shadows run on past the end of the beam (fading out) by this much of the beam's reach. */
+export const SHADOW_REACH = 2.2;
 
 /**
  * Every shadow in the scene. A source of some size is sampled at a few points across its width,
@@ -328,7 +334,7 @@ export function sceneShadows(items: readonly Item[], extra: LightSource[] = []):
     sources.push(s);
     const samples = s.clip ? 1 : s.sizeCm < 20 ? 1 : Math.min(7, Math.ceil(s.sizeCm / 18));
     const across = rotate({ x: 1, y: 0 }, s.rotationDeg); // perpendicular to the beam
-    const reach = s.clip ? Math.hypot(s.pos.x - s.apex.x, s.pos.y - s.apex.y) + 2e4 : s.throwCm * 1.5;
+    const reach = s.clip ? Math.hypot(s.pos.x - s.apex.x, s.pos.y - s.apex.y) + 2e4 : s.throwCm * SHADOW_REACH;
     for (const o of occ) {
       if (s.ignore?.includes(o.id)) continue;
       const c = o.points.reduce((a, p) => ({ x: a.x + p.x / o.points.length, y: a.y + p.y / o.points.length }), { x: 0, y: 0 });
@@ -346,7 +352,15 @@ export function sceneShadows(items: readonly Item[], extra: LightSource[] = []):
         const t = samples === 1 ? 0 : (k / (samples - 1) - 0.5) * s.sizeCm;
         const src = { x: s.pos.x + across.x * t, y: s.pos.y + across.y * t };
         const poly = shadowPolygon(src, s.heightCm, o, reach);
-        if (poly) shadows.push({ lightId: s.lightId, points: poly, opacity: s.darkness / samples });
+        if (!poly) continue;
+        // Fade from the object to the shadow's far end (sunlight keeps its patch, so no fade).
+        let fade: ShadowShape['fade'];
+        if (!s.clip) {
+          const d = Math.hypot(c.x - src.x, c.y - src.y) || 1;
+          const tip = Math.max(...poly.map((q) => Math.hypot(q.x - src.x, q.y - src.y)));
+          fade = { from: c, to: { x: src.x + ((c.x - src.x) / d) * tip, y: src.y + ((c.y - src.y) / d) * tip } };
+        }
+        shadows.push({ lightId: s.lightId, points: poly, opacity: s.darkness / samples, fade });
       }
     }
   }

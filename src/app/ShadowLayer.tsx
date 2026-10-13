@@ -3,7 +3,7 @@
 // for the drop; only this layer redraws.
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import { Group, Line } from 'react-konva';
-import { sceneShadows, type LightSource } from '../model/shadows';
+import { sceneShadows, SHADOW_REACH, type LightSource } from '../model/shadows';
 import type { Item, Vec2 } from '../model/types';
 
 export type LivePatch = { pos?: Vec2; rot?: number };
@@ -60,18 +60,32 @@ export function ShadowLayer({ items, extra = [], liveRef }: { items: Item[]; ext
               if (s.clip) {
                 s.clip.forEach((q, k) => (k ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y)));
                 ctx.closePath();
-              } else if (s.beamDeg >= 360) ctx.arc(s.apex.x, s.apex.y, s.throwCm, 0, Math.PI * 2);
+              } else if (s.beamDeg >= 360) ctx.arc(s.apex.x, s.apex.y, s.throwCm * SHADOW_REACH, 0, Math.PI * 2);
               else {
                 const mid = ((s.rotationDeg - 90) * Math.PI) / 180;
                 const half = (s.beamDeg * Math.PI) / 360;
                 ctx.moveTo(s.apex.x, s.apex.y);
-                ctx.arc(s.apex.x, s.apex.y, s.throwCm, mid - half, mid + half);
+                // Within the beam's angle, but on past its end (shadows fade out on their own).
+                ctx.arc(s.apex.x, s.apex.y, s.throwCm * SHADOW_REACH, mid - half, mid + half);
                 ctx.closePath();
               }
             }}
           >
             {mine.map((sh, k) => (
-              <Line key={k} points={sh.points.flatMap((p) => [p.x, p.y])} closed fill="#000" opacity={sh.opacity} perfectDrawEnabled={false} />
+              <Line
+                key={k}
+                points={sh.points.flatMap((p) => [p.x, p.y])}
+                closed
+                opacity={sh.opacity}
+                perfectDrawEnabled={false}
+                {...(sh.fade
+                  ? {
+                      fillLinearGradientStartPoint: sh.fade.from,
+                      fillLinearGradientEndPoint: sh.fade.to,
+                      fillLinearGradientColorStops: [0, 'rgba(0,0,0,1)', 0.55, 'rgba(0,0,0,0.75)', 1, 'rgba(0,0,0,0)'],
+                    }
+                  : { fill: '#000' })}
+              />
             ))}
           </Group>
         );

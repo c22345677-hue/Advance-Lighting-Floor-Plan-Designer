@@ -569,7 +569,7 @@ function LightSection({
           </span>
         </label>
         {beamReach(item, sceneItems) > (item.light?.throwCm ?? 300) && (
-          <p className="hint-text">Drawn to {Math.round(beamReach(item, sceneItems) / 10) * 10} cm so it reaches the nearest person in the beam.</p>
+          <p className="hint-text">Drawn to {Math.round(beamReach(item, sceneItems) / 10) * 10} cm so it reaches 15% past the nearest person in the beam.</p>
         )}
       </Section>
 
