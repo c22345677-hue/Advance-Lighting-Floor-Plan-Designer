@@ -21,6 +21,7 @@ import { circuitLoads, defaultBreakerA } from '../model/power';
 import { PowerPanel } from './PowerPanel';
 import { SchedulePanel } from './SchedulePanel';
 import { ArrangeTools } from './ArrangeTools';
+import { LayersMenu } from './LayersMenu';
 import { parseProjectFile, projectFileName, toProjectFile } from '../model/projectFile';
 import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain } from '../model/walls';
 import { HelpPanel } from './HelpPanel';
@@ -60,7 +61,7 @@ import {
   IconUndo,
 } from './icons';
 import { Inspector } from './Inspector';
-import { clampScale, displayLabel, isFocusLocked, itemName, PlanCanvas, zoomAt, type ExportPng, type Tool, type View, type WallExtend } from './PlanCanvas';
+import { clampScale, displayLabel, isFocusLocked, itemName, PlanCanvas, zoomAt, type ExportPng, type LayerState, type Tool, type View, type WallExtend } from './PlanCanvas';
 import { ProjectMenu } from './ProjectMenu';
 import { deleteProject, listProjects, loadGearLists, loadProject, loadStartProject, saveGearLists, saveProject } from './storage';
 import { TemplatePanel } from './TemplatePanel';
@@ -152,6 +153,9 @@ interface Prefs {
   camera: CameraSettings;
   /** Breaker size per circuit, A (default by voltage). */
   breakerA?: number;
+  /** Hidden / locked categories on the plan. */
+  layers?: Partial<Record<EditMode, LayerState>>;
+  beams?: boolean;
 }
 const PREFS_KEY = 'lfpd.prefs.v1';
 function loadPrefs(): Prefs {
@@ -716,6 +720,8 @@ export function App() {
               showGrid={prefs.grid}
               showShadows={prefs.shadows}
               meter={prefs.meter ? prefs.camera : null}
+              layers={prefs.layers}
+              showBeams={prefs.beams !== false}
               mode={mode}
               tool={tool}
               exportRef={exportRef}
@@ -780,6 +786,12 @@ export function App() {
               <IconPlus />
             </button>
             <span className="vsep" aria-hidden="true" />
+            <LayersMenu
+              layers={prefs.layers ?? {}}
+              beams={prefs.beams !== false}
+              onLayers={(layers) => setPrefs((p) => ({ ...p, layers }))}
+              onBeams={(beams) => setPrefs((p) => ({ ...p, beams }))}
+            />
             <button
               id="meter-toggle"
               className={`icon-btn ${prefs.meter ? 'on' : ''}`}

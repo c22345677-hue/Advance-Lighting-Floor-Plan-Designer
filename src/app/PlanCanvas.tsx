@@ -117,6 +117,9 @@ interface Props {
   showShadows: boolean;
   /** Light meter readings under each person (camera settings), or off. */
   meter: CameraSettings | null;
+  /** Per category: hidden from the plan, or locked (can't be picked or moved). */
+  layers?: Partial<Record<EditMode, LayerState>>;
+  showBeams?: boolean;
   mode: EditMode;
   tool: Tool;
   exportRef: MutableRefObject<ExportPng | null>;
@@ -136,6 +139,8 @@ interface Props {
   /** Alt + drag: leave the item where it was and add a copy where it was dropped. */
   onDuplicate: (item: Item, patch: Partial<Item>) => void;
 }
+
+export type LayerState = { hidden?: boolean; locked?: boolean };
 
 export type WallExtend = { wallId: string; atStart: boolean };
 
@@ -162,7 +167,11 @@ export function PlanCanvas(p: Props) {
   const [ghosts, setGhosts] = useState<Item[]>([]);
   const ghostOf = (i: Item): Item => ({ ...i, id: `${i.id}~original` });
   const all = sceneItems(scene);
-  const visible = all.filter((i) => !i.hidden);
+  /** Everything that's there (lights it, casts shadows), shown or not. */
+  const lit = useMemo(() => all.filter((i) => !i.hidden), [scene]);
+  const layer = (i: Item) => p.layers?.[modeOf(i)];
+  /** What's drawn: hidden layers are left out. */
+  const visible = lit.filter((i) => !layer(i)?.hidden);
   const walls = all.filter((i) => i.wall);
   const [hover, setHover] = useState<Vec2 | null>(null);
   /** What a click would do on an existing wall, shown next to the pointer. */
@@ -558,7 +567,7 @@ export function PlanCanvas(p: Props) {
   const labelSize = Math.min(28, Math.max(9, 12 / view.scale));
 
   const renderItem = (item: Item) => {
-    const active = modeOf(item) === mode;
+    const active = modeOf(item) === mode && !layer(item)?.locked;
     const canRotate = tool === 'rotate' && active && !item.locked && !isFocusLocked(item, all);
     const press = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
       if (!active) return;
@@ -750,7 +759,7 @@ export function PlanCanvas(p: Props) {
     );
   };
 
-  const readings = useMemo(() => (p.meter ? new Map(meterReadings(visible, p.meter).map((r) => [r.personId, r])) : null), [visible, p.meter]);
+  const readings = useMemo(() => (p.meter ? new Map(meterReadings(lit, p.meter).map((r) => [r.personId, r])) : null), [lit, p.meter]);
 
   /** Under a person's name: their light meter reading. */
   const meterLabel = (item: Item) => {
@@ -842,8 +851,8 @@ export function PlanCanvas(p: Props) {
           fill={colors.canvas}
         />
         {showGrid && grid}
-        {visible.map(beam)}
-        {p.showShadows && <ShadowLayer items={visible} liveRef={shadowLive} />}
+        {p.showBeams !== false && visible.map(beam)}
+        {p.showShadows && <ShadowLayer items={lit} liveRef={shadowLive} />}
         {ghosts.map((g) => beam(ghostOf(g)))}
       </Layer>
       <Layer>

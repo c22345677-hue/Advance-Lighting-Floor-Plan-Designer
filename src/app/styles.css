@@ -736,6 +736,36 @@ select {
   color: var(--muted);
 }
 
+.layers {
+  position: relative;
+}
+.layers-pop {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 260px;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  z-index: 20;
+}
+.layers-pop table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.layers-pop td {
+  padding: 5px 4px;
+}
+.layers-pop label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
 .load-bar {
   position: relative;
   height: 10px;

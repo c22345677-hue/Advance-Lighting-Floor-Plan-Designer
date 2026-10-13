@@ -153,3 +153,9 @@ export const IconSchedule = () => (
     <path d="M8 8h8M8 12h8M8 16h5" />
   </Svg>
 );
+export const IconLayers = () => (
+  <Svg>
+    <path d="M12 3 3 8l9 5 9-5-9-5z" />
+    <path d="m3 13 9 5 9-5" />
+  </Svg>
+);
