@@ -142,7 +142,7 @@ function needsStand(item: Item): boolean {
 export function sceneCounts(scene: SceneDoc, rules = true): Counts {
   const c: Counts = new Map();
   for (const item of sceneItems(scene)) {
-    if (item.kind === 'person') continue;
+    if (item.kind === 'person' || item.kind === 'note') continue;
     const lib = libraryItem(item.catalogId);
 
     if (item.kind === 'light') {

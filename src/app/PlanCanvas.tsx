@@ -75,6 +75,7 @@ export function displayLabel(item: Item, actors: readonly Actor[] = [], opts: { 
   const lib = libraryItem(item.catalogId);
   // Walls, doors and windows are self-explanatory: no label unless one was typed.
   if (!item.label && (item.wall || isOpening(item.catalogId))) return '';
+  if (item.kind === 'note') return ''; // notes draw their own text
   const base = itemFixture(item)?.model ?? lib?.name ?? '';
   const name = actor?.name ?? item.label ?? (fabric ? `${base} · ${fabric.name}` : base);
   // Light numbers (L1, L2…) are for lists; the plan shows just the name.
@@ -866,7 +867,10 @@ export function PlanCanvas(p: Props) {
           .filter((i) => scene.setItems.includes(i))
           .sort((a, b) => Number(!!b.wall) - Number(!!a.wall)) /* walls under doors and windows */
           .map(renderItem)}
-        {visible.filter((i) => scene.items.includes(i)).map(renderItem)}
+        {visible
+          .filter((i) => scene.items.includes(i))
+          .sort((a, b) => Number(itemLook(b).shape === 'note-area') - Number(itemLook(a).shape === 'note-area')) /* areas underneath */
+          .map(renderItem)}
         {visible.map(label)}
         {readings && visible.filter((i) => i.kind === 'person').map(meterLabel)}
         {tool === 'rotate' &&
@@ -1032,6 +1036,38 @@ function OutlineRing({
         </Group>
       ))}
     </Group>
+  );
+}
+
+const NOTE_FONT = "'Barlow Semi Condensed', 'Arial Narrow', sans-serif";
+
+/** Notes: text, an arrow pointing the way the item faces, or a marked area with its text. */
+function NoteShape({ item, shape, w, d, c }: { item: Item; shape: string; w: number; d: number; c: CanvasColors }) {
+  const color = item.note?.color ?? c.select;
+  const text = item.note?.text ?? '';
+  const size = item.note?.fontSize ?? 24;
+  if (shape === 'note-arrow') {
+    return (
+      <>
+        <Arrow points={[0, d / 2, 0, -d / 2]} stroke={color} fill={color} strokeWidth={5} pointerLength={22} pointerWidth={22} hitStrokeWidth={30} />
+        {text && <Text text={text} x={-150} y={d / 2 + 6} width={300} align="center" fontSize={size * 0.8} fontFamily={NOTE_FONT} fontStyle="600" fill={color} />}
+      </>
+    );
+  }
+  if (shape === 'note-area') {
+    return (
+      <>
+        <Rect x={-w / 2} y={-d / 2} width={w} height={d} stroke={color} strokeWidth={3} dash={[14, 8]} fill={color} opacity={1} fillEnabled={false} />
+        <Rect x={-w / 2} y={-d / 2} width={w} height={d} fill={color} opacity={0.1} />
+        {text && <Text text={text} x={-w / 2 + 10} y={-d / 2 + 8} width={w - 20} fontSize={size} fontFamily={NOTE_FONT} fontStyle="600" fill={color} />}
+      </>
+    );
+  }
+  return (
+    <>
+      <Rect x={-w / 2} y={-d / 2} width={w} height={d} fill={c.canvas} opacity={0.6} cornerRadius={6} />
+      <Text text={text || 'Note'} x={-w / 2} y={-size / 2} width={w} align="center" fontSize={size} fontFamily={NOTE_FONT} fontStyle="600" fill={color} />
+    </>
   );
 }
 
@@ -1787,6 +1823,10 @@ function ItemShape({
       return <DoorShape style={libraryItem(item.catalogId)?.style ?? 'single'} w={w} d={d} c={c} />;
     case 'window':
       return <WindowShape style={libraryItem(item.catalogId)?.style ?? 'standard'} w={w} d={d} c={c} />;
+    case 'note-text':
+    case 'note-arrow':
+    case 'note-area':
+      return <NoteShape item={item} shape={shape} w={w} d={d} c={c} />;
     case 'prop':
       return <PropShape style={libraryItem(item.catalogId)?.style ?? 'box'} w={w} d={d} c={c} />;
     case 'round':

@@ -67,6 +67,8 @@ export interface Item {
   grip?: { fabric?: string };
   /** People placed as cast: points at the project's actor list (name, colour, gender live there). */
   actorId?: string;
+  /** Notes on the plan: text, an arrow or a marked area (size in sizeCm; arrow length is d). */
+  note?: { text: string; color?: string; fontSize?: number };
   /** People: the cast member they look at in this scene (they turn to face them, like a camera's focus). */
   lookAtActorId?: string;
   /** Templates only: the cast role a template person becomes (stripped when placed). */

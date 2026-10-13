@@ -2,7 +2,7 @@
 // these cover everything else and act as stand-ins when the exact light doesn't matter.
 import type { ItemKind } from '../model/types';
 
-export type LibraryCategory = 'lights' | 'grip' | 'camera' | 'people' | 'set' | 'doors' | 'windows' | 'props';
+export type LibraryCategory = 'lights' | 'grip' | 'camera' | 'people' | 'set' | 'doors' | 'windows' | 'props' | 'notes';
 
 /** Icon family for drawing; lights reuse the catalogue's fixture families. */
 export type Shape =
@@ -30,7 +30,10 @@ export type Shape =
   | 'box'
   | 'round'
   | 'walls'
-  | 'prop';
+  | 'prop'
+  | 'note-text'
+  | 'note-arrow'
+  | 'note-area';
 
 export interface LibraryItem {
   id: string;
@@ -154,6 +157,9 @@ export const LIBRARY: LibraryItem[] = [
   P('tree', 'Tree', 'tree', 250, 250),
   P('car', 'Car', 'car', 180, 450),
   P('piano', 'Piano', 'piano', 150, 60),
+  I('notes', 'note', 'note.text', 'Text', 'note-text', 200, 40),
+  I('notes', 'note', 'note.arrow', 'Arrow', 'note-arrow', 20, 200),
+  I('notes', 'note', 'note.area', 'Area', 'note-area', 300, 200),
 ];
 
 const BY_ID = new Map(LIBRARY.map((i) => [i.id, i]));
@@ -169,6 +175,7 @@ export const CATEGORY_LABELS: Record<LibraryCategory, string> = {
   doors: 'Doors',
   windows: 'Windows',
   props: 'Props',
+  notes: 'Notes',
 };
 
 /** Doors and windows sit in walls and can be resized along the wall. */

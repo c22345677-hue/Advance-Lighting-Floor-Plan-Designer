@@ -18,7 +18,7 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
     rows: [
       [k('W'), 'Move tool: select and drag'],
       [k('R'), 'Rotate tool: select and turn'],
-      [<>{k('1')} – {k('4')}</>, 'Lights, Grip, Camera, Scene'],
+      [<>{k('1')} – {k('5')}</>, 'Lights, Grip, Camera, Scene, Notes'],
       [k('?'), 'This help'],
     ],
   },

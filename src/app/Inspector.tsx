@@ -88,7 +88,9 @@ export function Inspector(props: Props) {
         <p className="insp-sub">{subtitle}</p>
       </div>
 
-      {actor ? (
+      {item.kind === 'note' ? (
+        <NoteSection item={item} onUpdate={onUpdate} />
+      ) : actor ? (
         <Section title={ROLE_LABEL[roleOf(actor)]}>
           <PersonEditor actor={actor} kind={kind} onUpdate={(patch) => onUpdateActor(actor.id, patch)} />
         </Section>
@@ -789,6 +791,55 @@ function MeterSection({ item, sceneItems, camera, onCamera }: { item: Item; scen
         Estimates for planning, from each light's power, beam, distance and height, modifiers, gels, diffusion and anything in the way.
         Check with a meter on set.
       </p>
+    </Section>
+  );
+}
+
+const NOTE_COLORS = ['#f0a23b', '#ffffff', '#e5484d', '#3e8ef7', '#2fae55', '#f5d90a', '#a855f7'];
+
+/** A note's text, colour and size. */
+function NoteSection({ item, onUpdate }: { item: Item; onUpdate: Props['onUpdate'] }) {
+  const note = item.note ?? { text: '' };
+  const { shape, w, d } = itemLook(item);
+  const setNote = (patch: Partial<NonNullable<Item['note']>>) => onUpdate({ note: { ...note, ...patch } });
+  const size = (label: string, value: number, set: (v: number) => void) => (
+    <label className="field">
+      <span className="field-label">{label}</span>
+      <span className="input-unit">
+        <input className="text-input num" type="number" min={10} step={10} aria-label={label} value={Math.round(value)} onChange={(e) => set(Math.max(10, Number(e.target.value) || 10))} />
+        <span className="unit">cm</span>
+      </span>
+    </label>
+  );
+  return (
+    <Section title="Note">
+      <label className="field stack">
+        <span className="field-label">Text</span>
+        <textarea className="text-input" rows={2} aria-label="Note text" value={note.text} onChange={(e) => setNote({ text: e.target.value })} />
+      </label>
+      <div className="field">
+        <span className="field-label">Colour</span>
+        <div className="swatches">
+          {NOTE_COLORS.map((c) => (
+            <button key={c} className={`swatch-btn ${(note.color ?? NOTE_COLORS[0]) === c ? 'on' : ''}`} style={{ background: c }} aria-label={`Colour ${c}`} onClick={() => setNote({ color: c })} />
+          ))}
+        </div>
+      </div>
+      <label className="field">
+        <span className="field-label">Text size</span>
+        <span className="input-unit">
+          <input className="text-input num" type="number" min={8} max={200} aria-label="Text size" value={note.fontSize ?? 24} onChange={(e) => setNote({ fontSize: Math.min(200, Math.max(8, Number(e.target.value) || 24)) })} />
+        </span>
+      </label>
+      {shape === 'note-area' && (
+        <>
+          {size('Width', w, (v) => onUpdate({ sizeCm: { w: v, d } }))}
+          {size('Depth', d, (v) => onUpdate({ sizeCm: { w, d: v } }))}
+        </>
+      )}
+      {shape === 'note-arrow' && size('Length', d, (v) => onUpdate({ sizeCm: { w, d: v } }))}
+      {shape === 'note-text' && size('Box width', w, (v) => onUpdate({ sizeCm: { w: v, d } }))}
+      {shape === 'note-arrow' && <p className="hint-text">Use the Rotate tool (R) to point it.</p>}
     </Section>
   );
 }

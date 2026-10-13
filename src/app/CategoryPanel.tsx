@@ -42,6 +42,7 @@ const unitNo = (i: Item) => Number(/\d+/.exec(i.light?.unitId ?? '')?.[0] ?? 1e9
 
 /** One-line summary under an item's name in the scene list. */
 function summary(item: Item, actors: Actor[]): { sub: string; warn?: string } {
+  if (item.note) return { sub: item.note.text || '(no text)' };
   if (item.wall) {
     const n = item.wall.closed ? item.wall.points.length : item.wall.points.length - 1;
     return { sub: `${n} wall${n > 1 ? 's' : ''} · ${(wallLength(item) / 100).toFixed(1)} m${item.wall.closed ? ' · closed room' : ''}` };
@@ -173,6 +174,17 @@ export function CategoryPanel(props: Props) {
           </Section>
           <Section title="Add camera gear">
             <AddGrid category="camera" onPlace={onPlace} />
+          </Section>
+        </>
+      );
+    case 'notes':
+      return (
+        <>
+          <Section title="Notes on this plan" count={mine.length}>
+            {list('No notes yet. Add text, an arrow or an area to point things out on the plan and in the schedule.')}
+          </Section>
+          <Section title="Add">
+            <AddGrid category="notes" onPlace={onPlace} />
           </Section>
         </>
       );

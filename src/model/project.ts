@@ -91,18 +91,20 @@ export const sceneItems = (s: SceneDoc): Item[] => [...s.setItems, ...s.items];
 // ---- Edit modes ---------------------------------------------------------------------
 
 /** Top-menu categories. Only items of the active category can be selected and moved. */
-export type EditMode = 'lights' | 'grip' | 'camera' | 'scene';
+export type EditMode = 'lights' | 'grip' | 'camera' | 'scene' | 'notes';
 
 export const EDIT_MODES: { id: EditMode; label: string }[] = [
   { id: 'lights', label: 'Lights' },
   { id: 'grip', label: 'Grip' },
   { id: 'camera', label: 'Camera' },
   { id: 'scene', label: 'Scene' },
+  { id: 'notes', label: 'Notes' },
 ];
 
 export function modeOf(item: Item): EditMode {
   if (item.kind === 'light' || item.kind === 'modifier') return 'lights';
   if (item.kind === 'grip') return 'grip';
+  if (item.kind === 'note') return 'notes';
   if (item.kind === 'camera' || item.kind === 'path' || libraryItem(item.catalogId)?.category === 'camera') return 'camera';
   return 'scene';
 }

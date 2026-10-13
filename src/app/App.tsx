@@ -166,12 +166,13 @@ function loadPrefs(): Prefs {
   }
 }
 
-const MODE_LABEL: Record<EditMode, string> = { lights: 'Lights', grip: 'Grip', camera: 'Camera', scene: 'Scene' };
+const MODE_LABEL: Record<EditMode, string> = { lights: 'Lights', grip: 'Grip', camera: 'Camera', scene: 'Scene', notes: 'Notes' };
 const MODE_HINT: Record<EditMode, string> = {
   lights: 'Only lights can be picked and moved',
   grip: 'Only grip can be picked and moved',
   camera: 'Only camera gear can be picked and moved',
   scene: 'Only people, set and props can be picked and moved',
+  notes: 'Only notes, arrows and areas can be picked and moved',
 };
 
 type DialogKind = 'templates' | 'gear' | 'equipment' | 'help' | 'power' | 'schedule' | null;
@@ -342,6 +343,7 @@ export function App() {
             pos,
             rotationDeg: 0,
             ...(req.library.kind === 'light' ? { light: { unitId: nextUnitId(items) } } : {}),
+            ...(req.library.kind === 'note' ? { note: { text: req.library.shape === 'note-arrow' ? '' : req.library.shape === 'note-area' ? 'Area' : 'Note' } } : {}),
           },
     );
   };
@@ -513,7 +515,7 @@ export function App() {
         chooseTool('move');
       } else if (k === 'r') {
         chooseTool('rotate');
-      } else if (k >= '1' && k <= '4') {
+      } else if (k >= '1' && k <= '5') {
         switchMode(EDIT_MODES[Number(k) - 1]!.id);
       } else if (k === 'escape') {
         if (wallTool && wallDraft.length) setDraft([]);
@@ -955,7 +957,7 @@ export function App() {
         ) : (
           <span className="stat hint">
             {MODE_HINT[mode]}
-            <span className="mouse-only"> · pan: middle mouse or Space + drag · W move · R rotate · drag on empty space to select · Alt + drag copy · 1–4 category</span>
+            <span className="mouse-only"> · pan: middle mouse or Space + drag · W move · R rotate · drag on empty space to select · Alt + drag copy · 1–5 category</span>
             <span className="touch-only"> · two fingers to pan and zoom · tap to select</span>
           </span>
         )}
