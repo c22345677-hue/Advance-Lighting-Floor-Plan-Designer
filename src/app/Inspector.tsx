@@ -29,6 +29,7 @@ import { avail, limitingList, type GearScope } from './gearScope';
 import { useConfirm } from './confirm';
 import { IconClose } from './icons';
 import { PersonEditor } from './PersonEditor';
+import { addMark, goToMark, marksOf, removeMark } from '../model/blocking';
 import { CameraView } from './CameraView';
 import { beamDegOf, displayLabel, itemName } from './PlanCanvas';
 
@@ -120,6 +121,8 @@ export function Inspector(props: Props) {
           />
         </Section>
       )}
+
+      {item.kind === 'person' && <BlockingSection item={item} onUpdate={onUpdate} />}
 
       {item.kind === 'person' && <MeterSection item={item} sceneItems={sceneItems} camera={props.camera} onCamera={props.onCamera} />}
 
@@ -794,6 +797,43 @@ function MeterSection({ item, sceneItems, camera, onCamera }: { item: Item; scen
       <p className="hint-text">
         Estimates for planning, from each light's power, beam, distance and height, modifiers, gels, diffusion and anything in the way.
         Check with a meter on set.
+      </p>
+    </Section>
+  );
+}
+
+/** Blocking: marks 1, 2, 3… and which one they're on. */
+function BlockingSection({ item, onUpdate }: { item: Item; onUpdate: Props['onUpdate'] }) {
+  const marks = marksOf(item);
+  const at = item.blocking?.at ?? 0;
+  return (
+    <Section title="Blocking">
+      {marks.length > 0 && (
+        <ul className="row-list">
+          {marks.map((_, k) => (
+            <li key={k} className="row static">
+              <span className="row-main">
+                <span className="row-title">Mark {k + 1}</span>
+                <span className="row-sub">{k === at ? 'Standing here now' : ''}</span>
+              </span>
+              {k !== at && (
+                <button className="btn" onClick={() => onUpdate(goToMark(item, k))}>
+                  Go to
+                </button>
+              )}
+              <button className="icon-btn" aria-label={`Remove mark ${k + 1}`} onClick={() => onUpdate(removeMark(item, k))}>
+                <IconClose />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <button className="btn" onClick={() => onUpdate(addMark(item))}>
+        + Add a mark
+      </button>
+      <p className="hint-text">
+        Marks are joined by a numbered path on the plan; drag them to place them. "Go to" moves this person there, and cameras, lights,
+        readings and shadows follow.
       </p>
     </Section>
   );

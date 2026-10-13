@@ -1,5 +1,6 @@
 import Konva from 'konva';
 import { lightColor, rgbCss } from '../model/color';
+import { marksOf, moveMark } from '../model/blocking';
 import { meterReadings, type CameraSettings } from '../model/exposure';
 import { ShadowLayer, type LivePatch, type ShadowLive } from './ShadowLayer';
 import type { KonvaEventObject } from 'konva/lib/Node';
@@ -731,6 +732,55 @@ export function PlanCanvas(p: Props) {
     );
   };
 
+  /** A person's blocking: numbered marks joined by a dashed path; marks can be dragged when they're selected. */
+  const blockingPath = (item: Item) => {
+    const marks = marksOf(item);
+    if (marks.length < 2) return null;
+    const color = actors.find((a) => a.id === item.actorId)?.color ?? colors.person;
+    const editable = selected === item.id && mode === 'scene' && tool === 'move' && !item.locked && !p.wallTool;
+    return (
+      <Group key={`${item.id}-blocking`} name="blocking">
+        {marks.slice(1).map((m, k) => {
+          const a = marks[k]!;
+          const len = Math.hypot(m.x - a.x, m.y - a.y) || 1;
+          const pad = 22;
+          return (
+            <Arrow
+              key={k}
+              listening={false}
+              points={[a.x + ((m.x - a.x) / len) * pad, a.y + ((m.y - a.y) / len) * pad, m.x - ((m.x - a.x) / len) * pad, m.y - ((m.y - a.y) / len) * pad]}
+              stroke={color}
+              fill={color}
+              strokeWidth={3}
+              dash={[12, 8]}
+              pointerLength={14}
+              pointerWidth={14}
+              opacity={0.85}
+            />
+          );
+        })}
+        {marks.map((m, k) =>
+          k === item.blocking?.at ? null : (
+            <Group
+              key={`m${k}`}
+              x={m.x}
+              y={m.y}
+              draggable={editable}
+              listening={editable}
+              onMouseDown={(e) => (e.cancelBubble = true)}
+              onTouchStart={(e) => (e.cancelBubble = true)}
+              onDragEnd={(e) => dispatch({ type: 'update', id: item.id, patch: moveMark(item, k, { x: e.target.x(), y: e.target.y() }) })}
+            >
+              <Circle radius={18} stroke={color} strokeWidth={3} dash={[6, 4]} fill={colors.canvas} opacity={0.9} />
+              <Text text={String(k + 1)} x={-18} y={-9} width={36} align="center" fontSize={18} fontStyle="700" fill={color} />
+            </Group>
+          ),
+        )}
+        <Text text={String((item.blocking?.at ?? 0) + 1)} x={item.pos.x + 24} y={item.pos.y - 40} fontSize={16} fontStyle="700" fill={color} listening={false} />
+      </Group>
+    );
+  };
+
   const beamColor = (item: Item) => {
     const c = lightColor(item);
     const strength = Math.min(1, Math.max(0.15, (item.light?.intensityPct ?? 100) / 100));
@@ -863,6 +913,7 @@ export function PlanCanvas(p: Props) {
           </Group>
         ))}
         {ghosts.filter((g) => g.id === dragging).map((g) => label(ghostOf(g)))}
+        {visible.map(blockingPath)}
         {visible
           .filter((i) => scene.setItems.includes(i))
           .sort((a, b) => Number(!!b.wall) - Number(!!a.wall)) /* walls under doors and windows */

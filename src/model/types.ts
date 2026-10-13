@@ -69,6 +69,8 @@ export interface Item {
   actorId?: string;
   /** Notes on the plan: text, an arrow or a marked area (size in sizeCm; arrow length is d). */
   note?: { text: string; color?: string; fontSize?: number };
+  /** People: blocking marks in order; the person stands on marks[at] (kept equal to pos). */
+  blocking?: { marks: Vec2[]; at: number };
   /** People: the cast member they look at in this scene (they turn to face them, like a camera's focus). */
   lookAtActorId?: string;
   /** Templates only: the cast role a template person becomes (stripped when placed). */
