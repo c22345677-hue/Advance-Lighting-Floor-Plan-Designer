@@ -14,6 +14,7 @@ import {
   type SceneDoc,
 } from '../model/project';
 import type { Actor, CastRole, Item, Vec2 } from '../model/types';
+import { parseProjectFile, projectFileName, toProjectFile } from '../model/projectFile';
 import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain } from '../model/walls';
 import { HelpPanel } from './HelpPanel';
 import { isOpening, libraryItem } from '../library/items';
@@ -412,6 +413,29 @@ export function App() {
     setView(null);
   };
 
+  /** Download the project (with its gear list) as a file. */
+  const saveFile = () => {
+    const blob = new Blob([toProjectFile(project, gearLists)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = projectFileName(project);
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  /** Open a project file as a new project on this device (its gear list comes along). */
+  const openFile = async (file: File) => {
+    const r = parseProjectFile(await file.text(), uid());
+    if (!r.ok) {
+      await confirm({ title: "Couldn't open the file", message: r.error, confirm: 'OK' });
+      return;
+    }
+    const list = r.gearList;
+    if (list && !gearLists.some((l) => l.id === list.id)) setGearLists((ls) => [...ls, list]);
+    openProject(r.project);
+  };
+
   const exportPng = () => {
     leaveWalls();
     const url = exportRef.current?.();
@@ -505,6 +529,8 @@ export function App() {
             onDeleteScene={(id) => dispatch({ type: 'deleteScene', id })}
             onRename={(name) => dispatch({ type: 'setProject', patch: { name } })}
             onKind={(k) => dispatch({ type: 'setProject', patch: { kind: k } })}
+            onSaveFile={saveFile}
+            onOpenFile={openFile}
             onOpen={(id) => {
               const p = loadProject(id);
               if (p) openProject(p);

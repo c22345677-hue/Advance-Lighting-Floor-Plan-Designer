@@ -18,6 +18,9 @@ interface Props {
   onDuplicateScene: (id: string) => void;
   onClearScene: (id: string) => void;
   onDeleteScene: (id: string) => void;
+  /** Project file: save this project to a file, or open one. */
+  onSaveFile: () => void;
+  onOpenFile: (file: File) => void;
 }
 
 /**
@@ -33,6 +36,7 @@ export function ProjectMenu(props: Props) {
   const isEmpty = scene.items.length + scene.setItems.length === 0;
   const close = () => setOpen(false);
   const confirm = useConfirm();
+  const fileInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -184,6 +188,40 @@ export function ProjectMenu(props: Props) {
             </div>
           </section>
 
+          <section className="section">
+            <h3 className="section-title">Project file</h3>
+            <p className="hint-text">Move a project to another device (by Drive, email or USB), or keep a backup.</p>
+            <div className="btn-row">
+              <button
+                id="save-file"
+                className="btn"
+                onClick={() => {
+                  props.onSaveFile();
+                  close();
+                }}
+              >
+                Save to file
+              </button>
+              <button id="open-file" className="btn" onClick={() => fileInput.current?.click()}>
+                Open file…
+              </button>
+              <input
+                ref={fileInput}
+                type="file"
+                accept=".json,application/json"
+                hidden
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  e.target.value = '';
+                  if (f) {
+                    props.onOpenFile(f);
+                    close();
+                  }
+                }}
+              />
+            </div>
+          </section>
+
           {others.length > 0 && (
             <section className="section">
               <h3 className="section-title">Open another project</h3>
@@ -208,7 +246,7 @@ export function ProjectMenu(props: Props) {
             </section>
           )}
 
-          <p className="hint-text">Projects are saved on this device. Google Drive sync comes later.</p>
+          <p className="hint-text">Projects are kept on this device automatically. Google Drive sync comes later.</p>
         </div>
       )}
     </div>
