@@ -126,6 +126,7 @@ body {
 
 .app {
   height: 100%;
+  overflow: hidden; /* the closed bottom sheet (phones) must not make the page scrollable */
   display: grid;
   /* minmax(0, …): the columns and rows never grow to fit their content (the plan canvas has a
      fixed pixel size), so shrinking the window shrinks the plan instead of pushing the side panel

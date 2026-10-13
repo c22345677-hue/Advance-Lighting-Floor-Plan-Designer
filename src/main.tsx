@@ -11,3 +11,11 @@ createRoot(document.getElementById('root')!).render(
     </ConfirmHost>
   </StrictMode>,
 );
+
+// Offline support for the installed app (not in dev, and not in the single-file test build,
+// which runs inside a sandboxed frame).
+if (import.meta.env.PROD && !__SINGLE_FILE__ && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
