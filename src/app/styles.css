@@ -2057,3 +2057,26 @@ kbd {
     color: #000;
   }
 }
+
+/* Crash screen */
+.crash {
+  min-height: 100dvh;
+  padding: 32px 16px;
+  max-width: 720px;
+  margin: 0 auto;
+  background: var(--bg);
+  color: var(--fg);
+}
+.crash pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(127, 127, 127, 0.12);
+}
+.crash-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
