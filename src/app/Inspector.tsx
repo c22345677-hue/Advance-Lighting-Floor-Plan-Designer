@@ -7,6 +7,7 @@ import { FABRIC_KIND_LABEL, FABRICS, takesFabric, type FabricKind } from '../lib
 import { isOpening, libraryItem } from '../library/items';
 import { DEFAULT_WALL_CM, wallLength } from '../model/walls';
 import { lightSource } from '../model/shadows';
+import { circuitName, lightWatts } from '../model/power';
 import { lightName, meterReadings, type CameraSettings } from '../model/exposure';
 import { COLOR_KIND_LABEL, colorKindOf, displayKelvin, hsToRgb, KIND_RANGE, lightColor, rgbCss, type ColorKind } from '../model/color';
 import { GEL_GROUP_LABEL, gelById, GELS, type Gel, type GelGroup } from '../library/gels';
@@ -558,6 +559,23 @@ function LightSection({
       </Section>
 
       <ShadowSection item={item} sceneItems={sceneItems} setLight={setLight} />
+
+      <Section title="Power">
+        <label className="field">
+          <span className="field-label">Circuit</span>
+          <select aria-label="Circuit" value={item.light?.circuit ?? ''} onChange={(e) => setLight({ circuit: e.target.value || undefined })}>
+            <option value="">No circuit</option>
+            {(() => {
+              const names = [...new Set(sceneItems.map((i) => i.light?.circuit).filter((c): c is string => !!c))].sort();
+              const next = circuitName(names.length);
+              return [...names.map((n) => <option key={n} value={n}>Circuit {n}</option>), <option key="new" value={next}>New: circuit {next}</option>];
+            })()}
+          </select>
+        </label>
+        <p className="hint-text">
+          {lightWatts(item).w} W{lightWatts(item).estimated ? ' (typical for this kind of light)' : ''}. Tap the power total at the bottom for every circuit's load.
+        </p>
+      </Section>
     </>
   );
 }

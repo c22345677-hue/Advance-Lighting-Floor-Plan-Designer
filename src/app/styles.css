@@ -736,6 +736,58 @@ select {
   color: var(--muted);
 }
 
+.load-bar {
+  position: relative;
+  height: 10px;
+  border-radius: 5px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.load-bar span {
+  display: block;
+  height: 100%;
+  background: #2fae55;
+}
+.load-bar.high span {
+  background: var(--accent);
+}
+.load-bar.over span {
+  background: var(--danger);
+}
+.load-bar i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--fg);
+  opacity: 0.5;
+}
+.count.high {
+  color: var(--accent);
+}
+.count.over {
+  color: var(--danger);
+}
+.stat-btn.warn {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.row.static > select {
+  width: auto;
+  flex: none;
+  max-width: 45%;
+}
+.row.static .row-main {
+  min-width: 0;
+}
+
+.field.inline {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .meter-big {
   display: flex;
   align-items: baseline;

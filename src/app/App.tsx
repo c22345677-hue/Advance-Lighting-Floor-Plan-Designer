@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { nextUnitId, powerTotals } from '../model/gear';
+import { nextUnitId } from '../model/gear';
 import { gearUsage, type GearList } from '../model/gearList';
 import {
   EDIT_MODES,
@@ -17,6 +17,8 @@ import {
 } from '../model/project';
 import type { Actor, CastRole, Item, Vec2 } from '../model/types';
 import { DEFAULT_CAMERA, type CameraSettings } from '../model/exposure';
+import { circuitLoads, defaultBreakerA } from '../model/power';
+import { PowerPanel } from './PowerPanel';
 import { parseProjectFile, projectFileName, toProjectFile } from '../model/projectFile';
 import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain } from '../model/walls';
 import { HelpPanel } from './HelpPanel';
@@ -145,6 +147,8 @@ interface Prefs {
   meter: boolean;
   /** Camera settings the meter's T-stops are for. */
   camera: CameraSettings;
+  /** Breaker size per circuit, A (default by voltage). */
+  breakerA?: number;
 }
 const PREFS_KEY = 'lfpd.prefs.v1';
 function loadPrefs(): Prefs {
@@ -163,7 +167,7 @@ const MODE_HINT: Record<EditMode, string> = {
   scene: 'Only people, set and props can be picked and moved',
 };
 
-type DialogKind = 'templates' | 'gear' | 'equipment' | 'help' | null;
+type DialogKind = 'templates' | 'gear' | 'equipment' | 'help' | 'power' | null;
 
 export function App() {
   const [history, dispatch] = useReducer(reducer, undefined, () => ({
@@ -519,7 +523,8 @@ export function App() {
 
   const zoomBy = (f: number) => view && setView(zoomAt(view, f, { x: size.width / 2, y: size.height / 2 }));
   const bar = view ? scaleBar(view.scale) : null;
-  const power = powerTotals(items, prefs.volts);
+  const power = circuitLoads(items, prefs.volts, prefs.breakerA ?? defaultBreakerA(prefs.volts));
+  const powerWarn = power.circuits.some((c) => c.status === 'over');
   const sheetTitle = selectedItem ? displayLabel(selectedItem, project.actors) || MODE_LABEL[mode] : MODE_LABEL[mode];
 
   return (
@@ -905,11 +910,11 @@ export function App() {
           </div>
         )}
         <button
-          className="stat-btn"
-          onClick={() => setPrefs((p) => ({ ...p, volts: p.volts === 230 ? 120 : 230 }))}
-          title="Total light power in this scene. Tap to switch 230 V / 120 V."
+          className={`stat-btn ${powerWarn ? "warn" : ""}`}
+          onClick={() => setDialog('power')}
+          title="Total light power in this scene. Tap for circuits and breakers."
         >
-          {power.watts} W · {power.amps.toFixed(1)} A @ {prefs.volts} V{power.unknown ? ` · ${power.unknown} unknown` : ''}
+          {power.totalWatts} W · {power.totalAmps.toFixed(1)} A @ {prefs.volts} V{powerWarn ? ' · circuit over!' : ''}
         </button>
         {gear.limit && <span className="stat accent">Gear list: {activeList?.name}</span>}
         {selection.length > 1 ? (
@@ -927,6 +932,23 @@ export function App() {
         )}
       </footer>
 
+      {dialog === 'power' && (
+        <Dialog title="Power & circuits" onClose={() => setDialog(null)}>
+          <PowerPanel
+            items={items}
+            volts={prefs.volts}
+            breakerA={prefs.breakerA ?? defaultBreakerA(prefs.volts)}
+            onVolts={(volts) => setPrefs((p) => ({ ...p, volts, breakerA: p.breakerA ?? undefined }))}
+            onBreaker={(breakerA) => setPrefs((p) => ({ ...p, breakerA }))}
+            onCircuits={(patches) =>
+              sd({
+                type: 'updateMany',
+                patches: patches.map(({ id, circuit }) => ({ id, patch: { light: { ...items.find((i) => i.id === id)?.light, circuit } } })),
+              })
+            }
+          />
+        </Dialog>
+      )}
       {dialog === 'help' && (
         <Dialog title="Shortcuts" onClose={() => setDialog(null)}>
           <HelpPanel />
