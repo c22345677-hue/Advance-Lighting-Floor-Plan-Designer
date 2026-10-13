@@ -64,7 +64,7 @@ export const beamDegOf = (item: Item): number =>
   item.light?.beamDeg ?? libraryItem(item.catalogId)?.beamDeg ?? 60;
 
 /** Text shown under an item: "L1 · LS 600d Pro" for lights, the actor's name for cast. */
-export function displayLabel(item: Item, actors: readonly Actor[] = []): string {
+export function displayLabel(item: Item, actors: readonly Actor[] = [], opts: { unit?: boolean } = {}): string {
   const actor = item.actorId ? actors.find((a) => a.id === item.actorId) : undefined;
   const fabric = fabricById(item.grip?.fabric);
   const lib = libraryItem(item.catalogId);
@@ -72,7 +72,8 @@ export function displayLabel(item: Item, actors: readonly Actor[] = []): string 
   if (!item.label && (item.wall || isOpening(item.catalogId))) return '';
   const base = itemFixture(item)?.model ?? lib?.name ?? '';
   const name = actor?.name ?? item.label ?? (fabric ? `${base} · ${fabric.name}` : base);
-  const unit = item.light?.unitId;
+  // Light numbers (L1, L2…) are for lists; the plan shows just the name.
+  const unit = opts.unit === false ? undefined : item.light?.unitId;
   return unit ? (name ? `${unit} · ${name}` : unit) : name;
 }
 
@@ -279,6 +280,8 @@ export function PlanCanvas(p: Props) {
   /** While an item is dragged, keep its beam and any cameras watching it in step. */
   const follow = (moved: Item, pos: Vec2) => {
     node(`${moved.id}-beam`)?.position(pos);
+    // The name stays under the item while it moves.
+    node(`${moved.id}-label`)?.position({ x: pos.x - 200, y: pos.y + labelOffset(moved) });
     const turn = (id: string, deg: number) => {
       node(id)?.rotation(deg);
       node(`${id}-beam`)?.rotation(deg);
@@ -554,6 +557,7 @@ export function PlanCanvas(p: Props) {
             const hit = near && clampHit(near, walls, itemLook(item).w);
             if (hit) {
               e.target.position(hit.point);
+              node(`${item.id}-label`)?.position({ x: hit.point.x - 200, y: hit.point.y + labelOffset(item) });
               e.target.rotation(seatOpening(item, hit, itemLook(item).w).rotationDeg!);
               guideFor(hit, hit.point, itemLook(item).w);
             }
@@ -669,11 +673,12 @@ export function PlanCanvas(p: Props) {
   };
 
   const label = (item: Item) => {
-    const text = displayLabel(item, actors);
-    if (!text || item.id === dragging) return null; // hidden while the item is being moved
+    const text = displayLabel(item, actors, { unit: false });
+    if (!text) return null;
     return (
       <Text
         key={`${item.id}-label`}
+        id={`${item.id}-label`}
         x={item.pos.x - 200}
         y={item.pos.y + labelOffset(item)}
         width={400}

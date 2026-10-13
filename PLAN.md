@@ -32,7 +32,6 @@ Project (production)
   photo. It is shared by every shot, so moving the sofa once updates every setup.
 - **Setup layer** (one per shot): lights, flags, frames, cameras, camera moves and actor
   blocking. "Duplicate shot" makes it fast to iterate from setup to setup.
-- This matches the reference screenshot: a Scene 1 / Shot 3 navigator with a Shots dropdown.
 
 ---
 
@@ -46,9 +45,9 @@ Project (production)
 - Box select, multi-select, align and distribute, copy/paste. No snapping: items are placed
   freely. The grid can be shown or hidden.
 - Undo/redo, with on-screen buttons because tablets have no keyboard.
-- Labels with leader lines (as in the reference), and free text notes and arrows.
+- Labels with leader lines, and free text notes and arrows.
 - Layers panel with lock and visibility per layer and per category.
-- Design styles: **Dark** (as in the reference), **Light/Print**, and **Blueprint** (B&W,
+- Design styles: **Dark**, **Light/Print**, and **Blueprint** (B&W,
   photocopy-safe).
 - Status bar: live total wattage and amperage (e.g. `5460W | 23.74A`).
 
@@ -118,7 +117,7 @@ Behaviour:
   - Dolly track: a straight or curved line with its real track length.
   - Steadicam / gimbal path: a free spline.
   - Crane: an arc.
-- Actor blocking: mark A → mark B with a dashed path, as in the reference.
+- Actor blocking: mark A → mark B with a dashed path.
 
 ### 2.6 Photo backgrounds & calibration (ruler tool)
 1. Upload a photo: a ceiling shot looking down, a drone shot, or a scanned plan.
@@ -261,7 +260,7 @@ Start a plan from a ready-made setup, then adjust it.
   undo/redo.
 - On phones, the library and property panel open as bottom sheets. Phones are aimed at quick
   edits and viewing; full editing is on tablet and desktop.
-- Keyboard shortcuts on desktop (as in the reference's status hints).
+- Keyboard shortcuts on desktop.
 
 ---
 
@@ -341,7 +340,7 @@ Suggested first vendors:
 - **Gels / diffusion**: Rosco, LEE (CTO/CTB/CTS fractions, 216/250/251, grid cloths, silks).
 
 ### Illustrations
-- Top-down, consistent style (like the reference), as **SVG** so they stay crisp at any zoom
+- Top-down, consistent style, as **SVG** so they stay crisp at any zoom
   and adapt to the design style.
 - **Icon families, not one drawing per SKU**: about 30 light families, 20 grip, 10 camera and
   50 props. Each SKU maps to a family and is drawn at its real footprint with its label.
@@ -459,7 +458,7 @@ Each phase ends with something usable.
 | **0. Foundation** | Repo scaffold, lint, tests, CI, PWA shell, preview deploys | The app loads on iPad, phone and PC from a URL |
 | **1. Canvas MVP** | 50 cm grid at real scale; pan and zoom (mouse and touch); place, move, rotate and duplicate; labels; multi-select; snap; undo/redo; starter library of about 30 generic items; template picker; local autosave; PNG export | A 3-point interview can be planned on an iPad and exported |
 | **2. Photo & measure** | Upload, 2-point calibration with loupe, rotate/opacity/lock, measure tool, wall/door/window tool, 4-point perspective fix | A ceiling or drone photo comes out at true scale |
-| **3. Lights & camera detail** | Beam cones, CCT/gel/modifiers, light IDs, **string lights tool**, camera FOV, dolly/steadicam/crane paths, actor blocking, design styles | The reference screenshot can be recreated, and a curved row of 8 tubes aimed at one spot can be placed in seconds |
+| **3. Lights & camera detail** | Beam cones, CCT/gel/modifiers, light IDs, **string lights tool**, camera FOV, dolly/steadicam/crane paths, actor blocking, design styles | A curved row of 8 tubes aimed at one spot can be placed in seconds |
 | **4. Equipment, kits, power** | Auto list, reuse-aware quantities, kits, accessory rules, owned flag, power and circuits, XLSX/CSV export | A rental-ready list comes out in one click |
 | **5. Accounts & sync** | Google Sign-In, project → location → scene → shot, Google Drive sync (offline-first, conflict handling), photos in Drive, version history | Start on phone, finish on PC |
 | **6. Location & sun** | Address lookup, satellite import with auto-scale, north alignment, sun arc, time slider, sun times | You can see where the sun is at 3 pm on the shoot day |
@@ -488,6 +487,7 @@ get filled in as you define them.
 | Platform | PWA first, optional App Store and Play Store builds later *(proposed, no objection yet)* |
 | Sync | Google Drive (user's own Drive); own cloud only if needed later |
 | Templates | Engine first; each template's layout defined by you later |
+| Visual direction | The early reference screenshot is retired; look and layout follow our own design from here on |
 
 ## 8. What I need from you
 - Vendor catalogues, in priority order.
