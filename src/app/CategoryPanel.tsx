@@ -7,6 +7,7 @@ import { itemFixture, itemRigWeightKg, standCheck } from '../model/gear';
 import { KIND_ROLES, modeOf, ROLE_LABEL, roleOf, type EditMode, type ProjectKind } from '../model/project';
 import type { Actor, CastRole, Item } from '../model/types';
 import { wallLength } from '../model/walls';
+import { SUN_PRESETS, sunKelvin, type Sun } from '../model/sun';
 import { FixtureSearch } from './FixtureSearch';
 import { limitingList, type GearScope } from './gearScope';
 import { displayLabel, itemName } from './PlanCanvas';
@@ -33,6 +34,9 @@ interface Props {
   onWallFinish: () => void;
   /** Doors and windows need a wall to go into. */
   hasWalls: boolean;
+  /** The scene's daylight through windows. */
+  sun?: Sun;
+  onSun: (sun: Sun | undefined) => void;
   wallSnap: boolean;
   onWallSnap: (on: boolean) => void;
 }
@@ -102,6 +106,47 @@ function SceneList({ items, actors, empty, onSelect }: { items: Item[]; actors: 
         );
       })}
     </ul>
+  );
+}
+
+/** Sun through the windows: on/off, presets, direction and height, or overcast. */
+function DaylightSection({ sun, onSun, hasWindows }: { sun?: Sun; onSun: (s: Sun | undefined) => void; hasWindows: boolean }) {
+  const s: Sun = sun ?? { on: false, ...SUN_PRESETS[0]!.sun };
+  const set = (patch: Partial<Sun>) => onSun({ ...s, ...patch });
+  return (
+    <Section title="Daylight">
+      <label className="field toggle">
+        <span className="field-label">Sun through the windows</span>
+        <input type="checkbox" aria-label="Daylight" checked={s.on} onChange={(e) => set({ on: e.target.checked })} />
+      </label>
+      {s.on && (
+        <>
+          <div className="btn-row">
+            {SUN_PRESETS.map((p) => (
+              <button key={p.id} className="btn" onClick={() => set({ ...p.sun, overcast: !!p.sun.overcast })}>
+                {p.label}
+              </button>
+            ))}
+          </div>
+          <label className="field">
+            <span className="field-label">From {Math.round(s.azimuthDeg)}°</span>
+            <input type="range" aria-label="Sun direction" min={0} max={359} value={s.azimuthDeg} onChange={(e) => set({ azimuthDeg: Number(e.target.value) })} />
+          </label>
+          <label className="field">
+            <span className="field-label">Height {Math.round(s.elevationDeg)}°</span>
+            <input type="range" aria-label="Sun height" min={2} max={85} value={s.elevationDeg} onChange={(e) => set({ elevationDeg: Number(e.target.value) })} />
+          </label>
+          <label className="field toggle">
+            <span className="field-label">Overcast</span>
+            <input type="checkbox" aria-label="Overcast" checked={!!s.overcast} onChange={(e) => set({ overcast: e.target.checked })} />
+          </label>
+          <p className="hint-text">
+            {s.overcast ? 'Overcast: windows glow softly into the room.' : `Sun about ${sunKelvin(s)} K. Low sun throws long patches and long shadows.`} Direction 0° is
+            from the top of the plan.{hasWindows ? '' : ' Add windows to the walls to let it in.'}
+          </p>
+        </>
+      )}
+    </Section>
   );
 }
 
@@ -262,6 +307,7 @@ export function CategoryPanel(props: Props) {
               Snaps to corners, walls and 0/45/90°. Hold Ctrl (⌘ on Mac) to place freely; Shift for 15° steps.
             </p>
           </Section>
+          <DaylightSection sun={props.sun} onSun={props.onSun} hasWindows={items.some((i) => libraryItem(i.catalogId)?.category === 'windows')} />
           <Section title="Doors">
             <p className="hint-text">
               {props.hasWalls

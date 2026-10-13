@@ -59,6 +59,10 @@ export interface LightSource {
   minDistCm: number;
   /** The diffusion frame the light goes through, if any. */
   frameId?: string;
+  /** Sunlight through a window: the sunlit patch (shadows stay inside it instead of a beam). */
+  clip?: Vec2[];
+  /** Occluders this light passes (the wall a window is in). */
+  ignore?: string[];
   /** How dark a full shadow from this light is, 0–1. */
   darkness: number;
   hardness: Hardness;
@@ -295,24 +299,31 @@ export interface ShadowShape {
  * each casting a faint shadow: where they all overlap is the full (umbra) shadow, the fringe
  * where only some do is the soft edge (penumbra).
  */
-export function sceneShadows(items: readonly Item[]): { sources: LightSource[]; shadows: ShadowShape[] } {
+export function sceneShadows(items: readonly Item[], extra: LightSource[] = []): { sources: LightSource[]; shadows: ShadowShape[] } {
   const occ = occluders(items);
   const sources: LightSource[] = [];
   const shadows: ShadowShape[] = [];
-  for (const light of items) {
-    if (light.hidden) continue;
-    const s = lightSource(light, items);
-    if (!s || s.darkness <= 0.005) continue;
+  const all = [
+    ...items.filter((i) => !i.hidden).map((i) => lightSource(i, items)),
+    ...extra,
+  ].filter((s): s is LightSource => !!s && s.darkness > 0.005);
+  for (const s of all) {
     sources.push(s);
-    const samples = s.sizeCm < 20 ? 1 : Math.min(7, Math.ceil(s.sizeCm / 18));
+    const samples = s.clip ? 1 : s.sizeCm < 20 ? 1 : Math.min(7, Math.ceil(s.sizeCm / 18));
     const across = rotate({ x: 1, y: 0 }, s.rotationDeg); // perpendicular to the beam
-    const reach = s.throwCm * 1.5;
+    const reach = s.clip ? Math.hypot(s.pos.x - s.apex.x, s.pos.y - s.apex.y) + 2e4 : s.throwCm * 1.5;
     for (const o of occ) {
-      // Only what's in front of the source (and past a diffusion frame) and roughly in the beam.
+      if (s.ignore?.includes(o.id)) continue;
       const c = o.points.reduce((a, p) => ({ x: a.x + p.x / o.points.length, y: a.y + p.y / o.points.length }), { x: 0, y: 0 });
-      const dist = Math.min(...[c, ...o.points].map((p) => Math.hypot(p.x - s.apex.x, p.y - s.apex.y)));
-      if (dist > s.throwCm || Math.hypot(c.x - s.apex.x, c.y - s.apex.y) <= s.minDistCm) continue;
-      if (![c, ...o.points].some((p) => insideBeam(s.apex, s.rotationDeg, s.beamDeg, s.throwCm, p))) continue;
+      if (s.clip) {
+        // Sunlight through a window: only what stands in the sunlit patch.
+        if (![c, ...o.points].some((p) => pointInPolygon(p, s.clip!))) continue;
+      } else {
+        // Only what's in front of the source (and past a diffusion frame) and roughly in the beam.
+        const dist = Math.min(...[c, ...o.points].map((p) => Math.hypot(p.x - s.apex.x, p.y - s.apex.y)));
+        if (dist > s.throwCm || Math.hypot(c.x - s.apex.x, c.y - s.apex.y) <= s.minDistCm) continue;
+        if (![c, ...o.points].some((p) => insideBeam(s.apex, s.rotationDeg, s.beamDeg, s.throwCm, p))) continue;
+      }
       if (o.points.some((p) => Math.hypot(p.x - s.pos.x, p.y - s.pos.y) < 1)) continue;
       for (let k = 0; k < samples; k++) {
         const t = samples === 1 ? 0 : (k / (samples - 1) - 0.5) * s.sizeCm;
@@ -323,4 +334,15 @@ export function sceneShadows(items: readonly Item[]): { sources: LightSource[]; 
     }
   }
   return { sources, shadows };
+}
+
+/** Is `p` inside polygon `poly` (even-odd rule)? */
+export function pointInPolygon(p: Vec2, poly: readonly Vec2[]): boolean {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const a = poly[i]!;
+    const b = poly[j]!;
+    if (a.y > p.y !== b.y > p.y && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) inside = !inside;
+  }
+  return inside;
 }

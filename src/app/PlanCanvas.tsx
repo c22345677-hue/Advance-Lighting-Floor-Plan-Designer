@@ -1,6 +1,7 @@
 import Konva from 'konva';
 import { lightColor, rgbCss } from '../model/color';
 import { marksOf, moveMark } from '../model/blocking';
+import { sunRgb, windowLights, type WindowLight } from '../model/sun';
 import { meterReadings, type CameraSettings } from '../model/exposure';
 import { ShadowLayer, type LivePatch, type ShadowLive } from './ShadowLayer';
 import type { KonvaEventObject } from 'konva/lib/Node';
@@ -781,6 +782,31 @@ export function PlanCanvas(p: Props) {
     );
   };
 
+  /** Daylight through a window: a sunlit patch on the floor, or a soft glow into the room. */
+  const daylight = (wl: WindowLight) => {
+    const rgb = sunRgb(scene.sun!);
+    if (wl.patch) {
+      return <Line key={`${wl.windowId}-sun`} points={wl.patch.flatMap((q) => [q.x, q.y])} closed fill={rgbCss(rgb, 0.3)} listening={false} />;
+    }
+    const rot = aimAt(wl.center, { x: wl.center.x + wl.inward.x, y: wl.center.y + wl.inward.y });
+    return (
+      <Wedge
+        key={`${wl.windowId}-sky`}
+        x={wl.center.x}
+        y={wl.center.y}
+        rotation={rot - 90 - 75}
+        radius={500}
+        angle={150}
+        listening={false}
+        fillRadialGradientStartPoint={{ x: 0, y: 0 }}
+        fillRadialGradientStartRadius={0}
+        fillRadialGradientEndPoint={{ x: 0, y: 0 }}
+        fillRadialGradientEndRadius={500}
+        fillRadialGradientColorStops={[0, rgbCss(rgb, 0.22), 1, 'rgba(0,0,0,0)']}
+      />
+    );
+  };
+
   const beamColor = (item: Item) => {
     const c = lightColor(item);
     const strength = Math.min(1, Math.max(0.15, (item.light?.intensityPct ?? 100) / 100));
@@ -810,7 +836,9 @@ export function PlanCanvas(p: Props) {
     );
   };
 
-  const readings = useMemo(() => (p.meter ? new Map(meterReadings(lit, p.meter).map((r) => [r.personId, r])) : null), [lit, p.meter]);
+  const readings = useMemo(() => (p.meter ? new Map(meterReadings(lit, p.meter, scene.sun).map((r) => [r.personId, r])) : null), [lit, p.meter, scene.sun]);
+  const windowLit = useMemo(() => windowLights(lit, scene.sun), [lit, scene.sun]);
+  const windowSources = useMemo(() => windowLit.map((w) => w.source), [windowLit]);
 
   /** Under a person's name: their light meter reading. */
   const meterLabel = (item: Item) => {
@@ -903,7 +931,8 @@ export function PlanCanvas(p: Props) {
         />
         {showGrid && grid}
         {p.showBeams !== false && visible.map(beam)}
-        {p.showShadows && <ShadowLayer items={lit} liveRef={shadowLive} />}
+        {windowLit.map((wl) => daylight(wl))}
+        {p.showShadows && <ShadowLayer items={lit} extra={windowSources} liveRef={shadowLive} />}
         {ghosts.map((g) => beam(ghostOf(g)))}
       </Layer>
       <Layer>

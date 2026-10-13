@@ -8,7 +8,8 @@ import { isOpening, libraryItem } from '../library/items';
 import { DEFAULT_WALL_CM, wallLength } from '../model/walls';
 import { lightSource } from '../model/shadows';
 import { circuitName, lightWatts } from '../model/power';
-import { lightName, meterReadings, type CameraSettings } from '../model/exposure';
+import { DAYLIGHT_ID, lightName, meterReadings, type CameraSettings } from '../model/exposure';
+import type { Sun } from '../model/sun';
 import { COLOR_KIND_LABEL, colorKindOf, displayKelvin, hsToRgb, KIND_RANGE, lightColor, rgbCss, type ColorKind } from '../model/color';
 import { GEL_GROUP_LABEL, gelById, GELS, type Gel, type GelGroup } from '../library/gels';
 import { itemLook } from '../model/gear';
@@ -48,6 +49,8 @@ interface Props {
   /** Light meter camera settings (ISO, frame rate, shutter). */
   camera: CameraSettings;
   onCamera: (c: CameraSettings) => void;
+  /** The scene's daylight (for the light meter). */
+  sun?: Sun;
 }
 
 const kg = (v: number | null | undefined) => (v == null ? '?' : `${Math.round(v * 100) / 100} kg`);
@@ -124,7 +127,7 @@ export function Inspector(props: Props) {
 
       {item.kind === 'person' && <BlockingSection item={item} onUpdate={onUpdate} />}
 
-      {item.kind === 'person' && <MeterSection item={item} sceneItems={sceneItems} camera={props.camera} onCamera={props.onCamera} />}
+      {item.kind === 'person' && <MeterSection item={item} sceneItems={sceneItems} camera={props.camera} onCamera={props.onCamera} sun={props.sun} />}
 
       {item.kind === 'light' && (
         <LightSection item={item} gear={gear} sceneItems={sceneItems} actors={actors} setLight={setLight} onUpdate={onUpdate} />
@@ -740,8 +743,20 @@ function ColorWheel({ hue, sat, onChange }: { hue: number; sat: number; onChange
 }
 
 /** Light falling on this person: total, T-stop, key:fill and each light's share. */
-function MeterSection({ item, sceneItems, camera, onCamera }: { item: Item; sceneItems: Item[]; camera: CameraSettings; onCamera: (c: CameraSettings) => void }) {
-  const r = meterReadings(sceneItems, camera).find((x) => x.personId === item.id);
+function MeterSection({
+  item,
+  sceneItems,
+  camera,
+  onCamera,
+  sun,
+}: {
+  item: Item;
+  sceneItems: Item[];
+  camera: CameraSettings;
+  onCamera: (c: CameraSettings) => void;
+  sun?: Sun;
+}) {
+  const r = meterReadings(sceneItems, camera, sun).find((x) => x.personId === item.id);
   if (!r) return null;
   const num = (label: string, key: keyof CameraSettings, unit: string, min: number, max: number) => (
     <label className="field">
@@ -774,12 +789,12 @@ function MeterSection({ item, sceneItems, camera, onCamera }: { item: Item; scen
           </div>
           <ul className="row-list">
             {r.contributions.map((c) => {
-              const l = sceneItems.find((i) => i.id === c.lightId)!;
+              const l = sceneItems.find((i) => i.id === c.lightId);
               return (
                 <li key={c.lightId} className="row static">
                   <span className="row-main">
                     <span className="row-title">
-                      {lightName(l)} {c.lightId === r.keyId && r.contributions.length > 1 ? <span className="chip">Key</span> : null}
+                      {l ? lightName(l) : c.lightId === DAYLIGHT_ID ? 'Daylight (windows)' : '?'} {c.lightId === r.keyId && r.contributions.length > 1 ? <span className="chip">Key</span> : null}
                     </span>
                     <span className="row-sub">
                       {Math.round(c.lux)} lux{c.blocked ? ' · partly blocked' : ''}

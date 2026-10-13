@@ -4,6 +4,7 @@ import { aimAt } from './geometry';
 import { attachOpenings } from './walls';
 import { DEFAULT_LENS_MM } from './lens';
 import { fitTwoShot } from './twoShot';
+import type { Sun } from './sun';
 import type { EquipmentState } from './equipment';
 import type { Actor, CastRole, Gender, Item, Vec2 } from './types';
 
@@ -13,6 +14,8 @@ export interface SceneDoc {
   /** Walls, screens and other set pieces. */
   setItems: Item[];
   items: Item[];
+  /** Daylight through the windows (see sun.ts). */
+  sun?: Sun;
   /** Layout right after the last template was added; Reset returns to it (none = empty). */
   baseline?: { setItems: Item[]; items: Item[] };
 }

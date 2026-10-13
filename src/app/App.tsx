@@ -867,6 +867,7 @@ export function App() {
                 onDelete={deleteSelected}
                 camera={prefs.camera}
                 onCamera={(camera) => setPrefs((p) => ({ ...p, camera }))}
+                sun={scene.sun}
               />
             ) : selection.length > 1 ? (
               <section className="section">
@@ -927,6 +928,8 @@ export function App() {
                 wallSnap={prefs.wallSnap}
                 onWallSnap={(on) => setPrefs((p) => ({ ...p, wallSnap: on }))}
                 hasWalls={items.some((i) => i.wall)}
+                sun={scene.sun}
+                onSun={(sun) => sd({ type: 'sun', sun })}
               />
             )}
           </div>
@@ -983,6 +986,7 @@ export function App() {
             camera={prefs.camera}
             volts={prefs.volts}
             breakerA={prefs.breakerA ?? defaultBreakerA(prefs.volts)}
+            sun={scene.sun}
           />
         </Dialog>
       )}

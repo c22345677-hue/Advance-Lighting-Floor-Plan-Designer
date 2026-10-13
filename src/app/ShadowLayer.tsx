@@ -3,14 +3,14 @@
 // for the drop; only this layer redraws.
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import { Group, Line } from 'react-konva';
-import { sceneShadows } from '../model/shadows';
+import { sceneShadows, type LightSource } from '../model/shadows';
 import type { Item, Vec2 } from '../model/types';
 
 export type LivePatch = { pos?: Vec2; rot?: number };
 /** Set live changes for some items, or `null` to clear them all. */
 export type ShadowLive = (id: string | null, patch?: LivePatch) => void;
 
-export function ShadowLayer({ items, liveRef }: { items: Item[]; liveRef: MutableRefObject<ShadowLive | null> }) {
+export function ShadowLayer({ items, extra = [], liveRef }: { items: Item[]; extra?: LightSource[]; liveRef: MutableRefObject<ShadowLive | null> }) {
   const [live, setLive] = useState<Record<string, LivePatch>>({});
   const pending = useRef<Record<string, LivePatch> | null>(null);
   const frame = useRef(0);
@@ -42,8 +42,8 @@ export function ShadowLayer({ items, liveRef }: { items: Item[]; liveRef: Mutabl
     const now = ids.length
       ? items.map((i) => (live[i.id] ? { ...i, pos: live[i.id]!.pos ?? i.pos, rotationDeg: live[i.id]!.rot ?? i.rotationDeg } : i))
       : items;
-    return sceneShadows(now);
-  }, [items, live]);
+    return sceneShadows(now, extra);
+  }, [items, live, extra]);
 
   return (
     <>
@@ -57,7 +57,10 @@ export function ShadowLayer({ items, liveRef }: { items: Item[]; liveRef: Mutabl
             // Shadows only exist where the light reaches: inside its beam.
             clipFunc={(ctx) => {
               ctx.beginPath();
-              if (s.beamDeg >= 360) ctx.arc(s.apex.x, s.apex.y, s.throwCm, 0, Math.PI * 2);
+              if (s.clip) {
+                s.clip.forEach((q, k) => (k ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y)));
+                ctx.closePath();
+              } else if (s.beamDeg >= 360) ctx.arc(s.apex.x, s.apex.y, s.throwCm, 0, Math.PI * 2);
               else {
                 const mid = ((s.rotationDeg - 90) * Math.PI) / 180;
                 const half = (s.beamDeg * Math.PI) / 360;

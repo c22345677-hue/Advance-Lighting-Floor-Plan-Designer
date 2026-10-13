@@ -7,8 +7,12 @@ import { libraryItem } from '../library/items';
 import { lightColor } from './color';
 import { itemFixture, itemModifiers } from './gear';
 import { aimAt } from './geometry';
-import { lightSource, occluders, shadowPolygon } from './shadows';
+import { lightSource, occluders, pointInPolygon, shadowPolygon } from './shadows';
+import { daylightLux, windowLights, type Sun } from './sun';
 import type { Item, Vec2 } from './types';
+
+/** Contribution id for daylight through windows. */
+export const DAYLIGHT_ID = 'daylight';
 
 export interface CameraSettings {
   iso: number;
@@ -149,12 +153,23 @@ export function tStopLabel(n: number): string {
 }
 
 /** Readings for every person in the scene. */
-export function meterReadings(items: readonly Item[], cam: CameraSettings = DEFAULT_CAMERA): Reading[] {
+export function meterReadings(items: readonly Item[], cam: CameraSettings = DEFAULT_CAMERA, sun?: Sun): Reading[] {
   const lights = items.filter((i) => i.kind === 'light' && !i.hidden);
+  const windows = windowLights(items, sun);
+  const occ = windows.length ? occluders(items) : [];
   return items
     .filter((i) => i.kind === 'person' && !i.hidden)
     .map((p) => {
       const contributions = lights.map((l) => luxFrom(l, p.pos, items, p.id)).filter((c): c is Contribution => !!c && c.lux > 0.5);
+      // Daylight from the windows; direct sun is cut by anything standing in its way.
+      const shaded = (wl: (typeof windows)[number]) =>
+        occ.some((o) => {
+          if (o.id === p.id || o.heightCm < FACE_CM * 0.9 || wl.source.ignore?.includes(o.id)) return false;
+          const poly = shadowPolygon(wl.source.pos, wl.source.heightCm, o, 2e5);
+          return !!poly && pointInPolygon(p.pos, poly);
+        });
+      const day = daylightLux(p.pos, windows, shaded);
+      if (day > 0.5) contributions.push({ lightId: DAYLIGHT_ID, lux: day, blocked: false });
       contributions.sort((a, b) => b.lux - a.lux);
       const lux = contributions.reduce((n, c) => n + c.lux, 0);
       const key = contributions[0];

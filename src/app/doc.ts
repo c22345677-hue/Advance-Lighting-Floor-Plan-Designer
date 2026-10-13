@@ -1,6 +1,7 @@
 import { normDeg } from '../model/geometry';
 import { focusScene, newScene, type Project, type SceneDoc } from '../model/project';
 import type { Actor, Item, Vec2 } from '../model/types';
+import type { Sun } from '../model/sun';
 
 export interface History {
   past: Project[];
@@ -22,7 +23,8 @@ export type SceneAction =
   /** Add a template's items and remember the result as the scene's reset point. */
   | { type: 'applyTemplate'; setItems: Item[]; items: Item[] }
   /** Back to the template layout, or empty when the scene never had one. */
-  | { type: 'reset' };
+  | { type: 'reset' }
+  | { type: 'sun'; sun: Sun | undefined };
 
 export type Action =
   | { type: 'scene'; sceneId: string; action: SceneAction }
@@ -75,6 +77,8 @@ function editScene(s: SceneDoc, a: SceneAction): SceneDoc {
       const items = [...s.items, ...a.items];
       return { ...s, setItems, items, baseline: structuredClone({ setItems, items }) };
     }
+    case 'sun':
+      return { ...s, sun: a.sun };
     case 'reset':
       return {
         ...s,
