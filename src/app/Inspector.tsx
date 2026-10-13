@@ -29,6 +29,7 @@ import { avail, limitingList, type GearScope } from './gearScope';
 import { useConfirm } from './confirm';
 import { IconClose } from './icons';
 import { PersonEditor } from './PersonEditor';
+import { CameraView } from './CameraView';
 import { beamDegOf, displayLabel, itemName } from './PlanCanvas';
 
 interface Props {
@@ -427,6 +428,9 @@ function CameraSection({ item, sceneItems, actors, onUpdate }: Pick<Props, 'item
   );
   return (
     <>
+      <Section title="View">
+        <CameraView cam={item} items={sceneItems} actors={actors} />
+      </Section>
       <LensSection item={item} sceneItems={sceneItems} onUpdate={onUpdate} />
       <Section title="Framing">
         <div className="segmented" role="radiogroup" aria-label="Framing">

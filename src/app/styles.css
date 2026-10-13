@@ -736,6 +736,14 @@ select {
   color: var(--muted);
 }
 
+.camera-view svg {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+
 .swatches {
   display: flex;
   flex-wrap: wrap;
