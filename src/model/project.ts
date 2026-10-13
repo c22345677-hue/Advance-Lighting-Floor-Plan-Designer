@@ -169,8 +169,8 @@ export function focusScene(s: SceneDoc): SceneDoc {
 /**
  * An interview set up from a template: the first interviewee and interviewer look at each other
  * (other interviewees look at the interviewer, other interviewers at the interviewee), camera 1
- * stays on the interviewee and camera 2 on the interviewer; further cameras take the next
- * interviewees. Only when the layout has both roles.
+ * stays on the interviewee, camera 2 on the interviewer, camera 3 is a two shot of both; further
+ * cameras take the next interviewees. Only when the layout has both roles.
  */
 export function linkInterview(items: Item[], actors: readonly Actor[]): Item[] {
   const role = (i: Item) => {
@@ -180,11 +180,13 @@ export function linkInterview(items: Item[], actors: readonly Actor[]): Item[] {
   const ees = items.filter((i) => role(i) === 'interviewee').map((i) => i.actorId!);
   const ers = items.filter((i) => role(i) === 'interviewer').map((i) => i.actorId!);
   if (!ees.length || !ers.length) return items;
-  const camTargets = [ees[0]!, ers[0]!, ...ees.slice(1)];
+  // Camera 3 is a two shot of the interviewee and the interviewer.
+  const camTargets: (string | [string, string])[] = [ees[0]!, ers[0]!, [ees[0]!, ers[0]!], ...ees.slice(1)];
   let cam = 0;
   return items.map((i) => {
     if (i.kind === 'camera') {
       const target = camTargets[cam++];
+      if (Array.isArray(target)) return { ...i, camera: { ...i.camera, focusActorId: undefined, twoShot: target } };
       return target ? { ...i, camera: { ...i.camera, focusActorId: target } } : i;
     }
     const r = role(i);

@@ -163,7 +163,7 @@ describe('looking at', () => {
 });
 
 describe('interview template links', () => {
-  it('locks interviewee and interviewer on each other, camera 1 on the interviewee, camera 2 on the interviewer', () => {
+  it('locks interviewee and interviewer on each other, camera 1 on the interviewee, camera 2 on the interviewer, camera 3 a two shot', () => {
     const ee = newActor([], { role: 'interviewee' });
     const er = newActor([ee], { role: 'interviewer' });
     const person = (id: string, actorId: string, x: number): Item => ({ id, kind: 'person', actorId, pos: { x, y: 0 }, rotationDeg: 0 });
@@ -174,5 +174,6 @@ describe('interview template links', () => {
     expect(out[2]!.camera?.focusActorId).toBe(ee.id);
     expect(out[3]!.camera?.focusActorId).toBe(er.id);
     expect(out[4]!.camera?.focusActorId).toBeUndefined();
+    expect(out[4]!.camera?.twoShot).toEqual([ee.id, er.id]);
   });
 });
