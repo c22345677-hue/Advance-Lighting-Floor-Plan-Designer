@@ -55,6 +55,17 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
     ],
   },
   {
+    title: 'Touch screens',
+    rows: [
+      ['Tap', 'Select an item of the current category'],
+      ['Hold a finger on an item', 'Add it to the selection, or take it out'],
+      ['Drag a selected item', 'Move the whole selection'],
+      ['Bar above the plan', 'Turn 15°, duplicate, delete or deselect the selection'],
+      ['Two fingers', 'Pan and zoom'],
+      ['Double-tap or Finish', 'End the walls being drawn'],
+    ],
+  },
+  {
     title: 'Draw walls',
     rows: [
       ['Click', 'Place a corner'],

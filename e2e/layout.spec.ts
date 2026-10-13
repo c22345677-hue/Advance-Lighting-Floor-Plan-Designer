@@ -55,3 +55,18 @@ test('categories switch and an item can be added', async ({ page }) => {
   await page.locator('.tile', { hasText: 'Sofa' }).click();
   await expect(page.locator('.insp-title')).toHaveText('Sofa');
 });
+
+test('touch screens get a selection bar', async ({ page }, info) => {
+  test.skip(!info.project.use.hasTouch, 'touch only');
+  await open(page);
+  const vp = page.viewportSize()!;
+  await page.locator('#mode-scene').click();
+  if (vp.width <= PHONE_MAX) await page.locator('.sheet-toggle').click();
+  await page.locator('.tile', { hasText: 'Sofa' }).click();
+  if (vp.width <= PHONE_MAX) await page.locator('.sheet-toggle').click();
+  const bar = page.locator('.selection-bar');
+  await expect(bar).toBeVisible();
+  await bar.getByLabel('Duplicate').click();
+  await bar.getByLabel('Delete').click();
+  await expect(bar).toBeHidden();
+});

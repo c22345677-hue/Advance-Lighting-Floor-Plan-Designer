@@ -564,6 +564,39 @@ select {
   cursor: crosshair;
 }
 
+/* Selection actions as buttons; shown on touch screens (see the pointer: coarse block). */
+.selection-bar {
+  position: absolute;
+  top: 60px; /* under the tool badge, so they never overlap on narrow screens */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: none;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 4px 4px 12px;
+  max-width: calc(100% - 24px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.selection-count {
+  margin-right: 6px;
+  font-family: var(--font-label);
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.icon-btn.danger {
+  color: var(--danger);
+}
+
 .view-controls {
   position: absolute;
   right: 12px;
@@ -1675,7 +1708,7 @@ kbd {
   }
 }
 
-.stat.hint .touch-only {
+.touch-only {
   display: none;
 }
 
@@ -1695,12 +1728,16 @@ kbd {
     min-height: 44px;
   }
 
-  .stat.hint .mouse-only {
+  .mouse-only {
     display: none;
   }
 
-  .stat.hint .touch-only {
+  .touch-only {
     display: inline;
+  }
+
+  .selection-bar {
+    display: flex;
   }
 
   .stage {

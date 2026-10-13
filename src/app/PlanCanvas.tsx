@@ -47,6 +47,8 @@ const PERSON_SCALE = 1.5;
 const ACTOR_SCALE = PERSON_SCALE * 1.15;
 const DEFAULT_THROW_CM = 300;
 const CAMERA_CONE_CM = 660;
+/** Hold a finger this long on an item to add it to the selection. */
+const LONG_PRESS_MS = 500;
 
 export const clampScale = (s: number) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
 
@@ -294,6 +296,29 @@ export function PlanCanvas(p: Props) {
     if (target) turn(moved.id, aimAt(pos, target.pos));
   };
 
+  /** Pending long-press (touch): where the finger went down. */
+  const longPress = useRef<{ timer: number; x: number; y: number } | null>(null);
+  const cancelLongPress = () => {
+    if (longPress.current) window.clearTimeout(longPress.current.timer);
+    longPress.current = null;
+  };
+  useEffect(() => {
+    // Any real finger movement turns a long-press into a drag (or a pan).
+    const move = (e: TouchEvent) => {
+      const lp = longPress.current;
+      const t = e.touches[0];
+      if (lp && (!t || e.touches.length > 1 || Math.hypot(t.clientX - lp.x, t.clientY - lp.y) > 8)) cancelLongPress();
+    };
+    window.addEventListener('touchmove', move, { passive: true });
+    window.addEventListener('touchend', cancelLongPress);
+    window.addEventListener('touchcancel', cancelLongPress);
+    return () => {
+      window.removeEventListener('touchmove', move);
+      window.removeEventListener('touchend', cancelLongPress);
+      window.removeEventListener('touchcancel', cancelLongPress);
+    };
+  }, []);
+
   /** Item being Alt + dragged (copied on drop). */
   const altCopy = useRef<string | null>(null);
   /** Other selected items moving with the dragged one, and where they started. */
@@ -523,6 +548,24 @@ export function PlanCanvas(p: Props) {
       if (canRotate) startRotate(item, group);
       // A person appears once per scene, so Alt + drag only moves them.
       altCopy.current = e.evt.altKey && !item.actorId ? item.id : null;
+      // Touch: holding a finger still on an item adds it to the selection, or takes it out
+      // (the touch version of Shift + click).
+      if ('touches' in e.evt && e.evt.touches.length === 1) {
+        const before = selection;
+        const t = e.evt.touches[0]!;
+        cancelLongPress();
+        longPress.current = {
+          x: t.clientX,
+          y: t.clientY,
+          timer: window.setTimeout(() => {
+            longPress.current = null;
+            node(item.id)?.stopDrag();
+            node(item.id)?.position(item.pos);
+            p.onSelectMany(before.includes(item.id) ? before.filter((id) => id !== item.id) : [...before, item.id]);
+            navigator.vibrate?.(15);
+          }, LONG_PRESS_MS),
+        };
+      }
     };
     return (
       <Group

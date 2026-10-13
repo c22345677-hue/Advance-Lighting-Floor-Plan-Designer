@@ -40,13 +40,17 @@ import {
   IconPlus,
   IconRedo,
   IconReset,
+  IconRotateLeft,
+  IconCopy,
+  IconTrash,
+  IconClose,
   IconRotate,
   IconGrid,
   IconTemplates,
   IconUndo,
 } from './icons';
 import { Inspector } from './Inspector';
-import { clampScale, displayLabel, itemName, PlanCanvas, zoomAt, type ExportPng, type Tool, type View, type WallExtend } from './PlanCanvas';
+import { clampScale, displayLabel, isFocusLocked, itemName, PlanCanvas, zoomAt, type ExportPng, type Tool, type View, type WallExtend } from './PlanCanvas';
 import { ProjectMenu } from './ProjectMenu';
 import { deleteProject, listProjects, loadGearLists, loadProject, loadStartProject, saveGearLists, saveProject } from './storage';
 import { TemplatePanel } from './TemplatePanel';
@@ -413,6 +417,12 @@ export function App() {
     setView(null);
   };
 
+  /** Turn every selected item that can turn (not locked, not following a person). */
+  const turnSelection = (deg: number) => {
+    const ids = selectedItems.filter((i) => !i.locked && !isFocusLocked(i, items)).map((i) => i.id);
+    if (ids.length) sd({ type: 'rotateBy', ids, deg });
+  };
+
   /** Download the project (with its gear list) as a file. */
   const saveFile = () => {
     const blob = new Blob([toProjectFile(project, gearLists)], { type: 'application/json' });
@@ -702,6 +712,33 @@ export function App() {
             </div>
           )}
 
+          {selection.length > 0 && !wallTool && (
+            // Touch screens: the keyboard and Alt/Shift shortcuts as buttons, for the selection.
+            <div className="selection-bar" role="toolbar" aria-label="Selection">
+              <span className="selection-count">{selection.length > 1 ? `${selection.length} selected` : itemName(selectedItems[0]!)}</span>
+              <button className="icon-btn" onClick={() => turnSelection(-15)} aria-label="Turn left 15°" title="Turn left 15°">
+                <IconRotateLeft />
+              </button>
+              <button className="icon-btn" onClick={() => turnSelection(15)} aria-label="Turn right 15°" title="Turn right 15°">
+                <IconRotate />
+              </button>
+              <button
+                className="icon-btn"
+                onClick={() => (selectedItem ? duplicate(selectedItem) : duplicateMany(selection))}
+                aria-label="Duplicate"
+                title="Duplicate"
+              >
+                <IconCopy />
+              </button>
+              <button className="icon-btn danger" onClick={deleteSelected} aria-label="Delete" title="Delete">
+                <IconTrash />
+              </button>
+              <button className="icon-btn" onClick={() => setSelected(null)} aria-label="Deselect" title="Deselect">
+                <IconClose />
+              </button>
+            </div>
+          )}
+
           <div className="view-controls" role="toolbar" aria-label="View">
             <button className="icon-btn" onClick={() => zoomBy(1 / 1.25)} aria-label="Zoom out" title="Zoom out">
               <IconMinus />
@@ -782,7 +819,11 @@ export function App() {
                     </li>
                   ))}
                 </ul>
-                <p className="hint-text">Drag any of them to move them together; Alt + drag copies them. Shift + click adds or removes one.</p>
+                <p className="hint-text">
+                  Drag any of them to move them together.
+                  <span className="mouse-only"> Alt + drag copies them. Shift + click adds or removes one.</span>
+                  <span className="touch-only"> Hold a finger on an item to add or remove it.</span>
+                </p>
                 <div className="btn-row">
                   <button
                     className="btn"
