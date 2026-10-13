@@ -50,6 +50,7 @@ import {
   IconRedo,
   IconReset,
   IconRotateLeft,
+  IconSelect,
   IconCopy,
   IconTrash,
   IconClose,
@@ -192,6 +193,8 @@ export function App() {
 
   const [mode, setMode] = useState<EditMode>('lights');
   const [tool, setTool] = useState<Tool>('move');
+  /** Select mode (for touch): taps add to the selection or take out, a drag boxes more in. */
+  const [pickMode, setPickMode] = useState(false);
   /** Selected items (box-select and Shift+click select several). */
   const [selection, setSelection] = useState<string[]>([]);
   const selected = selection.length === 1 ? selection[0]! : null;
@@ -536,11 +539,14 @@ export function App() {
         chooseTool('move');
       } else if (k === 'r') {
         chooseTool('rotate');
+      } else if (k === 's') {
+        setPickMode((on) => !on);
       } else if (k >= '1' && k <= '5') {
         switchMode(EDIT_MODES[Number(k) - 1]!.id);
       } else if (k === 'escape') {
         if (wallTool && wallDraft.length) setDraft([]);
         else if (wallTool) setWallTool(false);
+        else if (pickMode) setPickMode(false);
         else setSelected(null);
       } else if (k === 'enter' && wallTool) {
         finishWalls(false);
@@ -739,6 +745,7 @@ export function App() {
               onSelect={setSelected}
               onSelectMany={setSelection}
               onConfigure={configure}
+              pickMode={pickMode && !wallTool}
               onDuplicateMany={duplicateMany}
               colors={colors}
               showGrid={prefs.grid}
@@ -766,9 +773,37 @@ export function App() {
               Draw walls · {wallDraft.length ? `${wallDraft.length} corner${wallDraft.length > 1 ? 's' : ''}` : 'click to start'}
             </div>
           ) : (
-            <div className={`tool-badge ${tool}`} role="status" aria-live="polite">
-              {tool === 'move' ? <IconMove /> : <IconRotate />}
-              {tool === 'move' ? 'Move' : 'Rotate'} <kbd>{tool === 'move' ? 'W' : 'R'}</kbd>
+            <div className="canvas-topleft">
+              <div className={`tool-badge ${tool}`} role="status" aria-live="polite">
+                {tool === 'move' ? <IconMove /> : <IconRotate />}
+                {tool === 'move' ? 'Move' : 'Rotate'} <kbd>{tool === 'move' ? 'W' : 'R'}</kbd>
+              </div>
+              <div className={`pick-bar ${pickMode ? 'on' : ''}`} role="toolbar" aria-label="Select mode">
+                <button
+                  id="pick-toggle"
+                  className="pick-toggle"
+                  aria-pressed={pickMode}
+                  onClick={() => setPickMode((on) => !on)}
+                  title="Select mode (S): tap items to add or remove them, drag on empty space to box-select"
+                >
+                  <IconSelect /> {pickMode ? 'Selecting' : 'Select'} <kbd>S</kbd>
+                </button>
+                {pickMode && (
+                  <>
+                    <button className="pick-btn" onClick={() => setSelection(items.filter((i) => !i.hidden && modeOf(i) === mode && !prefs.layers?.[mode]?.hidden && !prefs.layers?.[mode]?.locked).map((i) => i.id))}>
+                      All {MODE_LABEL[mode].toLowerCase()}
+                    </button>
+                    {selection.length > 0 && (
+                      <button className="pick-btn" onClick={() => setSelected(null)}>
+                        Clear
+                      </button>
+                    )}
+                    <button className="pick-btn done" onClick={() => setPickMode(false)}>
+                      Done
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           )}
 

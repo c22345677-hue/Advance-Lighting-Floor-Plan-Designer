@@ -18,6 +18,7 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
     rows: [
       [k('W'), 'Move tool: select and drag'],
       [k('R'), 'Rotate tool: select and turn'],
+      [k('S'), 'Select mode on/off: tap items to add or remove them, drag on empty space to box-select'],
       [<>{k('1')} – {k('5')}</>, 'Lights, Grip, Camera, Scene, Notes'],
       [k('?'), 'This help'],
     ],
@@ -26,6 +27,8 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
     title: 'Selecting',
     rows: [
       ['Click', 'Select an item of the current category (the panel stays on adding)'],
+      ['Tap near an item (touch)', 'Selects it: fingers don\'t have to land exactly on small icons'],
+      ['Drag on empty space (one finger or mouse)', 'Box-select; two fingers pan and zoom'],
       ['Right-click or double-click an item', 'Open its settings in the side panel'],
       ['Configure (bar above the plan)', 'Open the settings of what is selected'],
       ['Drag on empty space', 'Box-select (only the current category)'],

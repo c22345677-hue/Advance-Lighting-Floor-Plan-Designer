@@ -545,6 +545,71 @@ select {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
 }
 
+/* Top-left of the plan: the tool, then the select-mode switch. */
+.canvas-topleft {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.canvas-topleft > * {
+  pointer-events: auto;
+}
+.canvas-topleft .tool-badge {
+  position: static;
+}
+
+.pick-bar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+.pick-bar.on {
+  border-color: var(--accent);
+}
+.pick-toggle,
+.pick-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--fg);
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pick-toggle:hover,
+.pick-btn:hover {
+  background: rgba(127, 127, 127, 0.15);
+}
+.pick-bar.on .pick-toggle {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.pick-btn.done {
+  color: var(--accent);
+}
+.pick-toggle kbd {
+  opacity: 0.7;
+}
+
 .tool-badge.move {
   background: var(--accent);
   color: var(--accent-ink);
@@ -1804,7 +1869,8 @@ kbd {
     padding: 4px 10px 4px 6px;
   }
 
-  .tool-badge kbd {
+  .tool-badge kbd,
+  .pick-toggle kbd {
     display: none;
   }
 

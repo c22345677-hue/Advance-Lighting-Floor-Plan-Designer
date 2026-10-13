@@ -54,6 +54,11 @@ const ACTOR_SCALE = PERSON_SCALE * 1.15;
 const CAMERA_CONE_CM = 660;
 /** Hold a finger this long on an item to add it to the selection. */
 const LONG_PRESS_MS = 500;
+/** Touch screens: every item can be picked within this many screen pixels of its centre. */
+const TOUCH_PAD_PX = 28;
+/** A tap this close to an item (screen pixels) picks it, even off its outline. */
+const NEAR_TAP_PX = { touch: 32, mouse: 10 };
+const coarsePointer = () => typeof matchMedia === 'function' && matchMedia('(any-pointer: coarse)').matches;
 
 export const clampScale = (s: number) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
 
@@ -113,6 +118,8 @@ interface Props {
   onSelectMany: (ids: string[]) => void;
   /** Right-click or double-click an item: open its settings. */
   onConfigure: (id: string) => void;
+  /** Select mode: a tap adds an item to the selection or takes it out; a drag on empty space boxes more in. */
+  pickMode?: boolean;
   /** Alt + drag of several selected items: copies moved by `delta`. */
   onDuplicateMany: (ids: string[], delta: Vec2) => void;
   colors: CanvasColors;
@@ -163,6 +170,9 @@ export function PlanCanvas(p: Props) {
   const { width, height, view, onView, scene, actors, dispatch, selection, onSelect, colors, showGrid, mode, tool } = p;
   const selected = selection.length === 1 ? selection[0]! : null;
   const multi = selection.length > 1;
+  const coarse = useMemo(coarsePointer, []);
+  /** A press in select mode on an item already selected: a tap (no drag) takes it out. */
+  const pickRemove = useRef<string | null>(null);
   const stageRef = useRef<Konva.Stage>(null);
   const trRef = useRef<Konva.Transformer>(null);
   const pinch = useRef<{ dist: number; center: Vec2 } | null>(null);
@@ -375,7 +385,7 @@ export function PlanCanvas(p: Props) {
   };
 
   // ---- Box select: drag on empty space (mouse) selects the active category's items ----
-  const [box, setBox] = useState<{ x0: number; y0: number; x1: number; y1: number; add: boolean } | null>(null);
+  const [box, setBox] = useState<{ x0: number; y0: number; x1: number; y1: number; add: boolean; touch?: boolean } | null>(null);
   const boxRef = useRef(box);
   boxRef.current = box;
   const endBox = () => {
@@ -383,20 +393,40 @@ export function PlanCanvas(p: Props) {
     if (!b) return;
     setBox(null);
     const [l, r, t, btm] = [Math.min(b.x0, b.x1), Math.max(b.x0, b.x1), Math.min(b.y0, b.y1), Math.max(b.y0, b.y1)];
-    if (r - l < 4 && btm - t < 4) {
-      if (!b.add) onSelect(null);
-      return;
-    }
     const stage = stageRef.current!;
     const toScreen = (q: Vec2) => stage.getAbsoluteTransform().point(q);
+    /** An item's footprint on screen, as a circle (its outline drawing can reach much further, e.g. a camera's view lines). */
+    const footprint = (i: Item) => {
+      const look = itemLook(i);
+      return { c: toScreen(i.pos), r: (Math.max(20, Math.min(look.w, look.d)) / 2) * view.scale };
+    };
+    const pickable = visible.filter((i) => modeOf(i) === mode && !layer(i)?.locked);
+    if (r - l < 6 && btm - t < 6) {
+      // A tap on empty space: pick the nearest item close by (fingers are bigger than icons).
+      const tol = b.touch ? NEAR_TAP_PX.touch : NEAR_TAP_PX.mouse;
+      let best: { id: string; d: number } | null = null;
+      for (const i of pickable) {
+        if (i.wall) continue;
+        const f = footprint(i);
+        const d = Math.max(0, Math.hypot(f.c.x - b.x0, f.c.y - b.y0) - f.r);
+        if (d <= tol && (!best || d < best.d)) best = { id: i.id, d };
+      }
+      const id = best?.id;
+      if (id && p.pickMode) p.onSelectMany(selection.includes(id) ? selection.filter((x) => x !== id) : [...selection, id]);
+      else if (id) onSelect(id);
+      else if (!b.add) onSelect(null);
+      return;
+    }
     const inBox = (q: Vec2) => q.x >= l && q.x <= r && q.y >= t && q.y <= btm;
-    const hits = visible
-      .filter((i) => modeOf(i) === mode)
+    const hits = pickable
       .filter((i) => {
         // Walls: one of their corners in the box (their bounding box would catch too much).
         if (i.wall) return wallPoints(i).some((q) => inBox(toScreen(q)));
-        const c = node(i.id)?.getClientRect({ skipShadow: true });
-        return !!c && c.x < r && c.x + c.width > l && c.y < btm && c.y + c.height > t;
+        // Others: the box reaches their footprint.
+        const f = footprint(i);
+        const dx = Math.max(l - f.c.x, 0, f.c.x - r);
+        const dy = Math.max(t - f.c.y, 0, f.c.y - btm);
+        return Math.hypot(dx, dy) <= f.r;
       })
       .map((i) => i.id);
     p.onSelectMany(b.add ? [...new Set([...selection, ...hits])] : hits);
@@ -577,6 +607,16 @@ export function PlanCanvas(p: Props) {
     const press = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
       if (!active) return;
       e.cancelBubble = true;
+      pickRemove.current = null;
+      if (p.pickMode) {
+        // Select mode: pressing adds the item (and drags the whole selection); a tap on one
+        // already selected takes it out.
+        if (selection.includes(item.id)) pickRemove.current = item.id;
+        else p.onSelectMany([...selection, item.id]);
+        const group = selection.includes(item.id) ? all.filter((o) => o.id !== item.id && selection.includes(o.id) && !o.locked && !isFocusLocked(o, all)) : [];
+        if (canRotate) startRotate(item, group);
+        return;
+      }
       if ('button' in e.evt && e.evt.shiftKey) {
         // Shift + click adds the item to the selection, or takes it out.
         p.onSelectMany(selection.includes(item.id) ? selection.filter((id) => id !== item.id) : [...selection, item.id]);
@@ -623,11 +663,20 @@ export function PlanCanvas(p: Props) {
           e.evt.preventDefault();
           if (active) p.onConfigure(item.id);
         }}
+        onClick={() => {
+          if (p.pickMode && pickRemove.current === item.id) p.onSelectMany(selection.filter((id) => id !== item.id));
+          pickRemove.current = null;
+        }}
+        onTap={() => {
+          if (p.pickMode && pickRemove.current === item.id) p.onSelectMany(selection.filter((id) => id !== item.id));
+          pickRemove.current = null;
+        }}
         onDblClick={() => active && p.onConfigure(item.id)}
         onDblTap={() => active && p.onConfigure(item.id)}
         onMouseEnter={() => active && !item.locked && setCursor(tool === 'move' ? 'move' : ROTATE_CURSOR)}
         onMouseLeave={() => setCursor('')}
         onDragStart={() => {
+          pickRemove.current = null;
           setDragging(item.id);
           groupDrag.current = groupOf(item).map((o) => ({ id: o.id, item: o }));
           if (altCopy.current === item.id) {
@@ -736,6 +785,7 @@ export function PlanCanvas(p: Props) {
         {selection.includes(item.id) && (
           <SelectOutline item={item} actors={actors} colors={colors} scale={view.scale} color={tool === 'rotate' ? colors.rotate : colors.select} />
         )}
+        {coarse && !item.wall && <Circle name="hit-pad" radius={TOUCH_PAD_PX / view.scale} fill="#000" opacity={0} />}
         <ItemShape item={item} actors={actors} colors={colors} />
       </Group>
     );
@@ -913,10 +963,21 @@ export function PlanCanvas(p: Props) {
         endRotate();
         endBox();
       }}
-      onTouchMove={onTouchMove}
+      onTouchMove={(e) => {
+        const b = boxRef.current;
+        if (b && e.evt.touches.length === 1) {
+          e.evt.preventDefault();
+          const pt = stageRef.current?.getPointerPosition();
+          if (pt) setBox({ ...b, x1: pt.x, y1: pt.y });
+          return;
+        }
+        if (b) setBox(null); // a second finger: pinch or pan instead
+        onTouchMove(e);
+      }}
       onTouchEnd={() => {
         pinch.current = null;
         endRotate();
+        endBox();
       }}
       onMouseLeave={() => {
         endRotate();
@@ -925,9 +986,14 @@ export function PlanCanvas(p: Props) {
       onMouseDown={(e) => {
         if (e.target !== stageRef.current || e.evt.button !== 0) return;
         const pt = stageRef.current.getPointerPosition();
-        if (pt) setBox({ x0: pt.x, y0: pt.y, x1: pt.x, y1: pt.y, add: e.evt.shiftKey });
+        if (pt) setBox({ x0: pt.x, y0: pt.y, x1: pt.x, y1: pt.y, add: e.evt.shiftKey || !!p.pickMode });
       }}
-      onTouchStart={(e) => e.target === stageRef.current && onSelect(null)}
+      onTouchStart={(e) => {
+        // One finger on empty space: drag a box to select (a tap picks what's close by, or clears).
+        if (e.target !== stageRef.current || e.evt.touches.length !== 1) return;
+        const pt = stageRef.current.getPointerPosition();
+        if (pt) setBox({ x0: pt.x, y0: pt.y, x1: pt.x, y1: pt.y, add: !!p.pickMode, touch: true });
+      }}
     >
       <Layer listening={false}>
         <Rect
