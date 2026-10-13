@@ -1888,3 +1888,99 @@ kbd {
     -webkit-touch-callout: none; /* no long-press menu on the plan */
   }
 }
+
+/* =========================================================================================
+   Lighting schedule (and printing it)
+   ========================================================================================= */
+.schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.schedule-head h2 {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 22px;
+}
+.schedule-head p {
+  margin: 2px 0 0;
+  color: var(--muted);
+}
+.schedule-plan {
+  width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--canvas);
+}
+.table-wrap {
+  overflow-x: auto;
+}
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.schedule-table th,
+.schedule-table td {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.schedule-table th {
+  font-family: var(--font-label);
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.schedule-table td:nth-child(4) {
+  white-space: nowrap;
+}
+.schedule-table .swatch {
+  width: 12px;
+  height: 12px;
+  vertical-align: -1px;
+}
+.schedule-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    color: #000;
+    background: #fff;
+  }
+  html,
+  body,
+  #root,
+  .dialog,
+  .dialog-body,
+  .dialog-backdrop {
+    height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+  .schedule-table th,
+  .schedule-table td {
+    border-color: #ccc;
+    color: #000;
+  }
+}

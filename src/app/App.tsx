@@ -19,6 +19,7 @@ import type { Actor, CastRole, Item, Vec2 } from '../model/types';
 import { DEFAULT_CAMERA, type CameraSettings } from '../model/exposure';
 import { circuitLoads, defaultBreakerA } from '../model/power';
 import { PowerPanel } from './PowerPanel';
+import { SchedulePanel } from './SchedulePanel';
 import { parseProjectFile, projectFileName, toProjectFile } from '../model/projectFile';
 import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain } from '../model/walls';
 import { HelpPanel } from './HelpPanel';
@@ -52,6 +53,7 @@ import {
   IconRotate,
   IconGrid,
   IconShadow,
+  IconSchedule,
   IconMeter,
   IconTemplates,
   IconUndo,
@@ -167,7 +169,7 @@ const MODE_HINT: Record<EditMode, string> = {
   scene: 'Only people, set and props can be picked and moved',
 };
 
-type DialogKind = 'templates' | 'gear' | 'equipment' | 'help' | 'power' | null;
+type DialogKind = 'templates' | 'gear' | 'equipment' | 'help' | 'power' | 'schedule' | null;
 
 export function App() {
   const [history, dispatch] = useReducer(reducer, undefined, () => ({
@@ -193,6 +195,7 @@ export function App() {
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
   const [gearLists, setGearLists] = useState<GearList[]>(loadGearLists);
   const exportRef = useRef<ExportPng | null>(null);
+  const [planImage, setPlanImage] = useState<string | null>(null);
   const stageBox = useRef<HTMLDivElement>(null);
   const colors = useCanvasColors();
   const confirm = useConfirm();
@@ -652,6 +655,18 @@ export function App() {
           <button id="open-equipment" className="top-action" onClick={() => setDialog('equipment')} title="Equipment list for the job">
             <IconEquipment /> <span className="lbl">Equipment</span>
           </button>
+          <button
+            id="open-schedule"
+            className="top-action"
+            onClick={() => {
+              leaveWalls();
+              setPlanImage(exportRef.current?.() ?? null);
+              setDialog('schedule');
+            }}
+            title="Lighting schedule: plan, lights, cameras, readings and power on one printable sheet"
+          >
+            <IconSchedule /> <span className="lbl">Schedule</span>
+          </button>
           <button id="export-png" className="top-action" onClick={exportPng} disabled={items.length === 0} title="Download this scene as PNG">
             <IconExport /> <span className="lbl">PNG</span>
           </button>
@@ -932,6 +947,29 @@ export function App() {
         )}
       </footer>
 
+      {dialog === 'schedule' && (
+        <Dialog
+          title="Lighting schedule"
+          onClose={() => setDialog(null)}
+          wide
+          footer={
+            <button className="btn primary" onClick={() => window.print()}>
+              Print / save as PDF
+            </button>
+          }
+        >
+          <SchedulePanel
+            projectName={project.name}
+            sceneName={scene.name}
+            items={items}
+            actors={project.actors}
+            planImage={planImage}
+            camera={prefs.camera}
+            volts={prefs.volts}
+            breakerA={prefs.breakerA ?? defaultBreakerA(prefs.volts)}
+          />
+        </Dialog>
+      )}
       {dialog === 'power' && (
         <Dialog title="Power & circuits" onClose={() => setDialog(null)}>
           <PowerPanel
