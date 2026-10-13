@@ -7,6 +7,8 @@ import { FABRIC_KIND_LABEL, FABRICS, takesFabric, type FabricKind } from '../lib
 import { isOpening, libraryItem } from '../library/items';
 import { DEFAULT_WALL_CM, wallLength } from '../model/walls';
 import { lightSource } from '../model/shadows';
+import { COLOR_KIND_LABEL, colorKindOf, displayKelvin, hsToRgb, KIND_RANGE, lightColor, rgbCss, type ColorKind } from '../model/color';
+import { GEL_GROUP_LABEL, gelById, GELS, type Gel, type GelGroup } from '../library/gels';
 import { itemLook } from '../model/gear';
 import {
   itemFixture,
@@ -516,6 +518,8 @@ function LightSection({
         />
       </Section>
 
+      <ColorSection item={item} setLight={setLight} />
+
       <Section title="Beam">
         <label className="field">
           <span className="field-label">Angle</span>
@@ -549,6 +553,156 @@ function LightSection({
 
       <ShadowSection item={item} sceneItems={sceneItems} setLight={setLight} />
     </>
+  );
+}
+
+/** Colour: what the light can do, what it's set to, and gels. */
+function ColorSection({ item, setLight }: { item: Item; setLight: (p: Partial<LightProps>) => void }) {
+  const l = item.light ?? {};
+  const { kind, guessed } = colorKindOf(item);
+  const range = KIND_RANGE[kind];
+  const out = lightColor(item);
+  const hsi = kind === 'rgb' && l.colorMode === 'hsi';
+  const cct = Math.min(range.max, Math.max(range.min, l.cct ?? (kind === 'tungsten' ? 3200 : 5600)));
+  const gels = (l.gels ?? []).map((id) => gelById(id)).filter((g): g is Gel => !!g);
+  const setCct = (v: number) => setLight({ cct: Math.round(Math.min(range.max, Math.max(range.min, v)) / 50) * 50 });
+  return (
+    <Section title="Colour">
+      <div className="color-out">
+        <span className="swatch big" style={{ background: rgbCss(out.rgb) }} aria-hidden="true" />
+        <span>
+          <strong>{out.label}</strong>
+          <span className="muted"> · the beam on the plan shows this colour</span>
+        </span>
+      </div>
+      <label className="field">
+        <span className="field-label">Type</span>
+        <select
+          aria-label="Colour type"
+          value={l.colorKind ?? ''}
+          onChange={(e) => setLight({ colorKind: (e.target.value || undefined) as LightProps['colorKind'] })}
+        >
+          <option value="">{`${COLOR_KIND_LABEL[guessed ? kind : colorKindOf({ ...item, light: { ...l, colorKind: undefined } }).kind]} · auto`}</option>
+          {(Object.keys(COLOR_KIND_LABEL) as ColorKind[]).map((k) => (
+            <option key={k} value={k}>
+              {COLOR_KIND_LABEL[k]}
+            </option>
+          ))}
+        </select>
+      </label>
+      {kind === 'rgb' && (
+        <div className="segmented" role="radiogroup" aria-label="Colour mode">
+          <button role="radio" aria-checked={!hsi} onClick={() => setLight({ colorMode: 'cct' })}>
+            Colour temp
+          </button>
+          <button role="radio" aria-checked={hsi} onClick={() => setLight({ colorMode: 'hsi' })}>
+            HSI
+          </button>
+        </div>
+      )}
+      {(kind === 'bicolor' || (kind === 'rgb' && !hsi)) && (
+        <div className="lens-custom">
+          <input
+            type="range"
+            className="cct-slider"
+            aria-label="Colour temperature slider"
+            min={range.min}
+            max={range.max}
+            step={50}
+            value={cct}
+            style={{ ['--cct-from' as string]: rgbCss(displayKelvin(range.min)), ['--cct-to' as string]: rgbCss(displayKelvin(range.max)) }}
+            onChange={(e) => setCct(Number(e.target.value))}
+          />
+          <span className="input-unit">
+            <input className="text-input num" type="number" aria-label="Colour temperature" min={range.min} max={range.max} step={50} value={cct} onChange={(e) => e.target.value !== '' && setCct(Number(e.target.value))} />
+            <span className="unit">K</span>
+          </span>
+        </div>
+      )}
+      {hsi && (
+        <div className="hsi">
+          <ColorWheel hue={l.hue ?? 0} sat={l.sat ?? 100} onChange={(hue, sat) => setLight({ hue, sat })} />
+          <div className="hsi-sliders">
+            <label className="field-label">
+              Hue {Math.round(l.hue ?? 0)}°
+              <input type="range" className="hue-slider" aria-label="Hue" min={0} max={359} value={l.hue ?? 0} onChange={(e) => setLight({ hue: Number(e.target.value) })} />
+            </label>
+            <label className="field-label">
+              Saturation {Math.round(l.sat ?? 100)}%
+              <input type="range" aria-label="Saturation" min={0} max={100} value={l.sat ?? 100} onChange={(e) => setLight({ sat: Number(e.target.value) })} />
+            </label>
+            <label className="field-label">
+              Intensity {l.intensityPct ?? 100}%
+              <input type="range" aria-label="Intensity" min={0} max={100} value={l.intensityPct ?? 100} onChange={(e) => setLight({ intensityPct: Number(e.target.value) })} />
+            </label>
+          </div>
+        </div>
+      )}
+      {kind !== 'rgb' && kind !== 'bicolor' && <p className="hint-text">Fixed colour. Add a gel to change it.</p>}
+
+      <span className="field-label">Gels</span>
+      {gels.length > 0 && (
+        <ul className="row-list">
+          {gels.map((g, k) => (
+            <li key={`${g.id}-${k}`} className="row static">
+              <span className="swatch" style={{ background: g.color }} aria-hidden="true" />
+              <span className="row-main">
+                <span className="row-title">{g.name}</span>
+                <span className="row-sub">
+                  Rosco {g.number}
+                  {g.mired ? ` · ${g.mired > 0 ? '+' : ''}${g.mired} mired` : ''}
+                </span>
+              </span>
+              <button className="icon-btn" aria-label={`Remove ${g.name}`} onClick={() => setLight({ gels: (l.gels ?? []).filter((_, i) => i !== k) })}>
+                <IconClose />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <select aria-label="Add a gel" value="" onChange={(e) => e.target.value && setLight({ gels: [...(l.gels ?? []), e.target.value] })}>
+        <option value="">+ Add a Rosco gel…</option>
+        {(Object.keys(GEL_GROUP_LABEL) as GelGroup[]).map((grp) => (
+          <optgroup key={grp} label={GEL_GROUP_LABEL[grp]}>
+            {GELS.filter((g) => g.group === grp).map((g) => (
+              <option key={g.id} value={g.id}>
+                {g.number} {g.name}
+              </option>
+            ))}
+          </optgroup>
+        ))}
+      </select>
+      <p className="hint-text">CTO and CTB shift the colour temperature; green/magenta and colour gels tint the light. Dense gels make the beam dimmer.</p>
+    </Section>
+  );
+}
+
+/** Hue around the circle, saturation from the centre (white) out. */
+function ColorWheel({ hue, sat, onChange }: { hue: number; sat: number; onChange: (hue: number, sat: number) => void }) {
+  const pick = (e: React.PointerEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - (r.left + r.width / 2);
+    const y = e.clientY - (r.top + r.height / 2);
+    const h = ((Math.atan2(x, -y) * 180) / Math.PI + 360) % 360;
+    const s = Math.min(1, Math.hypot(x, y) / (r.width / 2));
+    onChange(Math.round(h), Math.round(s * 100));
+  };
+  const a = (hue * Math.PI) / 180;
+  const rr = (sat / 100) * 50;
+  return (
+    <div
+      className="color-wheel"
+      role="slider"
+      aria-label="Colour wheel"
+      aria-valuetext={`Hue ${hue}°, saturation ${sat}%`}
+      onPointerDown={(e) => {
+        e.currentTarget.setPointerCapture(e.pointerId);
+        pick(e);
+      }}
+      onPointerMove={(e) => e.buttons && pick(e)}
+    >
+      <span className="color-wheel-dot" style={{ left: `${50 + Math.sin(a) * rr}%`, top: `${50 - Math.cos(a) * rr}%`, background: rgbCss(hsToRgb(hue, sat / 100)) }} />
+    </div>
   );
 }
 

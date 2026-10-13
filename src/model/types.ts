@@ -7,8 +7,18 @@ export type Vec2 = { x: number; y: number };
 
 export interface LightProps {
   unitId?: string; // fixture ID shown on the plan, e.g. "L1"
+  /** Colour temperature it's set to, K (bi-colour and full-colour lights). */
   cct?: number;
   gel?: string;
+  /** What the fixture can do, when the guess from its model name is wrong. */
+  colorKind?: 'daylight' | 'tungsten' | 'bicolor' | 'rgb';
+  /** Full-colour lights: set by temperature or by hue/saturation (HSI; intensity is intensityPct). */
+  colorMode?: 'cct' | 'hsi';
+  hue?: number;
+  /** Saturation, 0–100. */
+  sat?: number;
+  /** Rosco gels in front of the light (see library/gels.ts), in order. */
+  gels?: string[];
   diffusion?: string;
   /** Catalogue modifiers attached, in stacking order. */
   modifierIds?: string[];

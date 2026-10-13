@@ -1,4 +1,5 @@
 import Konva from 'konva';
+import { lightColor, rgbCss } from '../model/color';
 import { ShadowLayer, type LivePatch, type ShadowLive } from './ShadowLayer';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
@@ -717,6 +718,12 @@ export function PlanCanvas(p: Props) {
     );
   };
 
+  const beamColor = (item: Item) => {
+    const c = lightColor(item);
+    const strength = Math.min(1, Math.max(0.15, (item.light?.intensityPct ?? 100) / 100));
+    return rgbCss(c.rgb, Math.max(0.05, 0.24 * strength * Math.max(0.3, c.transmission)));
+  };
+
   const beam = (item: Item) => {
     if (item.kind !== 'light') return null;
     const throwCm = item.light?.throwCm ?? DEFAULT_THROW_CM;
@@ -726,7 +733,8 @@ export function PlanCanvas(p: Props) {
       fillRadialGradientStartRadius: 0,
       fillRadialGradientEndPoint: { x: 0, y: 0 },
       fillRadialGradientEndRadius: throwCm,
-      fillRadialGradientColorStops: [0, colors.beam, 1, 'rgba(0,0,0,0)'],
+      // The beam is drawn in the light's colour (temperature, HSI and gels), dimmer through dense gels.
+      fillRadialGradientColorStops: [0, beamColor(item), 1, 'rgba(0,0,0,0)'],
     };
     return (
       <Group key={`${item.id}-beam`} id={`${item.id}-beam`} x={item.pos.x} y={item.pos.y} rotation={item.rotationDeg} listening={false}>
