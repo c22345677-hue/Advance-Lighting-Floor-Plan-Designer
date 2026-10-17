@@ -278,6 +278,8 @@ export function App() {
   const selectedItems = items.filter((i) => selection.includes(i.id));
   // ---- Selection bar: opens close to the selection where it covers least; drag its ends to move it ----
   const barRef = useRef<HTMLDivElement>(null);
+  /** Name tags and meter screens on screen, reported by the plan. */
+  const labelBoxes = useRef<{ id: string; x: number; y: number; w: number; h: number }[]>([]);
   const [barSize, setBarSize] = useState({ w: 380, h: 46 });
   useLayoutEffect(() => {
     const el = barRef.current;
@@ -311,12 +313,10 @@ export function App() {
       .map((i) => {
         const q = toScreen(i.pos);
         const e = halfExtents(i, view.scale);
-        return { x: q.x - e.x, y: q.y - e.y, w: e.x * 2, h: e.y * 2 + 26 };
+        return { x: q.x - e.x, y: q.y - e.y, w: e.x * 2, h: e.y * 2 };
       });
-    for (const i of selectedItems) {
-      const q = toScreen(i.pos);
-      obstacles.push({ x: q.x - 50, y: q.y + halfExtents(i, view.scale).y, w: 100, h: 26 });
-    }
+    // Name tags and light meter screens (the selection's own too), as last drawn.
+    obstacles.push(...labelBoxes.current.map((b) => ({ ...b, weight: 3 })));
     const p = placeBar(selBox, barSize, obstacles, barBounds);
     return { left: p.x, top: p.y };
   })();
@@ -974,6 +974,7 @@ export function App() {
               onSelectMany={setSelection}
               onConfigure={configure}
               linkPreview={linkPreview}
+              labelBoxesRef={labelBoxes}
               pickMode={pickMode && !wallTool}
               onDuplicateMany={duplicateMany}
               colors={colors}
@@ -1177,7 +1178,6 @@ export function App() {
                 onDuplicate={() => duplicate(selectedItem)}
                 onDelete={deleteSelected}
                 camera={prefs.camera}
-                onCamera={(camera) => setPrefs((p) => ({ ...p, camera }))}
                 sun={scene.sun}
               />
             ) : configuring && selection.length > 1 ? (

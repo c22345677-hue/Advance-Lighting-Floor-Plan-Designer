@@ -120,12 +120,12 @@ export function SchedulePanel(p: Props) {
       {readings.length > 0 && (
         <>
           <h3 className="section-title">
-            Light meters · ISO {p.camera.iso}, {p.camera.fps} fps, {p.camera.shutterDeg}°
+            Light meters (approximate)
           </h3>
           <ul className="schedule-list">
             {readings.map((r) => (
               <li key={r.meterId}>
-                <strong>{meterName(p.items.find((i) => i.id === r.meterId)!, p.items, p.actors)}</strong> · {r.contributions.length ? `${r.tStopLabel} · ${r.lux} lux (${r.footCandles} fc)${r.ratio ? ` · key:fill ${r.ratio}` : ''}${r.keyId ? ` · key ${who(r.keyId)}` : ''}` : 'no light'}
+                <strong>{meterName(p.items.find((i) => i.id === r.meterId)!, p.items, p.actors)}</strong> · {r.contributions.length ? `≈ ${r.tStopLabel} at ISO ${r.config.iso}, ${r.config.fps} fps, ${r.config.shutterDeg}° · ≈ ${r.lux} lux (${r.footCandles} fc)${r.ratio ? ` · key:fill ${r.ratio}` : ''}${r.keyId ? ` · key ${who(r.keyId)}` : ''}` : 'no light'}
               </li>
             ))}
           </ul>

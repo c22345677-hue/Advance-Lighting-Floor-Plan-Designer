@@ -6,6 +6,8 @@ export interface Box {
   y: number;
   w: number;
   h: number;
+  /** How much covering it matters (1 = an item; text people read counts more). */
+  weight?: number;
 }
 
 const overlap = (a: Box, b: Box) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
@@ -42,6 +44,12 @@ export function placeBar(sel: Box, bar: { w: number; h: number }, obstacles: Box
     { x: cx - bar.w / 2 - shift, y: below + 22 },
     { x: cx - bar.w / 2, y: above - 30 },
     { x: cx - bar.w / 2, y: below + 52 },
+    { x: right, y: above },
+    { x: left, y: above },
+    { x: right, y: below },
+    { x: left, y: below },
+    { x: cx - bar.w / 2, y: above - 70 },
+    { x: cx - bar.w / 2, y: below + 92 },
   ];
   // How far the bar may end up from the selection (after being kept on screen).
   const maxDist = 140;
@@ -54,7 +62,7 @@ export function placeBar(sel: Box, bar: { w: number; h: number }, obstacles: Box
     const dist = Math.hypot(gapX, gapY);
     if (dist > maxDist) return;
     let score = rank * 40 + overlap(box, sel) * 20 + Math.hypot(p.x - c.x, p.y - c.y) * 2;
-    for (const o of obstacles) score += overlap(box, o);
+    for (const o of obstacles) score += overlap(box, o) * (o.weight ?? 1);
     if (!best || score < best.score) best = { p, score };
   });
   return (best as { p: { x: number; y: number } } | null)?.p ?? clampInto({ x: cx - bar.w / 2, y: above }, bar, bounds);

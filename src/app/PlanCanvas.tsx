@@ -2,7 +2,7 @@ import Konva from 'konva';
 import { lightColor, rgbCss } from '../model/color';
 import { marksOf, moveMark } from '../model/blocking';
 import { sunRgb, windowLights, type WindowLight } from '../model/sun';
-import { lightLumens, meterReadings, type CameraSettings } from '../model/exposure';
+import { lightLumens, meterReadings, stopParts, type CameraSettings, type Reading } from '../model/exposure';
 import { beamReach, lightSource } from '../model/shadows';
 import { assemblyOf, canAttach, isMeter, rootOf } from '../model/attach';
 import { ShadowLayer, type LivePatch, type ShadowLive } from './ShadowLayer';
@@ -127,6 +127,8 @@ interface Props {
   onSelectMany: (ids: string[]) => void;
   /** Right-click or double-click an item: open its settings. */
   onConfigure: (id: string) => void;
+  /** Filled with the name tags' and meter screens' boxes on screen (px), for placing the selection bar. */
+  labelBoxesRef?: MutableRefObject<{ id: string; x: number; y: number; w: number; h: number }[]>;
   /** Attaching from the selection bar: the item, where the pointer is (plan cm) and what it would attach to. */
   linkPreview?: { from: string; at: Vec2 | null; target: string | null } | null;
   /** Select mode: a tap adds an item to the selection or takes it out; a drag on empty space boxes more in. */
@@ -331,7 +333,8 @@ export function PlanCanvas(p: Props) {
     node(`${moved.id}-beam`)?.position(pos);
     liveShadow(moved.id, { pos });
     // The name stays under the item while it moves.
-    const lt = labelTop(moved, pos);
+    const lay = labelShift.current.get(moved.id);
+    const lt = labelTop(moved, pos, lay?.w, lay?.h);
     node(`${moved.id}-label`)?.position({ x: lt.x - 200, y: lt.y + (labelShift.current.get(moved.id)?.shift ?? 0) });
     const turn = (id: string, deg: number) => {
       node(id)?.rotation(deg);
@@ -360,21 +363,20 @@ export function PlanCanvas(p: Props) {
    * Where an item's tag goes (centre x, top y): under it, except a light meter held by someone,
    * whose reading sits on the far side of the meter so it never covers the person.
    */
-  const labelTop = (item: Item, pos: Vec2 = item.pos, w = labelSize * 9): Vec2 => {
+  const labelTop = (item: Item, pos: Vec2 = item.pos, w = labelSize * 9, h = labelSize * 1.3): Vec2 => {
     const holder = isMeter(item) && item.attachedTo ? all.find((i) => i.id === item.attachedTo!.to) : undefined;
     if (!holder) return { x: pos.x, y: pos.y + labelOffset(item) };
     const dx = pos.x - holder.pos.x;
     const dy = pos.y - holder.pos.y;
     const len = Math.hypot(dx, dy) || 1;
     const u = { x: dx / len, y: dy / len };
-    const h = labelSize * 1.3;
     // Just clear of the meter, whichever side it's on (the tag is wider than it is tall).
     const reach = 10 + Math.abs(u.y) * (h / 2) + Math.abs(u.x) * (w / 2);
     return { x: pos.x + u.x * reach, y: pos.y + u.y * reach - h / 2 };
   };
 
   /** Where each name tag was nudged to (so it keeps its place while its item is dragged). */
-  const labelShift = useRef(new Map<string, { shift: number }>());
+  const labelShift = useRef(new Map<string, { shift: number; w: number; h: number }>());
 
   /** Pending long-press (touch): where the finger went down. */
   const longPress = useRef<{ timer: number; x: number; y: number } | null>(null);
@@ -534,7 +536,8 @@ export function PlanCanvas(p: Props) {
       const t = turned(m, r.delta);
       node(m.item.id)?.position(t.pos).rotation(t.rot);
       node(`${m.item.id}-beam`)?.position(t.pos).rotation(t.rot);
-      const lt = labelTop(m.item, t.pos);
+      const lay = labelShift.current.get(m.item.id);
+      const lt = labelTop(m.item, t.pos, lay?.w, lay?.h);
       node(`${m.item.id}-label`)?.position({ x: lt.x - 200, y: lt.y + (labelShift.current.get(m.item.id)?.shift ?? 0) });
       liveShadow(m.item.id, { pos: t.pos, rot: t.rot });
     }
@@ -1021,9 +1024,11 @@ export function PlanCanvas(p: Props) {
         const name = isMeter(item) ? (item.label ?? (readings ? '' : 'Light meter')) : displayLabel(item, actors, { unit: false });
         const meter = isMeter(item) ? meterText(item) : null;
         if (!name && !meter) return null;
-        const w = Math.max(textWidth(name, NAME_FONT, labelSize), meter ? textWidth(meter, METER_FONT, labelSize * 0.9) : 0) + labelSize * 0.7;
-        const h = (name ? labelSize * 1.2 : 0) + (meter ? labelSize * 1.15 : 0);
-        const at = labelTop(item, item.pos, w);
+        // A meter with a reading shows its little screen (a fixed size on screen).
+        const card = isMeter(item) && !!readings?.get(item.id);
+        const w = card ? METER_CARD.w / view.scale : Math.max(textWidth(name, NAME_FONT, labelSize), meter ? textWidth(meter, METER_FONT, labelSize * 0.9) : 0) + labelSize * 0.7;
+        const h = card ? METER_CARD.h / view.scale : (name ? labelSize * 1.2 : 0) + (meter ? labelSize * 1.15 : 0);
+        const at = labelTop(item, item.pos, w, h);
         return { item, name, meter, w, h, x: at.x, y: at.y };
       })
       .filter((r): r is NonNullable<typeof r> => !!r)
@@ -1041,8 +1046,18 @@ export function PlanCanvas(p: Props) {
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, actors, labelSize, readings]);
+  }, [visible, actors, labelSize, readings, view.scale]);
   labelShift.current = labelLayout;
+  if (p.labelBoxesRef) {
+    const boxes: { id: string; x: number; y: number; w: number; h: number }[] = [];
+    for (const item of visible) {
+      const lay = labelLayout.get(item.id);
+      if (!lay) continue;
+      const at = labelTop(item, item.pos, lay.w, lay.h);
+      boxes.push({ id: item.id, x: view.x + (at.x - lay.w / 2) * view.scale, y: view.y + (at.y + lay.shift) * view.scale, w: lay.w * view.scale, h: lay.h * view.scale });
+    }
+    p.labelBoxesRef.current = boxes;
+  }
 
   // ---- Attaching: while the selection bar's Link button is dragged (or armed), show where it would go ----
   const linkPreview = () => {
@@ -1121,6 +1136,17 @@ export function PlanCanvas(p: Props) {
 
   const label = (item: Item) => {
     const lay = labelLayout.get(item.id);
+    const reading = isMeter(item) ? readings?.get(item.id) : undefined;
+    if (reading && lay && item.id !== dragging) {
+      const at = labelTop(item, item.pos, lay.w, lay.h);
+      return (
+        <Group key={`${item.id}-label`} id={`${item.id}-label`} x={at.x - 200} y={at.y + lay.shift} listening={false}>
+          <Group x={200 - lay.w / 2} scaleX={1 / view.scale} scaleY={1 / view.scale}>
+            <MeterCard r={reading} title={item.label} />
+          </Group>
+        </Group>
+      );
+    }
     const name = lay?.name ?? (isMeter(item) ? (item.label ?? '') : displayLabel(item, actors, { unit: false }));
     const meter = item.id === dragging ? null : (lay?.meter ?? null);
     if (!name && !meter) return null;
@@ -1921,6 +1947,43 @@ function PropShape({ style, w, d, c }: { style: string; w: number; d: number; c:
     default:
       return <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={4} {...base} />;
   }
+}
+
+/** A light meter's screen on the plan, in screen pixels (Sekonic-style: settings, big T-stop, light level, stop scale). */
+const METER_CARD = { w: 156, h: 86 };
+const SCALE_STOPS = ['1', '1.4', '2', '2.8', '4', '5.6', '8', '11', '16', '22', '32'];
+/** Colour of each stop on the meter's scale: red past what lenses do, amber at the ends, green in between. */
+const scaleColor = (k: number) => (k < 1 || k >= 9 ? '#c8382e' : k < 2 || k >= 8 ? '#c99a2e' : '#5d9a3c');
+
+function MeterCard({ r, title }: { r: Reading; title?: string }) {
+  const { w, h } = METER_CARD;
+  const c = r.config;
+  const parts = stopParts(r.tStop, c.step);
+  const none = r.contributions.length === 0;
+  const big = none ? '—' : parts.under ? '<1' : parts.over ? '>32' : parts.base;
+  const bigW = textWidth(big, "600 {px}px 'Barlow Semi Condensed', sans-serif", 28);
+  const level = c.unit === 'off' || none ? '' : c.unit === 'fc' ? `≈ ${r.footCandles.toLocaleString()} fc` : `≈ ${r.lux.toLocaleString()} lx`;
+  const bar = { x: 8, y: h - 26, w: w - 16, h: 9 };
+  const seg = bar.w / (SCALE_STOPS.length - 1);
+  const at = Math.min(10, Math.max(0, Math.log2(Math.max(0.5, r.tStop) ** 2)));
+  return (
+    <Group>
+      <Rect width={w} height={h} cornerRadius={9} fill="#121316" stroke="#34373d" strokeWidth={1} shadowColor="#000" shadowBlur={10} shadowOpacity={0.35} />
+      <Text x={8} y={6} width={w - 16} text={title ?? `${c.fps} fps · ISO ${c.iso} · ${c.shutterDeg}°`} fontSize={9.5} fontFamily="'IBM Plex Mono', monospace" fill="#a3a8ae" wrap="none" ellipsis />
+      <Text x={8} y={24} text="T" fontSize={12} fontStyle="600" fontFamily="'Barlow Semi Condensed', sans-serif" fill="#e8e6e2" />
+      <Text x={20} y={16} text={big} fontSize={28} fontStyle="600" fontFamily="'Barlow Semi Condensed', sans-serif" fill="#ffffff" />
+      {!none && parts.frac && <Text x={22 + bigW} y={28} text={parts.frac} fontSize={15} fontStyle="600" fontFamily="'Barlow Semi Condensed', sans-serif" fill="#ffffff" />}
+      <Text x={w - 8 - 80} y={21} width={80} align="right" text={none ? 'no light' : level} fontSize={11} fontFamily="'IBM Plex Mono', monospace" fill="#e8e6e2" />
+      <Text x={w - 8 - 80} y={36} width={80} align="right" text="approx." fontSize={8.5} fontStyle="italic" fontFamily="'IBM Plex Mono', monospace" fill="#8d9298" />
+      {SCALE_STOPS.slice(0, -1).map((_, k) => (
+        <Rect key={k} x={bar.x + k * seg} y={bar.y} width={seg - 0.5} height={bar.h} fill={scaleColor(k)} />
+      ))}
+      {SCALE_STOPS.map((s, k) =>
+        k % 2 === 0 ? <Text key={s} x={bar.x + k * seg - 10} y={bar.y + bar.h + 2} width={20} align="center" text={s} fontSize={7.5} fontFamily="'IBM Plex Mono', monospace" fill="#a3a8ae" /> : null,
+      )}
+      {!none && <Rect x={bar.x + at * seg - 1.5} y={bar.y - 3} width={3} height={bar.h + 6} cornerRadius={1} fill="#ffffff" stroke="#121316" strokeWidth={1} />}
+    </Group>
+  );
 }
 
 /** Bottom-left of the plan (and of exports): a north arrow (with the sun when it's on) and a scale bar. */

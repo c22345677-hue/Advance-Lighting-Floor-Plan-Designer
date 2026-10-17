@@ -80,6 +80,18 @@ export interface Item {
   /** Attached to another item: it keeps this offset and turn in that item's own frame, so the two
    *  move and turn as one. */
   attachedTo?: Attachment;
+  /** Light meters: the camera settings it meters for and how it shows the reading. */
+  meter?: MeterSettings;
+}
+
+export interface MeterSettings {
+  iso?: number;
+  fps?: number;
+  shutterDeg?: number;
+  /** Stop increments shown: ⅓ (default), ½ or ¼. */
+  step?: 'third' | 'half' | 'quarter';
+  /** Light level shown: lux (default), foot-candles, or none. */
+  unit?: 'lux' | 'fc' | 'off';
 }
 
 export interface Attachment {

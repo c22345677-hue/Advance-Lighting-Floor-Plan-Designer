@@ -10,7 +10,7 @@ import { aimAt } from './geometry';
 import { lightSource, occluders, pointInPolygon, shadowDarkness, shadowPolygon } from './shadows';
 import { daylightLux, windowLights, type Sun } from './sun';
 import { assemblyOf, isMeter } from './attach';
-import type { Item, Vec2 } from './types';
+import type { Item, MeterSettings, Vec2 } from './types';
 
 /** Contribution id for daylight through windows. */
 export const DAYLIGHT_ID = 'daylight';
@@ -84,8 +84,9 @@ export interface Contribution {
 }
 
 export interface Reading {
-  /** The light meter it was read on. */
+  /** The light meter it was read on, and its settings. */
   meterId: string;
+  config: MeterConfig;
   lux: number;
   footCandles: number;
   contributions: Contribution[];
@@ -154,17 +155,46 @@ export function tStopFor(lux: number, cam: CameraSettings): number {
   return Math.sqrt(Math.max(0, (lux * cam.iso * t) / METER_C));
 }
 
-const STOPS = [1, 1.4, 2, 2.8, 4, 5.6, 8, 11, 16, 22, 32];
+export const STOPS = [1, 1.4, 2, 2.8, 4, 5.6, 8, 11, 16, 22, 32];
 
-/** Nearest full stop below, plus thirds: "T2.8 +⅔". */
-export function tStopLabel(n: number): string {
-  if (n < 0.7) return 'under T1';
-  if (n > 36) return 'over T32';
-  const thirds = Math.round(Math.log2(n * n) * 3);
-  const full = Math.floor(thirds / 3);
-  const rest = thirds - full * 3;
+export type StopStep = NonNullable<MeterSettings['step']>;
+const DIVISIONS: Record<StopStep, number> = { half: 2, third: 3, quarter: 4 };
+const FRACTION: Record<StopStep, string[]> = { half: ['', '½'], third: ['', '⅓', '⅔'], quarter: ['', '¼', '½', '¾'] };
+
+/** A stop split like a meter shows it: the full stop below and the fraction above it ("5.6" + "⅓"). */
+export function stopParts(n: number, step: StopStep = 'third'): { base: string; frac: string; under?: boolean; over?: boolean } {
+  if (n < 0.7) return { base: '1', frac: '', under: true };
+  if (n > 36) return { base: '32', frac: '', over: true };
+  const div = DIVISIONS[step];
+  const steps = Math.round(Math.log2(n * n) * div);
+  const full = Math.floor(steps / div);
+  const rest = steps - full * div;
   const base = STOPS[Math.min(STOPS.length - 1, Math.max(0, full))] ?? 32;
-  return `T${base}${rest === 1 ? ' +⅓' : rest === 2 ? ' +⅔' : ''}`;
+  return { base: String(base), frac: FRACTION[step][rest] ?? '' };
+}
+
+/** Nearest full stop below, plus the fraction: "T2.8 +⅔" (thirds unless told otherwise). */
+export function tStopLabel(n: number, step: StopStep = 'third'): string {
+  const p = stopParts(n, step);
+  if (p.under) return 'under T1';
+  if (p.over) return 'over T32';
+  return `T${p.base}${p.frac ? ` +${p.frac}` : ''}`;
+}
+
+/** Shutter speed for a frame rate and shutter angle: "1/48". */
+export function shutterSpeed(fps: number, deg: number): string {
+  return `1/${Math.round((fps * 360) / Math.max(1, deg))}`;
+}
+
+export interface MeterConfig extends CameraSettings {
+  step: StopStep;
+  unit: NonNullable<MeterSettings['unit']>;
+}
+
+/** A meter's settings, falling back to `cam` (the app's defaults). */
+export function meterConfig(meter: Item, cam: CameraSettings = DEFAULT_CAMERA): MeterConfig {
+  const m = meter.meter ?? {};
+  return { iso: m.iso ?? cam.iso, fps: m.fps ?? cam.fps, shutterDeg: m.shutterDeg ?? cam.shutterDeg, step: m.step ?? 'third', unit: m.unit ?? 'lux' };
 }
 
 /** Readings on every light meter in the scene, at face height: where the meter stands, or on what it is attached to. */
@@ -195,16 +225,18 @@ export function meterReadings(items: readonly Item[], cam: CameraSettings = DEFA
       const key = contributions[0];
       const fill = lux - (key?.lux ?? 0);
       const ratio = key && fill > 0.5 ? `${Math.max(1, Math.round((lux / fill) * 2) / 2)}:1` : undefined;
-      const n = tStopFor(lux, cam);
+      const config = meterConfig(p, cam);
+      const n = tStopFor(lux, config);
       return {
         meterId: p.id,
+        config,
         lux: Math.round(lux),
         footCandles: Math.round(lux / 10.764),
         contributions,
         keyId: key?.lightId,
         ratio,
         tStop: n,
-        tStopLabel: tStopLabel(n),
+        tStopLabel: tStopLabel(n, config.step),
       };
     });
 }

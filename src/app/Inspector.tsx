@@ -9,7 +9,7 @@ import { DEFAULT_WALL_CM, wallLength } from '../model/walls';
 import { beamReach, lightSource } from '../model/shadows';
 import { isMeter } from '../model/attach';
 import { circuitName, lightWatts } from '../model/power';
-import { DAYLIGHT_ID, lightName, meterReadings, type CameraSettings } from '../model/exposure';
+import { DAYLIGHT_ID, lightName, meterReadings, shutterSpeed, stopParts, type CameraSettings } from '../model/exposure';
 import type { Sun } from '../model/sun';
 import { COLOR_KIND_LABEL, colorKindOf, displayKelvin, hsToRgb, KIND_RANGE, lightColor, rgbCss, type ColorKind } from '../model/color';
 import { GEL_GROUP_LABEL, gelById, GELS, type Gel, type GelGroup } from '../library/gels';
@@ -49,7 +49,6 @@ interface Props {
   onDelete: () => void;
   /** Light meter camera settings (ISO, frame rate, shutter). */
   camera: CameraSettings;
-  onCamera: (c: CameraSettings) => void;
   /** The scene's daylight (for the light meter). */
   sun?: Sun;
 }
@@ -128,7 +127,7 @@ export function Inspector(props: Props) {
 
       {item.kind === 'person' && <BlockingSection item={item} onUpdate={onUpdate} />}
 
-      {isMeter(item) && <MeterSection item={item} sceneItems={sceneItems} camera={props.camera} onCamera={props.onCamera} sun={props.sun} />}
+      {isMeter(item) && <MeterSection item={item} sceneItems={sceneItems} actors={actors} camera={props.camera} sun={props.sun} onUpdate={onUpdate} />}
 
       {item.kind === 'light' && (
         <LightSection item={item} gear={gear} sceneItems={sceneItems} actors={actors} setLight={setLight} onUpdate={onUpdate} />
@@ -788,24 +787,31 @@ function AttachSection({ item, sceneItems, actors, onUpdate }: { item: Item; sce
   );
 }
 
-/** Light falling on this meter: total, T-stop, key:fill and each light's share. */
+const METER_STOPS = ['1', '1.4', '2', '2.8', '4', '5.6', '8', '11', '16', '22', '32'];
+const meterZone = (k: number) => (k < 1 || k >= 9 ? 'red' : k < 2 || k >= 8 ? 'amber' : 'green');
+
+/** The meter's screen and settings: camera (ISO, frame rate, shutter), stop increments, lux or fc; then each light's share. */
 function MeterSection({
   item,
   sceneItems,
+  actors,
   camera,
-  onCamera,
   sun,
+  onUpdate,
 }: {
   item: Item;
   sceneItems: Item[];
+  actors: Actor[];
   camera: CameraSettings;
-  onCamera: (c: CameraSettings) => void;
   sun?: Sun;
+  onUpdate: Props['onUpdate'];
 }) {
   const r = meterReadings(sceneItems, camera, sun).find((x) => x.meterId === item.id);
   const holder = item.attachedTo ? sceneItems.find((i) => i.id === item.attachedTo!.to) : undefined;
   if (!r) return null;
-  const num = (label: string, key: keyof CameraSettings, unit: string, min: number, max: number) => (
+  const c = r.config;
+  const set = (patch: Partial<NonNullable<Item['meter']>>) => onUpdate({ meter: { ...item.meter, ...patch } });
+  const num = (label: string, key: 'iso' | 'fps' | 'shutterDeg', unit: string, min: number, max: number) => (
     <label className="field">
       <span className="field-label">{label}</span>
       <span className="input-unit">
@@ -815,51 +821,90 @@ function MeterSection({
           aria-label={label}
           min={min}
           max={max}
-          value={camera[key]}
-          onChange={(e) => e.target.value !== '' && onCamera({ ...camera, [key]: Math.min(max, Math.max(min, Number(e.target.value))) })}
+          value={c[key]}
+          onChange={(e) => e.target.value !== '' && set({ [key]: Math.min(max, Math.max(min, Number(e.target.value))) })}
         />
         <span className="unit">{unit}</span>
       </span>
     </label>
   );
+  const parts = stopParts(r.tStop, c.step);
+  const none = r.contributions.length === 0;
+  const at = Math.min(10, Math.max(0, Math.log2(Math.max(0.5, r.tStop) ** 2)));
   return (
-    <Section title="Reading">
-      {holder && <p className="hint-text">The light on {displayLabel(holder, []) || itemName(holder)}: an attached meter reads what it hangs on, wherever it sits.</p>}
-      {r.contributions.length === 0 ? (
-        <p className="hint-text">No light reaches the meter yet.</p>
-      ) : (
-        <>
-          <div className="meter-big">
-            <strong>{r.tStopLabel}</strong>
-            <span>
-              {r.lux} lux · {r.footCandles} fc{r.ratio ? ` · key:fill ${r.ratio}` : ''}
-            </span>
-          </div>
-          <ul className="row-list">
-            {r.contributions.map((c) => {
-              const l = sceneItems.find((i) => i.id === c.lightId);
-              return (
-                <li key={c.lightId} className="row static">
-                  <span className="row-main">
-                    <span className="row-title">
-                      {l ? lightName(l) : c.lightId === DAYLIGHT_ID ? 'Daylight (windows)' : '?'} {c.lightId === r.keyId && r.contributions.length > 1 ? <span className="chip">Key</span> : null}
-                    </span>
-                    <span className="row-sub">
-                      {Math.round(c.lux)} lux{c.blocked ? ' · partly blocked' : ''}
-                    </span>
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </>
-      )}
+    <Section title="Light meter">
+      {holder && <p className="hint-text">The light on {displayLabel(holder, actors) || itemName(holder)}: an attached meter reads what it hangs on, wherever it sits.</p>}
+      <div className="meter-screen" aria-label={`Reading approximately ${r.tStopLabel}`}>
+        <div className="ms-head">
+          <span>{c.fps} fps</span>
+          <span>ISO {c.iso}</span>
+          <span>{c.shutterDeg}° · {shutterSpeed(c.fps, c.shutterDeg)}</span>
+        </div>
+        <div className="ms-main">
+          <span className="ms-t">T</span>
+          <span className="ms-big">{none ? '—' : parts.under ? '<1' : parts.over ? '>32' : parts.base}</span>
+          {!none && parts.frac && <span className="ms-frac">{parts.frac}</span>}
+          <span className="ms-side">
+            {!none && c.unit !== 'off' && <span className="ms-level">≈ {(c.unit === 'fc' ? r.footCandles : r.lux).toLocaleString()} {c.unit === 'fc' ? 'fc' : 'lx'}</span>}
+            {none && <span className="ms-level">no light</span>}
+            <span className="ms-approx">approximately</span>
+          </span>
+        </div>
+        <div className="ms-scale">
+          {METER_STOPS.slice(0, -1).map((s, k) => (
+            <span key={s} className={`ms-seg ${meterZone(k)}`} />
+          ))}
+          {!none && <span className="ms-needle" style={{ left: `${(at / 10) * 100}%` }} />}
+        </div>
+        <div className="ms-ticks">
+          {METER_STOPS.map((s) => (
+            <span key={s}>{s}</span>
+          ))}
+        </div>
+        {r.ratio && !none && <div className="ms-foot">key:fill {r.ratio}</div>}
+      </div>
       {num('ISO', 'iso', '', 50, 25600)}
       {num('Frame rate', 'fps', 'fps', 1, 240)}
-      {num('Shutter', 'shutterDeg', '°', 1, 360)}
+      {num('Shutter angle', 'shutterDeg', '°', 1, 360)}
+      <label className="field">
+        <span className="field-label">Shows stops in</span>
+        <select aria-label="Stop increments" value={c.step} onChange={(e) => set({ step: e.target.value as typeof c.step })}>
+          <option value="third">Thirds (⅓)</option>
+          <option value="half">Halves (½)</option>
+          <option value="quarter">Quarters (¼)</option>
+        </select>
+      </label>
+      <label className="field">
+        <span className="field-label">Light level</span>
+        <select aria-label="Light level unit" value={c.unit} onChange={(e) => set({ unit: e.target.value as typeof c.unit })}>
+          <option value="lux">Lux (lx)</option>
+          <option value="fc">Foot-candles (fc)</option>
+          <option value="off">Don't show</option>
+        </select>
+      </label>
+      {!none && (
+        <ul className="row-list">
+          {r.contributions.map((x) => {
+            const l = sceneItems.find((i) => i.id === x.lightId);
+            return (
+              <li key={x.lightId} className="row static">
+                <span className="row-main">
+                  <span className="row-title">
+                    {l ? lightName(l) : x.lightId === DAYLIGHT_ID ? 'Daylight (windows)' : '?'} {x.lightId === r.keyId && r.contributions.length > 1 ? <span className="chip">Key</span> : null}
+                  </span>
+                  <span className="row-sub">
+                    ≈ {c.unit === 'fc' ? `${Math.round(x.lux / 10.764)} fc` : `${Math.round(x.lux)} lux`}
+                    {x.blocked ? ' · partly blocked' : ''}
+                  </span>
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
       <p className="hint-text">
-        Estimates for planning, from each light's power, beam, distance and height, modifiers, gels, diffusion and anything in the way.
-        Check with a meter on set.
+        Approximate: a planning simulation from each light's power, beam, distance and height, modifiers, gels, diffusion and anything in the way. Meter
+        it on set.
       </p>
     </Section>
   );

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { meterReadings, tStopFor, tStopLabel } from './exposure';
+import { meterReadings, shutterSpeed, stopParts, tStopFor, tStopLabel } from './exposure';
 import { attachmentFor, LIGHT_METER_ID } from './attach';
 import type { Item } from './types';
 
@@ -71,5 +71,18 @@ describe('light meter', () => {
     expect(tStopLabel(tStopFor(1000, { iso: 800, fps: 24, shutterDeg: 180 }))).toMatch(/^T8/);
     expect(tStopLabel(2.8)).toBe('T2.8');
     expect(tStopLabel(3.2)).toBe('T2.8 +⅓');
+  });
+  it('stops in thirds, halves or quarters, and each meter has its own camera settings', () => {
+    const n = 2 ** (3.25 / 2); // T2.8 and a quarter stop
+    expect(stopParts(n, 'quarter')).toEqual({ base: '2.8', frac: '¼' });
+    expect(stopParts(2 ** (3.5 / 2), 'half')).toEqual({ base: '2.8', frac: '½' });
+    expect(tStopLabel(2 ** (3.67 / 2))).toBe('T2.8 +⅔');
+    expect(shutterSpeed(24, 180)).toBe('1/48');
+    const l = light('a', 'generic.light.cob', 0, 200, 0);
+    const [base] = meterReadings([l, meter('m', 0, 0)]);
+    const [faster] = meterReadings([l, meter('m', 0, 0, { meter: { iso: 3200 } })]);
+    // Four times the ISO: two stops more (the T-stop doubles).
+    expect(faster!.tStop / base!.tStop).toBeCloseTo(2, 5);
+    expect(faster!.config.iso).toBe(3200);
   });
 });
