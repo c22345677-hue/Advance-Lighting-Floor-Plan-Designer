@@ -117,7 +117,7 @@ function sampleProject(): Project {
   const r = applyTemplate(t, { interviewees: 1, interviewers: 1, cameras: 2 }, { origin: { x: 0, y: 0 } });
   const cast = castTemplateItems(r.shots.flatMap((s) => s.items), [], [], 'doc');
   p.actors = cast.added;
-  const scene = focusScene({ ...p.scenes[0]!, setItems: r.setItems, items: withMeters(cast.items, uid) });
+  const scene = focusScene({ ...p.scenes[0]!, setItems: r.setItems, items: cast.items });
   p.scenes[0] = { ...scene, baseline: structuredClone({ setItems: scene.setItems, items: scene.items }) };
   return p;
 }
@@ -707,8 +707,7 @@ export function App() {
     leaveWalls();
     setSelection([]);
     for (const actor of cast.added) dispatch({ type: 'addActor', actor });
-    // Everyone gets a light meter held in front of their face.
-    sd({ type: 'applyTemplate', setItems: r.setItems, items: withMeters(cast.items, uid) });
+    sd({ type: 'applyTemplate', setItems: r.setItems, items: cast.items });
     setDialog(null);
     setView(null); // fit the new layout
   };
