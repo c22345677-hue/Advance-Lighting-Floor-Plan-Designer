@@ -1065,8 +1065,9 @@ export function PlanCanvas(p: Props) {
   const linkHandle = () => {
     const sel = selected ? visible.find((i) => i.id === selected) : undefined;
     if (!sel || tool !== 'move' || p.wallTool || sel.locked || sel.wall || sel.inWall || modeOf(sel) !== mode || dragging) return null;
-    const r = footprintCm(sel) + 14 / view.scale;
-    const home = { x: sel.pos.x + r * 0.75, y: sel.pos.y - r * 0.75 };
+    // On the item's right: the selection bar sits above it and the name tag below.
+    const r = footprintCm(sel) + ((coarse ? 15 : 11) + 10) / view.scale;
+    const home = { x: sel.pos.x + r, y: sel.pos.y };
     const k = 1 / view.scale;
     const size = (coarse ? 15 : 11) * k;
     const linked = !!sel.attachedTo;
