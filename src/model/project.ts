@@ -94,10 +94,16 @@ export const sceneItems = (s: SceneDoc): Item[] => [...s.setItems, ...s.items];
 
 // ---- Edit modes ---------------------------------------------------------------------
 
-/** Top-menu categories. Only items of the active category can be selected and moved. */
-export type EditMode = 'lights' | 'grip' | 'camera' | 'scene' | 'notes';
+/** What an item belongs to on the plan. */
+export type Category = 'lights' | 'grip' | 'camera' | 'scene' | 'notes';
 
-export const EDIT_MODES: { id: EditMode; label: string }[] = [
+/**
+ * Top-menu modes: All (everything can be picked and moved, the default) or one category, where
+ * only that category's items can be picked (handy once a plan gets busy).
+ */
+export type EditMode = 'all' | Category;
+
+export const CATEGORIES: { id: Category; label: string }[] = [
   { id: 'lights', label: 'Lights' },
   { id: 'grip', label: 'Grip' },
   { id: 'camera', label: 'Camera' },
@@ -105,7 +111,12 @@ export const EDIT_MODES: { id: EditMode; label: string }[] = [
   { id: 'notes', label: 'Notes' },
 ];
 
-export function modeOf(item: Item): EditMode {
+export const EDIT_MODES: { id: EditMode; label: string }[] = [{ id: 'all', label: 'All' }, ...CATEGORIES];
+
+/** Can `item` be picked in `mode`? */
+export const inMode = (item: Item, mode: EditMode) => mode === 'all' || modeOf(item) === mode;
+
+export function modeOf(item: Item): Category {
   if (item.kind === 'light' || item.kind === 'modifier') return 'lights';
   if (item.kind === 'grip') return 'grip';
   if (item.kind === 'note') return 'notes';

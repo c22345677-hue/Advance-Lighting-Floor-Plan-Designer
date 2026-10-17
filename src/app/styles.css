@@ -34,6 +34,7 @@
   --cat-camera: #3ec7b0;
   --cat-scene: #ff8070;
   --cat-notes: #6aa8ff;
+  --cat-all: #e2dfd8;
   --mode-ink: #15171a;
 
   --font-ui: 'Barlow', 'Segoe UI', system-ui, sans-serif;
@@ -75,6 +76,7 @@
     --cat-camera: #13897a;
     --cat-scene: #c94a3a;
     --cat-notes: #2f6fd0;
+    --cat-all: #3a3d42;
     --mode-ink: #ffffff;
     color-scheme: light;
   }
@@ -112,6 +114,7 @@
   --cat-camera: #13897a;
   --cat-scene: #c94a3a;
   --cat-notes: #2f6fd0;
+  --cat-all: #3a3d42;
   --mode-ink: #ffffff;
   color-scheme: light;
 }
@@ -119,6 +122,9 @@
 /* Each category has its own colour: its tab, the selection outline and the side panel. */
 :root {
   --mode: var(--cat-lights);
+}
+:root[data-mode='all'] {
+  --mode: var(--cat-all);
 }
 :root[data-mode='grip'] {
   --mode: var(--cat-grip);
@@ -2424,4 +2430,51 @@ kbd {
   .selection-bar {
     transition: none;
   }
+}
+
+/* The All tab: everything on the plan, by category, and shortcuts to each category's panel. */
+.all-group + .all-group {
+  margin-top: 12px;
+}
+.all-group-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cat);
+}
+.add-cats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.add-cat {
+  justify-content: space-between;
+  box-shadow: inset 3px 0 0 var(--cat);
+}
+.add-cat kbd {
+  opacity: 0.6;
+}
+
+/* Move / Rotate in the selection bar. */
+.bar-tools {
+  display: inline-flex;
+  gap: 2px;
+  padding: 0 4px;
+  margin: 0 2px;
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+.bar-tools .icon-btn.on {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.bar-tools .icon-btn.rotate.on {
+  background: var(--tool-rotate);
+  color: #06202e;
 }

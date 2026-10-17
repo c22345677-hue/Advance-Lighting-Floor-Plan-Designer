@@ -15,7 +15,7 @@ import { isOpening, libraryItem } from '../library/items';
 import { itemFixture, itemLook, itemModifiers } from '../model/gear';
 import { aimAt, normDeg, rotate } from '../model/geometry';
 import { DEFAULT_LENS_MM, horizontalFovDeg } from '../model/lens';
-import { followsActorId, modeOf, sceneItems, twoShotTargets, type EditMode, type SceneDoc } from '../model/project';
+import { followsActorId, inMode, modeOf, sceneItems, twoShotTargets, type Category, type EditMode, type SceneDoc } from '../model/project';
 import type { Actor, Item, Vec2 } from '../model/types';
 import {
   clampHit,
@@ -143,7 +143,7 @@ interface Props {
   /** Light meter readings under each person (camera settings), or off. */
   meter: CameraSettings | null;
   /** Per category: hidden from the plan, or locked (can't be picked or moved). */
-  layers?: Partial<Record<EditMode, LayerState>>;
+  layers?: Partial<Record<Category, LayerState>>;
   showBeams?: boolean;
   mode: EditMode;
   tool: Tool;
@@ -439,7 +439,7 @@ export function PlanCanvas(p: Props) {
       const look = itemLook(i);
       return { c: toScreen(i.pos), r: (Math.max(20, Math.min(look.w, look.d)) / 2) * view.scale };
     };
-    const pickable = visible.filter((i) => modeOf(i) === mode && !layer(i)?.locked);
+    const pickable = visible.filter((i) => inMode(i, mode) && !layer(i)?.locked);
     if (r - l < 6 && btm - t < 6) {
       // A tap on empty space: pick the nearest item close by (fingers are bigger than icons).
       const tol = b.touch ? NEAR_TAP_PX.touch : NEAR_TAP_PX.mouse;
@@ -674,7 +674,7 @@ export function PlanCanvas(p: Props) {
   const labelSize = Math.min(28, Math.max(9, 12 / view.scale));
 
   const renderItem = (item: Item) => {
-    const active = modeOf(item) === mode && !layer(item)?.locked;
+    const active = inMode(item, mode) && !layer(item)?.locked;
     const canRotate = tool === 'rotate' && active && !item.locked && !isFocusLocked(item, all);
     const press = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
       if (!active) return;
@@ -868,7 +868,7 @@ export function PlanCanvas(p: Props) {
     const marks = marksOf(item);
     if (marks.length < 2) return null;
     const color = actors.find((a) => a.id === item.actorId)?.color ?? colors.person;
-    const editable = selected === item.id && mode === 'scene' && tool === 'move' && !item.locked && !p.wallTool;
+    const editable = selected === item.id && (mode === 'scene' || mode === 'all') && tool === 'move' && !item.locked && !p.wallTool;
     return (
       <Group key={`${item.id}-blocking`} name="blocking">
         {marks.slice(1).map((m, k) => {
@@ -1154,10 +1154,10 @@ export function PlanCanvas(p: Props) {
     if (!name && !meter) return null;
     const w = lay?.w ?? textWidth(name, NAME_FONT, labelSize) + labelSize * 0.7;
     const h = (name ? labelSize * 1.2 : 0) + (meter ? labelSize * 1.15 : 0);
-    const inMode = modeOf(item) === mode;
+    const picked = inMode(item, mode);
     return (
       <Group key={`${item.id}-label`} id={`${item.id}-label`} x={labelTop(item, item.pos, w).x - 200} y={labelTop(item, item.pos, w).y + (lay?.shift ?? 0)} listening={false}>
-        <Rect x={200 - w / 2} y={-labelSize * 0.1} width={w} height={h} cornerRadius={labelSize * 0.35} fill={colors.labelBg} opacity={inMode ? 1 : 0.7} />
+        <Rect x={200 - w / 2} y={-labelSize * 0.1} width={w} height={h} cornerRadius={labelSize * 0.35} fill={colors.labelBg} opacity={picked ? 1 : 0.7} />
         {name && (
           <Text
             width={400}
@@ -1167,7 +1167,7 @@ export function PlanCanvas(p: Props) {
             fontFamily="'Barlow Semi Condensed', 'Arial Narrow', sans-serif"
             fontStyle="600"
             fill={colors.label}
-            opacity={inMode ? 1 : 0.6}
+            opacity={picked ? 1 : 0.6}
           />
         )}
         {meter && (
@@ -1280,7 +1280,7 @@ export function PlanCanvas(p: Props) {
         {(() => {
           // Corner handles on a selected wall (Move tool): drag a corner to reshape the room.
           const sel = visible.find((i) => i.id === selected && i.wall);
-          if (!sel || tool !== 'move' || p.wallTool || sel.locked || modeOf(sel) !== mode) return null;
+          if (!sel || tool !== 'move' || p.wallTool || sel.locked || !inMode(sel, mode)) return null;
           const others = walls.filter((w) => w.id !== sel.id).flatMap(wallPoints);
           return wallPoints(sel).map((pt, idx) => (
             <Circle

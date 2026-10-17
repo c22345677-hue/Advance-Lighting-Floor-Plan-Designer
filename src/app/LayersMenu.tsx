@@ -1,13 +1,13 @@
 // View controls: show/hide and lock each category on the plan, and the light beams.
 import { useEffect, useRef, useState } from 'react';
-import { EDIT_MODES, type EditMode } from '../model/project';
+import { CATEGORIES, type Category } from '../model/project';
 import { IconLayers } from './icons';
 import type { LayerState } from './PlanCanvas';
 
 interface Props {
-  layers: Partial<Record<EditMode, LayerState>>;
+  layers: Partial<Record<Category, LayerState>>;
   beams: boolean;
-  onLayers: (l: Partial<Record<EditMode, LayerState>>) => void;
+  onLayers: (l: Partial<Record<Category, LayerState>>) => void;
   onBeams: (on: boolean) => void;
 }
 
@@ -20,7 +20,7 @@ export function LayersMenu({ layers, beams, onLayers, onBeams }: Props) {
     window.addEventListener('pointerdown', out);
     return () => window.removeEventListener('pointerdown', out);
   }, [open]);
-  const set = (m: EditMode, patch: LayerState) => onLayers({ ...layers, [m]: { ...layers[m], ...patch } });
+  const set = (m: Category, patch: LayerState) => onLayers({ ...layers, [m]: { ...layers[m], ...patch } });
   const changed = beams === false || Object.values(layers).some((l) => l?.hidden || l?.locked);
   return (
     <div className="layers" ref={box}>
@@ -31,7 +31,7 @@ export function LayersMenu({ layers, beams, onLayers, onBeams }: Props) {
         <div className="layers-pop" role="dialog" aria-label="Layers">
           <table>
             <tbody>
-              {EDIT_MODES.map((m) => (
+              {CATEGORIES.map((m) => (
                 <tr key={m.id}>
                   <td>{m.label}</td>
                   <td>

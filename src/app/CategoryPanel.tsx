@@ -4,7 +4,7 @@ import type { Fixture } from '../catalog/schema';
 import { FABRIC_KIND_LABEL, fabricById } from '../library/fabrics';
 import { LIBRARY, libraryItem, type LibraryCategory, type LibraryItem } from '../library/items';
 import { itemFixture, itemRigWeightKg, standCheck } from '../model/gear';
-import { KIND_ROLES, modeOf, ROLE_LABEL, roleOf, type EditMode, type ProjectKind } from '../model/project';
+import { CATEGORIES, KIND_ROLES, modeOf, ROLE_LABEL, roleOf, type Category, type EditMode, type ProjectKind } from '../model/project';
 import type { Actor, CastRole, Item } from '../model/types';
 import { wallLength } from '../model/walls';
 import { SUN_PRESETS, sunKelvin, type Sun } from '../model/sun';
@@ -42,6 +42,8 @@ interface Props {
   onSun: (sun: Sun | undefined) => void;
   wallSnap: boolean;
   onWallSnap: (on: boolean) => void;
+  /** ALL: switch to a category (to add its gear). */
+  onMode: (m: Category) => void;
   /** CAMERA: give everyone without one a light meter in front of their face. */
   onMetersForAll: () => void;
 }
@@ -192,6 +194,36 @@ export function CategoryPanel(props: Props) {
   const list = (empty: string, rows = mine) => <SceneList items={rows} all={items} actors={actors} empty={empty} onSelect={onSelect} />;
 
   switch (mode) {
+    case 'all':
+      return (
+        <>
+          <Section title="In this scene" count={items.filter((i) => !i.inWall).length}>
+            {items.length === 0 && <p className="hint-text">Nothing on the plan yet. Start from a template, or pick a category below to add gear.</p>}
+            {CATEGORIES.map((c) => {
+              const rows = items.filter((i) => modeOf(i) === c.id && !i.inWall);
+              if (!rows.length) return null;
+              return (
+                <div key={c.id} className="all-group">
+                  <h4 className="all-group-title" style={{ '--cat': `var(--cat-${c.id})` } as React.CSSProperties}>
+                    {c.label} <span className="count">{rows.length}</span>
+                  </h4>
+                  {list('', rows)}
+                </div>
+              );
+            })}
+          </Section>
+          <Section title="Add">
+            <div className="add-cats">
+              {CATEGORIES.map((c, k) => (
+                <button key={c.id} className="btn add-cat" style={{ '--cat': `var(--cat-${c.id})` } as React.CSSProperties} onClick={() => props.onMode(c.id)}>
+                  {c.label} <kbd>{k + 1}</kbd>
+                </button>
+              ))}
+            </div>
+            <p className="hint-text">In All, anything on the plan can be picked and moved. Choosing a category opens its gear to add, and narrows picking to it, which helps once the plan gets busy.</p>
+          </Section>
+        </>
+      );
     case 'lights':
       return (
         <>

@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, type CSSProperties } from 'react';
 import { itemLook, nextUnitId } from '../model/gear';
-import { assemblyOf, attachmentFor, canAttach, isMeter, turnPatches, withMeters } from '../model/attach';
+import { assemblyOf, attachmentFor, canAttach, isMeter, withMeters } from '../model/attach';
 import { gearUsage, type GearList } from '../model/gearList';
 import {
   EDIT_MODES,
@@ -12,6 +12,8 @@ import {
   newProject,
   sceneItems,
   type EditMode,
+  type Category,
+  inMode,
   type Project,
   type ProjectKind,
   type SceneDoc,
@@ -52,7 +54,6 @@ import {
   IconPlus,
   IconRedo,
   IconReset,
-  IconRotateLeft,
   IconSelect,
   IconLink,
   IconGrip,
@@ -72,7 +73,7 @@ import {
   IconUndo,
 } from './icons';
 import { Inspector } from './Inspector';
-import { clampScale, displayLabel, findAttachTarget, isFocusLocked, itemName, PlanCanvas, zoomAt, type ExportPng, type LayerState, type Tool, type View, type WallExtend } from './PlanCanvas';
+import { clampScale, displayLabel, findAttachTarget, meterName, itemName, PlanCanvas, zoomAt, type ExportPng, type LayerState, type Tool, type View, type WallExtend } from './PlanCanvas';
 import { ProjectMenu } from './ProjectMenu';
 import { deleteProject, listProjects, loadGearLists, loadProject, loadStartProject, saveGearLists, saveProject, loadSetups, saveSetups } from './storage';
 import { TemplatePanel } from './TemplatePanel';
@@ -166,7 +167,7 @@ interface Prefs {
   /** Breaker size per circuit, A (default by voltage). */
   breakerA?: number;
   /** Hidden / locked categories on the plan. */
-  layers?: Partial<Record<EditMode, LayerState>>;
+  layers?: Partial<Record<Category, LayerState>>;
   beams?: boolean;
   /** Light or dark, or follow the device. */
   theme?: 'auto' | 'light' | 'dark';
@@ -180,8 +181,9 @@ function loadPrefs(): Prefs {
   }
 }
 
-const MODE_LABEL: Record<EditMode, string> = { lights: 'Lights', grip: 'Grip', camera: 'Camera', scene: 'Scene', notes: 'Notes' };
+const MODE_LABEL: Record<EditMode, string> = { all: 'All', lights: 'Lights', grip: 'Grip', camera: 'Camera', scene: 'Scene', notes: 'Notes' };
 const MODE_HINT: Record<EditMode, string> = {
+  all: 'Everything can be picked and moved',
   lights: 'Only lights can be picked and moved',
   grip: 'Only grip can be picked and moved',
   camera: 'Only camera gear can be picked and moved',
@@ -202,7 +204,8 @@ export function App() {
   const scene: SceneDoc = project.scenes.find((s) => s.id === sceneId) ?? project.scenes[0]!;
   const items = sceneItems(scene);
 
-  const [mode, setMode] = useState<EditMode>('lights');
+  // Everything can be picked to start with; a category narrows it down once the plan is busy.
+  const [mode, setMode] = useState<EditMode>('all');
   const [tool, setTool] = useState<Tool>('move');
   useEffect(() => {
     document.documentElement.dataset.mode = mode;
@@ -436,7 +439,7 @@ export function App() {
 
   useEffect(() => {
     // Selection only lives inside the active category and scene.
-    const keep = selection.filter((id) => items.some((i) => i.id === id && modeOf(i) === mode));
+    const keep = selection.filter((id) => items.some((i) => i.id === id && inMode(i, mode)));
     if (keep.length !== selection.length) setSelection(keep);
   }, [selection, items, mode]);
 
@@ -513,7 +516,8 @@ export function App() {
     leaveWalls();
     const isSet = item.kind === 'set';
     sd({ type: 'add', setItems: isSet ? [item] : [], items: isSet ? [] : [item] });
-    setMode(modeOf(item));
+    // Adding from a category's panel stays there; in All it stays in All.
+    if (mode !== 'all') setMode(modeOf(item));
     setSelected(item.id);
   };
 
@@ -656,11 +660,6 @@ export function App() {
     if (patches.length) sd({ type: 'updateMany', patches });
   };
 
-  const turnSelection = (deg: number) => {
-    // Attached groups turn around their root; a light meter on someone orbits them.
-    const patches = selectedItems.filter((i) => !i.locked && !isFocusLocked(i, items)).flatMap((i) => turnPatches(i, deg, items));
-    if (patches.length) sd({ type: 'updateMany', patches });
-  };
 
   /** Download the project (with its gear list) as a file. */
   const saveFile = () => {
@@ -730,7 +729,7 @@ export function App() {
         else if (selection.length > 1) duplicateMany(selection);
       } else if (mod && k === 'a') {
         e.preventDefault();
-        setSelection(items.filter((i) => !i.hidden && modeOf(i) === mode).map((i) => i.id));
+        setSelection(items.filter((i) => !i.hidden && inMode(i, mode) && !prefs.layers?.[modeOf(i)]?.hidden && !prefs.layers?.[modeOf(i)]?.locked).map((i) => i.id));
       } else if (mod) {
         return;
       } else if (e.key === '?' || k === 'f1') {
@@ -742,8 +741,8 @@ export function App() {
         chooseTool('rotate');
       } else if (k === 's') {
         setPickMode((on) => !on);
-      } else if (k >= '1' && k <= '5') {
-        switchMode(EDIT_MODES[Number(k) - 1]!.id);
+      } else if (k >= '0' && k <= '5') {
+        switchMode(EDIT_MODES[Number(k)]!.id);
       } else if (k === 'escape') {
         if (wallTool && wallDraft.length) setDraft([]);
         else if (wallTool) setWallTool(false);
@@ -832,7 +831,7 @@ export function App() {
               aria-selected={mode === m.id}
               style={{ '--cat': `var(--cat-${m.id})` } as CSSProperties}
               onClick={() => switchMode(m.id)}
-              title={`${MODE_HINT[m.id]} (${i + 1})`}
+              title={`${MODE_HINT[m.id]} (${i})`}
             >
               {m.label}
             </button>
@@ -1020,8 +1019,8 @@ export function App() {
                 </button>
                 {pickMode && (
                   <>
-                    <button className="pick-btn" onClick={() => setSelection(items.filter((i) => !i.hidden && modeOf(i) === mode && !prefs.layers?.[mode]?.hidden && !prefs.layers?.[mode]?.locked).map((i) => i.id))}>
-                      All {MODE_LABEL[mode].toLowerCase()}
+                    <button className="pick-btn" onClick={() => setSelection(items.filter((i) => !i.hidden && inMode(i, mode) && !prefs.layers?.[modeOf(i)]?.hidden && !prefs.layers?.[modeOf(i)]?.locked).map((i) => i.id))}>
+                      {mode === 'all' ? 'Everything' : `All ${MODE_LABEL[mode].toLowerCase()}`}
                     </button>
                     {selection.length > 0 && (
                       <button className="pick-btn" onClick={() => setSelected(null)}>
@@ -1043,16 +1042,19 @@ export function App() {
               <span className="bar-grip" title="Drag to move this bar" aria-hidden="true" {...gripProps}>
                 <IconGrip />
               </span>
-              <span className="selection-count">{selection.length > 1 ? `${selection.length} selected` : itemName(selectedItems[0]!)}</span>
+              <span className="selection-count">{selection.length > 1 ? `${selection.length} selected` : (isMeter(selectedItems[0]) ? meterName(selectedItems[0]!, items, project.actors) : displayLabel(selectedItems[0]!, project.actors, { unit: true }) || itemName(selectedItems[0]!))}</span>
               <button id="configure" className={`btn small ${configuring ? 'on' : ''}`} onClick={() => (configuring ? setConfiguring(false) : configure())} title="Settings for the selection (or right-click it)">
                 <IconSliders /> Configure
               </button>
-              <button className="icon-btn" onClick={() => turnSelection(-15)} aria-label="Turn left 15°" title="Turn left 15°">
-                <IconRotateLeft />
-              </button>
-              <button className="icon-btn" onClick={() => turnSelection(15)} aria-label="Turn right 15°" title="Turn right 15°">
-                <IconRotate />
-              </button>
+              {/* The Move / Rotate tools, right by the selection. */}
+              <span className="bar-tools" role="radiogroup" aria-label="Tool">
+                <button id="bar-move" role="radio" aria-checked={tool === 'move'} className={`icon-btn ${tool === 'move' ? 'on' : ''}`} onClick={() => chooseTool('move')} title="Move: drag items (W)" aria-label="Move">
+                  <IconMove />
+                </button>
+                <button id="bar-rotate" role="radio" aria-checked={tool === 'rotate'} className={`icon-btn rotate ${tool === 'rotate' ? 'on' : ''}`} onClick={() => chooseTool('rotate')} title="Rotate: drag an item to turn it (R)" aria-label="Rotate">
+                  <IconRotate />
+                </button>
+              </span>
               <button
                 className="icon-btn"
                 onClick={() => (selectedItem ? duplicate(selectedItem) : duplicateMany(selection))}
@@ -1255,6 +1257,7 @@ export function App() {
                 hasWalls={items.some((i) => i.wall)}
                 sun={scene.sun}
                 onSun={(sun) => sd({ type: 'sun', sun })}
+                onMode={switchMode}
                 onMetersForAll={() => {
                   const added = withMeters(scene.items, uid).filter((i) => !scene.items.includes(i));
                   if (added.length) sd({ type: 'add', setItems: [], items: added });
