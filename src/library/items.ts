@@ -107,7 +107,8 @@ export const LIBRARY: LibraryItem[] = [
   I('grip', 'grip', 'grip.sandbag', 'Sandbag', 'sandbag', 40, 20),
   I('camera', 'camera', 'camera', 'Camera', 'camera', 26, 34),
   I('camera', 'set', 'camera.dolly', 'Dolly', 'dolly', 70, 120),
-  I('camera', 'prop', 'camera.monitor', 'Monitor', 'monitor', 60, 20),
+  // A monitor on a stand with someone in front of it.
+  I('camera', 'prop', 'camera.monitor', 'Monitor', 'monitor', 60, 75),
   // One element: a large monitor with two people watching it.
   I('camera', 'prop', 'camera.video-village', 'Video village', 'video-village', 190, 150),
   // Incident light meter: reads the light where it stands (attach it to a person to read their face).

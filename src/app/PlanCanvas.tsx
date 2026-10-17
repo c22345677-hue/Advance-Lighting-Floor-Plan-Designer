@@ -2036,6 +2036,17 @@ export function findAttachTarget(child: Item, at: Vec2, all: readonly Item[], to
   return best?.item ?? null;
 }
 
+/** Someone watching a monitor: a person in the camera colour, facing up the item (towards the screen). */
+function viewerShape(x: number, y: number, c: CanvasColors, scale = PERSON_SCALE) {
+  return (
+    <Group key={x} x={x} y={y} scaleX={scale} scaleY={scale}>
+      <Rect x={-22} y={-10} width={44} height={20} cornerRadius={10} fill={c.camera} opacity={0.85} />
+      <Circle radius={9} fill={c.camera} stroke={c.canvas} strokeWidth={2} />
+      <Line points={[-4, -11, 0, -18, 4, -11]} closed fill={c.camera} />
+    </Group>
+  );
+}
+
 /** Distance from `p` to the segment a–b. */
 function distToSegment(p: Vec2, a: Vec2, b: Vec2): number {
   const dx = b.x - a.x;
@@ -2266,34 +2277,31 @@ export function ItemShape({
           <Circle y={-5} radius={6} fill="#f4f2ee" stroke={c.camera} strokeWidth={1.5} />
         </>
       );
-    case 'monitor':
-      // Screen on a stand; the light edge is the screen side.
+    case 'monitor': {
+      // A monitor on a stand with one person in front of it, watching (the light edge is the screen).
+      const top = -Math.max(hd, 30);
       return (
         <>
-          <Rect x={-6} y={0} width={12} height={hd} fill={c.camera} opacity={0.7} />
-          <Rect x={-hw * 0.35} y={hd - 6} width={hw * 0.7} height={6} cornerRadius={3} fill={c.camera} opacity={0.7} />
-          <Rect x={-hw} y={-hd} width={w} height={8} cornerRadius={2} fill={c.camera} />
-          <Line points={[-hw + 3, -hd, hw - 3, -hd]} stroke={c.label} strokeWidth={2} />
+          <Rect x={-hw * 0.3} y={top} width={hw * 0.6} height={5} cornerRadius={2.5} fill={c.camera} opacity={0.7} />
+          <Rect x={-hw} y={top + 5} width={w} height={8} cornerRadius={2} fill={c.camera} />
+          <Line points={[-hw + 3, top + 13, hw - 3, top + 13]} stroke={c.label} strokeWidth={2} />
+          {viewerShape(0, top + 48, c)}
         </>
       );
+    }
     case 'video-village': {
-      // Large monitor at the front, two people behind it watching (facing it), one colour.
+      // Large monitor at the front, three people in front of it watching (facing it), one colour.
       const mw = Math.min(w * 0.7, 130);
-      const viewer = (x: number) => (
-        <Group key={x} x={x} y={hd - 36} scaleX={PERSON_SCALE} scaleY={PERSON_SCALE}>
-          <Rect x={-22} y={-10} width={44} height={20} cornerRadius={10} fill={c.camera} opacity={0.85} />
-          <Circle radius={9} fill={c.camera} stroke={c.canvas} strokeWidth={2} />
-          <Line points={[-4, -11, 0, -18, 4, -11]} closed fill={c.camera} />
-        </Group>
-      );
+      const viewer = (x: number) => viewerShape(x, hd - 36, c, Math.min(PERSON_SCALE, (w * 0.32) / 46)); // three side by side
       return (
         <>
           <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={8} stroke={c.camera} strokeWidth={1.5} dash={[6, 5]} opacity={0.6} />
           <Rect x={-mw / 2} y={-hd + 6} width={mw} height={9} cornerRadius={2} fill={c.camera} />
           <Line points={[-mw / 2 + 3, -hd + 15, mw / 2 - 3, -hd + 15]} stroke={c.label} strokeWidth={2} />
           <Rect x={-7} y={-hd + 15} width={14} height={14} fill={c.camera} opacity={0.7} />
-          {viewer(-w * 0.24)}
-          {viewer(w * 0.24)}
+          {viewer(-w * 0.34)}
+          {viewer(0)}
+          {viewer(w * 0.34)}
         </>
       );
     }
