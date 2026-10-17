@@ -2,10 +2,11 @@ import Konva from 'konva';
 import { lightColor, rgbCss } from '../model/color';
 import { marksOf, moveMark } from '../model/blocking';
 import { sunRgb, windowLights, type WindowLight } from '../model/sun';
-import { lightLumens, meterReadings, stopParts, type CameraSettings, type Reading } from '../model/exposure';
+import { meterReadings, stopParts, type CameraSettings, type Reading } from '../model/exposure';
 import { beamReach, lightReach, lightSource } from '../model/shadows';
 import { assemblyOf, canAttach, isMeter, rootOf } from '../model/attach';
-import { ShadowLayer, type LivePatch, type ShadowLive } from './ShadowLayer';
+import { LightLayer, type LivePatch, type ShadowLive } from './LightLayer';
+import { beamAlpha, beamDegOf } from './beams';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import { Arc, Arrow, Circle, Ellipse, Group, Layer, Line, Rect, Stage, Text, Transformer, Wedge } from 'react-konva';
@@ -73,8 +74,7 @@ export function zoomAt(view: View, factor: number, at: Vec2): View {
 
 
 /** Beam angle for a light: set on the item, else the library default, else 60°. */
-export const beamDegOf = (item: Item): number =>
-  item.light?.beamDeg ?? libraryItem(item.catalogId)?.beamDeg ?? 60;
+export { beamDegOf };
 
 /** Text shown under an item: "L1 · LS 600d Pro" for lights, the actor's name for cast. */
 export function displayLabel(item: Item, actors: readonly Actor[] = [], opts: { unit?: boolean } = {}): string {
@@ -326,7 +326,8 @@ export function PlanCanvas(p: Props) {
 
   /** Live positions and turns for the shadow layer while things move. */
   const shadowLive = useRef<ShadowLive | null>(null);
-  const liveShadow = (id: string | null, patch?: LivePatch) => p.showShadows && shadowLive.current?.(id, patch);
+  // Beams and shadows both follow live moves.
+  const liveShadow = (id: string | null, patch?: LivePatch) => shadowLive.current?.(id, patch);
 
   /** While an item is dragged, keep its beam and any cameras watching it in step. */
   const follow = (moved: Item, pos: Vec2) => {
@@ -937,14 +938,10 @@ export function PlanCanvas(p: Props) {
     );
   };
 
-  /** How strong a beam is drawn: dimmer, gels, and the light's output (a 1200 W HMI reads stronger than a small panel). */
-  const beamAlpha = (item: Item) => {
-    const c = lightColor(item);
-    const strength = Math.min(1, Math.max(0.15, (item.light?.intensityPct ?? 100) / 100));
-    const output = Math.min(1.3, Math.max(0.55, 0.85 + 0.25 * Math.log10(lightLumens(item).lumens / 15000)));
-    return Math.max(0.05, 0.3 * strength * output * Math.max(0.3, c.transmission));
-  };
+  /** Lights whose beams are drawn (by the light layer; hidden layers still light and cast shadows). */
+  const beamIds = useMemo(() => new Set(visible.filter((i) => i.kind === 'light').map((i) => i.id)), [visible]);
 
+  /** A beam as Konva shapes: only for the originals left in place during Alt + drag. */
   const beam = (item: Item) => {
     if (item.kind !== 'light') return null;
     const throwCm = beamReach(item, lit);
@@ -1256,9 +1253,8 @@ export function PlanCanvas(p: Props) {
           fill={colors.canvas}
         />
         {showGrid && grid}
-        {p.showBeams !== false && visible.map(beam)}
         {windowLit.map((wl) => daylight(wl))}
-        {p.showShadows && <ShadowLayer items={lit} extra={windowSources} liveRef={shadowLive} />}
+        <LightLayer items={lit} beamIds={beamIds} showShadows={p.showShadows} showBeams={p.showBeams !== false} extra={windowSources} liveRef={shadowLive} />
         {ghosts.map((g) => beam(ghostOf(g)))}
       </Layer>
       <Layer>

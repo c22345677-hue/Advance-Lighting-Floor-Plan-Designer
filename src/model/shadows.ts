@@ -312,21 +312,44 @@ export function occluders(items: readonly Item[]): Occluder[] {
     const lib = libraryItem(i.catalogId);
     if (i.wall) {
       const t = i.wall.thicknessCm ?? DEFAULT_WALL_CM;
+      // Doors and windows leave gaps: light gets through them.
+      const openings = items.filter((o) => o.inWall?.wallId === i.id && !o.hidden);
       wallSegments(i).forEach(([a, b], k) => {
         const len = Math.hypot(b.x - a.x, b.y - a.y);
         if (len < 1) return;
-        const nx = (-(b.y - a.y) / len) * (t / 2);
-        const ny = ((b.x - a.x) / len) * (t / 2);
-        out.push({
-          id: `${i.id}#${k}`,
-          points: [
-            { x: a.x + nx, y: a.y + ny },
-            { x: b.x + nx, y: b.y + ny },
-            { x: b.x - nx, y: b.y - ny },
-            { x: a.x - nx, y: a.y - ny },
-          ],
-          heightCm: BLOCKS,
-        });
+        const ux = (b.x - a.x) / len;
+        const uy = (b.y - a.y) / len;
+        const nx = -uy * (t / 2);
+        const ny = ux * (t / 2);
+        const gaps = openings
+          .filter((o) => o.inWall!.seg === k)
+          .map((o) => {
+            const w = o.sizeCm?.w ?? itemLook(o).w;
+            const off = len <= w ? len / 2 : Math.min(len - w / 2, Math.max(w / 2, o.inWall!.offsetCm));
+            return [Math.max(0, off - w / 2), Math.min(len, off + w / 2)] as [number, number];
+          })
+          .sort((p, q) => p[0] - q[0]);
+        let from = 0;
+        const pieces: [number, number][] = [];
+        for (const [g0, g1] of gaps) {
+          if (g0 > from + 0.5) pieces.push([from, g0]);
+          from = Math.max(from, g1);
+        }
+        if (len > from + 0.5) pieces.push([from, len]);
+        for (const [d0, d1] of pieces) {
+          const p0 = { x: a.x + ux * d0, y: a.y + uy * d0 };
+          const p1 = { x: a.x + ux * d1, y: a.y + uy * d1 };
+          out.push({
+            id: `${i.id}#${k}`,
+            points: [
+              { x: p0.x + nx, y: p0.y + ny },
+              { x: p1.x + nx, y: p1.y + ny },
+              { x: p1.x - nx, y: p1.y - ny },
+              { x: p0.x - nx, y: p0.y - ny },
+            ],
+            heightCm: BLOCKS,
+          });
+        }
       });
       continue;
     }

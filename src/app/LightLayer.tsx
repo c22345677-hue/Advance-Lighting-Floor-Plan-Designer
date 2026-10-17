@@ -1,6 +1,9 @@
-// Draws the shadows (see model/shadows.ts) under everything on the plan. While something is
-// dragged or turned, the canvas passes live positions in, so shadows follow without waiting
-// for the drop; only this layer redraws.
+// Draws the light on the plan: contact shadows, every light's shadows (see model/shadows.ts),
+// then the beams on top, each with its own shadows cut out. So a light never lights its own
+// shadow, while another light that still reaches the spot shows its colour there (a tungsten
+// key's shadow under a blue backlight comes out blue-ish). While something is dragged or
+// turned, the canvas passes live positions in, so all of it follows without waiting for the
+// drop; only this layer redraws.
 //
 // How they're drawn, so they read like light rather than cut-outs:
 // - Each light's shadows from one point of its source are filled as one shape (their union, walls
@@ -16,6 +19,7 @@ import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'rea
 import { Shape } from 'react-konva';
 import type Konva from 'konva';
 import { darknessAt, lightReach, occluders, sceneShadows, SHADOW_REACH, type LightSource, type ShadowShape } from '../model/shadows';
+import { beamBounds, beamSpec, drawBeam, type BeamSpec } from './beams';
 import type { Item, Vec2 } from '../model/types';
 
 export type LivePatch = { pos?: Vec2; rot?: number };
@@ -65,17 +69,103 @@ function groupShadows(source: LightSource, mine: ShadowShape[], items: readonly 
 /** Shadows are drawn at this fraction of the plan's resolution (they're soft; it's 4× less work). */
 const RES = 0.5;
 
-/** A canvas, reused to draw one light's shadows at a time (at RES of the plan's size). */
-let scratch: HTMLCanvasElement | null = null;
-function scratchFor(target: Native): CanvasRenderingContext2D | null {
-  scratch ??= document.createElement('canvas');
+/** Canvases reused to draw one light at a time (at RES of the plan's size). */
+const scratch: HTMLCanvasElement[] = [];
+function scratchFor(target: Native, k = 0): CanvasRenderingContext2D | null {
+  const c = (scratch[k] ??= document.createElement('canvas'));
   const w = Math.ceil(target.canvas.width * RES);
   const h = Math.ceil(target.canvas.height * RES);
-  if (scratch.width !== w || scratch.height !== h) {
-    scratch.width = w;
-    scratch.height = h;
+  if (c.width !== w || c.height !== h) {
+    c.width = w;
+    c.height = h;
   }
-  return scratch.getContext('2d');
+  return c.getContext('2d');
+}
+
+type Bounds = { x0: number; y0: number; x1: number; y1: number };
+
+/** Plan-cm points' bounds on the target canvas (device pixels), padded and kept on the canvas. */
+function deviceBounds(target: Native, pts: Iterable<Vec2>, pad: number): Bounds | null {
+  const t = target.getTransform();
+  let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
+  for (const q of pts) {
+    const px = t.a * q.x + t.c * q.y + t.e;
+    const py = t.b * q.x + t.d * q.y + t.f;
+    [x0, y0, x1, y1] = [Math.min(x0, px), Math.min(y0, py), Math.max(x1, px), Math.max(y1, py)];
+  }
+  x0 = Math.max(0, Math.floor(x0 - pad));
+  y0 = Math.max(0, Math.floor(y0 - pad));
+  x1 = Math.min(target.canvas.width, Math.ceil(x1 + pad));
+  y1 = Math.min(target.canvas.height, Math.ceil(y1 + pad));
+  return x1 > x0 && y1 > y0 ? { x0, y0, x1, y1 } : null;
+}
+
+/** Clears `b` on a scratch canvas and sets it to the plan's view at RES. */
+function prepare(off: CanvasRenderingContext2D, target: Native, b: Bounds) {
+  const t = target.getTransform();
+  off.setTransform(1, 0, 0, 1, 0, 0);
+  off.clearRect(b.x0 * RES - 1, b.y0 * RES - 1, (b.x1 - b.x0) * RES + 2, (b.y1 - b.y0) * RES + 2);
+  off.setTransform(t.a * RES, t.b * RES, t.c * RES, t.d * RES, t.e * RES, t.f * RES);
+}
+
+/** Lays scratch area `b` onto the plan (optionally blurred). */
+function present(target: Native, off: CanvasRenderingContext2D, b: Bounds, blurPx = 0) {
+  target.save();
+  target.setTransform(1, 0, 0, 1, 0, 0);
+  if (canBlur && blurPx > 0) target.filter = `blur(${blurPx.toFixed(1)}px)`;
+  target.imageSmoothingEnabled = true;
+  target.drawImage(off.canvas, b.x0 * RES, b.y0 * RES, (b.x1 - b.x0) * RES, (b.y1 - b.y0) * RES, b.x0, b.y0, b.x1 - b.x0, b.y1 - b.y0);
+  target.restore();
+}
+
+/** Where all the source's points are blocked it's 1, where some are, a share (penumbra). */
+function fillCoverage(off: CanvasRenderingContext2D, ls: LightShadows, withHot: boolean) {
+  const s = ls.source;
+  off.save();
+  off.globalCompositeOperation = 'lighter';
+  off.fillStyle = '#000';
+  for (const g of ls.groups) {
+    if (g.hot && !withHot) continue;
+    // Through light diffusion the hot spot adds a harder shadow of its own.
+    const hot = g.hot ? ((1 - (s.scatter ?? 1)) * 0.8 * darknessAt(15, s.subjectCm ?? s.throwCm)) / Math.max(0.05, darknessAt(s.sizeCm, s.subjectCm ?? s.throwCm)) : 0;
+    off.globalAlpha = g.hot ? Math.min(1, hot) : 1 / ls.samples;
+    off.beginPath();
+    for (const poly of g.polys) polyPath(off, poly);
+    off.fill('nonzero');
+  }
+  off.restore();
+}
+
+/** The light's beam, minus where its own light is blocked (its shadows). */
+function drawBeamCut(target: Native, beam: BeamSpec, ls: LightShadows | undefined) {
+  const bb = beamBounds(beam);
+  const box = deviceBounds(target, [{ x: bb.x0, y: bb.y0 }, { x: bb.x1, y: bb.y0 }, { x: bb.x1, y: bb.y1 }, { x: bb.x0, y: bb.y1 }], 2);
+  if (!box) return;
+  if (!ls) {
+    drawBeam(target, beam);
+    return;
+  }
+  const off = scratchFor(target, 0);
+  const cut = scratchFor(target, 1);
+  if (!off || !cut) return drawBeam(target, beam);
+  prepare(off, target, box);
+  drawBeam(off, beam);
+  // Its shadows, softened like they're drawn, taken out of the beam.
+  prepare(cut, target, box);
+  fillCoverage(cut, ls, false);
+  off.save();
+  off.setTransform(1, 0, 0, 1, 0, 0);
+  off.globalCompositeOperation = 'destination-out';
+  const spacing = ls.source.sizeCm / ls.samples;
+  const blur = Math.min(8, Math.max(0.5, spacing * target.getTransform().a * RES * 0.55));
+  if (canBlur) off.filter = `blur(${blur.toFixed(1)}px)`;
+  const sx = box.x0 * RES;
+  const sy = box.y0 * RES;
+  const sw = (box.x1 - box.x0) * RES;
+  const sh = (box.y1 - box.y0) * RES;
+  off.drawImage(cut.canvas, sx, sy, sw, sh, sx, sy, sw, sh);
+  off.restore();
+  present(target, off, box);
 }
 
 /**
@@ -130,10 +220,9 @@ function beamClip(n: Native, s: LightSource) {
  * and towards the beam's sides, kept to where the light gets past the walls, and laid on the plan
  * with a slight blur. Only the area the shadows cover is worked on.
  */
-function drawLight(target: Native, ls: LightShadows) {
+function drawShadows(target: Native, ls: LightShadows) {
   const s = ls.source;
-  const t = target.getTransform();
-  const scale = t.a; // canvas pixels per cm
+  const scale = target.getTransform().a; // canvas pixels per cm
   // Blur about half the gap between neighbouring sample shadows (hard light: just anti-aliasing).
   const spacing = s.clip ? 0 : s.sizeCm / ls.samples;
   const blur = Math.min(16, Math.max(0.7, spacing * scale * 0.55));
@@ -152,27 +241,10 @@ function drawLight(target: Native, ls: LightShadows) {
     target.restore();
     return;
   }
-  const off = scratchFor(target);
-  if (!off) return;
-  // The shadows' bounds on the canvas (plus room for the blur).
-  let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
-  for (const g of ls.groups)
-    for (const poly of g.polys)
-      for (const q of poly) {
-        const px = t.a * q.x + t.c * q.y + t.e;
-        const py = t.b * q.x + t.d * q.y + t.f;
-        [x0, y0, x1, y1] = [Math.min(x0, px), Math.min(y0, py), Math.max(x1, px), Math.max(y1, py)];
-      }
-  const pad = blur * 2 + 4;
-  x0 = Math.max(0, Math.floor(x0 - pad));
-  y0 = Math.max(0, Math.floor(y0 - pad));
-  x1 = Math.min(target.canvas.width, Math.ceil(x1 + pad));
-  y1 = Math.min(target.canvas.height, Math.ceil(y1 + pad));
-  if (x1 <= x0 || y1 <= y0) return;
-  // Same view as the plan at RES, fresh for this light (only the part we use).
-  off.setTransform(1, 0, 0, 1, 0, 0);
-  off.clearRect(x0 * RES - 1, y0 * RES - 1, (x1 - x0) * RES + 2, (y1 - y0) * RES + 2);
-  off.setTransform(t.a * RES, t.b * RES, t.c * RES, t.d * RES, t.e * RES, t.f * RES);
+  const off = scratchFor(target, 0);
+  const box = deviceBounds(target, ls.groups.flatMap((g) => g.polys.flat()), blur * 2 + 4);
+  if (!off || !box) return;
+  prepare(off, target, box);
   off.save();
   off.beginPath();
   if (ls.reach) polyPath(off, ls.reach);
@@ -184,26 +256,16 @@ function drawLight(target: Native, ls: LightShadows) {
     beamClip(off, s);
     off.clip();
   }
-  // Adding up (not layering) the samples: where all of them are blocked it's fully dark.
-  off.globalCompositeOperation = 'lighter';
-  off.fillStyle = '#000';
-  for (const g of ls.groups) {
-    // Through light diffusion the hot spot adds a harder shadow of its own.
-    const hot = g.hot ? ((1 - (s.scatter ?? 1)) * 0.8 * darknessAt(15, s.subjectCm ?? s.throwCm)) / Math.max(0.05, darknessAt(s.sizeCm, s.subjectCm ?? s.throwCm)) : 0;
-    off.globalAlpha = g.hot ? Math.min(1, hot) : 1 / ls.samples;
-    off.beginPath();
-    for (const poly of g.polys) polyPath(off, poly);
-    off.fill('nonzero');
-  }
+  fillCoverage(off, ls, true);
   off.restore();
   // Fade by distance and towards the sides of the beam, over the shadows' bounds only (the
   // gradients live in plan space, so the box is mapped back into it).
   const inv = off.getTransform().inverse();
-  const box = [
-    [x0, y0],
-    [x1, y0],
-    [x1, y1],
-    [x0, y1],
+  const corners = [
+    [box.x0, box.y0],
+    [box.x1, box.y0],
+    [box.x1, box.y1],
+    [box.x0, box.y1],
   ].map(([x, y]) => inv.transformPoint(new DOMPoint(x! * RES, y! * RES)));
   off.save();
   off.globalCompositeOperation = 'destination-in';
@@ -211,18 +273,12 @@ function drawLight(target: Native, ls: LightShadows) {
     if (!m) continue;
     off.fillStyle = m;
     off.beginPath();
-    box.forEach((c, k) => (k ? off.lineTo(c.x, c.y) : off.moveTo(c.x, c.y)));
+    corners.forEach((c, k) => (k ? off.lineTo(c.x, c.y) : off.moveTo(c.x, c.y)));
     off.closePath();
     off.fill();
   }
   off.restore();
-  // Lay it on the plan, blurred a little.
-  target.save();
-  target.setTransform(1, 0, 0, 1, 0, 0);
-  if (canBlur) target.filter = `blur(${blur.toFixed(1)}px)`;
-  target.imageSmoothingEnabled = true;
-  target.drawImage(off.canvas, x0 * RES, y0 * RES, (x1 - x0) * RES, (y1 - y0) * RES, x0, y0, x1 - x0, y1 - y0);
-  target.restore();
+  present(target, off, box, blur);
 }
 
 /** Faint contact shadows under people and props (not walls or flags, which reach the floor everywhere). */
@@ -241,7 +297,22 @@ function drawContact(n: Native, blobs: { c: Vec2; r: number }[]) {
   n.restore();
 }
 
-export function ShadowLayer({ items, extra = [], liveRef }: { items: Item[]; extra?: LightSource[]; liveRef: MutableRefObject<ShadowLive | null> }) {
+export function LightLayer({
+  items,
+  beamIds,
+  showShadows,
+  showBeams,
+  extra = [],
+  liveRef,
+}: {
+  items: Item[];
+  /** Lights whose beams are drawn (hidden layers still light and cast shadows). */
+  beamIds: ReadonlySet<string>;
+  showShadows: boolean;
+  showBeams: boolean;
+  extra?: LightSource[];
+  liveRef: MutableRefObject<ShadowLive | null>;
+}) {
   const [live, setLive] = useState<Record<string, LivePatch>>({});
   const pending = useRef<Record<string, LivePatch> | null>(null);
   const frame = useRef(0);
@@ -268,7 +339,7 @@ export function ShadowLayer({ items, extra = [], liveRef }: { items: Item[]; ext
   // New saved positions replace live ones.
   useEffect(() => setLive({}), [items]);
 
-  const { lights, blobs } = useMemo(() => {
+  const { lights, blobs, beams } = useMemo(() => {
     const ids = Object.keys(live);
     const now = ids.length
       ? items.map((i) => (live[i.id] ? { ...i, pos: live[i.id]!.pos ?? i.pos, rotationDeg: live[i.id]!.rot ?? i.rotationDeg } : i))
@@ -281,8 +352,9 @@ export function ShadowLayer({ items, extra = [], liveRef }: { items: Item[]; ext
         const c = o.points.reduce((a, q) => ({ x: a.x + q.x / o.points.length, y: a.y + q.y / o.points.length }), { x: 0, y: 0 });
         return { c, r: Math.max(...o.points.map((q) => Math.hypot(q.x - c.x, q.y - c.y))) };
       });
-    return { lights, blobs };
-  }, [items, live, extra]);
+    const beams = now.filter((i) => i.kind === 'light' && beamIds.has(i.id)).map((i) => beamSpec(i, now)).filter((b): b is BeamSpec => !!b);
+    return { lights, blobs, beams };
+  }, [items, live, extra, beamIds]);
 
   return (
     <Shape
@@ -290,8 +362,12 @@ export function ShadowLayer({ items, extra = [], liveRef }: { items: Item[]; ext
       perfectDrawEnabled={false}
       sceneFunc={(ctx) => {
         const n = nativeOf(ctx);
-        drawContact(n, blobs);
-        for (const l of lights) drawLight(n, l);
+        if (showShadows) {
+          drawContact(n, blobs);
+          for (const l of lights) drawShadows(n, l);
+        }
+        // Beams over the shadows, each cut where its own light is blocked.
+        if (showBeams) for (const b of beams) drawBeamCut(n, b, showShadows ? lights.find((l) => l.source.lightId === b.lightId) : undefined);
       }}
     />
   );

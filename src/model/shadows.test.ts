@@ -116,3 +116,23 @@ describe('light and walls', () => {
     expect(inside({ x: 400, y: -200 })).toBe(true); // round the end of the wall
   });
 });
+
+describe('openings', () => {
+  it('light gets through a door or window in a wall', () => {
+    const wall: Item = { id: 'W', kind: 'set', catalogId: 'generic.set.walls', pos: { x: -200, y: -100 }, rotationDeg: 0, wall: { points: [{ x: 0, y: 0 }, { x: 400, y: 0 }], closed: false, thicknessCm: 10 } };
+    const door: Item = { id: 'D', kind: 'set', catalogId: 'generic.door.single', pos: { x: 0, y: -100 }, rotationDeg: 0, sizeCm: { w: 90, d: 10 }, inWall: { wallId: 'W', seg: 0, offsetCm: 200 } };
+    const inside = (vis: { x: number; y: number }[], p: { x: number; y: number }) => {
+      let c = false;
+      for (let i = 0, j = vis.length - 1; i < vis.length; j = i++) {
+        const a = vis[i]!;
+        const b = vis[j]!;
+        if (a.y > p.y !== b.y > p.y && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) c = !c;
+      }
+      return c;
+    };
+    const behind = { x: 0, y: -200 };
+    expect(inside(lightReach({ x: 0, y: 200 }, [wall], 600)!, behind)).toBe(false);
+    expect(inside(lightReach({ x: 0, y: 200 }, [wall, door], 600)!, behind)).toBe(true);
+    expect(inside(lightReach({ x: 0, y: 200 }, [wall, door], 600)!, { x: -150, y: -200 })).toBe(false); // still blocked off to the side
+  });
+});
