@@ -333,7 +333,11 @@ export function PlanCanvas(p: Props) {
   const liveShadow = (id: string | null, patch?: LivePatch) => shadowLive.current?.(id, patch);
 
   /** While an item is dragged, keep its beam and any cameras watching it in step. */
+  /** Where things being dragged are right now (so followers aim at, and from, live positions). */
+  const livePos = useRef(new Map<string, Vec2>());
   const follow = (moved: Item, pos: Vec2) => {
+    livePos.current.set(moved.id, pos);
+    const at = (i: Item) => livePos.current.get(i.id) ?? i.pos;
     node(`${moved.id}-beam`)?.position(pos);
     liveShadow(moved.id, { pos });
     // The name stays under the item while it moves.
@@ -345,22 +349,31 @@ export function PlanCanvas(p: Props) {
       node(`${id}-beam`)?.rotation(deg);
       liveShadow(id, { rot: deg });
     };
-    if (moved.actorId) {
-      for (const f of all) if (followsActorId(f) === moved.actorId) turn(f.id, aimAt(f.pos, pos));
-      // Two-shot cameras keep aiming between their two people (lens and distance settle on drop).
-      for (const f of all) {
-        const ids = f.camera?.twoShot;
-        const pair = twoShotTargets(f, all);
-        if (!ids || !pair || !ids.includes(moved.actorId)) continue;
-        const other = pair[ids[0] === moved.actorId ? 1 : 0];
-        turn(f.id, aimAt(f.pos, { x: (pos.x + other.x) / 2, y: (pos.y + other.y) / 2 }));
-      }
+    /** What an item keeps facing: a person, or a thing (a light's "point at", a camera's object). */
+    const targetOf = (f: Item): Item | undefined => {
+      const who = followsActorId(f);
+      if (who) return all.find((a) => a.actorId === who);
+      const thing = f.kind === 'light' ? f.light?.aimItemId : f.kind === 'camera' ? f.camera?.focusItemId : undefined;
+      return thing ? all.find((a) => a.id === thing && a.id !== f.id) : undefined;
+    };
+    const midOf = (f: Item) => {
+      const ids = f.camera?.twoShot;
+      if (!ids || !twoShotTargets(f, all)) return null;
+      const [a, b] = ids.map((id) => all.find((x) => x.actorId === id)!);
+      return { x: (at(a!).x + at(b!).x) / 2, y: (at(a!).y + at(b!).y) / 2 };
+    };
+    // Everything that faces the moved item (or a two shot it's in) turns as it goes…
+    for (const f of all) {
+      if (f.id === moved.id) continue;
+      const mid = midOf(f);
+      if (mid && moved.actorId && f.camera?.twoShot?.includes(moved.actorId)) turn(f.id, aimAt(at(f), mid));
+      else if (targetOf(f)?.id === moved.id) turn(f.id, aimAt(at(f), pos));
     }
-    const pair = twoShotTargets(moved, all);
-    if (pair) turn(moved.id, aimAt(pos, { x: (pair[0].x + pair[1].x) / 2, y: (pair[0].y + pair[1].y) / 2 }));
-    const who = followsActorId(moved);
-    const target = who ? all.find((a) => a.actorId === who) : undefined;
-    if (target) turn(moved.id, aimAt(pos, target.pos));
+    // …and the moved item turns to what it faces.
+    const mid = midOf(moved);
+    const target = targetOf(moved);
+    if (mid) turn(moved.id, aimAt(pos, mid));
+    else if (target) turn(moved.id, aimAt(pos, at(target)));
   };
 
   /**
@@ -546,12 +559,18 @@ export function PlanCanvas(p: Props) {
       node(`${m.item.id}-label`)?.position({ x: lt.x - 200, y: lt.y + (labelShift.current.get(m.item.id)?.shift ?? 0) });
       liveShadow(m.item.id, { pos: t.pos, rot: t.rot });
     }
+    // Things facing an item that orbits turn with it as it goes.
+    for (const m of r.members) {
+      const t = turned(m, r.delta);
+      if (t.pos.x !== m.item.pos.x || t.pos.y !== m.item.pos.y) follow(m.item, t.pos);
+    }
   };
 
   const endRotate = () => {
     const r = rot.current;
     if (!r) return;
     rot.current = null;
+    livePos.current.clear();
     setTimeout(() => liveShadow(null), 60);
     if (normDeg(r.delta) === 0) return;
     dispatch({
@@ -785,6 +804,7 @@ export function PlanCanvas(p: Props) {
         onDragEnd={(e) => {
           setDragging(null);
           setGhosts([]);
+          livePos.current.clear();
           // Saved positions take over from the live ones (also when nothing was saved).
           setTimeout(() => liveShadow(null), 60);
           setOpeningGuide(null);
