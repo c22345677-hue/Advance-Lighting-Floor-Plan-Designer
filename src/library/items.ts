@@ -21,6 +21,7 @@ export type Shape =
   | 'sandbag'
   | 'camera'
   | 'dolly'
+  | 'crane'
   | 'monitor'
   | 'video-village'
   | 'meter'
@@ -107,6 +108,8 @@ export const LIBRARY: LibraryItem[] = [
   I('grip', 'grip', 'grip.sandbag', 'Sandbag', 'sandbag', 40, 20),
   I('camera', 'camera', 'camera', 'Camera', 'camera', 26, 34),
   I('camera', 'set', 'camera.dolly', 'Dolly', 'dolly', 70, 120),
+  // Jib / crane: base and arm (the arm reaches forward, where the camera hangs).
+  I('camera', 'set', 'camera.crane', 'Crane', 'crane', 90, 360),
   // A monitor on a stand with someone in front of it.
   I('camera', 'prop', 'camera.monitor', 'Monitor', 'monitor', 60, 75),
   // One element: a large monitor with two people watching it.

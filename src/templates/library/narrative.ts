@@ -86,6 +86,15 @@ export const carInterior: TemplateDefinition = {
   },
 };
 
+/** A camera on a dolly (attached to it from the start), the dolly underneath facing the same way. */
+function dollyCam(pos: Vec2, target: Vec2, name: string, cam: NonNullable<DraftItem['camera']>): DraftItem[] {
+  const rotationDeg = aimAt(pos, target);
+  return [
+    { kind: 'set', catalogId: 'generic.camera.dolly', pos, rotationDeg, label: `Dolly ${name}` },
+    { ...camera(pos, target, `Cam ${name}`), camera: cam, attachedTo: { to: `#Dolly ${name}`, offset: { x: 0, y: 0 }, rotDeg: 0 } },
+  ];
+}
+
 export const walkAndTalk: TemplateDefinition = {
   id: 'walk-and-talk',
   name: 'Walk and talk',
@@ -106,11 +115,11 @@ export const walkAndTalk: TemplateDefinition = {
           items: [
             walker(-35, 'Actor 1'),
             walker(35, 'Actor 2'),
-            // Leading two shot on 24 mm, and 50 mm singles crossing (each from the other actor's side).
-            { ...camera({ x: 0, y: len / 2 - 280 }, { x: 0, y: len / 2 }, 'Cam A'), camera: { focalMm: 24, twoShot: ['@0', '@1'] } },
-            { ...camera({ x: 160, y: len / 2 - 260 }, { x: -35, y: len / 2 }, 'Cam B'), camera: { focalMm: 50, focusActorId: '@0' } },
-            { ...camera({ x: -160, y: len / 2 - 260 }, { x: 35, y: len / 2 }, 'Cam C'), camera: { focalMm: 50, focusActorId: '@1' } },
-            { kind: 'set', catalogId: 'generic.camera.dolly', pos: { x: 0, y: len / 2 - 330 }, rotationDeg: 180 },
+            // Leading cameras, each riding its own dolly: a two shot on 24 mm, and 50 mm singles crossing
+            // (each from the other actor's side).
+            ...dollyCam({ x: 0, y: len / 2 - 280 }, { x: 0, y: len / 2 }, 'A', { focalMm: 24, twoShot: ['@0', '@1'] }),
+            ...dollyCam({ x: 160, y: len / 2 - 260 }, { x: -35, y: len / 2 }, 'B', { focalMm: 50, focusActorId: '@0' }),
+            ...dollyCam({ x: -160, y: len / 2 - 260 }, { x: 35, y: len / 2 }, 'C', { focalMm: 50, focusActorId: '@1' }),
           ],
         },
       ],

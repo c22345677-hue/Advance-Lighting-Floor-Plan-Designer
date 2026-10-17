@@ -446,12 +446,13 @@ export function PlanCanvas(p: Props) {
     if (r - l < 6 && btm - t < 6) {
       // A tap on empty space: pick the nearest item close by (fingers are bigger than icons).
       const tol = b.touch ? NEAR_TAP_PX.touch : NEAR_TAP_PX.mouse;
-      let best: { id: string; d: number } | null = null;
+      let best: { id: string; d: number; layer: number } | null = null;
       for (const i of pickable) {
         if (i.wall) continue;
         const f = footprint(i);
         const d = Math.max(0, Math.hypot(f.c.x - b.x0, f.c.y - b.y0) - f.r);
-        if (d <= tol && (!best || d < best.d)) best = { id: i.id, d };
+        // Nearest; at the same distance (a camera on a dolly), the one drawn on top.
+        if (d <= tol && (!best || d < best.d - 1 || (d <= best.d + 1 && drawLayer(i) > best.layer))) best = { id: i.id, d, layer: drawLayer(i) };
       }
       const id = best?.id;
       if (id && p.pickMode) p.onSelectMany(selection.includes(id) ? selection.filter((x) => x !== id) : [...selection, id]);
@@ -2074,9 +2075,13 @@ export function drawLayer(i: Item): number {
   if (shape === 'note-area') return 0;
   if (i.wall) return 1;
   if (i.inWall) return 2;
-  if (i.kind === 'note') return 7;
+  if (i.kind === 'note') return 9;
   if (i.kind === 'person') return 4;
-  if (i.kind === 'light' || i.kind === 'modifier' || i.kind === 'grip' || i.kind === 'camera' || modeOf(i) === 'camera') return isMeter(i) ? 6 : 5;
+  if (isMeter(i)) return 8;
+  // Cameras sit on top of everything they ride on (dolly, crane) and of grip.
+  if (i.kind === 'camera') return 7;
+  if (i.kind === 'light' || i.kind === 'modifier') return 6;
+  if (i.kind === 'grip' || modeOf(i) === 'camera') return 5; // grip, dollies, cranes, monitors
   return 3; // set pieces, furniture, props
 }
 
@@ -2340,6 +2345,16 @@ export function ItemShape({
         </>
       );
     }
+    case 'crane':
+      // Base at the back, arm reaching forward to the head (the camera goes there), counterweight behind.
+      return (
+        <>
+          <Circle x={0} y={hd - 45} radius={40} stroke={c.camera} strokeWidth={3} />
+          <Rect x={-6} y={-hd + 20} width={12} height={d - 40} cornerRadius={4} fill={c.camera} opacity={0.75} />
+          <Rect x={-16} y={hd - 26} width={32} height={22} cornerRadius={3} fill={c.camera} />
+          <Circle x={0} y={-hd + 20} radius={10} stroke={c.camera} strokeWidth={3} />
+        </>
+      );
     case 'dolly':
       return (
         <>

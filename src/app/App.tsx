@@ -114,6 +114,9 @@ function castTemplateItems(
   const who = (ref?: string) => (ref?.startsWith('@') ? cast[Number(ref.slice(1))] : ref);
   const linked = out.map((item) => {
     let i = item;
+    // Attached by label in the template ("#Dolly A"): hang it where it stands on that item.
+    const onRef = i.attachedTo?.to.startsWith('#') ? [...setItems, ...out].find((x) => x.label === i.attachedTo!.to.slice(1)) : undefined;
+    if (i.attachedTo?.to.startsWith('#')) i = { ...i, attachedTo: onRef ? attachmentFor(i, onRef) : undefined };
     const aimRef = i.light?.aimItemId?.startsWith('#') ? i.light.aimItemId.slice(1) : undefined;
     if (aimRef) i = { ...i, light: { ...i.light, aimItemId: [...setItems, ...out].find((x) => x.label === aimRef)?.id } };
     const look = who(i.lookAtActorId);
