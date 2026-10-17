@@ -1008,6 +1008,8 @@ export function PlanCanvas(p: Props) {
     if (!r) return null;
     return r.contributions.length ? `${r.tStopLabel} · ${r.lux} lx${r.ratio ? ` · ${r.ratio}` : ''}` : 'no light';
   };
+  /** Meter screens shrink as the plan zooms out (down to about half), so they don't cover it. */
+  const cardScale = Math.min(1, Math.max(0.5, view.scale * 1.2));
   const NAME_FONT = "600 {px}px 'Barlow Semi Condensed', 'Arial Narrow', sans-serif";
   const METER_FONT = "{px}px 'IBM Plex Mono', monospace";
 
@@ -1026,8 +1028,8 @@ export function PlanCanvas(p: Props) {
         if (!name && !meter) return null;
         // A meter with a reading shows its little screen (a fixed size on screen).
         const card = isMeter(item) && !!readings?.get(item.id);
-        const w = card ? METER_CARD.w / view.scale : Math.max(textWidth(name, NAME_FONT, labelSize), meter ? textWidth(meter, METER_FONT, labelSize * 0.9) : 0) + labelSize * 0.7;
-        const h = card ? METER_CARD.h / view.scale : (name ? labelSize * 1.2 : 0) + (meter ? labelSize * 1.15 : 0);
+        const w = card ? (METER_CARD.w * cardScale) / view.scale : Math.max(textWidth(name, NAME_FONT, labelSize), meter ? textWidth(meter, METER_FONT, labelSize * 0.9) : 0) + labelSize * 0.7;
+        const h = card ? (METER_CARD.h * cardScale) / view.scale : (name ? labelSize * 1.2 : 0) + (meter ? labelSize * 1.15 : 0);
         const at = labelTop(item, item.pos, w, h);
         return { item, name, meter, w, h, x: at.x, y: at.y };
       })
@@ -1141,7 +1143,7 @@ export function PlanCanvas(p: Props) {
       const at = labelTop(item, item.pos, lay.w, lay.h);
       return (
         <Group key={`${item.id}-label`} id={`${item.id}-label`} x={at.x - 200} y={at.y + lay.shift} listening={false}>
-          <Group x={200 - lay.w / 2} scaleX={1 / view.scale} scaleY={1 / view.scale}>
+          <Group x={200 - lay.w / 2} scaleX={cardScale / view.scale} scaleY={cardScale / view.scale}>
             <MeterCard r={reading} title={item.label} />
           </Group>
         </Group>
@@ -1408,7 +1410,12 @@ function OutlineRing({
   widthPx: number;
 }) {
   const ref = useRef<Konva.Group>(null);
-  const d = widthPx / scale;
+  // widthPx on screen, but never more than a fifth of the item's size (zoomed out, a fixed
+  // width would swamp small items); at least 1.5 px so it stays visible.
+  const look = itemLook(item);
+  const size = item.wall ? (item.wall.thicknessCm ?? DEFAULT_WALL_CM) * 2 : Math.max(look.w, look.d);
+  const k = widthPx / 6;
+  const d = Math.min(widthPx / scale, Math.max(size * 0.2 * k, (1.5 * k) / scale));
   const rgb = /^#?([0-9a-f]{6})$/i.exec(color);
   const n = rgb ? parseInt(rgb[1]!, 16) : 0xf0a23b;
   useEffect(() => {
