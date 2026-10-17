@@ -196,6 +196,21 @@ export function focusScene(s: SceneDoc): SceneDoc {
  * stays on the interviewee, camera 2 on the interviewer, camera 3 is a two shot of both; further
  * cameras take the next interviewees. Only when the layout has both roles.
  */
+/**
+ * Who each interview camera covers, in order. Interviewees come first: one camera each, then
+ * one for each interviewer; once everyone has their own, the next is a two shot (of two
+ * interviewees when there are several, else interviewee and interviewer), then the remaining
+ * interviewee pairs. E.g. 1 camera, 1 interviewee: on them. 2 cameras, 1 interviewee and 1
+ * interviewer: one each. 2 cameras, 2 interviewees: one on each interviewee.
+ */
+export function interviewCameraTargets(ees: string[], ers: string[]): (string | [string, string])[] {
+  const singles: (string | [string, string])[] = [...ees, ...ers];
+  const pairs: [string, string][] = [];
+  if (ees.length >= 2) for (let k = 0; k + 1 < ees.length; k++) pairs.push([ees[k]!, ees[k + 1]!]);
+  else if (ees.length === 1 && ers.length) pairs.push([ees[0]!, ers[0]!]);
+  return [...singles, ...pairs];
+}
+
 export function linkInterview(items: Item[], actors: readonly Actor[]): Item[] {
   const role = (i: Item) => {
     const a = i.actorId ? actors.find((x) => x.id === i.actorId) : undefined;
@@ -203,9 +218,8 @@ export function linkInterview(items: Item[], actors: readonly Actor[]): Item[] {
   };
   const ees = items.filter((i) => role(i) === 'interviewee').map((i) => i.actorId!);
   const ers = items.filter((i) => role(i) === 'interviewer').map((i) => i.actorId!);
-  if (!ees.length || !ers.length) return items;
-  // Camera 3 is a two shot of the interviewee and the interviewer.
-  const camTargets: (string | [string, string])[] = [ees[0]!, ers[0]!, [ees[0]!, ers[0]!], ...ees.slice(1)];
+  if (!ees.length) return items;
+  const camTargets = interviewCameraTargets(ees, ers);
   let cam = 0;
   return items.map((i) => {
     if (i.kind === 'camera') {

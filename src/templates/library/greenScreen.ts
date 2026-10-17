@@ -2,7 +2,6 @@ import { GENERIC } from '../../catalog/generic';
 import type { TemplateDefinition } from '../types';
 import {
   countOption,
-  framingOption,
   light,
   subjectsFacingCameras,
 } from './shared';
@@ -28,14 +27,6 @@ export const greenScreen: TemplateDefinition = {
         { value: '900', label: '9 m' },
       ],
     },
-    {
-      type: 'repeat',
-      key: 'cameraSetup',
-      label: 'Camera setup',
-      countFrom: 'cameras',
-      itemLabel: 'Camera {n}',
-      options: [framingOption],
-    },
   ],
   build: (o) => {
     const width = Number(o.select('screenWidth'));
@@ -44,7 +35,7 @@ export const greenScreen: TemplateDefinition = {
     const people = subjectsFacingCameras(
       'Subject',
       subjects,
-      o.repeat('cameraSetup').map((c) => c.select('framing')),
+      Array.from({ length: o.number('cameras') }, () => 'medium'),
       30,
     );
     // Each camera on 50 mm, locked on a subject ('@k': the template's k-th person).

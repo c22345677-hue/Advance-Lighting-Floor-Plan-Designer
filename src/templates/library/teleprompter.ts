@@ -1,5 +1,5 @@
 import type { TemplateDefinition } from '../types';
-import { countOption, framingOption, subjectsFacingCameras } from './shared';
+import { countOption, subjectsFacingCameras } from './shared';
 
 export const teleprompter: TemplateDefinition = {
   id: 'teleprompter',
@@ -10,14 +10,6 @@ export const teleprompter: TemplateDefinition = {
   options: [
     countOption('presenters', 'Presenters', 1, 3),
     countOption('cameras', 'Cameras', 1, 3),
-    {
-      type: 'repeat',
-      key: 'cameraSetup',
-      label: 'Camera setup',
-      countFrom: 'cameras',
-      itemLabel: 'Camera {n}',
-      options: [framingOption],
-    },
   ],
   build: (o) => ({
     shots: [
@@ -26,7 +18,7 @@ export const teleprompter: TemplateDefinition = {
         items: subjectsFacingCameras(
           'Presenter',
           o.number('presenters'),
-          o.repeat('cameraSetup').map((c) => c.select('framing')),
+          Array.from({ length: o.number('cameras') }, () => 'medium'),
           30,
         ),
       },

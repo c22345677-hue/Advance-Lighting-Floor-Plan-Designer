@@ -1,5 +1,5 @@
 import type { TemplateDefinition } from '../types';
-import { countOption, framingOption, interviewersBesideCamera, subjectsFacingCameras } from './shared';
+import { countOption, interviewersBesideCamera, subjectsFacingCameras } from './shared';
 
 export const interview: TemplateDefinition = {
   id: 'interview',
@@ -11,20 +11,12 @@ export const interview: TemplateDefinition = {
     countOption('interviewees', 'Interviewees', 1, 4),
     countOption('interviewers', 'Interviewers', 1, 3),
     countOption('cameras', 'Cameras', 2, 4),
-    {
-      type: 'repeat',
-      key: 'cameraSetup',
-      label: 'Camera setup',
-      countFrom: 'cameras',
-      itemLabel: 'Camera {n}',
-      options: [framingOption],
-    },
   ],
   build: (o) => {
     const items = subjectsFacingCameras(
       'Interviewee',
       o.number('interviewees'),
-      o.repeat('cameraSetup').map((c) => c.select('framing')),
+      Array.from({ length: o.number('cameras') }, () => 'medium'),
       50,
       'interviewee',
     );

@@ -99,7 +99,7 @@ describe('template library', () => {
   it('interview creates the requested people and cameras, cameras aimed at the subject', () => {
     const r = applyTemplate(
       getTemplate('interview')!,
-      { interviewees: 2, cameras: 3, cameraSetup: [{ framing: 'close' }] },
+      { interviewees: 2, cameras: 3 },
       { origin: { x: 0, y: 0 } },
     );
     const items = r.shots[0]!.items;
@@ -110,11 +110,6 @@ describe('template library', () => {
     expect(interviewer?.label).toBe('Interviewer');
     const cams = items.filter((i) => i.kind === 'camera');
     expect(cams).toHaveLength(3);
-    expect(r.values.cameraSetup).toEqual([
-      { framing: 'close' },
-      { framing: 'medium' },
-      { framing: 'medium' },
-    ]);
     // Middle camera sits straight below the subjects, facing up.
     close(cams[1]!.pos, { x: 0, y: 250 });
     expect(cams[1]!.rotationDeg).toBeCloseTo(0);

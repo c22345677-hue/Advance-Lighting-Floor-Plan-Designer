@@ -2,7 +2,7 @@
 import { GENERIC } from '../../catalog/generic';
 import { aimAt, arc, row } from '../../model/geometry';
 import type { CastRole, Vec2 } from '../../model/types';
-import type { DraftItem, NumberOption, SelectOption } from '../types';
+import type { DraftItem, NumberOption } from '../types';
 
 export const countOption = (key: string, label: string, def: number, max: number): NumberOption => ({
   type: 'number',
@@ -12,18 +12,6 @@ export const countOption = (key: string, label: string, def: number, max: number
   min: 1,
   max,
 });
-
-export const framingOption: SelectOption = {
-  type: 'select',
-  key: 'framing',
-  label: 'Framing',
-  default: 'medium',
-  choices: [
-    { value: 'wide', label: 'Wide' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'close', label: 'Close-up' },
-  ],
-};
 
 /** Rough camera-to-subject distance per framing, cm. Placeholder until real layouts. */
 export const FRAMING_DISTANCE_CM: Record<string, number> = {

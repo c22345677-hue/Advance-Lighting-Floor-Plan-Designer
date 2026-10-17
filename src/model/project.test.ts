@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { reducer, type History } from '../app/doc';
 import { availability, gearUsage, setQty, type GearList } from './gearList';
-import { ACTOR_COLORS, applyCameraFocus, linkInterview, modeOf, newActor, newProject, nextActorColor } from './project';
+import { ACTOR_COLORS, applyCameraFocus, interviewCameraTargets, linkInterview, modeOf, newActor, newProject, nextActorColor } from './project';
 import type { Item } from './types';
 
 const item = (id: string, extra: Partial<Item>): Item => ({ id, kind: 'prop', pos: { x: 0, y: 0 }, rotationDeg: 0, ...extra });
@@ -175,5 +175,15 @@ describe('interview template links', () => {
     expect(out[3]!.camera?.focusActorId).toBe(er.id);
     expect(out[4]!.camera?.focusActorId).toBeUndefined();
     expect(out[4]!.camera?.twoShot).toEqual([ee.id, er.id]);
+  });
+});
+
+describe('interview cameras', () => {
+  it('interviewees first, then interviewers, then a two shot', () => {
+    expect(interviewCameraTargets(['e1'], ['r1']).slice(0, 1)).toEqual(['e1']);
+    expect(interviewCameraTargets(['e1'], ['r1']).slice(0, 2)).toEqual(['e1', 'r1']);
+    expect(interviewCameraTargets(['e1'], ['r1']).slice(0, 3)).toEqual(['e1', 'r1', ['e1', 'r1']]);
+    expect(interviewCameraTargets(['e1', 'e2'], ['r1']).slice(0, 2)).toEqual(['e1', 'e2']);
+    expect(interviewCameraTargets(['e1', 'e2'], ['r1'])[3]).toEqual(['e1', 'e2']);
   });
 });
