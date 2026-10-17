@@ -72,8 +72,8 @@ export const carInterior: TemplateDefinition = {
       person(passenger, 0, 'Passenger'),
       // Windshield two shot of both; side singles each locked on the person across ("@0" driver, "@1" passenger).
       { ...camera({ x: 0, y: -260 }, { x: 0, y: -20 }, 'Cam A'), camera: { focalMm: 24, twoShot: ['@0', '@1'] } },
-      { ...camera({ x: -160, y: -40 }, passenger, 'Cam B'), camera: { focusActorId: '@1' } },
-      { ...camera({ x: 160, y: -40 }, driver, 'Cam C'), camera: { focusActorId: '@0' } },
+      { ...camera({ x: -160, y: -40 }, passenger, 'Cam B'), camera: { focalMm: 50, focusActorId: '@1' } },
+      { ...camera({ x: 160, y: -40 }, driver, 'Cam C'), camera: { focalMm: 50, focusActorId: '@0' } },
     ];
     if (o.boolean('lights'))
       items.push(
@@ -89,7 +89,7 @@ export const carInterior: TemplateDefinition = {
 export const walkAndTalk: TemplateDefinition = {
   id: 'walk-and-talk',
   name: 'Walk and talk',
-  description: 'Two actors walking towards a leading camera, with blocking marks.',
+  description: 'Two actors walking towards leading cameras (a two shot and crossing singles), with blocking marks.',
   kinds: ['narrative'],
   options: [{ type: 'number', key: 'distance', label: 'Walk length', default: 600, min: 200, max: 2000, step: 50, unit: 'cm' }],
   build: (o) => {
@@ -106,7 +106,10 @@ export const walkAndTalk: TemplateDefinition = {
           items: [
             walker(-35, 'Actor 1'),
             walker(35, 'Actor 2'),
-            { ...camera({ x: 0, y: len / 2 - 280 }, { x: 0, y: len / 2 }, 'Cam A'), camera: { focalMm: 35 } },
+            // Leading two shot on 24 mm, and 50 mm singles crossing (each from the other actor's side).
+            { ...camera({ x: 0, y: len / 2 - 280 }, { x: 0, y: len / 2 }, 'Cam A'), camera: { focalMm: 24, twoShot: ['@0', '@1'] } },
+            { ...camera({ x: 160, y: len / 2 - 260 }, { x: -35, y: len / 2 }, 'Cam B'), camera: { focalMm: 50, focusActorId: '@0' } },
+            { ...camera({ x: -160, y: len / 2 - 260 }, { x: 35, y: len / 2 }, 'Cam C'), camera: { focalMm: 50, focusActorId: '@1' } },
             { kind: 'set', catalogId: 'generic.camera.dolly', pos: { x: 0, y: len / 2 - 330 }, rotationDeg: 180 },
           ],
         },
