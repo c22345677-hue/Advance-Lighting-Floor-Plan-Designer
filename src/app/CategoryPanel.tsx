@@ -233,7 +233,7 @@ export function CategoryPanel(props: Props) {
               return (
                 <>
                   <p className="hint-text">
-                    A light meter reads the light where it stands. Select it and drag its link handle onto a person to have them carry it; Rotate (R) swings it around them.
+                    A light meter reads the light where it stands. Select it and drag Link (in the bar over it) onto a person to have them carry it; Rotate (R) swings it around them.
                   </p>
                   {without > 0 && (
                     <button id="meters-for-all" className="btn" onClick={props.onMetersForAll}>

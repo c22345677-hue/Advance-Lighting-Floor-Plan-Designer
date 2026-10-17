@@ -677,22 +677,63 @@ select {
 /* Selection actions as buttons: configure, turn, duplicate, delete, deselect. */
 .selection-bar {
   position: absolute;
-  top: 60px; /* under the tool badge, so they never overlap on narrow screens */
-  left: 50%;
+  top: 60px; /* placed by the app next to the selection (top-left corner) */
+  left: 12px;
   transition:
     left 0.15s ease-out,
     top 0.15s ease-out;
-  transform: translateX(-50%);
   z-index: 5;
   display: flex;
   align-items: center;
   gap: 2px;
-  padding: 4px 4px 4px 12px;
+  padding: 4px;
   max-width: calc(100% - 24px);
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 10px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.selection-bar.dragging {
+  transition: none;
+}
+/* The bar's ends: grab one to drag the bar somewhere else. */
+.bar-grip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  width: 22px;
+  margin: -4px 0;
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: grab;
+  touch-action: none;
+}
+.bar-grip:first-child {
+  margin-left: -4px;
+  margin-right: 4px;
+}
+.bar-grip:last-child {
+  margin-right: -4px;
+  margin-left: 2px;
+}
+.bar-grip:hover,
+.bar-grip:active {
+  background: var(--surface-2);
+  color: var(--fg);
+}
+.bar-grip:active {
+  cursor: grabbing;
+}
+.bar-grip .icon {
+  width: 16px;
+  height: 16px;
+}
+.link-btn.on {
+  background: var(--mode);
+  color: var(--mode-ink);
+  border-color: var(--mode);
 }
 
 .selection-bar .btn.small {

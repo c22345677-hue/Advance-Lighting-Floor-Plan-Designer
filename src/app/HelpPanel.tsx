@@ -26,7 +26,8 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
   {
     title: 'Attaching',
     rows: [
-      ['Link handle (chain, next to the selected item)', 'Drag it onto anything to attach: a frame to a light, a meter to a person'],
+      ['Link (selection bar)', 'Drag it onto anything to attach: a frame to a light, a meter to a person. Or tap it, then tap the target'],
+      ['Ends of the selection bar', 'Drag to move the bar out of the way'],
       ['Attached items', 'Move and turn as one, around the item they hang on'],
       ['Light meter on someone', 'Rotate (R) swings it around them; it follows when they turn'],
       ['Detach (selection bar or settings)', 'Takes it off; it stays where it is'],

@@ -25,6 +25,7 @@ import { ArrangeTools } from './ArrangeTools';
 import { makeSetup, placeSetup } from '../model/setups';
 import { LayersMenu } from './LayersMenu';
 import { MenuButton } from './MenuButton';
+import { clampInto, placeBar } from './barPlacement';
 import { parseProjectFile, projectFileName, toProjectFile } from '../model/projectFile';
 import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain, wallPoints } from '../model/walls';
 import { HelpPanel } from './HelpPanel';
@@ -53,6 +54,8 @@ import {
   IconReset,
   IconRotateLeft,
   IconSelect,
+  IconLink,
+  IconGrip,
   IconMoon,
   IconSun,
   IconAutoTheme,
@@ -69,7 +72,7 @@ import {
   IconUndo,
 } from './icons';
 import { Inspector } from './Inspector';
-import { clampScale, displayLabel, isFocusLocked, itemName, PlanCanvas, zoomAt, type ExportPng, type LayerState, type Tool, type View, type WallExtend } from './PlanCanvas';
+import { clampScale, displayLabel, findAttachTarget, isFocusLocked, itemName, PlanCanvas, zoomAt, type ExportPng, type LayerState, type Tool, type View, type WallExtend } from './PlanCanvas';
 import { ProjectMenu } from './ProjectMenu';
 import { deleteProject, listProjects, loadGearLists, loadProject, loadStartProject, saveGearLists, saveProject, loadSetups, saveSetups } from './storage';
 import { TemplatePanel } from './TemplatePanel';
@@ -116,6 +119,14 @@ function sampleProject(): Project {
   const scene = focusScene({ ...p.scenes[0]!, setItems: r.setItems, items: withMeters(cast.items, uid) });
   p.scenes[0] = { ...scene, baseline: structuredClone({ setItems: scene.setItems, items: scene.items }) };
   return p;
+}
+
+/** Half the on-screen width and height of an item's footprint, turned as it is (at least 8 px). */
+function halfExtents(i: Item, scale: number): { x: number; y: number } {
+  const { w, d } = itemLook(i);
+  const r = (i.rotationDeg * Math.PI) / 180;
+  const [c, sn] = [Math.abs(Math.cos(r)), Math.abs(Math.sin(r))];
+  return { x: Math.max(8, ((w / 2) * c + (d / 2) * sn) * scale), y: Math.max(8, ((w / 2) * sn + (d / 2) * c) * scale) };
 }
 
 function fitView(items: Item[], width: number, height: number): View {
@@ -265,28 +276,164 @@ export function App() {
 
   const selectedItem: Item | undefined = items.find((i) => i.id === selected);
   const selectedItems = items.filter((i) => selection.includes(i.id));
-  /** Where the selection bar goes: just above what's selected (below it when there's no room). */
-  const selectionBarAt = (() => {
-    if (!view || !selectedItems.length || !size.width) return null;
+  // ---- Selection bar: opens close to the selection where it covers least; drag its ends to move it ----
+  const barRef = useRef<HTMLDivElement>(null);
+  const [barSize, setBarSize] = useState({ w: 380, h: 46 });
+  useLayoutEffect(() => {
+    const el = barRef.current;
+    if (el && (Math.abs(el.offsetWidth - barSize.w) > 1 || Math.abs(el.offsetHeight - barSize.h) > 1)) setBarSize({ w: el.offsetWidth, h: el.offsetHeight });
+  });
+  /** Moved by hand: offset of its corner from the selection's centre (until the selection changes). */
+  const [barNudge, setBarNudge] = useState<{ key: string; dx: number; dy: number } | null>(null);
+  const selKey = selection.join(',');
+  const toScreen = (q: Vec2) => (view ? { x: view.x + q.x * view.scale, y: view.y + q.y * view.scale } : q);
+  const selBox = (() => {
+    if (!view || !selectedItems.length) return null;
     let [l, t, r, b] = [Infinity, Infinity, -Infinity, -Infinity];
     for (const i of selectedItems) {
-      const pts = i.wall ? wallPoints(i) : [i.pos];
-      const rad = i.wall ? 0 : (Math.max(itemLook(i).w, itemLook(i).d) / 2) * view.scale;
-      for (const q of pts) {
-        const sx = view.x + q.x * view.scale;
-        const sy = view.y + q.y * view.scale;
-        [l, t, r, b] = [Math.min(l, sx - rad), Math.min(t, sy - rad), Math.max(r, sx + rad), Math.max(b, sy + rad)];
-      }
+      const e = i.wall ? { x: 0, y: 0 } : halfExtents(i, view.scale);
+      for (const q of (i.wall ? wallPoints(i) : [i.pos]).map(toScreen)) [l, t, r, b] = [Math.min(l, q.x - e.x), Math.min(t, q.y - e.y), Math.max(r, q.x + e.x), Math.max(b, q.y + e.y)];
     }
-    const BAR_H = 46;
-    const half = Math.min(200, size.width / 2 - 8);
-    const x = Math.min(size.width - half - 8, Math.max(half + 8, (l + r) / 2));
-    // Above, clear of the tool badge row; else below; else pinned to the top.
-    let y = t - BAR_H - 14;
-    if (y < 60) y = b + 14;
-    if (y > size.height - BAR_H - 70) y = 60;
-    return { left: x, top: Math.max(60, y) };
+    return { x: l, y: t, w: r - l, h: b - t };
   })();
+  const barBounds = { x: 8, y: 56, w: size.width - 16, h: size.height - 56 - 64 };
+  const selectionBarAt = (() => {
+    if (!view || !selBox || !size.width) return null;
+    const cx = selBox.x + selBox.w / 2;
+    const cy = selBox.y + selBox.h / 2;
+    if (barNudge?.key === selKey) {
+      const p = clampInto({ x: cx + barNudge.dx, y: cy + barNudge.dy }, barSize, barBounds);
+      return { left: p.x, top: p.y };
+    }
+    // What it shouldn't cover: other items and the name tags under them (and the selection's own tags).
+    const obstacles = items
+      .filter((i) => !i.hidden && !i.wall && !selection.includes(i.id))
+      .map((i) => {
+        const q = toScreen(i.pos);
+        const e = halfExtents(i, view.scale);
+        return { x: q.x - e.x, y: q.y - e.y, w: e.x * 2, h: e.y * 2 + 26 };
+      });
+    for (const i of selectedItems) {
+      const q = toScreen(i.pos);
+      obstacles.push({ x: q.x - 50, y: q.y + halfExtents(i, view.scale).y, w: 100, h: 26 });
+    }
+    const p = placeBar(selBox, barSize, obstacles, barBounds);
+    return { left: p.x, top: p.y };
+  })();
+  /** Dragging the bar by one of its ends. */
+  const barDrag = useRef<{ x: number; y: number; left: number; top: number } | null>(null);
+  const [barDragging, setBarDragging] = useState(false);
+  const gripProps = {
+    onPointerDown: (e: React.PointerEvent<HTMLElement>) => {
+      if (!selectionBarAt) return;
+      e.preventDefault();
+      e.currentTarget.setPointerCapture(e.pointerId);
+      barDrag.current = { x: e.clientX, y: e.clientY, ...selectionBarAt };
+      setBarDragging(true);
+    },
+    onPointerMove: (e: React.PointerEvent<HTMLElement>) => {
+      const d = barDrag.current;
+      if (!d || !selBox) return;
+      const p = clampInto({ x: d.left + e.clientX - d.x, y: d.top + e.clientY - d.y }, barSize, barBounds);
+      setBarNudge({ key: selKey, dx: p.x - (selBox.x + selBox.w / 2), dy: p.y - (selBox.y + selBox.h / 2) });
+    },
+    onPointerUp: () => {
+      barDrag.current = null;
+      setBarDragging(false);
+    },
+    onPointerCancel: () => {
+      barDrag.current = null;
+      setBarDragging(false);
+    },
+  };
+
+  // ---- Link: drag from the bar's Link button onto something, or tap it and then tap the target ----
+  const [linkPreview, setLinkPreview] = useState<{ from: string; at: Vec2 | null; target: string | null } | null>(null);
+  const [linkArmed, setLinkArmed] = useState(false);
+  const linkGesture = useRef<{ x: number; y: number; moved: boolean } | null>(null);
+  const coarse = typeof matchMedia === 'function' && matchMedia('(any-pointer: coarse)').matches;
+  const toWorld = (clientX: number, clientY: number): Vec2 | null => {
+    const rect = stageBox.current?.getBoundingClientRect();
+    if (!rect || !view) return null;
+    return { x: (clientX - rect.left - view.x) / view.scale, y: (clientY - rect.top - view.y) / view.scale };
+  };
+  const linkTargetAt = (clientX: number, clientY: number) => {
+    const at = toWorld(clientX, clientY);
+    if (!at || !selectedItem || !view) return { at, target: null };
+    return { at, target: findAttachTarget(selectedItem, at, items, (coarse ? 30 : 16) / view.scale) };
+  };
+  const canLink = !!selectedItem && !selectedItem.wall && !selectedItem.inWall;
+  useEffect(() => {
+    if (!linkArmed || !canLink) {
+      if (linkArmed) setLinkArmed(false);
+      return;
+    }
+    const el = stageBox.current;
+    if (!el) return;
+    // Armed: the next press on the plan picks what to attach to (and does nothing else).
+    const move = (e: PointerEvent) => {
+      const { at, target } = linkTargetAt(e.clientX, e.clientY);
+      setLinkPreview({ from: selectedItem!.id, at, target: target?.id ?? null });
+    };
+    const down = (e: PointerEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const { target } = linkTargetAt(e.clientX, e.clientY);
+      if (target) attach(selectedItem!.id, target.id);
+      setLinkArmed(false);
+      setLinkPreview(null);
+    };
+    const key = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      setLinkArmed(false);
+      setLinkPreview(null);
+    };
+    el.addEventListener('pointermove', move, true);
+    el.addEventListener('pointerdown', down, true);
+    window.addEventListener('keydown', key);
+    return () => {
+      el.removeEventListener('pointermove', move, true);
+      el.removeEventListener('pointerdown', down, true);
+      window.removeEventListener('keydown', key);
+    };
+  });
+  useEffect(() => {
+    setLinkArmed(false);
+    setLinkPreview(null);
+  }, [selKey]);
+  const linkProps = {
+    onPointerDown: (e: React.PointerEvent<HTMLElement>) => {
+      e.currentTarget.setPointerCapture(e.pointerId);
+      linkGesture.current = { x: e.clientX, y: e.clientY, moved: false };
+    },
+    onPointerMove: (e: React.PointerEvent<HTMLElement>) => {
+      const g = linkGesture.current;
+      if (!g || !selectedItem) return;
+      if (!g.moved && Math.hypot(e.clientX - g.x, e.clientY - g.y) > 6) g.moved = true;
+      if (!g.moved) return;
+      const { at, target } = linkTargetAt(e.clientX, e.clientY);
+      setLinkPreview({ from: selectedItem.id, at, target: target?.id ?? null });
+    },
+    onPointerUp: (e: React.PointerEvent<HTMLElement>) => {
+      const g = linkGesture.current;
+      linkGesture.current = null;
+      if (!g || !selectedItem) return;
+      if (g.moved) {
+        const { target } = linkTargetAt(e.clientX, e.clientY);
+        if (target) attach(selectedItem.id, target.id);
+        setLinkPreview(null);
+      } else {
+        // A tap: pick the target with the next tap on the plan.
+        setLinkArmed((on) => !on);
+        setLinkPreview(linkArmed ? null : { from: selectedItem.id, at: null, target: null });
+      }
+    },
+    onPointerCancel: () => {
+      linkGesture.current = null;
+      setLinkPreview(null);
+    },
+  };
+
   useEffect(() => {
     // Selection only lives inside the active category and scene.
     const keep = selection.filter((id) => items.some((i) => i.id === id && modeOf(i) === mode));
@@ -826,7 +973,7 @@ export function App() {
               onSelect={setSelected}
               onSelectMany={setSelection}
               onConfigure={configure}
-              onAttach={attach}
+              linkPreview={linkPreview}
               pickMode={pickMode && !wallTool}
               onDuplicateMany={duplicateMany}
               colors={colors}
@@ -891,7 +1038,10 @@ export function App() {
 
           {selection.length > 0 && !wallTool && (
             // Touch screens: the keyboard and Alt/Shift shortcuts as buttons, for the selection.
-            <div className="selection-bar" role="toolbar" aria-label="Selection" style={selectionBarAt ?? undefined}>
+            <div ref={barRef} className={`selection-bar ${barDragging ? 'dragging' : ''}`} role="toolbar" aria-label="Selection" style={selectionBarAt ?? undefined}>
+              <span className="bar-grip" title="Drag to move this bar" aria-hidden="true" {...gripProps}>
+                <IconGrip />
+              </span>
               <span className="selection-count">{selection.length > 1 ? `${selection.length} selected` : itemName(selectedItems[0]!)}</span>
               <button id="configure" className={`btn small ${configuring ? 'on' : ''}`} onClick={() => (configuring ? setConfiguring(false) : configure())} title="Settings for the selection (or right-click it)">
                 <IconSliders /> Configure
@@ -910,6 +1060,17 @@ export function App() {
               >
                 <IconCopy />
               </button>
+              {canLink && (
+                <button
+                  id="link"
+                  className={`btn small link-btn ${linkArmed ? 'on' : ''}`}
+                  title="Drag onto something to attach to it, or tap and then tap what to attach to"
+                  style={{ touchAction: 'none' }}
+                  {...linkProps}
+                >
+                  <IconLink /> {linkArmed ? 'Tap target…' : 'Link'}
+                </button>
+              )}
               {selectedItems.some((i) => i.attachedTo) && (
                 <button id="detach" className="btn small" onClick={() => detach(selection)} title="Take it off what it's attached to (it stays where it is)">
                   Detach
@@ -921,6 +1082,9 @@ export function App() {
               <button className="icon-btn" onClick={() => setSelected(null)} aria-label="Deselect" title="Deselect">
                 <IconClose />
               </button>
+              <span className="bar-grip" title="Drag to move this bar" aria-hidden="true" {...gripProps}>
+                <IconGrip />
+              </span>
             </div>
           )}
 

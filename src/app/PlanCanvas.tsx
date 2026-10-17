@@ -127,8 +127,8 @@ interface Props {
   onSelectMany: (ids: string[]) => void;
   /** Right-click or double-click an item: open its settings. */
   onConfigure: (id: string) => void;
-  /** The link handle was dropped on another item: hang `childId` on `parentId`. */
-  onAttach: (childId: string, parentId: string) => void;
+  /** Attaching from the selection bar: the item, where the pointer is (plan cm) and what it would attach to. */
+  linkPreview?: { from: string; at: Vec2 | null; target: string | null } | null;
   /** Select mode: a tap adds an item to the selection or takes it out; a drag on empty space boxes more in. */
   pickMode?: boolean;
   /** Alt + drag of several selected items: copies moved by `delta`. */
@@ -1044,68 +1044,19 @@ export function PlanCanvas(p: Props) {
   }, [visible, actors, labelSize, readings]);
   labelShift.current = labelLayout;
 
-  // ---- Attaching: drag the link handle of the selected item onto another item ----
-  const [link, setLink] = useState<{ from: string; at: Vec2; target: string | null } | null>(null);
-  const footprintCm = (i: Item) => Math.max(20, Math.max(itemLook(i).w, itemLook(i).d) / 2);
-  /** The item under `at` that `child` could hang on (any category; walls by their line). */
-  const attachTarget = (child: Item, at: Vec2): Item | null => {
-    const tol = (coarse ? 30 : 16) / view.scale;
-    let best: { item: Item; d: number } | null = null;
-    for (const o of lit) {
-      if (!canAttach(child, o, all)) continue;
-      let d: number;
-      if (o.wall) {
-        const t = (o.wall.thicknessCm ?? DEFAULT_WALL_CM) / 2;
-        d = Math.min(...wallSegments(o).map(([a, b]) => distToSegment(at, a, b))) - t;
-      } else d = Math.hypot(at.x - o.pos.x, at.y - o.pos.y) - footprintCm(o) * 0.8;
-      if (d <= tol && (!best || d < best.d)) best = { item: o, d };
-    }
-    return best?.item ?? null;
-  };
-  const linkHandle = () => {
-    const sel = selected ? visible.find((i) => i.id === selected) : undefined;
-    if (!sel || tool !== 'move' || p.wallTool || sel.locked || sel.wall || sel.inWall || modeOf(sel) !== mode || dragging) return null;
-    // On the item's right: the selection bar sits above it and the name tag below.
-    const r = footprintCm(sel) + ((coarse ? 15 : 11) + 10) / view.scale;
-    const home = { x: sel.pos.x + r, y: sel.pos.y };
+  // ---- Attaching: while the selection bar's Link button is dragged (or armed), show where it would go ----
+  const linkPreview = () => {
+    const lp = p.linkPreview;
+    const from = lp ? all.find((i) => i.id === lp.from) : undefined;
+    if (!lp || !from) return null;
     const k = 1 / view.scale;
-    const size = (coarse ? 15 : 11) * k;
-    const linked = !!sel.attachedTo;
-    const target = link?.target ? all.find((i) => i.id === link.target) : undefined;
+    const target = lp.target ? all.find((i) => i.id === lp.target) : undefined;
     return (
       <>
-        {link && (
-          <Line name="ui-only" points={[sel.pos.x, sel.pos.y, link.at.x, link.at.y]} stroke={colors.select} strokeWidth={2 * k} dash={[6 * k, 5 * k]} listening={false} />
-        )}
+        {lp.at && <Line name="ui-only" points={[from.pos.x, from.pos.y, lp.at.x, lp.at.y]} stroke={colors.select} strokeWidth={2 * k} dash={[6 * k, 5 * k]} listening={false} />}
         {target && (
-          <Circle name="ui-only" x={target.pos.x} y={target.pos.y} radius={(target.wall ? 0 : footprintCm(target)) + 8 * k} stroke={colors.select} strokeWidth={3 * k} listening={false} />
+          <Circle name="ui-only" x={target.pos.x} y={target.pos.y} radius={(target.wall ? 0 : attachRadiusCm(target)) + 8 * k} stroke={colors.select} strokeWidth={3 * k} listening={false} />
         )}
-        <Group
-          name="ui-only link-handle"
-          x={home.x}
-          y={home.y}
-          draggable
-          onMouseDown={(e) => (e.cancelBubble = true)}
-          onTouchStart={(e) => (e.cancelBubble = true)}
-          onMouseEnter={() => setCursor('crosshair')}
-          onMouseLeave={() => setCursor('')}
-          onDragStart={(e) => setLink({ from: sel.id, at: { x: e.target.x(), y: e.target.y() }, target: null })}
-          onDragMove={(e) => {
-            const at = { x: e.target.x(), y: e.target.y() };
-            setLink({ from: sel.id, at, target: attachTarget(sel, at)?.id ?? null });
-          }}
-          onDragEnd={(e) => {
-            const t = attachTarget(sel, { x: e.target.x(), y: e.target.y() });
-            e.target.position(home);
-            setLink(null);
-            if (t) p.onAttach(sel.id, t.id);
-          }}
-        >
-          <Circle radius={size} fill={linked ? colors.select : colors.labelBg} stroke={colors.select} strokeWidth={1.5 * k} shadowColor="#000" shadowBlur={6 * k} shadowOpacity={0.3} />
-          {/* Two chain links. */}
-          <Rect x={-size * 0.62} y={-size * 0.22} width={size * 0.7} height={size * 0.44} cornerRadius={size * 0.22} stroke={linked ? colors.labelBg : colors.select} strokeWidth={1.6 * k} rotation={-35} />
-          <Rect x={-size * 0.08} y={-size * 0.22} width={size * 0.7} height={size * 0.44} cornerRadius={size * 0.22} stroke={linked ? colors.labelBg : colors.select} strokeWidth={1.6 * k} rotation={-35} />
-        </Group>
       </>
     );
   };
@@ -1297,7 +1248,7 @@ export function PlanCanvas(p: Props) {
             .filter((i) => selection.includes(i.id))
             .map((sel) => <RotateRing key={`${sel.id}-ring`} item={sel} scale={view.scale} color={colors.rotate} />)}
         {attachLinks()}
-        {linkHandle()}
+        {linkPreview()}
         {(() => {
           // Corner handles on a selected wall (Move tool): drag a corner to reshape the room.
           const sel = visible.find((i) => i.id === selected && i.wall);
@@ -2003,6 +1954,23 @@ function PlanCorner({ view, height, colors: c, sun }: { view: View; height: numb
       </Group>
     </Group>
   );
+}
+
+const attachRadiusCm = (i: Item) => Math.max(20, Math.max(itemLook(i).w, itemLook(i).d) / 2);
+
+/** The item at `at` (plan cm) that `child` could hang on: any category, walls by their line; `tolCm` of slack. */
+export function findAttachTarget(child: Item, at: Vec2, all: readonly Item[], tolCm: number): Item | null {
+  let best: { item: Item; d: number } | null = null;
+  for (const o of all) {
+    if (o.hidden || !canAttach(child, o, all)) continue;
+    let d: number;
+    if (o.wall) {
+      const t = (o.wall.thicknessCm ?? DEFAULT_WALL_CM) / 2;
+      d = Math.min(...wallSegments(o).map(([a, b]) => distToSegment(at, a, b))) - t;
+    } else d = Math.hypot(at.x - o.pos.x, at.y - o.pos.y) - attachRadiusCm(o) * 0.8;
+    if (d <= tolCm && (!best || d < best.d)) best = { item: o, d };
+  }
+  return best?.item ?? null;
 }
 
 /** Distance from `p` to the segment a–b. */

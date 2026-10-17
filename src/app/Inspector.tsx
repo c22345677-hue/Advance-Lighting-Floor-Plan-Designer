@@ -757,7 +757,7 @@ function AttachSection({ item, sceneItems, actors, onUpdate }: { item: Item; sce
     if (item.wall || item.inWall) return null;
     return (
       <Section title="Attach">
-        <p className="hint-text">Drag the link handle next to the selected item onto anything to attach it; they then move and turn as one.</p>
+        <p className="hint-text">Drag Link (in the bar over the selection) onto anything to attach it, or tap Link and then tap the target; they then move and turn as one.</p>
       </Section>
     );
   }
