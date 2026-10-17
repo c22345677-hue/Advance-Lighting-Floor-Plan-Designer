@@ -9,10 +9,11 @@ import type { Actor, CastRole, Item } from '../model/types';
 import { wallLength } from '../model/walls';
 import { SUN_PRESETS, sunKelvin, type Sun } from '../model/sun';
 import { FixtureSearch } from './FixtureSearch';
+import { isMeter } from '../model/attach';
 import { ItemThumb } from './ItemThumb';
 import { useCanvasColors } from './theme';
 import { limitingList, type GearScope } from './gearScope';
-import { displayLabel, itemName } from './PlanCanvas';
+import { displayLabel, itemName, meterName } from './PlanCanvas';
 
 export type PlaceRequest = { library: LibraryItem } | { fixture: Fixture };
 
@@ -41,6 +42,8 @@ interface Props {
   onSun: (sun: Sun | undefined) => void;
   wallSnap: boolean;
   onWallSnap: (on: boolean) => void;
+  /** CAMERA: give everyone without one a light meter in front of their face. */
+  onMetersForAll: () => void;
 }
 
 const kg = (v: number | null) => (v == null ? '? kg' : `${Math.round(v * 10) / 10} kg`);
@@ -84,7 +87,7 @@ function Section({ title, children, count }: { title: string; children: React.Re
   );
 }
 
-function SceneList({ items, actors, empty, onSelect }: { items: Item[]; actors: Actor[]; empty: string; onSelect: (id: string) => void }) {
+function SceneList({ items, all, actors, empty, onSelect }: { items: Item[]; all: Item[]; actors: Actor[]; empty: string; onSelect: (id: string) => void }) {
   if (items.length === 0) return <p className="hint-text">{empty}</p>;
   return (
     <ul className="row-list">
@@ -95,7 +98,7 @@ function SceneList({ items, actors, empty, onSelect }: { items: Item[]; actors: 
             <button className="row" onClick={() => onSelect(i.id)}>
               <span className="row-main">
                 <span className="row-title">
-                  {displayLabel(i, actors) || itemName(i)}
+                  {isMeter(i) ? meterName(i, all, actors) : displayLabel(i, actors) || itemName(i)}
                 </span>
                 <span className="row-sub">
                   {s.sub}
@@ -186,7 +189,7 @@ function AddGrid({ category, onPlace, disabled }: { category: LibraryCategory; o
 export function CategoryPanel(props: Props) {
   const { mode, items, actors, kind, gear, onSelect, onPlace, onPlaceActor, onNewPerson } = props;
   const mine = items.filter((i) => modeOf(i) === mode);
-  const list = (empty: string, rows = mine) => <SceneList items={rows} actors={actors} empty={empty} onSelect={onSelect} />;
+  const list = (empty: string, rows = mine) => <SceneList items={rows} all={items} actors={actors} empty={empty} onSelect={onSelect} />;
 
   switch (mode) {
     case 'lights':
@@ -225,6 +228,21 @@ export function CategoryPanel(props: Props) {
           </Section>
           <Section title="Add camera gear">
             <AddGrid category="camera" onPlace={onPlace} />
+            {(() => {
+              const without = items.filter((p) => p.kind === 'person' && !p.hidden && !items.some((m) => isMeter(m) && m.attachedTo?.to === p.id)).length;
+              return (
+                <>
+                  <p className="hint-text">
+                    A light meter reads the light where it stands. Select it and drag its link handle onto a person to have them carry it; Rotate (R) swings it around them.
+                  </p>
+                  {without > 0 && (
+                    <button id="meters-for-all" className="btn" onClick={props.onMetersForAll}>
+                      Give {without === 1 ? 'the 1 person' : `all ${without} people`} without one a meter
+                    </button>
+                  )}
+                </>
+              );
+            })()}
           </Section>
         </>
       );

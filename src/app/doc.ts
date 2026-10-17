@@ -1,3 +1,4 @@
+import { releaseChildren, settleAttachments } from '../model/attach';
 import { normDeg } from '../model/geometry';
 import { focusScene, newScene, type Project, type SceneDoc } from '../model/project';
 import type { Actor, Item, Vec2 } from '../model/types';
@@ -47,7 +48,30 @@ const mapItems = (s: SceneDoc, fn: (i: Item) => Item): SceneDoc => ({
   items: s.items.map(fn),
 });
 
+const placed = (patch: Partial<Item>) => 'pos' in patch || 'rotationDeg' in patch;
+
+/** Items placed by hand in this edit: if they hang on something, their new place becomes their new offset. */
+function movedBy(a: SceneAction): Set<string> {
+  switch (a.type) {
+    case 'move':
+    case 'rotate':
+      return new Set([a.id]);
+    case 'update':
+      return new Set(placed(a.patch) ? [a.id] : []);
+    case 'updateMany':
+      return new Set(a.patches.filter((x) => placed(x.patch)).map((x) => x.id));
+    case 'rotateBy':
+      return new Set(a.ids);
+    default:
+      return new Set();
+  }
+}
+
 function editScene(s: SceneDoc, a: SceneAction): SceneDoc {
+  return settleAttachments(applyEdit(s, a), movedBy(a));
+}
+
+function applyEdit(s: SceneDoc, a: SceneAction): SceneDoc {
   switch (a.type) {
     case 'add':
       return { ...s, setItems: [...s.setItems, ...a.setItems], items: [...s.items, ...a.items] };
@@ -63,13 +87,15 @@ function editScene(s: SceneDoc, a: SceneAction): SceneDoc {
       return mapItems(s, (i) => (i.id === a.id ? { ...i, rotationDeg: normDeg(a.rotationDeg) } : i));
     case 'rotateBy':
       return mapItems(s, (i) => (a.ids.includes(i.id) ? { ...i, rotationDeg: normDeg(i.rotationDeg + a.deg) } : i));
-    case 'delete':
+    case 'delete': {
+      // Doors and windows go with their wall; whatever hung on a deleted item stays, detached.
+      const gone = new Set(a.ids);
       return {
         ...s,
-        // Doors and windows go with their wall.
-        setItems: s.setItems.filter((i) => !a.ids.includes(i.id) && !(i.inWall && a.ids.includes(i.inWall.wallId))),
-        items: s.items.filter((i) => !a.ids.includes(i.id)),
+        setItems: releaseChildren(s.setItems.filter((i) => !gone.has(i.id) && !(i.inWall && gone.has(i.inWall.wallId))), gone),
+        items: releaseChildren(s.items.filter((i) => !gone.has(i.id)), gone),
       };
+    }
     case 'clear':
       return { ...s, setItems: [], items: [] };
     case 'applyTemplate': {

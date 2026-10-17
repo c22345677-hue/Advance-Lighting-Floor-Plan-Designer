@@ -7,6 +7,7 @@ import { FABRIC_KIND_LABEL, FABRICS, takesFabric, type FabricKind } from '../lib
 import { isOpening, libraryItem } from '../library/items';
 import { DEFAULT_WALL_CM, wallLength } from '../model/walls';
 import { beamReach, lightSource } from '../model/shadows';
+import { isMeter } from '../model/attach';
 import { circuitName, lightWatts } from '../model/power';
 import { DAYLIGHT_ID, lightName, meterReadings, type CameraSettings } from '../model/exposure';
 import type { Sun } from '../model/sun';
@@ -32,7 +33,7 @@ import { IconClose } from './icons';
 import { PersonEditor } from './PersonEditor';
 import { addMark, goToMark, marksOf, removeMark } from '../model/blocking';
 import { CameraView } from './CameraView';
-import { beamDegOf, displayLabel, itemName } from './PlanCanvas';
+import { beamDegOf, displayLabel, itemName, meterName } from './PlanCanvas';
 
 interface Props {
   item: Item;
@@ -127,7 +128,7 @@ export function Inspector(props: Props) {
 
       {item.kind === 'person' && <BlockingSection item={item} onUpdate={onUpdate} />}
 
-      {item.kind === 'person' && <MeterSection item={item} sceneItems={sceneItems} camera={props.camera} onCamera={props.onCamera} sun={props.sun} />}
+      {isMeter(item) && <MeterSection item={item} sceneItems={sceneItems} camera={props.camera} onCamera={props.onCamera} sun={props.sun} />}
 
       {item.kind === 'light' && (
         <LightSection item={item} gear={gear} sceneItems={sceneItems} actors={actors} setLight={setLight} onUpdate={onUpdate} />
@@ -208,6 +209,7 @@ export function Inspector(props: Props) {
         </Section>
       )}
       {item.kind === 'camera' && <CameraSection item={item} sceneItems={sceneItems} actors={actors} onUpdate={onUpdate} />}
+      <AttachSection item={item} sceneItems={sceneItems} actors={actors} onUpdate={onUpdate} />
 
       <div className="insp-actions">
         <button className={`btn ${item.locked ? 'on' : ''}`} aria-pressed={!!item.locked} onClick={() => onUpdate({ locked: !item.locked || undefined })}>
@@ -746,7 +748,47 @@ function ColorWheel({ hue, sat, onChange }: { hue: number; sat: number; onChange
   );
 }
 
-/** Light falling on this person: total, T-stop, key:fill and each light's share. */
+/** What this item hangs on, and what hangs on it. */
+function AttachSection({ item, sceneItems, actors, onUpdate }: { item: Item; sceneItems: Item[]; actors: Actor[]; onUpdate: Props['onUpdate'] }) {
+  const parent = item.attachedTo ? sceneItems.find((i) => i.id === item.attachedTo!.to) : undefined;
+  const children = sceneItems.filter((i) => i.attachedTo?.to === item.id);
+  const name = (i: Item) => (isMeter(i) ? meterName(i, sceneItems, actors) : displayLabel(i, actors) || itemName(i));
+  if (!parent && !children.length) {
+    if (item.wall || item.inWall) return null;
+    return (
+      <Section title="Attach">
+        <p className="hint-text">Drag the link handle next to the selected item onto anything to attach it; they then move and turn as one.</p>
+      </Section>
+    );
+  }
+  return (
+    <Section title="Attached">
+      <ul className="row-list">
+        {parent && (
+          <li className="row static">
+            <span className="row-main">
+              <span className="row-title">On {name(parent)}</span>
+              <span className="row-sub">{isMeter(item) ? 'Rotate (R) swings it around them' : 'Moves and turns with it'}</span>
+            </span>
+            <button id="insp-detach" className="btn" onClick={() => onUpdate({ attachedTo: undefined })}>
+              Detach
+            </button>
+          </li>
+        )}
+        {children.map((c) => (
+          <li key={c.id} className="row static">
+            <span className="row-main">
+              <span className="row-title">{name(c)}</span>
+              <span className="row-sub">Attached here</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
+
+/** Light falling on this meter: total, T-stop, key:fill and each light's share. */
 function MeterSection({
   item,
   sceneItems,
@@ -760,7 +802,7 @@ function MeterSection({
   onCamera: (c: CameraSettings) => void;
   sun?: Sun;
 }) {
-  const r = meterReadings(sceneItems, camera, sun).find((x) => x.personId === item.id);
+  const r = meterReadings(sceneItems, camera, sun).find((x) => x.meterId === item.id);
   if (!r) return null;
   const num = (label: string, key: keyof CameraSettings, unit: string, min: number, max: number) => (
     <label className="field">
@@ -780,9 +822,9 @@ function MeterSection({
     </label>
   );
   return (
-    <Section title="Light on them">
+    <Section title="Reading">
       {r.contributions.length === 0 ? (
-        <p className="hint-text">No light reaches them yet.</p>
+        <p className="hint-text">No light reaches the meter yet.</p>
       ) : (
         <>
           <div className="meter-big">

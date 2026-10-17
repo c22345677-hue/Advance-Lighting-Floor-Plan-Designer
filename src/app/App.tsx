@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, type CSSProperties } from 'react';
 import { itemLook, nextUnitId } from '../model/gear';
+import { assemblyOf, attachmentFor, canAttach, isMeter, turnPatches, withMeters } from '../model/attach';
 import { gearUsage, type GearList } from '../model/gearList';
 import {
   EDIT_MODES,
@@ -112,7 +113,7 @@ function sampleProject(): Project {
   const r = applyTemplate(t, { interviewees: 1, interviewers: 1, cameras: 2 }, { origin: { x: 0, y: 0 } });
   const cast = castTemplateItems(r.shots.flatMap((s) => s.items), [], [], 'doc');
   p.actors = cast.added;
-  const scene = focusScene({ ...p.scenes[0]!, setItems: r.setItems, items: cast.items });
+  const scene = focusScene({ ...p.scenes[0]!, setItems: r.setItems, items: withMeters(cast.items, uid) });
   p.scenes[0] = { ...scene, baseline: structuredClone({ setItems: scene.setItems, items: scene.items }) };
   return p;
 }
@@ -407,11 +408,15 @@ export function App() {
 
   /** Ctrl+D (next to the original) or Alt + drag (`patch` = where it was dropped). */
   const duplicate = (src: Item, patch?: Partial<Item>) => {
+    // Something with attachments is copied with everything attached to it.
+    const group = assemblyOf(src, items);
+    if (group.length > 1 && !patch) return duplicateMany(group.map((i) => i.id));
     if (src.actorId) return; // a person appears once per scene
     const copy: Item = structuredClone({
       ...src,
       id: uid(),
       locked: undefined,
+      attachedTo: undefined,
       ...(patch ?? { pos: { x: src.pos.x + 50, y: src.pos.y + 50 } }),
     });
     if (copy.light) copy.light.unitId = nextUnitId(items);
@@ -431,14 +436,18 @@ export function App() {
   /** Several items at once (Ctrl+D, or Alt + drag of a selection), moved by `delta`. */
   const duplicateMany = (ids: string[], delta: Vec2 = { x: 50, y: 50 }) => {
     const srcs = items.filter((i) => ids.includes(i.id) && !i.actorId);
+    // New ids up front, so copies attached to each other stay attached (to the copies).
+    const newIds = new Map(srcs.map((s) => [s.id, uid()]));
     const wallIds = new Map<string, string>();
-    for (const s of srcs) if (s.wall) wallIds.set(s.id, uid());
+    for (const s of srcs) if (s.wall) wallIds.set(s.id, newIds.get(s.id)!);
     const added: Item[] = [];
     const toSet = new Set<string>();
     const picked: string[] = [];
     const copyOf = (src: Item, id: string, inWall?: Item['inWall']): Item => {
       if (scene.setItems.some((x) => x.id === src.id)) toSet.add(id);
       const c: Item = structuredClone({ ...src, id, locked: undefined, pos: { x: src.pos.x + delta.x, y: src.pos.y + delta.y } });
+      const to = src.attachedTo && newIds.get(src.attachedTo.to);
+      c.attachedTo = to ? { ...src.attachedTo!, to } : undefined;
       if (inWall) c.inWall = inWall;
       if (c.light) c.light.unitId = nextUnitId([...items, ...added]);
       added.push(c);
@@ -452,7 +461,7 @@ export function App() {
         for (const o of scene.setItems) if (o.inWall?.wallId === src.id) copyOf(o, uid(), { ...o.inWall, wallId: id });
       } else if (src.inWall) {
         picked.push(copyOf(src, uid(), { ...src.inWall, offsetCm: src.inWall.offsetCm + (src.sizeCm?.w ?? 90) + 20 }).id);
-      } else picked.push(copyOf(src, uid()).id);
+      } else picked.push(copyOf(src, newIds.get(src.id)!).id);
     }
     sd({ type: 'add', setItems: added.filter((i) => toSet.has(i.id)), items: added.filter((i) => !toSet.has(i.id)) });
     setSelection(picked);
@@ -486,9 +495,24 @@ export function App() {
   };
 
   /** Turn every selected item that can turn (not locked, not following a person). */
+  /** Hang `childId` on `parentId` where it is now (a light meter far from a person goes in front of their face). */
+  const attach = (childId: string, parentId: string) => {
+    const child = items.find((i) => i.id === childId);
+    const parent = items.find((i) => i.id === parentId);
+    if (!child || !parent || !canAttach(child, parent, items)) return;
+    const far = Math.hypot(child.pos.x - parent.pos.x, child.pos.y - parent.pos.y) > 150;
+    const attachedTo = isMeter(child) && parent.kind === 'person' && far ? { to: parent.id, offset: { x: 0, y: -35 }, rotDeg: 0 } : attachmentFor(child, parent);
+    sd({ type: 'update', id: childId, patch: { attachedTo } });
+  };
+  const detach = (ids: string[]) => {
+    const patches = items.filter((i) => ids.includes(i.id) && i.attachedTo).map((i) => ({ id: i.id, patch: { attachedTo: undefined } }));
+    if (patches.length) sd({ type: 'updateMany', patches });
+  };
+
   const turnSelection = (deg: number) => {
-    const ids = selectedItems.filter((i) => !i.locked && !isFocusLocked(i, items)).map((i) => i.id);
-    if (ids.length) sd({ type: 'rotateBy', ids, deg });
+    // Attached groups turn around their root; a light meter on someone orbits them.
+    const patches = selectedItems.filter((i) => !i.locked && !isFocusLocked(i, items)).flatMap((i) => turnPatches(i, deg, items));
+    if (patches.length) sd({ type: 'updateMany', patches });
   };
 
   /** Download the project (with its gear list) as a file. */
@@ -534,7 +558,8 @@ export function App() {
       numbered.push(i);
     }
     for (const actor of cast.added) dispatch({ type: 'addActor', actor });
-    sd({ type: 'applyTemplate', setItems: r.setItems, items: cast.items });
+    // Everyone gets a light meter held in front of their face.
+    sd({ type: 'applyTemplate', setItems: r.setItems, items: withMeters(cast.items, uid) });
     setDialog(null);
     setView(null); // fit the new layout
   };
@@ -801,6 +826,7 @@ export function App() {
               onSelect={setSelected}
               onSelectMany={setSelection}
               onConfigure={configure}
+              onAttach={attach}
               pickMode={pickMode && !wallTool}
               onDuplicateMany={duplicateMany}
               colors={colors}
@@ -884,6 +910,11 @@ export function App() {
               >
                 <IconCopy />
               </button>
+              {selectedItems.some((i) => i.attachedTo) && (
+                <button id="detach" className="btn small" onClick={() => detach(selection)} title="Take it off what it's attached to (it stays where it is)">
+                  Detach
+                </button>
+              )}
               <button className="icon-btn danger" onClick={deleteSelected} aria-label="Delete" title="Delete">
                 <IconTrash />
               </button>
@@ -916,7 +947,7 @@ export function App() {
               aria-pressed={prefs.meter}
               onClick={() => setPrefs((p) => ({ ...p, meter: !p.meter }))}
               aria-label={prefs.meter ? 'Hide light meter' : 'Show light meter'}
-              title={prefs.meter ? 'Hide light meter readings' : 'Show light meter readings on people'}
+              title={prefs.meter ? 'Hide light meter readings' : 'Show readings on the light meters'}
             >
               <IconMeter />
             </button>
@@ -1060,6 +1091,10 @@ export function App() {
                 hasWalls={items.some((i) => i.wall)}
                 sun={scene.sun}
                 onSun={(sun) => sd({ type: 'sun', sun })}
+                onMetersForAll={() => {
+                  const added = withMeters(scene.items, uid).filter((i) => !scene.items.includes(i));
+                  if (added.length) sd({ type: 'add', setItems: [], items: added });
+                }}
               />
             )}
           </div>

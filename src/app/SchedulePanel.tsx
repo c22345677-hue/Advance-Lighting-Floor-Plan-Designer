@@ -8,7 +8,7 @@ import { DEFAULT_LENS_MM } from '../model/lens';
 import { circuitLoads, lightWatts } from '../model/power';
 import { lightSource } from '../model/shadows';
 import type { Actor, Item } from '../model/types';
-import { displayLabel, itemName } from './PlanCanvas';
+import { displayLabel, itemName, meterName } from './PlanCanvas';
 
 interface Props {
   projectName: string;
@@ -120,12 +120,12 @@ export function SchedulePanel(p: Props) {
       {readings.length > 0 && (
         <>
           <h3 className="section-title">
-            Light on people · ISO {p.camera.iso}, {p.camera.fps} fps, {p.camera.shutterDeg}°
+            Light meters · ISO {p.camera.iso}, {p.camera.fps} fps, {p.camera.shutterDeg}°
           </h3>
           <ul className="schedule-list">
             {readings.map((r) => (
-              <li key={r.personId}>
-                <strong>{who(r.personId)}</strong> · {r.contributions.length ? `${r.tStopLabel} · ${r.lux} lux (${r.footCandles} fc)${r.ratio ? ` · key:fill ${r.ratio}` : ''}${r.keyId ? ` · key ${who(r.keyId)}` : ''}` : 'no light'}
+              <li key={r.meterId}>
+                <strong>{meterName(p.items.find((i) => i.id === r.meterId)!, p.items, p.actors)}</strong> · {r.contributions.length ? `${r.tStopLabel} · ${r.lux} lux (${r.footCandles} fc)${r.ratio ? ` · key:fill ${r.ratio}` : ''}${r.keyId ? ` · key ${who(r.keyId)}` : ''}` : 'no light'}
               </li>
             ))}
           </ul>

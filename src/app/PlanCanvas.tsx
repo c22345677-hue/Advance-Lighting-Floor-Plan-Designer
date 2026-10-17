@@ -4,6 +4,7 @@ import { marksOf, moveMark } from '../model/blocking';
 import { sunRgb, windowLights, type WindowLight } from '../model/sun';
 import { lightLumens, meterReadings, type CameraSettings } from '../model/exposure';
 import { beamReach, lightSource } from '../model/shadows';
+import { assemblyOf, canAttach, isMeter, rootOf } from '../model/attach';
 import { ShadowLayer, type LivePatch, type ShadowLive } from './ShadowLayer';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
@@ -90,6 +91,14 @@ export function displayLabel(item: Item, actors: readonly Actor[] = [], opts: { 
   return unit ? (name ? `${unit} · ${name}` : unit) : name;
 }
 
+/** A light meter's name in lists: its label, or whose it is ("Meter · Anna"). */
+export function meterName(meter: Item, all: readonly Item[], actors: readonly Actor[] = []): string {
+  if (meter.label) return meter.label;
+  const on = meter.attachedTo ? all.find((i) => i.id === meter.attachedTo!.to) : undefined;
+  const whose = on ? displayLabel(on, actors, { unit: true }) || itemName(on) : '';
+  return whose ? `Meter · ${whose}` : 'Light meter';
+}
+
 /** What an item is called when it has no label: "Room"/"Walls" for wall chains, else its library name. */
 export function itemName(item: Item): string {
   if (item.wall) return item.wall.closed ? 'Room' : 'Walls';
@@ -118,6 +127,8 @@ interface Props {
   onSelectMany: (ids: string[]) => void;
   /** Right-click or double-click an item: open its settings. */
   onConfigure: (id: string) => void;
+  /** The link handle was dropped on another item: hang `childId` on `parentId`. */
+  onAttach: (childId: string, parentId: string) => void;
   /** Select mode: a tap adds an item to the selection or takes it out; a drag on empty space boxes more in. */
   pickMode?: boolean;
   /** Alt + drag of several selected items: copies moved by `delta`. */
@@ -158,12 +169,13 @@ export type WallExtend = { wallId: string; atStart: boolean };
 
 interface RotateSession {
   id: string;
+  /** What the pointer turns around: the group's root, or the item a light meter hangs on. */
   center: Vec2;
   startAngle: number;
-  startRot: number;
-  current: number;
-  /** Other selected items turning by the same amount, with their starting rotation. */
-  others: { id: string; start: number }[];
+  /** Turn so far, degrees (snapped). */
+  delta: number;
+  /** Everything turning: where it started and the point it swings around. */
+  members: { item: Item; pivot: Vec2 }[];
 }
 
 export function PlanCanvas(p: Props) {
@@ -319,7 +331,8 @@ export function PlanCanvas(p: Props) {
     node(`${moved.id}-beam`)?.position(pos);
     liveShadow(moved.id, { pos });
     // The name stays under the item while it moves.
-    node(`${moved.id}-label`)?.position({ x: pos.x - 200, y: pos.y + labelOffset(moved) + (labelShift.current.get(moved.id)?.shift ?? 0) });
+    const lt = labelTop(moved, pos);
+    node(`${moved.id}-label`)?.position({ x: lt.x - 200, y: lt.y + (labelShift.current.get(moved.id)?.shift ?? 0) });
     const turn = (id: string, deg: number) => {
       node(id)?.rotation(deg);
       node(`${id}-beam`)?.rotation(deg);
@@ -341,6 +354,23 @@ export function PlanCanvas(p: Props) {
     const who = followsActorId(moved);
     const target = who ? all.find((a) => a.actorId === who) : undefined;
     if (target) turn(moved.id, aimAt(pos, target.pos));
+  };
+
+  /**
+   * Where an item's tag goes (centre x, top y): under it, except a light meter held by someone,
+   * whose reading sits on the far side of the meter so it never covers the person.
+   */
+  const labelTop = (item: Item, pos: Vec2 = item.pos, w = labelSize * 9): Vec2 => {
+    const holder = isMeter(item) && item.attachedTo ? all.find((i) => i.id === item.attachedTo!.to) : undefined;
+    if (!holder) return { x: pos.x, y: pos.y + labelOffset(item) };
+    const dx = pos.x - holder.pos.x;
+    const dy = pos.y - holder.pos.y;
+    const len = Math.hypot(dx, dy) || 1;
+    const u = { x: dx / len, y: dy / len };
+    const h = labelSize * 1.3;
+    // Just clear of the meter, whichever side it's on (the tag is wider than it is tall).
+    const reach = 10 + Math.abs(u.y) * (h / 2) + Math.abs(u.x) * (w / 2);
+    return { x: pos.x + u.x * reach, y: pos.y + u.y * reach - h / 2 };
   };
 
   /** Where each name tag was nudged to (so it keeps its place while its item is dragged). */
@@ -374,10 +404,14 @@ export function PlanCanvas(p: Props) {
   /** Other selected items moving with the dragged one, and where they started. */
   const groupDrag = useRef<{ id: string; item: Item }[]>([]);
   /** Selected items that move with `item` (doors and windows follow their walls instead). */
-  const groupOf = (item: Item) =>
-    multi && selection.includes(item.id) && !isOpening(item.catalogId)
-      ? all.filter((o) => o.id !== item.id && selection.includes(o.id) && !o.locked && !isOpening(o.catalogId))
-      : [];
+  const groupOf = (item: Item) => {
+    // The selection (when the item is part of it), and everything attached to any of them.
+    const base = multi && selection.includes(item.id) && !isOpening(item.catalogId) ? all.filter((o) => selection.includes(o.id) && (!o.locked || o.id === item.id) && !isOpening(o.catalogId)) : [item];
+    const ids = new Set<string>();
+    for (const b of base) for (const m of assemblyOf(b, all)) if (!isOpening(m.catalogId)) ids.add(m.id);
+    ids.delete(item.id);
+    return all.filter((o) => ids.has(o.id));
+  };
   const moveGroup = (delta: Vec2) => {
     for (const { item: o } of groupDrag.current) {
       const at = { x: o.pos.x + delta.x, y: o.pos.y + delta.y };
@@ -449,17 +483,45 @@ export function PlanCanvas(p: Props) {
 
   const worldPointer = (): Vec2 | null => stageRef.current?.getRelativePointerPosition() ?? null;
 
+  /**
+   * What turns when `item` is turned (with the rest of the selection): each attached group
+   * swings around its root; a light meter that hangs on something orbits it instead.
+   */
+  const rotateMembers = (item: Item, others: Item[]): { center: Vec2; members: RotateSession['members'] } => {
+    const parentOf = (i: Item) => (i.attachedTo ? all.find((o) => o.id === i.attachedTo!.to) : undefined);
+    const members: RotateSession['members'] = [];
+    const seen = new Set<string>();
+    const addGroup = (i: Item) => {
+      const holder = isMeter(i) ? parentOf(i) : undefined;
+      if (holder) {
+        if (!seen.has(i.id)) members.push({ item: i, pivot: holder.pos });
+        seen.add(i.id);
+        return holder.pos;
+      }
+      const root = rootOf(i, all);
+      for (const m of assemblyOf(root, all)) {
+        if (seen.has(m.id) || m.inWall || (m.locked && m.id !== i.id)) continue;
+        seen.add(m.id);
+        members.push({ item: m, pivot: root.pos });
+      }
+      return root.pos;
+    };
+    const center = addGroup(item);
+    for (const o of others) addGroup(o);
+    return { center, members };
+  };
+
   const startRotate = (item: Item, group: Item[] = []) => {
     const ptr = worldPointer();
     if (!ptr) return;
-    rot.current = {
-      id: item.id,
-      center: item.pos,
-      startAngle: aimAt(item.pos, ptr),
-      startRot: item.rotationDeg,
-      current: item.rotationDeg,
-      others: group.map((o) => ({ id: o.id, start: o.rotationDeg })),
-    };
+    const { center, members } = rotateMembers(item, group);
+    rot.current = { id: item.id, center, startAngle: aimAt(center, ptr), delta: 0, members };
+  };
+
+  /** Where a turning member is now. */
+  const turned = (m: RotateSession['members'][number], delta: number) => {
+    const r = rotate({ x: m.item.pos.x - m.pivot.x, y: m.item.pos.y - m.pivot.y }, delta);
+    return { pos: { x: m.pivot.x + r.x, y: m.pivot.y + r.y }, rot: m.item.rotationDeg + delta };
   };
 
   const moveRotate = (shift: boolean) => {
@@ -467,15 +529,14 @@ export function PlanCanvas(p: Props) {
     const ptr = worldPointer();
     if (!r || !ptr) return;
     const step = shift ? 45 : 5;
-    const raw = r.startRot + aimAt(r.center, ptr) - r.startAngle;
-    r.current = Math.round(raw / step) * step;
-    node(r.id)?.rotation(r.current);
-    node(`${r.id}-beam`)?.rotation(r.current);
-    liveShadow(r.id, { rot: r.current });
-    for (const o of r.others) {
-      node(o.id)?.rotation(o.start + r.current - r.startRot);
-      node(`${o.id}-beam`)?.rotation(o.start + r.current - r.startRot);
-      liveShadow(o.id, { rot: o.start + r.current - r.startRot });
+    r.delta = Math.round((aimAt(r.center, ptr) - r.startAngle) / step) * step;
+    for (const m of r.members) {
+      const t = turned(m, r.delta);
+      node(m.item.id)?.position(t.pos).rotation(t.rot);
+      node(`${m.item.id}-beam`)?.position(t.pos).rotation(t.rot);
+      const lt = labelTop(m.item, t.pos);
+      node(`${m.item.id}-label`)?.position({ x: lt.x - 200, y: lt.y + (labelShift.current.get(m.item.id)?.shift ?? 0) });
+      liveShadow(m.item.id, { pos: t.pos, rot: t.rot });
     }
   };
 
@@ -484,9 +545,14 @@ export function PlanCanvas(p: Props) {
     if (!r) return;
     rot.current = null;
     setTimeout(() => liveShadow(null), 60);
-    if (r.current === r.startRot) return;
-    if (r.others.length) dispatch({ type: 'rotateBy', ids: [r.id, ...r.others.map((o) => o.id)], deg: r.current - r.startRot });
-    else dispatch({ type: 'rotate', id: r.id, rotationDeg: r.current });
+    if (normDeg(r.delta) === 0) return;
+    dispatch({
+      type: 'updateMany',
+      patches: r.members.map((m) => {
+        const t = turned(m, r.delta);
+        return { id: m.item.id, patch: { pos: t.pos, rotationDeg: normDeg(t.rot) } };
+      }),
+    });
   };
 
   // ---- Draw walls tool ----
@@ -929,7 +995,7 @@ export function PlanCanvas(p: Props) {
     );
   };
 
-  const readings = useMemo(() => (p.meter ? new Map(meterReadings(lit, p.meter, scene.sun).map((r) => [r.personId, r])) : null), [lit, p.meter, scene.sun]);
+  const readings = useMemo(() => (p.meter ? new Map(meterReadings(lit, p.meter, scene.sun).map((r) => [r.meterId, r])) : null), [lit, p.meter, scene.sun]);
   const windowLit = useMemo(() => windowLights(lit, scene.sun), [lit, scene.sun]);
   const windowSources = useMemo(() => windowLit.map((w) => w.source), [windowLit]);
 
@@ -951,17 +1017,19 @@ export function PlanCanvas(p: Props) {
     const placed: { l: number; r: number; t: number; b: number }[] = [];
     const rows = visible
       .map((item) => {
-        const name = displayLabel(item, actors, { unit: false });
-        const meter = item.kind === 'person' ? meterText(item) : null;
+        // A light meter shows its reading (and its name only when one was typed, or readings are off).
+        const name = isMeter(item) ? (item.label ?? (readings ? '' : 'Light meter')) : displayLabel(item, actors, { unit: false });
+        const meter = isMeter(item) ? meterText(item) : null;
         if (!name && !meter) return null;
         const w = Math.max(textWidth(name, NAME_FONT, labelSize), meter ? textWidth(meter, METER_FONT, labelSize * 0.9) : 0) + labelSize * 0.7;
-        const h = labelSize * 1.2 + (meter ? labelSize * 1.15 : 0);
-        return { item, name, meter, w, h, y: item.pos.y + labelOffset(item) };
+        const h = (name ? labelSize * 1.2 : 0) + (meter ? labelSize * 1.15 : 0);
+        const at = labelTop(item, item.pos, w);
+        return { item, name, meter, w, h, x: at.x, y: at.y };
       })
       .filter((r): r is NonNullable<typeof r> => !!r)
-      .sort((a, b) => a.y - b.y || a.item.pos.x - b.item.pos.x);
+      .sort((a, b) => a.y - b.y || a.x - b.x);
     for (const r of rows) {
-      const l = r.item.pos.x - r.w / 2;
+      const l = r.x - r.w / 2;
       let t = r.y - labelSize * 0.1;
       for (let k = 0; k < 6; k++) {
         const hit = placed.find((q) => l < q.r && l + r.w > q.l && t < q.b && t + r.h > q.t);
@@ -975,6 +1043,91 @@ export function PlanCanvas(p: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, actors, labelSize, readings]);
   labelShift.current = labelLayout;
+
+  // ---- Attaching: drag the link handle of the selected item onto another item ----
+  const [link, setLink] = useState<{ from: string; at: Vec2; target: string | null } | null>(null);
+  const footprintCm = (i: Item) => Math.max(20, Math.max(itemLook(i).w, itemLook(i).d) / 2);
+  /** The item under `at` that `child` could hang on (any category; walls by their line). */
+  const attachTarget = (child: Item, at: Vec2): Item | null => {
+    const tol = (coarse ? 30 : 16) / view.scale;
+    let best: { item: Item; d: number } | null = null;
+    for (const o of lit) {
+      if (!canAttach(child, o, all)) continue;
+      let d: number;
+      if (o.wall) {
+        const t = (o.wall.thicknessCm ?? DEFAULT_WALL_CM) / 2;
+        d = Math.min(...wallSegments(o).map(([a, b]) => distToSegment(at, a, b))) - t;
+      } else d = Math.hypot(at.x - o.pos.x, at.y - o.pos.y) - footprintCm(o) * 0.8;
+      if (d <= tol && (!best || d < best.d)) best = { item: o, d };
+    }
+    return best?.item ?? null;
+  };
+  const linkHandle = () => {
+    const sel = selected ? visible.find((i) => i.id === selected) : undefined;
+    if (!sel || tool !== 'move' || p.wallTool || sel.locked || sel.wall || sel.inWall || modeOf(sel) !== mode || dragging) return null;
+    const r = footprintCm(sel) + 14 / view.scale;
+    const home = { x: sel.pos.x + r * 0.75, y: sel.pos.y - r * 0.75 };
+    const k = 1 / view.scale;
+    const size = (coarse ? 15 : 11) * k;
+    const linked = !!sel.attachedTo;
+    const target = link?.target ? all.find((i) => i.id === link.target) : undefined;
+    return (
+      <>
+        {link && (
+          <Line name="ui-only" points={[sel.pos.x, sel.pos.y, link.at.x, link.at.y]} stroke={colors.select} strokeWidth={2 * k} dash={[6 * k, 5 * k]} listening={false} />
+        )}
+        {target && (
+          <Circle name="ui-only" x={target.pos.x} y={target.pos.y} radius={(target.wall ? 0 : footprintCm(target)) + 8 * k} stroke={colors.select} strokeWidth={3 * k} listening={false} />
+        )}
+        <Group
+          name="ui-only link-handle"
+          x={home.x}
+          y={home.y}
+          draggable
+          onMouseDown={(e) => (e.cancelBubble = true)}
+          onTouchStart={(e) => (e.cancelBubble = true)}
+          onMouseEnter={() => setCursor('crosshair')}
+          onMouseLeave={() => setCursor('')}
+          onDragStart={(e) => setLink({ from: sel.id, at: { x: e.target.x(), y: e.target.y() }, target: null })}
+          onDragMove={(e) => {
+            const at = { x: e.target.x(), y: e.target.y() };
+            setLink({ from: sel.id, at, target: attachTarget(sel, at)?.id ?? null });
+          }}
+          onDragEnd={(e) => {
+            const t = attachTarget(sel, { x: e.target.x(), y: e.target.y() });
+            e.target.position(home);
+            setLink(null);
+            if (t) p.onAttach(sel.id, t.id);
+          }}
+        >
+          <Circle radius={size} fill={linked ? colors.select : colors.labelBg} stroke={colors.select} strokeWidth={1.5 * k} shadowColor="#000" shadowBlur={6 * k} shadowOpacity={0.3} />
+          {/* Two chain links. */}
+          <Rect x={-size * 0.62} y={-size * 0.22} width={size * 0.7} height={size * 0.44} cornerRadius={size * 0.22} stroke={linked ? colors.labelBg : colors.select} strokeWidth={1.6 * k} rotation={-35} />
+          <Rect x={-size * 0.08} y={-size * 0.22} width={size * 0.7} height={size * 0.44} cornerRadius={size * 0.22} stroke={linked ? colors.labelBg : colors.select} strokeWidth={1.6 * k} rotation={-35} />
+        </Group>
+      </>
+    );
+  };
+  /** Dotted ties between attached items, shown for the selection's groups. */
+  const attachLinks = () => {
+    const shown = new Set(selection.flatMap((id) => {
+      const i = all.find((x) => x.id === id);
+      return i ? assemblyOf(i, all).map((m) => m.id) : [];
+    }));
+    const k = 1 / view.scale;
+    return visible
+      .filter((c) => c.attachedTo && shown.has(c.id))
+      .map((c) => {
+        const parent = all.find((i) => i.id === c.attachedTo!.to);
+        if (!parent) return null;
+        return (
+          <Group key={`${c.id}-tie`} name="ui-only" listening={false}>
+            <Line points={[parent.pos.x, parent.pos.y, c.pos.x, c.pos.y]} stroke={colors.select} strokeWidth={1.5 * k} dash={[2 * k, 4 * k]} opacity={0.9} />
+            <Circle x={parent.pos.x} y={parent.pos.y} radius={3 * k} fill={colors.select} />
+          </Group>
+        );
+      });
+  };
 
   /** Inside a room: its size (inside the walls) and floor area. */
   const roomTag = (item: Item) => {
@@ -1016,14 +1169,14 @@ export function PlanCanvas(p: Props) {
 
   const label = (item: Item) => {
     const lay = labelLayout.get(item.id);
-    const name = lay?.name ?? displayLabel(item, actors, { unit: false });
+    const name = lay?.name ?? (isMeter(item) ? (item.label ?? '') : displayLabel(item, actors, { unit: false }));
     const meter = item.id === dragging ? null : (lay?.meter ?? null);
     if (!name && !meter) return null;
     const w = lay?.w ?? textWidth(name, NAME_FONT, labelSize) + labelSize * 0.7;
-    const h = labelSize * 1.2 + (meter ? labelSize * 1.15 : 0);
+    const h = (name ? labelSize * 1.2 : 0) + (meter ? labelSize * 1.15 : 0);
     const inMode = modeOf(item) === mode;
     return (
-      <Group key={`${item.id}-label`} id={`${item.id}-label`} x={item.pos.x - 200} y={item.pos.y + labelOffset(item) + (lay?.shift ?? 0)} listening={false}>
+      <Group key={`${item.id}-label`} id={`${item.id}-label`} x={labelTop(item, item.pos, w).x - 200} y={labelTop(item, item.pos, w).y + (lay?.shift ?? 0)} listening={false}>
         <Rect x={200 - w / 2} y={-labelSize * 0.1} width={w} height={h} cornerRadius={labelSize * 0.35} fill={colors.labelBg} opacity={inMode ? 1 : 0.7} />
         {name && (
           <Text
@@ -1142,6 +1295,8 @@ export function PlanCanvas(p: Props) {
           visible
             .filter((i) => selection.includes(i.id))
             .map((sel) => <RotateRing key={`${sel.id}-ring`} item={sel} scale={view.scale} color={colors.rotate} />)}
+        {attachLinks()}
+        {linkHandle()}
         {(() => {
           // Corner handles on a selected wall (Move tool): drag a corner to reshape the room.
           const sel = visible.find((i) => i.id === selected && i.wall);
@@ -1849,6 +2004,15 @@ function PlanCorner({ view, height, colors: c, sun }: { view: View; height: numb
   );
 }
 
+/** Distance from `p` to the segment a–b. */
+function distToSegment(p: Vec2, a: Vec2, b: Vec2): number {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const len2 = dx * dx + dy * dy;
+  const t = len2 ? Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / len2)) : 0;
+  return Math.hypot(p.x - (a.x + dx * t), p.y - (a.y + dy * t));
+}
+
 let measureCtx: CanvasRenderingContext2D | null = null;
 /** Width of a line of text in plan units (`font` has {px} for the size). */
 function textWidth(text: string, font: string, size: number): number {
@@ -2060,6 +2224,14 @@ export function ItemShape({
           <Rect x={-13} y={-14} width={26} height={34} cornerRadius={3} fill={c.camera} />
           <Rect x={-8} y={-26} width={16} height={13} cornerRadius={2} fill={c.camera} />
           <Rect x={-9} y={-6} width={18} height={14} cornerRadius={2} fill={c.canvas} opacity={0.35} />
+        </>
+      );
+    case 'meter':
+      // Incident meter: a small body with the white dome facing the front (up).
+      return (
+        <>
+          <Rect x={-7} y={-4} width={14} height={14} cornerRadius={3} fill={c.camera} />
+          <Circle y={-5} radius={6} fill="#f4f2ee" stroke={c.camera} strokeWidth={1.5} />
         </>
       );
     case 'monitor':

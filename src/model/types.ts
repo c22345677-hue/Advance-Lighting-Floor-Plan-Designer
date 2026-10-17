@@ -77,6 +77,18 @@ export interface Item {
   castRole?: CastRole;
   camera?: CameraProps;
   path?: { points: Vec2[]; style: PathStyle };
+  /** Attached to another item: it keeps this offset and turn in that item's own frame, so the two
+   *  move and turn as one. */
+  attachedTo?: Attachment;
+}
+
+export interface Attachment {
+  /** The item it hangs on. */
+  to: string;
+  /** Where it sits in that item's frame (its rotation undone), cm. */
+  offset: Vec2;
+  /** Its turn relative to that item, degrees. */
+  rotDeg: number;
 }
 
 export interface CameraProps {

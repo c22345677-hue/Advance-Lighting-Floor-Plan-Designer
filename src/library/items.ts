@@ -23,6 +23,7 @@ export type Shape =
   | 'dolly'
   | 'monitor'
   | 'video-village'
+  | 'meter'
   | 'person'
   | 'wall'
   | 'door'
@@ -109,6 +110,8 @@ export const LIBRARY: LibraryItem[] = [
   I('camera', 'prop', 'camera.monitor', 'Monitor', 'monitor', 60, 20),
   // One element: a large monitor with two people watching it.
   I('camera', 'prop', 'camera.video-village', 'Video village', 'video-village', 190, 150),
+  // Incident light meter: reads the light where it stands (attach it to a person to read their face).
+  I('camera', 'prop', 'camera.light-meter', 'Light meter', 'meter', 14, 20),
   I('people', 'person', 'person', 'Actor', 'person', 86, 46),
   I('people', 'person', 'person.crew', 'Crew', 'person', 86, 46),
   // Walls are drawn with the Draw walls tool; these older single pieces stay for saved plans.

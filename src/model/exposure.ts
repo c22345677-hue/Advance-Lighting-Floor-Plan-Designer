@@ -9,6 +9,7 @@ import { itemFixture, itemModifiers } from './gear';
 import { aimAt } from './geometry';
 import { lightSource, occluders, pointInPolygon, shadowDarkness, shadowPolygon } from './shadows';
 import { daylightLux, windowLights, type Sun } from './sun';
+import { assemblyOf, isMeter } from './attach';
 import type { Item, Vec2 } from './types';
 
 /** Contribution id for daylight through windows. */
@@ -83,7 +84,8 @@ export interface Contribution {
 }
 
 export interface Reading {
-  personId: string;
+  /** The light meter it was read on. */
+  meterId: string;
   lux: number;
   footCandles: number;
   contributions: Contribution[];
@@ -95,8 +97,9 @@ export interface Reading {
   tStopLabel: string;
 }
 
-/** Light falling on a point at face height, from one light. */
-export function luxFrom(light: Item, at: Vec2, all: readonly Item[], exclude?: string): Contribution | null {
+/** Light falling on a point at face height, from one light (`exclude`: things that can't block it, e.g. the person holding the meter). */
+export function luxFrom(light: Item, at: Vec2, all: readonly Item[], exclude: ReadonlySet<string> | string = new Set()): Contribution | null {
+  const skip = typeof exclude === 'string' ? new Set([exclude]) : exclude;
   const src = lightSource(light, all);
   if (!src) return null;
   const horiz = Math.hypot(at.x - light.pos.x, at.y - light.pos.y);
@@ -131,7 +134,7 @@ export function luxFrom(light: Item, at: Vec2, all: readonly Item[], exclude?: s
   let blockAt = 0;
   const fromSrc = Math.hypot(at.x - src.pos.x, at.y - src.pos.y);
   for (const o of occluders(all)) {
-    if (o.id === exclude || o.heightCm < FACE_CM * 0.9) continue; // lower than a face: doesn't block it
+    if (skip.has(o.id) || o.heightCm < FACE_CM * 0.9) continue; // lower than a face: doesn't block it
     const nearest = Math.min(...o.points.map((q) => Math.hypot(q.x - src.pos.x, q.y - src.pos.y)));
     if (nearest >= fromSrc) continue; // behind the person
     const poly = shadowPolygon(src.pos, src.heightCm, o, fromSrc * 2);
@@ -164,19 +167,21 @@ export function tStopLabel(n: number): string {
   return `T${base}${rest === 1 ? ' +⅓' : rest === 2 ? ' +⅔' : ''}`;
 }
 
-/** Readings for every person in the scene. */
+/** Readings on every light meter in the scene (at face height, where the meter stands). */
 export function meterReadings(items: readonly Item[], cam: CameraSettings = DEFAULT_CAMERA, sun?: Sun): Reading[] {
   const lights = items.filter((i) => i.kind === 'light' && !i.hidden);
   const windows = windowLights(items, sun);
   const occ = windows.length ? occluders(items) : [];
   return items
-    .filter((i) => i.kind === 'person' && !i.hidden)
+    .filter((i) => isMeter(i) && !i.hidden)
     .map((p) => {
-      const contributions = lights.map((l) => luxFrom(l, p.pos, items, p.id)).filter((c): c is Contribution => !!c && c.lux > 0.5);
+      // What the meter hangs on (the person holding it) doesn't shade it.
+      const own = new Set(assemblyOf(p, items).map((i) => i.id));
+      const contributions = lights.map((l) => luxFrom(l, p.pos, items, own)).filter((c): c is Contribution => !!c && c.lux > 0.5);
       // Daylight from the windows; direct sun is cut by anything standing in its way.
       const shaded = (wl: (typeof windows)[number]) =>
         occ.some((o) => {
-          if (o.id === p.id || o.heightCm < FACE_CM * 0.9 || wl.source.ignore?.includes(o.id)) return false;
+          if (own.has(o.id) || o.heightCm < FACE_CM * 0.9 || wl.source.ignore?.includes(o.id)) return false;
           const poly = shadowPolygon(wl.source.pos, wl.source.heightCm, o, 2e5);
           return !!poly && pointInPolygon(p.pos, poly);
         });
@@ -189,7 +194,7 @@ export function meterReadings(items: readonly Item[], cam: CameraSettings = DEFA
       const ratio = key && fill > 0.5 ? `${Math.max(1, Math.round((lux / fill) * 2) / 2)}:1` : undefined;
       const n = tStopFor(lux, cam);
       return {
-        personId: p.id,
+        meterId: p.id,
         lux: Math.round(lux),
         footCandles: Math.round(lux / 10.764),
         contributions,

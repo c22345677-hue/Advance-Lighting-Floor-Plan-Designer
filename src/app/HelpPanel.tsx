@@ -24,6 +24,15 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
     ],
   },
   {
+    title: 'Attaching',
+    rows: [
+      ['Link handle (chain, next to the selected item)', 'Drag it onto anything to attach: a frame to a light, a meter to a person'],
+      ['Attached items', 'Move and turn as one, around the item they hang on'],
+      ['Light meter on someone', 'Rotate (R) swings it around them; it follows when they turn'],
+      ['Detach (selection bar or settings)', 'Takes it off; it stays where it is'],
+    ],
+  },
+  {
     title: 'Selecting',
     rows: [
       ['Click', 'Select an item of the current category (the panel stays on adding)'],

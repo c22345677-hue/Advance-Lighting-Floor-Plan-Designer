@@ -2,6 +2,7 @@
 import { libraryItem } from '../library/items';
 import { aimAt } from './geometry';
 import { attachOpenings } from './walls';
+import { settleAttachments } from './attach';
 import { DEFAULT_LENS_MM } from './lens';
 import { fitTwoShot } from './twoShot';
 import type { Sun } from './sun';
@@ -162,13 +163,19 @@ export function applyCameraFocus(items: Item[], all: readonly Item[] = items): I
 }
 
 export function focusScene(s: SceneDoc): SceneDoc {
-  let all = sceneItems(s);
-  // Doors and windows first follow their walls, then cameras and lights turn to their people.
-  const seated = attachOpenings(s.setItems, all);
-  if (seated !== s.setItems) all = [...seated, ...s.items];
-  const items = applyCameraFocus(s.items, all);
-  const setItems = applyCameraFocus(seated, all);
-  return items === s.items && setItems === s.setItems ? s : { ...s, items, setItems };
+  // Attached items follow what they hang on, doors and windows their walls, then cameras and
+  // lights turn to their people (and whatever hangs on those follows again).
+  let cur = settleAttachments(s);
+  const seated = attachOpenings(cur.setItems, sceneItems(cur));
+  if (seated !== cur.setItems) cur = { ...cur, setItems: seated };
+  for (let k = 0; k < 2; k++) {
+    const all = sceneItems(cur);
+    const items = applyCameraFocus(cur.items, all);
+    const setItems = applyCameraFocus(cur.setItems, all);
+    if (items !== cur.items || setItems !== cur.setItems) cur = { ...cur, items, setItems };
+    cur = settleAttachments(cur);
+  }
+  return cur.items === s.items && cur.setItems === s.setItems ? s : cur;
 }
 
 /**
