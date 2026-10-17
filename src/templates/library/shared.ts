@@ -1,6 +1,7 @@
 // Helpers shared by the template layouts.
 import { GENERIC } from '../../catalog/generic';
 import { add, aimAt, arc, rotate, row } from '../../model/geometry';
+import { interviewCameraTargets } from '../../model/project';
 import type { CastRole, Vec2 } from '../../model/types';
 import type { DraftItem, NumberOption } from '../types';
 
@@ -61,36 +62,62 @@ export function subjectsFacingCameras(
   return [...subjects, ...cameras];
 }
 
-/** Bearings (from the subjects, 0 = straight out in front) of interview cameras A, B, C, D. */
-const INTERVIEW_CAMERA_DEG = [[0], [-25, 40], [-15, -75, 70], [-15, -75, 70, 25]];
-
 /**
- * Interview cameras on a half circle around the subjects: A just off the interviewer's eyeline,
- * then B and C out to the sides, so between them they cover the front half of the set.
+ * An interview laid out for matching eyelines: interviewees on the left facing the interviewers
+ * on the right, and every camera on the same side of that line (below it on the plan). So in
+ * every shot the interviewees look left to right and the interviewers right to left.
+ *
+ * Cameras take their people in the same order the project assigns them (see
+ * interviewCameraTargets): a single from beside the person they look at, slightly off their
+ * eyeline; a two shot from further back, off to the camera side.
  */
-export function interviewCameras(count: number, center: Vec2 = { x: 0, y: 0 }, dist = FRAMING_DISTANCE_CM.medium!): DraftItem[] {
-  const degs = INTERVIEW_CAMERA_DEG[Math.min(count, 4) - 1] ?? [];
-  return degs.slice(0, count).map((d, i) => {
-    const pos = add(center, rotate({ x: 0, y: dist }, d));
-    return camera(pos, center, `Cam ${String.fromCharCode(65 + i)}`);
+export function interviewLayout(interviewees: number, interviewers: number, cameras: number): DraftItem[] {
+  const ees = column({ x: -110, y: 0 }, interviewees, 120);
+  const ers = column({ x: 110, y: 0 }, interviewers, 100);
+  const mean = (ps: Vec2[]) => ({ x: ps.reduce((t, p) => t + p.x, 0) / ps.length, y: ps.reduce((t, p) => t + p.y, 0) / ps.length });
+  const eeMid = mean(ees);
+  const erMid = ers.length ? mean(ers) : { x: eeMid.x + 220, y: eeMid.y };
+  const people = [
+    ...ees.map((p, i) => person(p, aimAt(p, erMid), interviewees > 1 ? `Interviewee ${i + 1}` : 'Interviewee', 'interviewee')),
+    ...ers.map((p, i) => person(p, aimAt(p, eeMid), interviewers > 1 ? `Interviewer ${i + 1}` : 'Interviewer', 'interviewer')),
+  ];
+  const at: Record<string, Vec2> = {};
+  ees.forEach((p, i) => (at[`e${i}`] = p));
+  ers.forEach((p, i) => (at[`r${i}`] = p));
+  /** `from` + `dist` along `toward`, turned `deg` to the camera side (down the plan). */
+  const out = (from: Vec2, toward: Vec2, deg: number, dist: number) => {
+    const len = Math.hypot(toward.x - from.x, toward.y - from.y) || 1;
+    const u = { x: (toward.x - from.x) / len, y: (toward.y - from.y) / len };
+    const [p, q] = [rotate(u, deg), rotate(u, -deg)];
+    const d = p.y >= q.y ? p : q;
+    return add(from, { x: d.x * dist, y: d.y * dist });
+  };
+  const targets = interviewCameraTargets(ees.map((_, i) => `e${i}`), ers.map((_, i) => `r${i}`));
+  const cams = Array.from({ length: cameras }, (_, k) => {
+    const t = targets[k];
+    let pos: Vec2;
+    let aim: Vec2;
+    if (typeof t === 'string') {
+      // A single, from beside whoever they're talking to.
+      aim = at[t]!;
+      pos = out(aim, t.startsWith('e') ? erMid : eeMid, 40, 250);
+    } else if (t) {
+      const [a, b] = [at[t[0]]!, at[t[1]]!];
+      aim = mean([a, b]);
+      // Two interviewees: from the interviewer's side; interviewee and interviewer: side on.
+      pos = t[1].startsWith('e') ? out(aim, erMid, 60, 300) : out(aim, b, 90, 300);
+    } else {
+      aim = mean([eeMid, erMid]);
+      pos = out(aim, erMid, 90, 400);
+    }
+    return camera(pos, aim, `Cam ${String.fromCharCode(65 + k)}`);
   });
+  return [...people, ...cams];
 }
 
-/**
- * Interviewers sit just beside the first camera, a little closer to the subjects, facing them.
- * Placeholder until the interview layout is defined.
- */
-export function interviewersBesideCamera(count: number, camera: Vec2, subjects: Vec2): DraftItem[] {
-  const toSubject = { x: subjects.x - camera.x, y: subjects.y - camera.y };
-  const len = Math.hypot(toSubject.x, toSubject.y) || 1;
-  const fwd = { x: toSubject.x / len, y: toSubject.y / len };
-  const side = { x: -fwd.y, y: fwd.x };
-  return Array.from({ length: count }, (_, i) => {
-    const offset = (i % 2 === 0 ? 1 : -1) * (75 + Math.floor(i / 2) * 80);
-    const pos = { x: camera.x + fwd.x * 40 + side.x * offset, y: camera.y + fwd.y * 40 + side.y * offset };
-    return person(pos, aimAt(pos, subjects), count > 1 ? `Interviewer ${i + 1}` : 'Interviewer', 'interviewer');
-  });
-}
+/** `count` points in a column through `center` (top to bottom), `spacing` apart. */
+const column = (center: Vec2, count: number, spacing: number): Vec2[] =>
+  row({ x: 0, y: 0 }, count, spacing).map((p) => ({ x: center.x, y: center.y + p.x }));
 
 /** A light (generic stand-in) at `pos`, aimed at `target`. */
 export const light = (catalogId: string, pos: Vec2, target: Vec2, extra: Partial<DraftItem['light']> = {}): DraftItem => ({

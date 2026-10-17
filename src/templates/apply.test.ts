@@ -100,7 +100,7 @@ describe('template library', () => {
   it('interview creates the requested people and cameras, cameras aimed at the subject', () => {
     const r = applyTemplate(
       getTemplate('interview')!,
-      { interviewees: 2, cameras: 3 },
+      { interviewees: 2, cameras: 4 },
       { origin: { x: 0, y: 0 } },
     );
     const items = r.shots[0]!.items;
@@ -110,15 +110,37 @@ describe('template library', () => {
     const [interviewer] = people.filter((i) => i.castRole === 'interviewer');
     expect(interviewer?.label).toBe('Interviewer');
     const cams = items.filter((i) => i.kind === 'camera');
-    expect(cams).toHaveLength(3);
-    // A half circle around the subjects, all 250 cm out and facing them; B and C out to the sides.
+    expect(cams).toHaveLength(4);
+    // Every camera on one side of the eyeline: interviewees look left to right, interviewers right to left.
+    const ray = (deg: number) => ({ x: Math.sin((deg * Math.PI) / 180), y: -Math.cos((deg * Math.PI) / 180) });
     for (const c of cams) {
-      expect(Math.hypot(c.pos.x, c.pos.y)).toBeCloseTo(250);
-      expect(aimAt(c.pos, { x: 0, y: 0 })).toBeCloseTo(c.rotationDeg);
+      const right = ray(c.rotationDeg + 90);
+      for (const p of people) {
+        const g = ray(p.rotationDeg);
+        const looks = g.x * right.x + g.y * right.y;
+        if (p.castRole === 'interviewee') expect(looks).toBeGreaterThan(0.1);
+        else expect(looks).toBeLessThan(-0.1);
+      }
     }
-    expect(Math.abs(cams[1]!.pos.x)).toBeGreaterThan(200);
-    expect(Math.abs(cams[2]!.pos.x)).toBeGreaterThan(200);
-    expect(Math.sign(cams[1]!.pos.x)).not.toBe(Math.sign(cams[2]!.pos.x));
+  });
+
+  it('interview eyelines match in every camera, whatever the numbers', () => {
+    const ray = (deg: number) => ({ x: Math.sin((deg * Math.PI) / 180), y: -Math.cos((deg * Math.PI) / 180) });
+    for (const interviewees of [1, 2, 3, 4])
+      for (const interviewers of [1, 2, 3])
+        for (const cameras of [2, 3, 4]) {
+          const items = applyTemplate(getTemplate('interview')!, { interviewees, interviewers, cameras }, { origin: { x: 0, y: 0 } }).shots[0]!.items;
+          for (const c of items.filter((i) => i.kind === 'camera')) {
+            const right = ray(c.rotationDeg + 90);
+            // Whoever is in its shot (near the middle of the frame).
+            const inShot = (p: (typeof items)[number]) => Math.abs(((aimAt(c.pos, p.pos) - c.rotationDeg + 540) % 360) - 180) < 25;
+            for (const p of items.filter((i) => i.kind === 'person' && inShot(i))) {
+              const g = ray(p.rotationDeg);
+              const looks = g.x * right.x + g.y * right.y;
+              expect(p.castRole === 'interviewee' ? looks : -looks, `${interviewees}/${interviewers}/${cameras} ${c.label} ${p.label}`).toBeGreaterThan(0);
+            }
+          }
+        }
   });
 
   it('green screen puts the screen on the set layer at the chosen width', () => {
