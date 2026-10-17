@@ -1,6 +1,6 @@
 // Helpers shared by the template layouts.
 import { GENERIC } from '../../catalog/generic';
-import { aimAt, arc, row } from '../../model/geometry';
+import { add, aimAt, arc, rotate, row } from '../../model/geometry';
 import type { CastRole, Vec2 } from '../../model/types';
 import type { DraftItem, NumberOption } from '../types';
 
@@ -59,6 +59,21 @@ export function subjectsFacingCameras(
     return camera(pos, center, `Cam ${String.fromCharCode(65 + i)}`);
   });
   return [...subjects, ...cameras];
+}
+
+/** Bearings (from the subjects, 0 = straight out in front) of interview cameras A, B, C, D. */
+const INTERVIEW_CAMERA_DEG = [[0], [-25, 40], [-15, -75, 70], [-15, -75, 70, 25]];
+
+/**
+ * Interview cameras on a half circle around the subjects: A just off the interviewer's eyeline,
+ * then B and C out to the sides, so between them they cover the front half of the set.
+ */
+export function interviewCameras(count: number, center: Vec2 = { x: 0, y: 0 }, dist = FRAMING_DISTANCE_CM.medium!): DraftItem[] {
+  const degs = INTERVIEW_CAMERA_DEG[Math.min(count, 4) - 1] ?? [];
+  return degs.slice(0, count).map((d, i) => {
+    const pos = add(center, rotate({ x: 0, y: dist }, d));
+    return camera(pos, center, `Cam ${String.fromCharCode(65 + i)}`);
+  });
 }
 
 /**

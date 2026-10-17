@@ -3,8 +3,8 @@ import { libraryItem } from '../library/items';
 import { aimAt } from './geometry';
 import { attachOpenings } from './walls';
 import { settleAttachments } from './attach';
-import { DEFAULT_LENS_MM } from './lens';
-import { fitTwoShot } from './twoShot';
+import { DEFAULT_LENS_MM, horizontalFovDeg } from './lens';
+import { fitTwoShot, twoShotFovDeg } from './twoShot';
 import type { Sun } from './sun';
 import type { EquipmentState } from './equipment';
 import type { Actor, CastRole, Gender, Item, Vec2 } from './types';
@@ -224,8 +224,15 @@ export function linkInterview(items: Item[], actors: readonly Actor[]): Item[] {
   return items.map((i) => {
     if (i.kind === 'camera') {
       const target = camTargets[cam++];
-      if (Array.isArray(target)) return { ...i, camera: { ...i.camera, focusActorId: undefined, twoShot: target } };
-      return target ? { ...i, camera: { ...i.camera, focusActorId: target } } : i;
+      // Lens unless the template set one: tight singles (85 mm on interviewees, 50 mm on
+      // interviewers), wides on 35 mm, or 24 mm when 35 can't hold both from where it stands.
+      const lens = (mm: number) => ({ focalMm: i.camera?.focalMm ?? mm });
+      if (Array.isArray(target)) {
+        const [a, b] = target.map((id) => items.find((x) => x.actorId === id)!.pos);
+        const wide = twoShotFovDeg(i.pos, a!, b!) <= horizontalFovDeg(35) ? 35 : 24;
+        return { ...i, camera: { ...i.camera, ...lens(wide), focusActorId: undefined, twoShot: target } };
+      }
+      return target ? { ...i, camera: { ...i.camera, ...lens(ees.includes(target) ? 85 : 50), focusActorId: target } } : i;
     }
     const r = role(i);
     if (r === 'interviewee') return { ...i, lookAtActorId: ers[0] };

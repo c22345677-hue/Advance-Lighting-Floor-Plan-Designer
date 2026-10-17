@@ -176,6 +176,15 @@ describe('interview template links', () => {
     expect(out[4]!.camera?.focusActorId).toBeUndefined();
     expect(out[4]!.camera?.twoShot).toEqual([ee.id, er.id]);
   });
+
+  it('puts 85 mm on interviewee singles, 50 mm on interviewer singles and 35 or 24 mm on the two shot', () => {
+    const ee = newActor([], { role: 'interviewee' });
+    const er = newActor([ee], { role: 'interviewer' });
+    const person = (id: string, actorId: string, x: number): Item => ({ id, kind: 'person', actorId, pos: { x, y: 0 }, rotationDeg: 0 });
+    const cam = (id: string, focalMm?: number): Item => ({ id, kind: 'camera', pos: { x: 0, y: 300 }, rotationDeg: 0, ...(focalMm ? { camera: { focalMm } } : {}) });
+    const out = linkInterview([person('a', ee.id, 0), person('b', er.id, 100), cam('c1'), cam('c2'), cam('c3'), cam('c4', 100)], [ee, er]);
+    expect(out.slice(2).map((c) => c.camera?.focalMm)).toEqual([85, 50, 24, 100]);
+  });
 });
 
 describe('interview cameras', () => {

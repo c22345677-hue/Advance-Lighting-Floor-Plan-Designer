@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { aimAt } from '../model/geometry';
 import { applyTemplate } from './apply';
 import { getTemplate, listTemplates } from './registry';
 import type { TemplateDefinition } from './types';
@@ -110,9 +111,14 @@ describe('template library', () => {
     expect(interviewer?.label).toBe('Interviewer');
     const cams = items.filter((i) => i.kind === 'camera');
     expect(cams).toHaveLength(3);
-    // Middle camera sits straight below the subjects, facing up.
-    close(cams[1]!.pos, { x: 0, y: 250 });
-    expect(cams[1]!.rotationDeg).toBeCloseTo(0);
+    // A half circle around the subjects, all 250 cm out and facing them; B and C out to the sides.
+    for (const c of cams) {
+      expect(Math.hypot(c.pos.x, c.pos.y)).toBeCloseTo(250);
+      expect(aimAt(c.pos, { x: 0, y: 0 })).toBeCloseTo(c.rotationDeg);
+    }
+    expect(Math.abs(cams[1]!.pos.x)).toBeGreaterThan(200);
+    expect(Math.abs(cams[2]!.pos.x)).toBeGreaterThan(200);
+    expect(Math.sign(cams[1]!.pos.x)).not.toBe(Math.sign(cams[2]!.pos.x));
   });
 
   it('green screen puts the screen on the set layer at the chosen width', () => {
