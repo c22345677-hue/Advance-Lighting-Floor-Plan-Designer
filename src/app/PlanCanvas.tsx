@@ -32,7 +32,7 @@ import {
   wallSegments,
 } from '../model/walls';
 import type { SceneAction } from './doc';
-import { greyOf, mutedColors, type CanvasColors } from './theme';
+import { greyOf, mutedColors, tonedColors, type CanvasColors } from './theme';
 
 Konva.hitOnDragEnabled = true; // lets a second finger start a pinch while dragging
 
@@ -109,7 +109,8 @@ export function itemName(item: Item): string {
 export const isFocusLocked = (item: Item, all: readonly Item[]): boolean =>
   !!twoShotTargets(item, all) ||
   (!!followsActorId(item) && all.some((a) => a.actorId === followsActorId(item))) ||
-  (item.kind === 'light' && !!item.light?.aimItemId && all.some((a) => a.id === item.light!.aimItemId));
+  (item.kind === 'light' && !!item.light?.aimItemId && all.some((a) => a.id === item.light!.aimItemId)) ||
+  (item.kind === 'camera' && !!item.camera?.focusItemId && all.some((a) => a.id === item.camera!.focusItemId));
 
 /** Renders the plan to a PNG data URL, without selection handles. */
 export type ExportPng = () => string | null;
@@ -862,7 +863,7 @@ export function PlanCanvas(p: Props) {
           <SelectOutline item={item} actors={actors} colors={colors} scale={view.scale} color={tool === 'rotate' ? colors.rotate : colors.select} />
         )}
         {coarse && !item.wall && <Circle name="hit-pad" radius={TOUCH_PAD_PX / view.scale} fill="#000" opacity={0} />}
-        <ItemShape item={item} actors={actors} colors={colors} muted={!active} />
+        <ItemShape item={item} actors={actors} colors={colors} muted={!active} tone={stackTone.get(item.id)} />
       </Group>
     );
   };
@@ -940,6 +941,27 @@ export function PlanCanvas(p: Props) {
       />
     );
   };
+
+  /**
+   * How many items of the same layer each item sits on (its centre inside their footprint, and it
+   * drawn after them): a product on a table, a box on a crate. Used to shade it apart.
+   */
+  const stackTone = useMemo(() => {
+    const order = [...visible].sort((a, b) => drawLayer(a) - drawLayer(b));
+    const out = new Map<string, number>();
+    order.forEach((top, k) => {
+      if (top.wall || top.inWall) return;
+      let n = 0;
+      for (const under of order.slice(0, k)) {
+        if (under.wall || under.inWall || drawLayer(under) !== drawLayer(top)) continue;
+        const look = itemLook(under);
+        const local = rotate({ x: top.pos.x - under.pos.x, y: top.pos.y - under.pos.y }, -under.rotationDeg);
+        if (Math.abs(local.x) <= look.w / 2 && Math.abs(local.y) <= look.d / 2) n += 1;
+      }
+      if (n) out.set(top.id, n);
+    });
+    return out;
+  }, [visible]);
 
   /** Lights whose beams are drawn (by the light layer; hidden layers still light and cast shadows). */
   const beamIds = useMemo(() => new Set(visible.filter((i) => i.kind === 'light').map((i) => i.id)), [visible]);
@@ -2187,6 +2209,7 @@ export function ItemShape({
   colors,
   bodyOnly,
   muted,
+  tone,
 }: {
   item: Item;
   actors: readonly Actor[];
@@ -2195,8 +2218,10 @@ export function ItemShape({
   bodyOnly?: boolean;
   /** Greyed out: not in the category being edited. */
   muted?: boolean;
+  /** Sitting on this many items of its own kind: drawn in a shifted shade so it doesn't vanish into them. */
+  tone?: number;
 }) {
-  const c = muted ? mutedColors(colors) : colors;
+  const c = muted ? mutedColors(tonedColors(colors, tone ?? 0)) : tonedColors(colors, tone ?? 0);
   const { shape, w, d } = itemLook(item);
   const hw = w / 2;
   const hd = d / 2;

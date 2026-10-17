@@ -450,17 +450,20 @@ function PointAt({ item, sceneItems, actors, setLight }: { item: Item; sceneItem
   );
 }
 
-type Framing = 'none' | 'one' | 'two';
+type Framing = 'none' | 'one' | 'two' | 'object';
 
 function CameraSection({ item, sceneItems, actors, onUpdate }: Pick<Props, 'item' | 'sceneItems' | 'actors' | 'onUpdate'>) {
   const cam = item.camera;
   const inScene = actors.filter((a) => sceneItems.some((i) => i.actorId === a.id));
-  const framing: Framing = cam?.twoShot ? 'two' : cam?.focusActorId ? 'one' : 'none';
+  const framing: Framing = cam?.twoShot ? 'two' : cam?.focusActorId ? 'one' : cam?.focusItemId ? 'object' : 'none';
+  // Things a camera can hold on besides people: props and set pieces.
+  const objects = sceneItems.filter((i) => !i.hidden && !i.wall && !i.inWall && (i.kind === 'prop' || i.kind === 'set') && modeOf(i) !== 'camera');
   const setCam = (patch: Partial<NonNullable<Item['camera']>>) => onUpdate({ camera: { ...cam, ...patch } });
   const choose = (f: Framing) => {
-    if (f === 'none') setCam({ focusActorId: undefined, twoShot: undefined });
-    if (f === 'one') setCam({ twoShot: undefined, focusActorId: cam?.focusActorId ?? inScene[0]?.id });
-    if (f === 'two' && inScene.length >= 2) setCam({ focusActorId: undefined, twoShot: [inScene[0]!.id, inScene[1]!.id] });
+    if (f === 'none') setCam({ focusActorId: undefined, twoShot: undefined, focusItemId: undefined });
+    if (f === 'one') setCam({ twoShot: undefined, focusItemId: undefined, focusActorId: cam?.focusActorId ?? inScene[0]?.id });
+    if (f === 'two' && inScene.length >= 2) setCam({ focusActorId: undefined, focusItemId: undefined, twoShot: [inScene[0]!.id, inScene[1]!.id] });
+    if (f === 'object' && objects.length) setCam({ focusActorId: undefined, twoShot: undefined, focusItemId: cam?.focusItemId ?? objects[0]!.id });
   };
   const who = (value: string | undefined, onChange: (id: string) => void, label: string, exclude?: string) => (
     <select value={value} onChange={(e) => onChange(e.target.value)} aria-label={label}>
@@ -491,7 +494,23 @@ function CameraSection({ item, sceneItems, actors, onUpdate }: Pick<Props, 'item
           <button role="radio" aria-checked={framing === 'two'} disabled={inScene.length < 2 && framing !== 'two'} onClick={() => choose('two')}>
             Two shot
           </button>
+          <button role="radio" aria-checked={framing === 'object'} disabled={!objects.length && framing !== 'object'} onClick={() => choose('object')}>
+            Object
+          </button>
         </div>
+        {framing === 'object' && (
+          <>
+            <select aria-label="Camera focus on object" value={cam?.focusItemId} onChange={(e) => setCam({ focusItemId: e.target.value })}>
+              {objects.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {displayLabel(o, actors) || itemName(o)}
+                </option>
+              ))}
+              {cam?.focusItemId && !objects.some((o) => o.id === cam.focusItemId) && <option value={cam.focusItemId}>(not in this scene)</option>}
+            </select>
+            <p className="hint-text">The camera keeps facing it (a product, a prop) whenever either moves.</p>
+          </>
+        )}
         {framing === 'one' && (
           <>
             {who(cam?.focusActorId, (focusActorId) => setCam({ focusActorId }), 'Camera focus on')}

@@ -163,7 +163,7 @@ export function applyCameraFocus(items: Item[], all: readonly Item[] = items): I
       return { ...i, pos: fit.pos, rotationDeg: fit.rotationDeg, camera: { ...i.camera, focalMm: fit.focalMm } };
     }
     const who = followsActorId(i);
-    const aimItem = i.kind === 'light' && !who ? i.light?.aimItemId : undefined;
+    const aimItem = !who ? (i.kind === 'light' ? i.light?.aimItemId : i.kind === 'camera' ? i.camera?.focusItemId : undefined) : undefined;
     const target = who ? all.find((a) => a.actorId === who) : aimItem ? all.find((a) => a.id === aimItem && a.id !== i.id) : undefined;
     if (!target) return i;
     const rotationDeg = aimAt(i.pos, target.pos);

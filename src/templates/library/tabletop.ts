@@ -17,7 +17,8 @@ export const tabletop: TemplateDefinition = {
           items: [
             prop('desk', { x: 0, y: -10 }),
             { kind: 'prop', catalogId: 'generic.prop.stool', pos: product, rotationDeg: 0, label: 'Product' },
-            { ...camera({ x: 0, y: 220 }, product, 'Cam A'), camera: { focalMm: 85 } },
+            // 100 mm, held on the product.
+            { ...camera({ x: 0, y: 220 }, product, 'Cam A'), camera: { focalMm: 100, focusItemId: '#Product' } },
             light('generic.light.cob', { x: -160, y: 60 }, product, { heightCm: 140 }),
             light('generic.light.led-panel', { x: 110, y: -150 }, product, { heightCm: 150 }),
             grip('polyboard', { x: 120, y: 60 }, product),

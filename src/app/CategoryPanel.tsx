@@ -52,7 +52,7 @@ const kg = (v: number | null) => (v == null ? '? kg' : `${Math.round(v * 10) / 1
 const unitNo = (i: Item) => Number(/\d+/.exec(i.light?.unitId ?? '')?.[0] ?? 1e9);
 
 /** One-line summary under an item's name in the scene list. */
-function summary(item: Item, actors: Actor[]): { sub: string; warn?: string } {
+function summary(item: Item, actors: Actor[], all: Item[] = []): { sub: string; warn?: string } {
   if (item.note) return { sub: item.note.text || '(no text)' };
   if (item.wall) {
     const n = item.wall.closed ? item.wall.points.length : item.wall.points.length - 1;
@@ -68,7 +68,9 @@ function summary(item: Item, actors: Actor[]): { sub: string; warn?: string } {
     const two = item.camera?.twoShot?.map((id) => actors.find((a) => a.id === id)?.name ?? '?');
     if (two) return { sub: `Two shot: ${two.join(' & ')} · ${item.camera?.focalMm ?? 35} mm` };
     const focus = actors.find((a) => a.id === item.camera?.focusActorId);
-    return { sub: focus ? `Focus on ${focus.name}` : 'No focus' };
+    const thing = item.camera?.focusItemId ? all.find((i) => i.id === item.camera!.focusItemId) : undefined;
+    const mm = item.camera?.focalMm ? ` · ${item.camera.focalMm} mm` : '';
+    return { sub: focus ? `Focus on ${focus.name}${mm}` : thing ? `Focus on ${displayLabel(thing, actors) || itemName(thing)}${mm}` : 'No focus' };
   }
   const fabric = fabricById(item.grip?.fabric);
   if (fabric) return { sub: FABRIC_KIND_LABEL[fabric.kind] };
@@ -94,7 +96,7 @@ function SceneList({ items, all, actors, empty, onSelect }: { items: Item[]; all
   return (
     <ul className="row-list">
       {items.map((i) => {
-        const s = summary(i, actors);
+        const s = summary(i, actors, all);
         return (
           <li key={i.id}>
             <button className="row" onClick={() => onSelect(i.id)}>

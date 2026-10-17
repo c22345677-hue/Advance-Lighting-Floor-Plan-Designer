@@ -117,6 +117,8 @@ function castTemplateItems(
     // Attached by label in the template ("#Dolly A"): hang it where it stands on that item.
     const onRef = i.attachedTo?.to.startsWith('#') ? [...setItems, ...out].find((x) => x.label === i.attachedTo!.to.slice(1)) : undefined;
     if (i.attachedTo?.to.startsWith('#')) i = { ...i, attachedTo: onRef ? attachmentFor(i, onRef) : undefined };
+    const camRef = i.camera?.focusItemId?.startsWith('#') ? i.camera.focusItemId.slice(1) : undefined;
+    if (camRef) i = { ...i, camera: { ...i.camera, focusItemId: [...setItems, ...out].find((x) => x.label === camRef)?.id } };
     const aimRef = i.light?.aimItemId?.startsWith('#') ? i.light.aimItemId.slice(1) : undefined;
     if (aimRef) i = { ...i, light: { ...i.light, aimItemId: [...setItems, ...out].find((x) => x.label === aimRef)?.id } };
     const look = who(i.lookAtActorId);

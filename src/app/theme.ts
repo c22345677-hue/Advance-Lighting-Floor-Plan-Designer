@@ -80,6 +80,43 @@ export function greyOf(color: string, canvas = '#808080'): string {
   return c[3] < 1 ? `rgba(${g}, ${g}, ${g}, ${c[3]})` : `rgb(${g}, ${g}, ${g})`;
 }
 
+const parseRgb = (s: string): [number, number, number] | null => {
+  const hex = /^#([0-9a-f]{6})$/i.exec(s.trim());
+  if (hex) {
+    const n = parseInt(hex[1]!, 16);
+    return [n >> 16, (n >> 8) & 255, n & 255];
+  }
+  const m = /^rgba?\(([^)]+)\)$/i.exec(s.trim());
+  return m ? (m[1]!.split(',').slice(0, 3).map((x) => parseFloat(x)) as [number, number, number]) : null;
+};
+
+const toneCache = new Map<string, CanvasColors>();
+/**
+ * The plan colours shifted `depth` steps away from the canvas (lighter on a dark plan, darker on
+ * a light one), for an item sitting on another item: a product on a table stays visible.
+ */
+export function tonedColors(c: CanvasColors, depth: number): CanvasColors {
+  if (depth <= 0) return c;
+  const key = `${c.canvas}|${c.prop}|${c.set}|${depth}`;
+  let t = toneCache.get(key);
+  if (!t) {
+    const bg = parseRgb(c.canvas) ?? [128, 128, 128];
+    const dark = 0.299 * bg[0] + 0.587 * bg[1] + 0.114 * bg[2] < 128;
+    const k = Math.min(0.6, 0.24 * depth);
+    const shift = (col: string) => {
+      const v = parseRgb(col);
+      if (!v) return col;
+      const to = dark ? 255 : 0;
+      const [r, g, b] = v.map((x) => Math.round(x + (to - x) * k));
+      return `rgb(${r}, ${g}, ${b})`;
+    };
+    t = { ...c };
+    for (const n of ['person', 'camera', 'chroma', 'set', 'light', 'grip', 'prop'] as const) t[n] = shift(c[n]);
+    toneCache.set(key, t);
+  }
+  return t;
+}
+
 const mutedCache = new WeakMap<CanvasColors, CanvasColors>();
 /** The plan colours greyed out, for items outside the category being edited. */
 export function mutedColors(c: CanvasColors): CanvasColors {
