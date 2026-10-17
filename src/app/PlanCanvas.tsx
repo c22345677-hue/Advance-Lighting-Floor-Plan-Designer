@@ -1265,14 +1265,7 @@ export function PlanCanvas(p: Props) {
         ))}
         {ghosts.filter((g) => g.id === dragging).map((g) => label(ghostOf(g)))}
         {visible.map(blockingPath)}
-        {visible
-          .filter((i) => scene.setItems.includes(i))
-          .sort((a, b) => Number(!!b.wall) - Number(!!a.wall)) /* walls under doors and windows */
-          .map(renderItem)}
-        {visible
-          .filter((i) => scene.items.includes(i))
-          .sort((a, b) => Number(itemLook(b).shape === 'note-area') - Number(itemLook(a).shape === 'note-area')) /* areas underneath */
-          .map(renderItem)}
+        {[...visible].sort((a, b) => drawLayer(a) - drawLayer(b)).map(renderItem)}
         {visible.filter((i) => i.wall?.closed).map(roomTag)}
         {visible.map(label)}
         {tool === 'rotate' &&
@@ -2068,6 +2061,21 @@ function viewerShape(x: number, y: number, c: CanvasColors, scale = PERSON_SCALE
       )}
     </Group>
   );
+}
+
+/**
+ * Drawing order on the plan, bottom to top: marked areas, walls, doors and windows, set pieces
+ * and furniture, people, then lights, grip and camera gear (always on top of the actors), then notes.
+ */
+export function drawLayer(i: Item): number {
+  const shape = itemLook(i).shape;
+  if (shape === 'note-area') return 0;
+  if (i.wall) return 1;
+  if (i.inWall) return 2;
+  if (i.kind === 'note') return 7;
+  if (i.kind === 'person') return 4;
+  if (i.kind === 'light' || i.kind === 'modifier' || i.kind === 'grip' || i.kind === 'camera' || modeOf(i) === 'camera') return isMeter(i) ? 6 : 5;
+  return 3; // set pieces, furniture, props
 }
 
 /** Distance from `p` to the segment a–b. */
