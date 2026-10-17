@@ -70,9 +70,10 @@ export const carInterior: TemplateDefinition = {
       prop('car', C),
       person(driver, 0, 'Driver'),
       person(passenger, 0, 'Passenger'),
-      { ...camera({ x: 0, y: -260 }, { x: 0, y: -20 }, 'Cam A'), camera: { focalMm: 24 } },
-      camera({ x: -160, y: -40 }, passenger, 'Cam B'),
-      camera({ x: 160, y: -40 }, driver, 'Cam C'),
+      // Windshield two shot of both; side singles each locked on the person across ("@0" driver, "@1" passenger).
+      { ...camera({ x: 0, y: -260 }, { x: 0, y: -20 }, 'Cam A'), camera: { focalMm: 24, twoShot: ['@0', '@1'] } },
+      { ...camera({ x: -160, y: -40 }, passenger, 'Cam B'), camera: { focusActorId: '@1' } },
+      { ...camera({ x: 160, y: -40 }, driver, 'Cam C'), camera: { focusActorId: '@0' } },
     ];
     if (o.boolean('lights'))
       items.push(
