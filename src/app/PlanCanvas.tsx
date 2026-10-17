@@ -2036,13 +2036,25 @@ export function findAttachTarget(child: Item, at: Vec2, all: readonly Item[], to
   return best?.item ?? null;
 }
 
-/** Someone watching a monitor: a person in the camera colour, facing up the item (towards the screen). */
-function viewerShape(x: number, y: number, c: CanvasColors, scale = PERSON_SCALE) {
+/**
+ * Someone watching a monitor: a person in the camera colour, turned to face `look` (in the
+ * item's frame; straight up when not given), optionally wearing headphones.
+ */
+function viewerShape(x: number, y: number, c: CanvasColors, scale = PERSON_SCALE, look?: Vec2, headphones = false) {
+  const turn = look ? aimAt({ x, y }, look) : 0;
   return (
-    <Group key={x} x={x} y={y} scaleX={scale} scaleY={scale}>
+    <Group key={x} x={x} y={y} scaleX={scale} scaleY={scale} rotation={turn}>
       <Rect x={-22} y={-10} width={44} height={20} cornerRadius={10} fill={c.camera} opacity={0.85} />
       <Circle radius={9} fill={c.camera} stroke={c.canvas} strokeWidth={2} />
       <Line points={[-4, -11, 0, -18, 4, -11]} closed fill={c.camera} />
+      {headphones && (
+        <>
+          {/* Band over the crown, ear cups on both sides. */}
+          <Arc angle={180} rotation={0} innerRadius={8.5} outerRadius={11} fill={c.grip} />
+          <Rect x={-13} y={-4.5} width={5} height={9} cornerRadius={2} fill={c.grip} stroke={c.canvas} strokeWidth={0.8} />
+          <Rect x={8} y={-4.5} width={5} height={9} cornerRadius={2} fill={c.grip} stroke={c.canvas} strokeWidth={0.8} />
+        </>
+      )}
     </Group>
   );
 }
@@ -2285,14 +2297,16 @@ export function ItemShape({
           <Rect x={-hw * 0.3} y={top} width={hw * 0.6} height={5} cornerRadius={2.5} fill={c.camera} opacity={0.7} />
           <Rect x={-hw} y={top + 5} width={w} height={8} cornerRadius={2} fill={c.camera} />
           <Line points={[-hw + 3, top + 13, hw - 3, top + 13]} stroke={c.label} strokeWidth={2} />
-          {viewerShape(0, top + 48, c)}
+          {viewerShape(0, top + 48, c, PERSON_SCALE, undefined, true)}
         </>
       );
     }
     case 'video-village': {
       // Large monitor at the front, three people in front of it watching (facing it), one colour.
       const mw = Math.min(w * 0.7, 130);
-      const viewer = (x: number) => viewerShape(x, hd - 36, c, Math.min(PERSON_SCALE, (w * 0.32) / 46)); // three side by side
+      // Three side by side, each turned to the middle of the screen.
+      const screen = { x: 0, y: -hd + 10 };
+      const viewer = (x: number) => viewerShape(x, hd - 36, c, Math.min(PERSON_SCALE, (w * 0.32) / 46), screen);
       return (
         <>
           <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={8} stroke={c.camera} strokeWidth={1.5} dash={[6, 5]} opacity={0.6} />
