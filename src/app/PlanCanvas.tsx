@@ -3,7 +3,7 @@ import { lightColor, rgbCss } from '../model/color';
 import { marksOf, moveMark } from '../model/blocking';
 import { sunRgb, windowLights, type WindowLight } from '../model/sun';
 import { lightLumens, meterReadings, stopParts, type CameraSettings, type Reading } from '../model/exposure';
-import { beamReach, lightSource } from '../model/shadows';
+import { beamReach, lightReach, lightSource } from '../model/shadows';
 import { assemblyOf, canAttach, isMeter, rootOf } from '../model/attach';
 import { ShadowLayer, type LivePatch, type ShadowLive } from './ShadowLayer';
 import type { KonvaEventObject } from 'konva/lib/Node';
@@ -962,6 +962,14 @@ export function PlanCanvas(p: Props) {
     });
     // Through diffusion: the lamp's cone stops at the frame, and the fabric spreads the light wide.
     const src = lightSource(item, lit);
+    // Walls stop the light: the beam is cut to where it gets to (in the beam's own frame).
+    const reachPoly = lightReach(item.pos, lit, throwCm * 1.6)?.map((q) => rotate({ x: q.x - item.pos.x, y: q.y - item.pos.y }, -item.rotationDeg));
+    const wallClip = reachPoly
+      ? (ctx: Konva.Context) => {
+          reachPoly.forEach((q, k) => (k ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y)));
+          ctx.closePath();
+        }
+      : undefined;
     const frame = src?.frameId ? lit.find((f) => f.id === src.frameId) : undefined;
     if (frame && deg < 360) {
       const toFrame = Math.hypot(frame.pos.x - item.pos.x, frame.pos.y - item.pos.y);
@@ -977,14 +985,14 @@ export function PlanCanvas(p: Props) {
       };
       const lamp = { ...gradient(0.8), fillRadialGradientEndRadius: toFrame * 1.6 };
       return (
-        <Group key={`${item.id}-beam`} id={`${item.id}-beam`} x={item.pos.x} y={item.pos.y} rotation={item.rotationDeg} listening={false}>
+        <Group key={`${item.id}-beam`} id={`${item.id}-beam`} x={item.pos.x} y={item.pos.y} rotation={item.rotationDeg} listening={false} clipFunc={wallClip}>
           <Wedge radius={toFrame} angle={deg} rotation={-90 - deg / 2} {...lamp} />
           <Wedge x={local.x} y={local.y} radius={rest} angle={spread} rotation={-90 - spread / 2} {...glow} />
         </Group>
       );
     }
     return (
-      <Group key={`${item.id}-beam`} id={`${item.id}-beam`} x={item.pos.x} y={item.pos.y} rotation={item.rotationDeg} listening={false}>
+      <Group key={`${item.id}-beam`} id={`${item.id}-beam`} x={item.pos.x} y={item.pos.y} rotation={item.rotationDeg} listening={false} clipFunc={wallClip}>
         {deg >= 360 ? (
           <Circle radius={throwCm} {...gradient(1)} />
         ) : (

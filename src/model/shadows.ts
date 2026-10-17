@@ -129,6 +129,17 @@ function bareSource(i: Item): { size: number; what: string } {
   }
 }
 
+/** Is any part of the occluder in the beam (or, for a wall, does it cross the beam)? */
+function insideBeamOrCrossing(s: LightSource, points: Vec2[], c: Vec2, range: number): boolean {
+  const pts = [c, ...points];
+  if (pts.some((p) => insideBeam(s.apex, s.rotationDeg, s.beamDeg, range, p))) return true;
+  if (s.beamDeg >= 360 || points.length < 2) return false;
+  // A long wall can span the beam with both ends outside it: check the angles straddle the beam.
+  const off = (p: Vec2) => ((aimAt(s.apex, p) - s.rotationDeg + 540) % 360) - 180;
+  const offs = points.map(off);
+  return Math.min(...offs) < -s.beamDeg / 2 && Math.max(...offs) > s.beamDeg / 2 && Math.max(...offs) - Math.min(...offs) < 180;
+}
+
 /** Darkness of a full shadow for a source of this size (seen from about 45 cm: the window skylight). */
 export const darknessFor = (sizeCm: number) => 0.62 / (1 + sizeCm / 40);
 
@@ -142,7 +153,7 @@ export const apparentDeg = (sizeCm: number, distCm: number) => (2 * Math.atan(si
  * How dark a shadow is from a source of `sizeCm`, on something `distCm` from it: a source that
  * looks big from there wraps light around the object and fills its shadow in.
  */
-export const darknessAt = (sizeCm: number, distCm: number) => 0.62 / (1 + (1.1 * sizeCm) / Math.max(20, distCm));
+export const darknessAt = (sizeCm: number, distCm: number) => 0.62 / (1 + (1.8 * sizeCm) / Math.max(20, distCm));
 
 /** Hard below about 8° apparent size, soft from about 20°. */
 export const hardnessAt = (deg: number): Hardness => (deg < 8 ? 'hard' : deg < 20 ? 'medium' : 'soft');
@@ -386,6 +397,10 @@ export interface ShadowShape {
   lightId: string;
   points: Vec2[];
   opacity: number;
+  /** Which point across the source cast it (−1: the hard hot spot through light diffusion). */
+  sample?: number;
+  /** Cast by a wall: the light doesn't get past it at all (drawn as "no light here", not as a shadow). */
+  wall?: boolean;
   /** Where the shadow starts (the object) and where it has faded out: drawn as a fade between them. */
   fade?: { from: Vec2; to: Vec2 };
 }
@@ -425,9 +440,11 @@ export function sceneShadows(items: readonly Item[], extra: LightSource[] = []):
         if (![c, ...o.points].some((p) => pointInPolygon(p, s.clip!))) continue;
       } else {
         // Only what's in front of the source (and past a diffusion frame) and roughly in the beam.
+        // Walls count out to where the shadows end, so nothing's shadow carries on past one.
+        const range = o.heightCm === BLOCKS ? reach : s.throwCm;
         const dist = Math.min(...[c, ...o.points].map((p) => Math.hypot(p.x - s.apex.x, p.y - s.apex.y)));
-        if (dist > s.throwCm || Math.hypot(c.x - s.apex.x, c.y - s.apex.y) <= s.minDistCm) continue;
-        if (![c, ...o.points].some((p) => insideBeam(s.apex, s.rotationDeg, s.beamDeg, s.throwCm, p))) continue;
+        if (dist > range || Math.hypot(c.x - s.apex.x, c.y - s.apex.y) <= s.minDistCm) continue;
+        if (!insideBeamOrCrossing(s, o.points, c, range)) continue;
       }
       if (o.points.some((p) => Math.hypot(p.x - s.pos.x, p.y - s.pos.y) < 1)) continue;
       // Closer to a big source, the shadow is filled in more (and spread wider by the samples).
@@ -442,11 +459,13 @@ export function sceneShadows(items: readonly Item[], extra: LightSource[] = []):
             lightId: s.lightId,
             points: poly,
             opacity: darknessAt(15, d) * (1 - s.scatter) * (s.intensity ?? 1) * 0.8,
+            sample: -1,
             fade: { from: c, to: { x: s.apex.x + ((c.x - s.apex.x) / d) * tip, y: s.apex.y + ((c.y - s.apex.y) / d) * tip } },
           });
       }
       for (let k = 0; k < samples; k++) {
-        const t = samples === 1 ? 0 : (k / (samples - 1) - 0.5) * s.sizeCm;
+        // The middle of each equal slice of the source (its very edges count for less).
+        const t = samples === 1 ? 0 : ((k + 0.5) / samples - 0.5) * s.sizeCm;
         const src = { x: s.pos.x + across.x * t, y: s.pos.y + across.y * t };
         const poly = shadowPolygon(src, s.heightCm, o, reach);
         if (!poly) continue;
@@ -457,7 +476,7 @@ export function sceneShadows(items: readonly Item[], extra: LightSource[] = []):
           const tip = Math.max(...poly.map((q) => Math.hypot(q.x - src.x, q.y - src.y)));
           fade = { from: c, to: { x: src.x + ((c.x - src.x) / d) * tip, y: src.y + ((c.y - src.y) / d) * tip } };
         }
-        shadows.push({ lightId: s.lightId, points: poly, opacity: dark / samples, fade });
+        shadows.push({ lightId: s.lightId, points: poly, opacity: dark / samples, fade, sample: k, wall: o.id.includes('#') || undefined });
       }
     }
   }
@@ -473,4 +492,54 @@ export function pointInPolygon(p: Vec2, poly: readonly Vec2[]): boolean {
     if (a.y > p.y !== b.y > p.y && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) inside = !inside;
   }
   return inside;
+}
+
+/**
+ * The area a point light at `o` reaches, given walls (as segments), out to `radius`: a polygon
+ * found by casting rays at every wall corner (and just either side of it).
+ */
+export function visibilityPolygon(o: Vec2, segs: [Vec2, Vec2][], radius: number): Vec2[] {
+  const ring: Vec2[] = Array.from({ length: 32 }, (_, k) => ({ x: o.x + Math.cos((k / 32) * Math.PI * 2) * radius * 1.05, y: o.y + Math.sin((k / 32) * Math.PI * 2) * radius * 1.05 }));
+  const all: [Vec2, Vec2][] = [...segs, ...ring.map((p, k) => [p, ring[(k + 1) % ring.length]!] as [Vec2, Vec2])];
+  const angles: number[] = [];
+  for (const [a, b] of all)
+    for (const p of [a, b]) {
+      const t = Math.atan2(p.y - o.y, p.x - o.x);
+      angles.push(t - 1e-4, t, t + 1e-4);
+    }
+  angles.sort((a, b) => a - b);
+  const out: Vec2[] = [];
+  for (const t of angles) {
+    const d = { x: Math.cos(t), y: Math.sin(t) };
+    let best = radius * 1.05;
+    for (const [a, b] of all) {
+      // Ray o + d·s against segment a + (b − a)·u.
+      const e = { x: b.x - a.x, y: b.y - a.y };
+      const den = d.x * e.y - d.y * e.x;
+      if (Math.abs(den) < 1e-9) continue;
+      const w = { x: a.x - o.x, y: a.y - o.y };
+      const s = (w.x * e.y - w.y * e.x) / den;
+      const u = (w.x * d.y - w.y * d.x) / den;
+      if (s > 0.01 && u >= -1e-9 && u <= 1 + 1e-9 && s < best) best = s;
+    }
+    out.push({ x: o.x + d.x * best, y: o.y + d.y * best });
+  }
+  return out;
+}
+
+/** Wall faces near `o` (within `radius`), as segments. */
+export function wallFaces(items: readonly Item[], o: Vec2, radius: number): [Vec2, Vec2][] {
+  const out: [Vec2, Vec2][] = [];
+  for (const occ of occluders(items)) {
+    if (!occ.id.includes('#')) continue;
+    if (Math.min(...occ.points.map((p) => Math.hypot(p.x - o.x, p.y - o.y))) > radius * 1.5 + 2000) continue;
+    occ.points.forEach((p, k) => out.push([p, occ.points[(k + 1) % occ.points.length]!]));
+  }
+  return out;
+}
+
+/** Where a light gets to past the walls (null when no wall is near). */
+export function lightReach(from: Vec2, items: readonly Item[], radius: number): Vec2[] | null {
+  const faces = wallFaces(items, from, radius);
+  return faces.length ? visibilityPolygon(from, faces, radius) : null;
 }

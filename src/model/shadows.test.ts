@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { darknessFor, lightSource, sceneShadows, shadowPolygon } from './shadows';
+import { darknessFor, lightReach, lightSource, sceneShadows, shadowPolygon } from './shadows';
 import type { Item } from './types';
 
 const light = (catalogId: string, extra: Partial<Item> = {}): Item => ({
@@ -94,5 +94,25 @@ describe('shadows', () => {
     const low = shadowPolygon({ x: 0, y: 300 }, 200, { ...occ, heightCm: 50 }, 1000)!;
     const tall = shadowPolygon({ x: 0, y: 300 }, 200, { ...occ, heightCm: 150 }, 1000)!;
     expect(Math.min(...tall.map((p) => p.y))).toBeLessThan(Math.min(...low.map((p) => p.y)));
+  });
+});
+
+describe('light and walls', () => {
+  it('a light does not reach past a wall', () => {
+    const wall: Item = { id: 'W', kind: 'set', catalogId: 'generic.set.walls', pos: { x: -200, y: -100 }, rotationDeg: 0, wall: { points: [{ x: 0, y: 0 }, { x: 400, y: 0 }], closed: false, thicknessCm: 10 } };
+    const vis = lightReach({ x: 0, y: 200 }, [wall], 600)!;
+    expect(vis).not.toBeNull();
+    const inside = (p: { x: number; y: number }) => {
+      let c = false;
+      for (let i = 0, j = vis.length - 1; i < vis.length; j = i++) {
+        const a = vis[i]!;
+        const b = vis[j]!;
+        if (a.y > p.y !== b.y > p.y && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) c = !c;
+      }
+      return c;
+    };
+    expect(inside({ x: 0, y: 0 })).toBe(true); // in front of the wall
+    expect(inside({ x: 0, y: -200 })).toBe(false); // behind it
+    expect(inside({ x: 400, y: -200 })).toBe(true); // round the end of the wall
   });
 });
