@@ -768,7 +768,7 @@ function AttachSection({ item, sceneItems, actors, onUpdate }: { item: Item; sce
           <li className="row static">
             <span className="row-main">
               <span className="row-title">On {name(parent)}</span>
-              <span className="row-sub">{isMeter(item) ? 'Rotate (R) swings it around them' : 'Moves and turns with it'}</span>
+              <span className="row-sub">{isMeter(item) ? 'Reads the light on it, wherever the meter sits. Rotate (R) swings it around' : 'Moves and turns with it'}</span>
             </span>
             <button id="insp-detach" className="btn" onClick={() => onUpdate({ attachedTo: undefined })}>
               Detach
@@ -803,6 +803,7 @@ function MeterSection({
   sun?: Sun;
 }) {
   const r = meterReadings(sceneItems, camera, sun).find((x) => x.meterId === item.id);
+  const holder = item.attachedTo ? sceneItems.find((i) => i.id === item.attachedTo!.to) : undefined;
   if (!r) return null;
   const num = (label: string, key: keyof CameraSettings, unit: string, min: number, max: number) => (
     <label className="field">
@@ -823,6 +824,7 @@ function MeterSection({
   );
   return (
     <Section title="Reading">
+      {holder && <p className="hint-text">The light on {displayLabel(holder, []) || itemName(holder)}: an attached meter reads what it hangs on, wherever it sits.</p>}
       {r.contributions.length === 0 ? (
         <p className="hint-text">No light reaches the meter yet.</p>
       ) : (

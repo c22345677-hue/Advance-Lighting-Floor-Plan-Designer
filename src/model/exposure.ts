@@ -167,7 +167,7 @@ export function tStopLabel(n: number): string {
   return `T${base}${rest === 1 ? ' +⅓' : rest === 2 ? ' +⅔' : ''}`;
 }
 
-/** Readings on every light meter in the scene (at face height, where the meter stands). */
+/** Readings on every light meter in the scene, at face height: where the meter stands, or on what it is attached to. */
 export function meterReadings(items: readonly Item[], cam: CameraSettings = DEFAULT_CAMERA, sun?: Sun): Reading[] {
   const lights = items.filter((i) => i.kind === 'light' && !i.hidden);
   const windows = windowLights(items, sun);
@@ -175,17 +175,20 @@ export function meterReadings(items: readonly Item[], cam: CameraSettings = DEFA
   return items
     .filter((i) => isMeter(i) && !i.hidden)
     .map((p) => {
-      // What the meter hangs on (the person holding it) doesn't shade it.
+      // A meter attached to something reads the light on that thing (where the meter sits is
+      // just where its reading is shown); what it hangs on doesn't shade it.
+      const on = p.attachedTo ? items.find((i) => i.id === p.attachedTo!.to) : undefined;
+      const at = on?.pos ?? p.pos;
       const own = new Set(assemblyOf(p, items).map((i) => i.id));
-      const contributions = lights.map((l) => luxFrom(l, p.pos, items, own)).filter((c): c is Contribution => !!c && c.lux > 0.5);
+      const contributions = lights.map((l) => luxFrom(l, at, items, own)).filter((c): c is Contribution => !!c && c.lux > 0.5);
       // Daylight from the windows; direct sun is cut by anything standing in its way.
       const shaded = (wl: (typeof windows)[number]) =>
         occ.some((o) => {
           if (own.has(o.id) || o.heightCm < FACE_CM * 0.9 || wl.source.ignore?.includes(o.id)) return false;
           const poly = shadowPolygon(wl.source.pos, wl.source.heightCm, o, 2e5);
-          return !!poly && pointInPolygon(p.pos, poly);
+          return !!poly && pointInPolygon(at, poly);
         });
-      const day = daylightLux(p.pos, windows, shaded);
+      const day = daylightLux(at, windows, shaded);
       if (day > 0.5) contributions.push({ lightId: DAYLIGHT_ID, lux: day, blocked: false });
       contributions.sort((a, b) => b.lux - a.lux);
       const lux = contributions.reduce((n, c) => n + c.lux, 0);

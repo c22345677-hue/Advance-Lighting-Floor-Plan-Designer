@@ -52,11 +52,15 @@ describe('light meter', () => {
   it('readings come from light meters only; the person holding one does not shade it', () => {
     const l = light('a', 'generic.light.fresnel', 0, 300, 0);
     expect(meterReadings([l, person('q', 0, 0)])).toEqual([]);
+    // Attached, the meter reads the light on its holder; where the meter itself sits doesn't matter.
     const holder = person('q', 0, 30);
-    const m = meter('m', 0, 0);
-    const held = meterReadings([l, holder, { ...m, attachedTo: attachmentFor(m, holder) }])[0]!;
-    const free = meterReadings([l, m])[0]!;
-    expect(held.lux).toBe(free.lux);
+    const reading = (mx: number, my: number) => {
+      const m = meter('m', mx, my);
+      return meterReadings([l, holder, { ...m, attachedTo: attachmentFor(m, holder) }])[0]!.lux;
+    };
+    const free = meterReadings([l, meter('m', 0, 30)])[0]!.lux; // the same spot, nobody there
+    expect(reading(0, 0)).toBe(free);
+    expect(reading(-60, 80)).toBe(free);
   });
 
   it('key:fill ratio and T-stops', () => {
