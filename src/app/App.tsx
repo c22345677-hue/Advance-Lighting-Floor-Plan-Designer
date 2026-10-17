@@ -91,6 +91,8 @@ function castTemplateItems(
   actors: Actor[],
   scene: Item[],
   kind: ProjectKind,
+  /** The template's set pieces (lights can point at them by label: "#Green screen"). */
+  setItems: Item[] = [],
 ): { items: Item[]; added: Actor[] } {
   const added: Actor[] = [];
   const taken = new Set(scene.map((i) => i.actorId).filter(Boolean));
@@ -110,7 +112,10 @@ function castTemplateItems(
   // Templates point cameras and looks at their people as "@0", "@1"… (in the order they're listed).
   const cast = out.filter((i) => i.kind === 'person').map((i) => i.actorId!);
   const who = (ref?: string) => (ref?.startsWith('@') ? cast[Number(ref.slice(1))] : ref);
-  const linked = out.map((i) => {
+  const linked = out.map((item) => {
+    let i = item;
+    const aimRef = i.light?.aimItemId?.startsWith('#') ? i.light.aimItemId.slice(1) : undefined;
+    if (aimRef) i = { ...i, light: { ...i.light, aimItemId: [...setItems, ...out].find((x) => x.label === aimRef)?.id } };
     const look = who(i.lookAtActorId);
     const cam = i.camera && { ...i.camera, focusActorId: who(i.camera.focusActorId), twoShot: i.camera.twoShot && (i.camera.twoShot.map(who) as [string, string]) };
     return { ...i, ...(look !== i.lookAtActorId ? { lookAtActorId: look } : {}), ...(cam ? { camera: cam } : {}) };
@@ -123,7 +128,7 @@ function sampleProject(): Project {
   const t = getTemplate('interview');
   if (!t) return p;
   const r = applyTemplate(t, { interviewees: 1, interviewers: 1, cameras: 2 }, { origin: { x: 0, y: 0 } });
-  const cast = castTemplateItems(r.shots.flatMap((s) => s.items), [], [], 'doc');
+  const cast = castTemplateItems(r.shots.flatMap((s) => s.items), [], [], 'doc', r.setItems);
   p.actors = cast.added;
   const scene = focusScene({ ...p.scenes[0]!, setItems: r.setItems, items: cast.items });
   p.scenes[0] = { ...scene, baseline: structuredClone({ setItems: scene.setItems, items: scene.items }) };
@@ -706,7 +711,7 @@ export function App() {
     // The template replaces the scene, so it starts from the middle, with the whole cast free
     // to be placed again and lights numbered from L1.
     const r = applyTemplate(t, values, { origin: { x: 0, y: 0 } });
-    const cast = castTemplateItems(r.shots.flatMap((s) => s.items), project.actors, [], kind);
+    const cast = castTemplateItems(r.shots.flatMap((s) => s.items), project.actors, [], kind, r.setItems);
     const numbered: Item[] = [];
     for (const i of cast.items) {
       if (i.kind === 'light' && !i.light?.unitId) i.light = { ...i.light, unitId: nextUnitId(numbered) };

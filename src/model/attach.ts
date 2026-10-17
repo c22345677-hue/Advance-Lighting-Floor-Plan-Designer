@@ -68,7 +68,8 @@ export function canAttach(child: Item, parent: Item, all: readonly Item[]): bool
 }
 
 /** Keeps its own direction (it turns to face someone), so only its position follows the parent. */
-const aimsItself = (i: Item, all: readonly Item[]) => !!twoShotTargets(i, all) || (!!followsActorId(i) && all.some((a) => a.actorId === followsActorId(i)));
+const aimsItself = (i: Item, all: readonly Item[]) =>
+  !!twoShotTargets(i, all) || (!!followsActorId(i) && all.some((a) => a.actorId === followsActorId(i))) || (i.kind === 'light' && !!i.light?.aimItemId && all.some((a) => a.id === i.light!.aimItemId));
 
 /**
  * Puts every attached item where its parent says (top-down, so chains follow). Items in `moved`

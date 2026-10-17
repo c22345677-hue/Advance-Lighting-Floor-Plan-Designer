@@ -284,6 +284,8 @@ export interface Occluder {
   /** Footprint outline, world coordinates (convex). */
   points: Vec2[];
   heightCm: number;
+  /** Walls and solid set pieces (flats, screens): the light stops at them; they draw no shadow of their own. */
+  stopsLight?: boolean;
 }
 
 const rect = (i: Item, w: number, d: number): Vec2[] =>
@@ -348,6 +350,7 @@ export function occluders(items: readonly Item[]): Occluder[] {
               { x: p0.x - nx, y: p0.y - ny },
             ],
             heightCm: BLOCKS,
+            stopsLight: true,
           });
         }
       });
@@ -370,7 +373,7 @@ export function occluders(items: readonly Item[]): Occluder[] {
         out.push({ id: i.id, points: rect(i, w, Math.max(d, 4)), heightCm: BLOCKS });
       }
     } else if (i.kind === 'set' && (shape === 'wall' || shape === 'box')) {
-      out.push({ id: i.id, points: rect(i, w, d), heightCm: BLOCKS });
+      out.push({ id: i.id, points: rect(i, w, d), heightCm: BLOCKS, stopsLight: true });
     } else if (shape === 'video-village' || shape === 'monitor') {
       out.push({ id: i.id, points: rect(i, w * 0.8, d * 0.6), heightCm: 150 });
     }
@@ -499,7 +502,7 @@ export function sceneShadows(items: readonly Item[], extra: LightSource[] = []):
           const tip = Math.max(...poly.map((q) => Math.hypot(q.x - src.x, q.y - src.y)));
           fade = { from: c, to: { x: src.x + ((c.x - src.x) / d) * tip, y: src.y + ((c.y - src.y) / d) * tip } };
         }
-        shadows.push({ lightId: s.lightId, points: poly, opacity: dark / samples, fade, sample: k, wall: o.id.includes('#') || undefined });
+        shadows.push({ lightId: s.lightId, points: poly, opacity: dark / samples, fade, sample: k, wall: o.stopsLight || undefined });
       }
     }
   }
@@ -550,11 +553,11 @@ export function visibilityPolygon(o: Vec2, segs: [Vec2, Vec2][], radius: number)
   return out;
 }
 
-/** Wall faces near `o` (within `radius`), as segments. */
+/** Faces of walls and solid set pieces near `o` (within `radius`), as segments. */
 export function wallFaces(items: readonly Item[], o: Vec2, radius: number): [Vec2, Vec2][] {
   const out: [Vec2, Vec2][] = [];
   for (const occ of occluders(items)) {
-    if (!occ.id.includes('#')) continue;
+    if (!occ.stopsLight) continue;
     if (Math.min(...occ.points.map((p) => Math.hypot(p.x - o.x, p.y - o.y))) > radius * 1.5 + 2000) continue;
     occ.points.forEach((p, k) => out.push([p, occ.points[(k + 1) % occ.points.length]!]));
   }

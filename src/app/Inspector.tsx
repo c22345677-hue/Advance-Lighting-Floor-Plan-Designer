@@ -23,7 +23,7 @@ import {
   standCheck,
   standsFor,
 } from '../model/gear';
-import { ROLE_LABEL, roleOf, twoShotTargets, type ProjectKind } from '../model/project';
+import { modeOf, ROLE_LABEL, roleOf, twoShotTargets, type ProjectKind } from '../model/project';
 import type { Actor, Item, LightProps } from '../model/types';
 import { FixtureSearch } from './FixtureSearch';
 import { COMMON_LENSES_MM, COMMON_ZOOMS_MM, DEFAULT_LENS_MM, horizontalFovDeg, LENS_RANGE_MM } from '../model/lens';
@@ -410,6 +410,46 @@ function FollowPerson({
   );
 }
 
+/** What a light can point at: people, props and set pieces (not cameras, grip or other lights). */
+function PointAt({ item, sceneItems, actors, setLight }: { item: Item; sceneItems: Item[]; actors: Actor[]; setLight: (p: Partial<LightProps>) => void }) {
+  const targets = sceneItems
+    .filter((i) => i.id !== item.id && !i.hidden && !i.wall && !i.inWall && (i.kind === 'person' || i.kind === 'prop' || i.kind === 'set') && !isMeter(i) && modeOf(i) !== 'camera')
+    .map((i) => ({ value: i.actorId ? `actor:${i.actorId}` : `item:${i.id}`, label: displayLabel(i, actors) || itemName(i), person: i.kind === 'person' }));
+  const value = item.light?.aimActorId ? `actor:${item.light.aimActorId}` : item.light?.aimItemId ? `item:${item.light.aimItemId}` : '';
+  const set = (v: string) =>
+    setLight(v.startsWith('actor:') ? { aimActorId: v.slice(6), aimItemId: undefined } : v.startsWith('item:') ? { aimItemId: v.slice(5), aimActorId: undefined } : { aimActorId: undefined, aimItemId: undefined });
+  return (
+    <>
+      <label className="field">
+        <span className="field-label">Point at</span>
+        <select aria-label="Point at" value={value} onChange={(e) => set(e.target.value)}>
+          <option value="">Nothing (turn it by hand)</option>
+          {targets.some((t) => t.person) && (
+            <optgroup label="People">
+              {targets.filter((t) => t.person).map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </optgroup>
+          )}
+          {targets.some((t) => !t.person) && (
+            <optgroup label="Props and set">
+              {targets.filter((t) => !t.person).map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </optgroup>
+          )}
+          {value && !targets.some((t) => t.value === value) && <option value={value}>(not in this scene)</option>}
+        </select>
+      </label>
+      <p className="hint-text">The light keeps facing what it points at, whenever either moves.</p>
+    </>
+  );
+}
+
 type Framing = 'none' | 'one' | 'two';
 
 function CameraSection({ item, sceneItems, actors, onUpdate }: Pick<Props, 'item' | 'sceneItems' | 'actors' | 'onUpdate'>) {
@@ -529,14 +569,7 @@ function LightSection({
       {fixture && <StandSection item={item} gear={gear} setLight={setLight} />}
 
       <Section title="Aim">
-        <FollowPerson
-          label="Light aimed at"
-          hint="The light turns to face this person whenever either of them moves."
-          value={item.light?.aimActorId}
-          sceneItems={sceneItems}
-          actors={actors}
-          onChange={(aimActorId) => setLight({ aimActorId })}
-        />
+        <PointAt item={item} sceneItems={sceneItems} actors={actors} setLight={setLight} />
       </Section>
 
       <ColorSection item={item} setLight={setLight} />

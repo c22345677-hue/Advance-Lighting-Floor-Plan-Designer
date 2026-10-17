@@ -107,7 +107,9 @@ export function itemName(item: Item): string {
 
 /** A camera whose rotation is driven by its focus actor (when that actor is in the scene). */
 export const isFocusLocked = (item: Item, all: readonly Item[]): boolean =>
-  !!twoShotTargets(item, all) || (!!followsActorId(item) && all.some((a) => a.actorId === followsActorId(item)));
+  !!twoShotTargets(item, all) ||
+  (!!followsActorId(item) && all.some((a) => a.actorId === followsActorId(item))) ||
+  (item.kind === 'light' && !!item.light?.aimItemId && all.some((a) => a.id === item.light!.aimItemId));
 
 /** Renders the plan to a PNG data URL, without selection handles. */
 export type ExportPng = () => string | null;

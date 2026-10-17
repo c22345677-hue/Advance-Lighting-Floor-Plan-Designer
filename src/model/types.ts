@@ -26,6 +26,8 @@ export interface LightProps {
   standId?: string;
   /** When set, the light always turns to face this person (project actor id). */
   aimActorId?: string;
+  /** Pointed at a thing in the scene (a prop, a set piece like a green screen): the light keeps facing it. */
+  aimItemId?: string;
   intensityPct?: number;
   beamDeg?: number;
   throwCm?: number;
