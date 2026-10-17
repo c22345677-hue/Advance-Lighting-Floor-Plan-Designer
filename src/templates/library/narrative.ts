@@ -17,12 +17,13 @@ export const dialogue: TemplateDefinition = {
     const a = { x: -g, y: 0 };
     const b = { x: g, y: 0 };
     const items: DraftItem[] = [
-      person(a, aimAt(a, b), 'Actor 1'),
-      person(b, aimAt(b, a), 'Actor 2'),
-      // Over-the-shoulder: behind each actor, a little to the side, looking at the other.
-      camera({ x: -g - 120, y: 45 }, b, 'Cam A'),
-      camera({ x: g + 120, y: 45 }, a, 'Cam B'),
-      { ...camera({ x: 0, y: 380 }, C, 'Cam C'), camera: { focalMm: 35 } },
+      // They look at each other ("@0", "@1": the template's people, linked once cast).
+      { ...person(a, aimAt(a, b), 'Actor 1'), lookAtActorId: '@1' },
+      { ...person(b, aimAt(b, a), 'Actor 2'), lookAtActorId: '@0' },
+      // Over-the-shoulder singles on 85 mm, each locked on the actor facing it; Cam C a 35 mm two shot.
+      { ...camera({ x: -g - 120, y: 45 }, b, 'Cam A'), camera: { focalMm: 85, focusActorId: '@1' } },
+      { ...camera({ x: g + 120, y: 45 }, a, 'Cam B'), camera: { focalMm: 85, focusActorId: '@0' } },
+      { ...camera({ x: 0, y: 380 }, C, 'Cam C'), camera: { focalMm: 35, twoShot: ['@0', '@1'] } },
     ];
     if (o.boolean('lights'))
       items.push(

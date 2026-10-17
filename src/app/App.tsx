@@ -107,7 +107,15 @@ function castTemplateItems(
     taken.add(actor.id);
     return { ...rest, actorId: actor.id };
   });
-  return { items: linkInterview(out, [...actors, ...added]), added };
+  // Templates point cameras and looks at their people as "@0", "@1"… (in the order they're listed).
+  const cast = out.filter((i) => i.kind === 'person').map((i) => i.actorId!);
+  const who = (ref?: string) => (ref?.startsWith('@') ? cast[Number(ref.slice(1))] : ref);
+  const linked = out.map((i) => {
+    const look = who(i.lookAtActorId);
+    const cam = i.camera && { ...i.camera, focusActorId: who(i.camera.focusActorId), twoShot: i.camera.twoShot && (i.camera.twoShot.map(who) as [string, string]) };
+    return { ...i, ...(look !== i.lookAtActorId ? { lookAtActorId: look } : {}), ...(cam ? { camera: cam } : {}) };
+  });
+  return { items: linkInterview(linked, [...actors, ...added]), added };
 }
 
 function sampleProject(): Project {
