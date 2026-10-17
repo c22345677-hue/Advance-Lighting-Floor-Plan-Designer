@@ -71,3 +71,16 @@ describe('attachments', () => {
     expect(canAttach(door, light, [light, door])).toBe(false);
   });
 });
+
+describe('templates', () => {
+  it('a template replaces what is on the plan, it never goes on top', () => {
+    let h = start([light, frame]);
+    h = scene(h, { type: 'applyTemplate', setItems: [], items: [person] });
+    expect(sceneOf(h).items.map((i) => i.id)).toEqual(['P']);
+    h = scene(h, { type: 'applyTemplate', setItems: [], items: [meter] });
+    expect(sceneOf(h).items.map((i) => i.id)).toEqual(['M']);
+    // Reset goes back to the last template; undo to the one before.
+    h = scene(h, { type: 'reset' });
+    expect(sceneOf(h).items.map((i) => i.id)).toEqual(['M']);
+  });
+});

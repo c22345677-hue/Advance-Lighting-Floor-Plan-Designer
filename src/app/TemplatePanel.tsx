@@ -18,6 +18,8 @@ interface Props {
   onAdd: (template: TemplateDefinition, values: TemplateValues) => void;
   /** Where the template goes, for the button text. */
   sceneName: string;
+  /** The scene already has things on it: the template replaces them. */
+  replaces: boolean;
   /** Setups saved from earlier selections. */
   setups: Setup[];
   onAddSetup: (id: string) => void;
@@ -29,7 +31,7 @@ const KINDS: { id: ProjectKind; label: string; hint: string }[] = [
   { id: 'doc', label: 'Doc', hint: 'People are interviewees and interviewers.' },
 ];
 
-export function TemplatePanel({ kind, onKind, onAdd, sceneName, setups, onAddSetup, onDeleteSetup }: Props) {
+export function TemplatePanel({ kind, onKind, onAdd, sceneName, replaces, setups, onAddSetup, onDeleteSetup }: Props) {
   const templates = listTemplates().filter((t) => t.kinds.includes(kind));
   const [templateId, setTemplateId] = useState(templates[0]?.id ?? '');
   const [input, setInput] = useState<Record<string, Partial<TemplateValues>>>({});
@@ -127,8 +129,9 @@ export function TemplatePanel({ kind, onKind, onAdd, sceneName, setups, onAddSet
       </section>
 
       <button id="add-template" className="btn primary big" onClick={() => onAdd(template, values)}>
-        Add {template.name.toLowerCase()} to {sceneName}
+        {replaces ? `Replace ${sceneName} with ${template.name.toLowerCase()}` : `Add ${template.name.toLowerCase()} to ${sceneName}`}
       </button>
+      {replaces && <p className="hint-text">Everything on {sceneName} is replaced by the template. Undo (Ctrl+Z) brings it back.</p>}
 
       <section className="section">
         <h3 className="section-title">

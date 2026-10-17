@@ -695,14 +695,17 @@ export function App() {
   };
 
   const addTemplate = (t: TemplateDefinition, values: TemplateValues) => {
-    const r = applyTemplate(t, values, { origin: viewCenter() });
-    const cast = castTemplateItems(r.shots.flatMap((s) => s.items), project.actors, items, kind);
-    // Template lights get the next free numbers.
+    // The template replaces the scene, so it starts from the middle, with the whole cast free
+    // to be placed again and lights numbered from L1.
+    const r = applyTemplate(t, values, { origin: { x: 0, y: 0 } });
+    const cast = castTemplateItems(r.shots.flatMap((s) => s.items), project.actors, [], kind);
     const numbered: Item[] = [];
     for (const i of cast.items) {
-      if (i.kind === 'light' && !i.light?.unitId) i.light = { ...i.light, unitId: nextUnitId([...items, ...numbered]) };
+      if (i.kind === 'light' && !i.light?.unitId) i.light = { ...i.light, unitId: nextUnitId(numbered) };
       numbered.push(i);
     }
+    leaveWalls();
+    setSelection([]);
     for (const actor of cast.added) dispatch({ type: 'addActor', actor });
     // Everyone gets a light meter held in front of their face.
     sd({ type: 'applyTemplate', setItems: r.setItems, items: withMeters(cast.items, uid) });
@@ -1345,6 +1348,7 @@ export function App() {
             onKind={(k) => dispatch({ type: 'setProject', patch: { kind: k } })}
             onAdd={addTemplate}
             sceneName={scene.name}
+            replaces={items.length > 0}
             setups={setups}
             onAddSetup={(id) => {
               const s = setups.find((x) => x.id === id);

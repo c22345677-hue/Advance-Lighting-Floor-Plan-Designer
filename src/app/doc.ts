@@ -21,7 +21,7 @@ export type SceneAction =
   | { type: 'rotateBy'; ids: string[]; deg: number }
   | { type: 'delete'; ids: string[] }
   | { type: 'clear' }
-  /** Add a template's items and remember the result as the scene's reset point. */
+  /** Replace the scene's items with a template's and remember them as the scene's reset point (one template at a time). */
   | { type: 'applyTemplate'; setItems: Item[]; items: Item[] }
   /** Back to the template layout, or empty when the scene never had one. */
   | { type: 'reset' }
@@ -99,8 +99,8 @@ function applyEdit(s: SceneDoc, a: SceneAction): SceneDoc {
     case 'clear':
       return { ...s, setItems: [], items: [] };
     case 'applyTemplate': {
-      const setItems = [...s.setItems, ...a.setItems];
-      const items = [...s.items, ...a.items];
+      // A template replaces what's on the plan: never one layout on top of another (Undo brings it back).
+      const { setItems, items } = a;
       return { ...s, setItems, items, baseline: structuredClone({ setItems, items }) };
     }
     case 'sun':
