@@ -138,11 +138,18 @@ export function itemLook(item: Item): { shape: Shape; w: number; d: number } {
     if (shape === 'panel' || shape === 'mat' || shape === 'tube') {
       return { shape, w: big, d: shape === 'panel' ? Math.min(small, f.sizeCm?.h ?? 8, 15) : 4 };
     }
-    if (shape === 'inflatable') return { shape, w: big, d: big };
+    // Inflatables: a tube lies long and thin; a soft panel or balloon fills its square.
+    if (shape === 'inflatable') return big / small > 2 && big >= 20 ? { shape, w: big, d: small } : { shape, w: big, d: big };
     return { shape, w: small, d: big };
   }
   const lib = libraryItem(item.catalogId);
-  if (lib) return { shape: lib.shape, w: item.sizeCm?.w ?? lib.sizeCm.w, d: item.sizeCm?.d ?? lib.sizeCm.d };
+  if (lib) {
+    const w = item.sizeCm?.w ?? lib.sizeCm.w;
+    const d = item.sizeCm?.d ?? lib.sizeCm.d;
+    // A stand-in panel or mat is listed by its face (1×1, 2×4); from above it's a thin slab.
+    const thin = item.kind === 'light' ? { panel: 8, mat: 4, tube: 5 }[lib.shape as 'panel' | 'mat' | 'tube'] : undefined;
+    return { shape: lib.shape, w, d: thin ? Math.min(d, thin) : d };
+  }
   const fallback: Shape = item.kind === 'person' ? 'person' : item.kind === 'camera' ? 'camera' : 'box';
   return { shape: fallback, w: item.sizeCm?.w ?? 40, d: item.sizeCm?.d ?? 40 };
 }

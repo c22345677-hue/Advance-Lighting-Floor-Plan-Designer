@@ -6,14 +6,14 @@ import { meterReadings, stopParts, type CameraSettings, type Reading } from '../
 import { beamReach, lightReach, lightSource } from '../model/shadows';
 import { assemblyOf, canAttach, isMeter, rootOf } from '../model/attach';
 import { LightLayer, type LivePatch, type ShadowLive } from './LightLayer';
+import { FixtureShape, ModifierShapes } from './fixtureShapes';
 import { beamAlpha, beamDegOf } from './beams';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import { Arc, Arrow, Circle, Ellipse, Group, Layer, Line, Rect, Stage, Text, Transformer, Wedge } from 'react-konva';
-import type { Modifier } from '../catalog/schema';
 import { FABRIC_FILL, fabricById } from '../library/fabrics';
 import { isOpening, libraryItem } from '../library/items';
-import { itemFixture, itemLook, itemModifiers } from '../model/gear';
+import { itemFixture, itemLook } from '../model/gear';
 import { aimAt, normDeg, rotate } from '../model/geometry';
 import { DEFAULT_LENS_MM, horizontalFovDeg } from '../model/lens';
 import { followsActorId, inMode, modeOf, sceneItems, twoShotTargets, type Category, type EditMode, type SceneDoc } from '../model/project';
@@ -2192,36 +2192,6 @@ function gridLines(view: View, width: number, height: number, c: CanvasColors) {
   return lines;
 }
 
-/** Softboxes, domes and lanterns drawn in front of the light (towards -y). */
-function ModifierShapes({ mods, front, c }: { mods: Modifier[]; front: number; c: CanvasColors }) {
-  let y = front;
-  const out = [];
-  for (const m of mods) {
-    const size = m.sizeCm;
-    const dia = Math.max(size?.l ?? 0, size?.w ?? 0);
-    if (!dia) continue;
-    if (m.type === 'lantern') {
-      out.push(<Circle key={m.id} y={y - dia / 2} radius={dia / 2} fill={c.label} opacity={0.18} stroke={c.light} strokeWidth={1.5} />);
-      y -= dia;
-    } else if (m.type === 'softbox' || m.type === 'dome' || m.type === 'parallel-beam') {
-      const depth = size?.h ?? dia * 0.5;
-      out.push(
-        <Line
-          key={m.id}
-          points={[-8, y, 8, y, dia / 2, y - depth, -dia / 2, y - depth]}
-          closed
-          fill={c.label}
-          opacity={0.18}
-          stroke={c.light}
-          strokeWidth={1.5}
-        />,
-      );
-      y -= depth;
-    }
-  }
-  return <>{out}</>;
-}
-
 /** Simple top-down symbols, drawn at real size facing up (-y). */
 export function ItemShape({
   item,
@@ -2245,56 +2215,15 @@ export function ItemShape({
   const { shape, w, d } = itemLook(item);
   const hw = w / 2;
   const hd = d / 2;
-  const mods = item.kind === 'light' ? <ModifierShapes mods={itemModifiers(item)} front={-hd} c={c} /> : null;
+  if (item.kind === 'light') {
+    return (
+      <>
+        <FixtureShape item={item} w={w} d={d} c={c} />
+        <ModifierShapes item={item} front={shape === 'panel' || shape === 'mat' || shape === 'tube' ? -Math.max(hd, 0.8) : -hd} lightW={w} c={c} />
+      </>
+    );
+  }
   switch (shape) {
-    case 'cob':
-      return (
-        <>
-          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={3} fill={c.light} />
-          <Rect x={-hw * 0.8} y={-hd} width={w * 0.8} height={Math.min(4, d * 0.15)} fill={c.canvas} opacity={0.5} />
-          {mods}
-        </>
-      );
-    case 'fresnel':
-      return (
-        <>
-          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={3} fill={c.light} />
-          <Rect x={-hw - 3} y={-hd - 3} width={w + 6} height={6} cornerRadius={2} fill={c.label} opacity={0.6} />
-          {mods}
-        </>
-      );
-    case 'panel':
-      return (
-        <>
-          <Rect x={-hw} y={-hd} width={w} height={d} cornerRadius={2} fill={c.light} />
-          <Line points={[-hw, -hd, hw, -hd]} stroke={c.label} strokeWidth={2} />
-          {mods}
-        </>
-      );
-    case 'mat':
-    case 'tube':
-      return (
-        <>
-          <Rect x={-hw} y={-Math.max(hd, 2.5)} width={w} height={Math.max(d, 5)} cornerRadius={2.5} fill={c.light} />
-          {mods}
-        </>
-      );
-    case 'bulb':
-      return <Circle radius={Math.max(hw, 8)} fill={c.light} stroke={c.label} strokeWidth={1.5} />;
-    case 'inflatable':
-      return (
-        <>
-          <Circle radius={hw} fill={c.light} opacity={0.75} />
-          <Circle radius={hw * 0.6} stroke={c.label} strokeWidth={1.5} opacity={0.5} />
-        </>
-      );
-    case 'spacelight':
-      return (
-        <>
-          <Circle radius={hw} stroke={c.light} strokeWidth={3} dash={[8, 6]} />
-          <Circle radius={hw * 0.55} fill={c.light} />
-        </>
-      );
     case 'flag':
       return <Rect x={-hw} y={-Math.max(hd, 3)} width={w} height={Math.max(d, 6)} fill={c.grip} cornerRadius={1} />;
     case 'polyboard':
