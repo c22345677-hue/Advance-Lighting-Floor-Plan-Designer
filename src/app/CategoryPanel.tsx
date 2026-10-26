@@ -1,6 +1,6 @@
 // The side panel when nothing is selected. It always matches the top category:
 // what of that category is in the scene, then how to add more.
-import type { Fixture } from '../catalog/schema';
+import type { Fixture, Stand } from '../catalog/schema';
 import { FABRIC_KIND_LABEL, fabricById } from '../library/fabrics';
 import { NOTE_COLORS, PEN_WIDTHS } from '../model/notes';
 import { LIBRARY, libraryItem, type LibraryCategory, type LibraryItem } from '../library/items';
@@ -10,15 +10,16 @@ import type { Actor, CastRole, Item } from '../model/types';
 import { wallLength } from '../model/walls';
 import { SUN_PRESETS, sunKelvin, type Sun } from '../model/sun';
 import { FixtureSearch } from './FixtureSearch';
+import { GripSearch } from './GripSearch';
 import { isMeter } from '../model/attach';
 import { ItemThumb } from './ItemThumb';
 import { useCanvasColors } from './theme';
 import { limitingList, type GearScope } from './gearScope';
 import { displayLabel, itemName, meterName } from './PlanCanvas';
 
-export type PlaceRequest = { library: LibraryItem } | { fixture: Fixture };
+export type PlaceRequest = { library: LibraryItem } | { fixture: Fixture } | { stand: Stand };
 
-/** Drag-and-drop payload type for panel tiles: "lib:<id>" or "fixture:<id>". */
+/** Drag-and-drop payload type for panel tiles: "lib:<id>", "fixture:<id>" or "stand:<id>". */
 export const DRAG_TYPE = 'application/x-lfpd-item';
 
 interface Props {
@@ -256,6 +257,9 @@ export function CategoryPanel(props: Props) {
             {list('No grip yet.')}
           </Section>
           <Section title="Add grip">
+            <GripSearch onPlace={onPlace} />
+          </Section>
+          <Section title="Quick add">
             <AddGrid category="grip" onPlace={onPlace} />
           </Section>
         </>
@@ -326,6 +330,12 @@ export function CategoryPanel(props: Props) {
       const others = mine.filter((i) => !i.actorId);
       return (
         <>
+          <Section title="Props">
+            <AddGrid category="props" onPlace={onPlace} />
+          </Section>
+          <Section title="Set & props in this scene" count={others.length}>
+            {list('Nothing yet.', others)}
+          </Section>
           <Section title={kind === 'doc' ? 'People' : 'Cast'} count={actors.length}>
             <p className="hint-text">
               {kind === 'doc' ? 'Interviewees and interviewers' : 'Actors'} belong to the project and look the same in every scene.
@@ -406,12 +416,6 @@ export function CategoryPanel(props: Props) {
           </Section>
           <Section title="Windows">
             <AddGrid category="windows" onPlace={onPlace} disabled={!props.hasWalls} />
-          </Section>
-          <Section title="Set & props in this scene" count={others.length}>
-            {list('Nothing yet.', others)}
-          </Section>
-          <Section title="Props">
-            <AddGrid category="props" onPlace={onPlace} />
           </Section>
         </>
       );

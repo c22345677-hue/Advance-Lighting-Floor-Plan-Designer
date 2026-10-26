@@ -70,7 +70,8 @@ export interface Item {
    *  segment's first corner, and which side they open to. They follow the wall; their width never changes. */
   inWall?: { wallId: string; seg: number; offsetCm: number; flip?: boolean };
   /** Frames: the fabric stretched on it (see library/fabrics.ts). */
-  grip?: { fabric?: string };
+  /** Grip: the fabric in a frame; for a stand from the catalogue, which one it is. */
+  grip?: { fabric?: string; standId?: string };
   /** People placed as cast: points at the project's actor list (name, colour, gender live there). */
   actorId?: string;
   /** Notes on the plan: text, an arrow or a marked area (size in sizeCm; arrow length is d). */

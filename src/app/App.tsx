@@ -34,7 +34,7 @@ import { parseProjectFile, projectFileName, toProjectFile } from '../model/proje
 import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain, wallPoints } from '../model/walls';
 import { HelpPanel } from './HelpPanel';
 import { isOpening, libraryItem } from '../library/items';
-import { fixtureById } from '../model/gear';
+import { fixtureById, standById } from '../model/gear';
 import { applyTemplate, getTemplate, type TemplateDefinition, type TemplateValues } from '../templates';
 import { CategoryPanel, DRAG_TYPE, type PlaceRequest } from './CategoryPanel';
 import { useConfirm } from './confirm';
@@ -567,6 +567,12 @@ export function App() {
       addItem({ ...base, ...seatOpening(base, hit, req.library.sizeCm.w) });
       return;
     }
+    if ('stand' in req) {
+      // A stand from the catalogue: drawn as a stand, its spread by type, named by its model.
+      const spread = { 'c-stand': 70, light: 90, combo: 110, roller: 130, boom: 90 }[req.stand.type] ?? 80;
+      addItem({ id: uid(), kind: 'grip', catalogId: 'generic.grip.c-stand', pos, rotationDeg: 0, sizeCm: { w: spread, d: spread }, grip: { standId: req.stand.id } });
+      return;
+    }
     addItem(
       'fixture' in req
         ? { id: uid(), kind: 'light', catalogId: req.fixture.id, pos, rotationDeg: 0, light: { unitId: nextUnitId(items) } }
@@ -993,7 +999,9 @@ export function App() {
             const [kindOf, id] = ref.split(':', 2) as [string, string];
             const fixture = kindOf === 'fixture' ? fixtureById(id) : undefined;
             const library = kindOf === 'lib' ? libraryItem(id) : undefined;
-            if (fixture) place({ fixture }, at);
+            const stand = kindOf === 'stand' ? standById(id) : undefined;
+            if (stand) place({ stand }, at);
+            else if (fixture) place({ fixture }, at);
             else if (library) place({ library }, at);
           }}
         >

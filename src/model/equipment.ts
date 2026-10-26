@@ -181,6 +181,14 @@ export function sceneCounts(scene: SceneDoc, rules = true): Counts {
       continue;
     }
 
+    // A stand picked from the catalogue: listed as that stand, with a sandbag.
+    const placedStand = item.kind === 'grip' ? standById(item.grip?.standId) : undefined;
+    if (placedStand) {
+      bump(c, { key: `stand:${placedStand.id}`, dept: 'grip', name: `${placedStand.brand} ${placedStand.model}`, unitKg: placedStand.weightKg, gear: { kind: 'stand', id: placedStand.id } });
+      if (rules) bump(c, stock('sandbag'));
+      continue;
+    }
+
     const stockId = item.catalogId ? LIBRARY_STOCK[item.catalogId] : undefined;
     if (stockId) {
       bump(c, stock(stockId));

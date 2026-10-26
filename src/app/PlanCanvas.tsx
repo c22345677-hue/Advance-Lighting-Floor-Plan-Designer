@@ -14,7 +14,7 @@ import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'rea
 import { Arc, Arrow, Circle, Ellipse, Group, Layer, Line, Rect, Stage, Text, Transformer, Wedge } from 'react-konva';
 import { FABRIC_FILL, fabricById } from '../library/fabrics';
 import { isOpening, libraryItem } from '../library/items';
-import { itemFixture, itemLook } from '../model/gear';
+import { itemFixture, itemLook, standById } from '../model/gear';
 import { aimAt, normDeg, rotate } from '../model/geometry';
 import { DEFAULT_LENS_MM, horizontalFovDeg } from '../model/lens';
 import { followsActorId, inMode, modeOf, sceneItems, twoShotTargets, type Category, type EditMode, type SceneDoc } from '../model/project';
@@ -85,7 +85,7 @@ export function displayLabel(item: Item, actors: readonly Actor[] = [], opts: { 
   // Walls, doors and windows are self-explanatory: no label unless one was typed.
   if (!item.label && (item.wall || isOpening(item.catalogId))) return '';
   if (item.kind === 'note') return ''; // notes draw their own text
-  const base = itemFixture(item)?.model ?? lib?.name ?? '';
+  const base = itemFixture(item)?.model ?? standById(item.grip?.standId)?.model ?? lib?.name ?? '';
   const name = actor?.name ?? item.label ?? (fabric ? `${base} · ${fabric.name}` : base);
   // Light numbers (L1, L2…) are for lists; the plan shows just the name.
   const unit = opts.unit === false ? undefined : item.light?.unitId;
@@ -103,7 +103,7 @@ export function meterName(meter: Item, all: readonly Item[], actors: readonly Ac
 /** What an item is called when it has no label: "Room"/"Walls" for wall chains, else its library name. */
 export function itemName(item: Item): string {
   if (item.wall) return item.wall.closed ? 'Room' : 'Walls';
-  return itemFixture(item)?.model ?? libraryItem(item.catalogId)?.name ?? item.kind;
+  return itemFixture(item)?.model ?? standById(item.grip?.standId)?.model ?? libraryItem(item.catalogId)?.name ?? item.kind;
 }
 
 /** A camera whose rotation is driven by its focus actor (when that actor is in the scene). */
