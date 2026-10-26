@@ -85,7 +85,9 @@ export interface Item {
     background?: boolean;
     /** Arrows: straight, bent 35° or 75°, curved, or with a head at both ends. */
     arrow?: import('./notes').ArrowStyle;
-    /** Drawings: the stroke's points relative to the item's position (x, y, x, y…), and its width, cm. */
+    /** Drawings: strokes' points relative to the item's position (x, y, x, y…), and the line width, cm. */
+    strokes?: number[][];
+    /** Older single-stroke drawings. */
     points?: number[];
     strokeCm?: number;
   };

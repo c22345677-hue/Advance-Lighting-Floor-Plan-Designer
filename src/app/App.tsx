@@ -29,7 +29,7 @@ import { LayersMenu } from './LayersMenu';
 import { MenuButton } from './MenuButton';
 import { clampInto, placeBar } from './barPlacement';
 import { turnedCorners } from './fixtureShapes';
-import { drawingNote, NOTE_DEFAULT_COLOR, PEN_WIDTHS } from '../model/notes';
+import { drawingFromStrokes, drawingNote, scaleDrawing, drawingStrokes, NOTE_DEFAULT_COLOR, noteColor, PEN_WIDTHS, strokesTouch } from '../model/notes';
 import { parseProjectFile, projectFileName, toProjectFile } from '../model/projectFile';
 import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain, wallPoints } from '../model/walls';
 import { HelpPanel } from './HelpPanel';
@@ -66,6 +66,7 @@ import {
   IconTrash,
   IconClose,
   IconRotate,
+  IconScale,
   IconGrid,
   IconShadow,
   IconSliders,
@@ -483,13 +484,35 @@ export function App() {
   /** Drawing on the plan (Notes): on or off, and the pen. */
   const [drawing, setDrawingState] = useState(false);
   const [pen, setPen] = useState<{ color: string; width: (typeof PEN_WIDTHS)[number]['id'] }>({ color: NOTE_DEFAULT_COLOR, width: 'medium' });
+  /** Drawings made since Draw was pressed: a stroke touching one of them joins it into one shape. */
+  const drawSession = useRef<string[]>([]);
   const setDrawing = (on: boolean) => {
     setDrawingState(on);
     if (on) {
       setWallToolState(false);
       setSelected(null);
       setPickMode(false);
+    } else {
+      // Finished: the shapes just drawn are picked, ready to move (W), turn (R) or scale.
+      const made = drawSession.current.filter((id) => items.some((i) => i.id === id));
+      if (made.length) setSelection(made);
     }
+    drawSession.current = [];
+  };
+  const drawStroke = (points: Vec2[], strokeCm: number) => {
+    const tol = Math.max(strokeCm, 6 / (view?.scale ?? 1));
+    const touching = items.filter((i) => drawSession.current.includes(i.id) && drawingStrokes(i).some((st) => strokesTouch(st, points, tol + (i.note?.strokeCm ?? 0) / 2)));
+    if (!touching.length) {
+      const id = uid();
+      drawSession.current.push(id);
+      sd({ type: 'add', setItems: [], items: [{ id, kind: 'note', catalogId: 'generic.note.draw', ...drawingNote(points, pen.color, strokeCm) }] });
+      return;
+    }
+    // Joined into one shape with everything it touches (in the first one's colour and width).
+    const [keep, ...rest] = touching;
+    const strokes = [...touching.flatMap(drawingStrokes), points];
+    sd({ type: 'merge', id: keep!.id, patch: drawingFromStrokes(strokes, noteColor(keep!), keep!.note?.strokeCm ?? strokeCm), remove: rest.map((i) => i.id) });
+    drawSession.current = drawSession.current.filter((id) => !rest.some((r) => r.id === id));
   };
   const [wallDraft, setWallDraft] = useState<Vec2[]>([]);
   const [wallExtend, setWallExtend] = useState<WallExtend | null>(null);
@@ -532,10 +555,15 @@ export function App() {
   const chooseTool = (t: Tool) => {
     leaveWalls();
     setTool(t);
+    setScaling(false);
   };
+  /** Scale (drawings): a corner handle on the selected drawing resizes it. */
+  const [scaling, setScaling] = useState(false);
   useEffect(() => {
     if (selection.length || dialog) leaveWalls();
   }, [selection, dialog]);
+  // Scale is for the drawing it was turned on for.
+  useEffect(() => setScaling(false), [selection.join(',')]);
 
   const deleteSelected = () => {
     if (selection.length) sd({ type: 'delete', ids: selection });
@@ -1041,7 +1069,12 @@ export function App() {
               wallSnap={prefs.wallSnap}
               onDuplicate={duplicate}
               drawPen={drawing ? { color: pen.color, px: PEN_WIDTHS.find((w) => w.id === pen.width)!.px } : null}
-              onDrawStroke={(points, strokeCm) => sd({ type: 'add', setItems: [], items: [{ id: uid(), kind: 'note', catalogId: 'generic.note.draw', rotationDeg: 0, ...drawingNote(points, pen.color, strokeCm) }] })}
+              onDrawStroke={drawStroke}
+              scaleId={scaling && selectedItems.length === 1 && selectedItems[0]!.catalogId === 'generic.note.draw' ? selectedItems[0]!.id : null}
+              onScale={(id, k) => {
+                const it = items.find((i) => i.id === id);
+                if (it && Math.abs(k - 1) > 0.01) sd({ type: 'update', id, patch: scaleDrawing(it, k) });
+              }}
             />
           )}
 
@@ -1052,7 +1085,7 @@ export function App() {
               </div>
               <div className="pick-bar on" role="toolbar" aria-label="Drawing">
                 <button className="pick-btn done" onClick={() => setDrawing(false)}>
-                  Done
+                  Finish drawing
                 </button>
               </div>
             </div>
@@ -1107,12 +1140,28 @@ export function App() {
               </button>
               {/* The Move / Rotate tools, right by the selection. */}
               <span className="bar-tools" role="radiogroup" aria-label="Tool">
-                <button id="bar-move" role="radio" aria-checked={tool === 'move'} className={`icon-btn ${tool === 'move' ? 'on' : ''}`} onClick={() => chooseTool('move')} title="Move: drag items (W)" aria-label="Move">
+                <button id="bar-move" role="radio" aria-checked={tool === 'move' && !scaling} className={`icon-btn ${tool === 'move' && !scaling ? 'on' : ''}`} onClick={() => chooseTool('move')} title="Move: drag items (W)" aria-label="Move">
                   <IconMove />
                 </button>
-                <button id="bar-rotate" role="radio" aria-checked={tool === 'rotate'} className={`icon-btn rotate ${tool === 'rotate' ? 'on' : ''}`} onClick={() => chooseTool('rotate')} title="Rotate: drag an item to turn it (R)" aria-label="Rotate">
+                <button id="bar-rotate" role="radio" aria-checked={tool === 'rotate' && !scaling} className={`icon-btn rotate ${tool === 'rotate' && !scaling ? 'on' : ''}`} onClick={() => chooseTool('rotate')} title="Rotate: drag an item to turn it (R)" aria-label="Rotate">
                   <IconRotate />
                 </button>
+                {selectedItems.length === 1 && selectedItems[0]!.catalogId === 'generic.note.draw' && (
+                  <button
+                    id="bar-scale"
+                    role="radio"
+                    aria-checked={scaling}
+                    className={`icon-btn ${scaling ? 'on' : ''}`}
+                    onClick={() => {
+                      setTool('move');
+                      setScaling((on) => !on);
+                    }}
+                    title="Scale: drag the corner handle to make the drawing bigger or smaller"
+                    aria-label="Scale"
+                  >
+                    <IconScale />
+                  </button>
+                )}
               </span>
               <button
                 className="icon-btn"

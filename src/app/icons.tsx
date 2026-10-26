@@ -27,6 +27,13 @@ export const IconRotate = () => (
     <path d="M20 4v5h-5" />
   </Svg>
 );
+export const IconScale = () => (
+  <Svg>
+    <rect x="4" y="10" width="10" height="10" rx="1" />
+    <path d="M13 4h7v7" />
+    <path d="M20 4l-8 8" />
+  </Svg>
+);
 export const IconUndo = () => (
   <Svg>
     <path d="M9 14 4 9l5-5" />

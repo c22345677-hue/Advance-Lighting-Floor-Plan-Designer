@@ -20,6 +20,8 @@ export type SceneAction =
   | { type: 'rotate'; id: string; rotationDeg: number }
   | { type: 'rotateBy'; ids: string[]; deg: number }
   | { type: 'delete'; ids: string[] }
+  /** One item takes over others (drawings joined into one shape): patch it, drop the rest. */
+  | { type: 'merge'; id: string; patch: Partial<Omit<Item, 'id'>>; remove: string[] }
   | { type: 'clear' }
   /** Replace the scene's items with a template's and remember them as the scene's reset point (one template at a time). */
   | { type: 'applyTemplate'; setItems: Item[]; items: Item[] }
@@ -95,6 +97,11 @@ function applyEdit(s: SceneDoc, a: SceneAction): SceneDoc {
         setItems: releaseChildren(s.setItems.filter((i) => !gone.has(i.id) && !(i.inWall && gone.has(i.inWall.wallId))), gone),
         items: releaseChildren(s.items.filter((i) => !gone.has(i.id)), gone),
       };
+    }
+    case 'merge': {
+      const gone = new Set(a.remove);
+      const keep = (list: Item[]) => list.filter((i) => !gone.has(i.id)).map((i) => (i.id === a.id ? { ...i, ...a.patch } : i));
+      return { ...s, setItems: keep(s.setItems), items: keep(s.items) };
     }
     case 'clear':
       return { ...s, setItems: [], items: [] };

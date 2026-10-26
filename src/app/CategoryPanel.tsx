@@ -60,7 +60,7 @@ const unitNo = (i: Item) => Number(/\d+/.exec(i.light?.unitId ?? '')?.[0] ?? 1e9
 
 /** One-line summary under an item's name in the scene list. */
 function summary(item: Item, actors: Actor[], all: Item[] = []): { sub: string; warn?: string } {
-  if (item.note) return { sub: item.note.text || (item.note.points ? 'Drawing' : '(no text)') };
+  if (item.note) return { sub: item.note.text || (item.note.points || item.note.strokes ? `${(item.note.strokes ?? [0]).length} stroke${(item.note.strokes ?? [0]).length > 1 ? 's' : ''}` : '(no text)') };
   if (item.wall) {
     const n = item.wall.closed ? item.wall.points.length : item.wall.points.length - 1;
     return { sub: `${n} wall${n > 1 ? 's' : ''} · ${(wallLength(item) / 100).toFixed(1)} m${item.wall.closed ? ' · closed room' : ''}` };
@@ -301,7 +301,7 @@ export function CategoryPanel(props: Props) {
           </Section>
           <Section title="Draw">
             <button id="draw-notes" className={`btn big ${props.drawing ? '' : 'primary'}`} onClick={() => props.onDrawing(!props.drawing)}>
-              {props.drawing ? 'Done drawing' : 'Draw on the plan'}
+              {props.drawing ? 'Finish drawing' : 'Draw on the plan'}
             </button>
             <div className="field">
               <span className="field-label">Colour</span>
@@ -321,7 +321,7 @@ export function CategoryPanel(props: Props) {
                 ))}
               </div>
             </div>
-            <p className="hint-text">Draw with a pen or finger on a tablet or phone, or a mouse or drawing tablet on a computer. Each stroke becomes a note you can move, recolour or delete. Two fingers still zoom and pan.</p>
+            <p className="hint-text">Draw with a pen or finger on a tablet or phone, or a mouse or drawing tablet on a computer. Strokes that touch join into one shape until you press Finish drawing; then move it (W), turn it (R) or scale it like anything else. Two fingers still zoom and pan.</p>
           </Section>
         </>
       );

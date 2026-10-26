@@ -171,6 +171,9 @@ interface Props {
   drawPen?: { color: string; px: number } | null;
   /** A finished stroke, in plan cm, and its width in cm. */
   onDrawStroke?: (points: Vec2[], strokeCm: number) => void;
+  /** Scale tool: the drawing showing a corner handle, and the factor it was scaled by. */
+  scaleId?: string | null;
+  onScale?: (id: string, k: number) => void;
 }
 
 export type LayerState = { hidden?: boolean; locked?: boolean };
@@ -1364,6 +1367,65 @@ export function PlanCanvas(p: Props) {
             />
           ));
         })()}
+        {(() => {
+          // Scale: a handle on the drawing's corner; drag it out to enlarge, in to shrink (about its centre).
+          const sel = p.scaleId ? visible.find((i) => i.id === p.scaleId) : undefined;
+          if (!sel) return null;
+          const hw = (sel.sizeCm?.w ?? 100) / 2;
+          const hd = (sel.sizeCm?.d ?? 100) / 2;
+          const r = (sel.rotationDeg * Math.PI) / 180;
+          const corner = { x: sel.pos.x + hw * Math.cos(r) - hd * Math.sin(r), y: sel.pos.y + hw * Math.sin(r) + hd * Math.cos(r) };
+          const start = Math.hypot(corner.x - sel.pos.x, corner.y - sel.pos.y) || 1;
+          const factor = (at: Vec2) => Math.max(0.05, Math.hypot(at.x - sel.pos.x, at.y - sel.pos.y) / start);
+          return (
+            <Group key={`${sel.id}-scale`} name="ui-only">
+              <Rect
+                x={sel.pos.x}
+                y={sel.pos.y}
+                width={hw * 2}
+                height={hd * 2}
+                offsetX={hw}
+                offsetY={hd}
+                rotation={sel.rotationDeg}
+                stroke={colors.select}
+                strokeWidth={1.5 / view.scale}
+                dash={[6 / view.scale, 4 / view.scale]}
+                listening={false}
+                name="scale-box"
+              />
+              <Rect
+                x={corner.x}
+                y={corner.y}
+                width={16 / view.scale}
+                height={16 / view.scale}
+                offsetX={8 / view.scale}
+                offsetY={8 / view.scale}
+                fill={colors.canvas}
+                stroke={colors.select}
+                strokeWidth={2.5 / view.scale}
+                cornerRadius={3 / view.scale}
+                hitStrokeWidth={30 / view.scale}
+                draggable
+                onMouseDown={(e) => (e.cancelBubble = true)}
+                onTouchStart={(e) => (e.cancelBubble = true)}
+                onMouseEnter={() => setCursor('nwse-resize')}
+                onDragMove={(e) => {
+                  const k = factor({ x: e.target.x(), y: e.target.y() });
+                  node(sel.id)?.scale({ x: k, y: k });
+                  const box = e.target.getParent()?.findOne('.scale-box');
+                  box?.scale({ x: k, y: k });
+                }}
+                onDragEnd={(e) => {
+                  const k = factor({ x: e.target.x(), y: e.target.y() });
+                  node(sel.id)?.scale({ x: 1, y: 1 });
+                  e.target.getParent()?.findOne('.scale-box')?.scale({ x: 1, y: 1 });
+                  e.target.position(corner);
+                  p.onScale?.(sel.id, k);
+                }}
+              />
+            </Group>
+          );
+        })()}
         {p.drawPen && (
           <>
             <Rect
@@ -1614,12 +1676,15 @@ function NoteShape({ item, shape, w, d }: { item: Item; shape: string; w: number
   /** Semi-transparent backing in the contrasting colour, so the text stands out on anything. */
   const backing = item.note?.background ? outlineFor(color) : null;
   if (shape === 'note-draw') {
-    const pts = item.note?.points ?? [];
+    const strokes = item.note?.strokes ?? (item.note?.points ? [item.note.points] : []);
     const sw = item.note?.strokeCm ?? 4;
     return (
       <>
-        {item.note?.outline !== false && <Line points={pts} stroke={outlineFor(color)} strokeWidth={sw * 1.9} lineCap="round" lineJoin="round" tension={0.35} opacity={0.6} listening={false} />}
-        <Line points={pts} stroke={color} strokeWidth={sw} lineCap="round" lineJoin="round" tension={0.35} hitStrokeWidth={Math.max(24, sw * 3)} />
+        {item.note?.outline !== false &&
+          strokes.map((pts, k) => <Line key={`e${k}`} points={pts} stroke={outlineFor(color)} strokeWidth={sw * 1.9} lineCap="round" lineJoin="round" tension={0.35} opacity={0.6} listening={false} />)}
+        {strokes.map((pts, k) => (
+          <Line key={k} points={pts} stroke={color} strokeWidth={sw} lineCap="round" lineJoin="round" tension={0.35} hitStrokeWidth={Math.max(24, sw * 3)} />
+        ))}
       </>
     );
   }
