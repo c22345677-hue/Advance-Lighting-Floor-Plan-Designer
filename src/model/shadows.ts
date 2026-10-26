@@ -483,6 +483,9 @@ export function sceneShadows(items: readonly Item[], extra: LightSource[] = []):
         if (!insideBeamOrCrossing(s, o.points, c, range)) continue;
       }
       if (o.points.some((p) => Math.hypot(p.x - s.pos.x, p.y - s.pos.y) < 1)) continue;
+      // Standing on the light's own spot (say, under a lamp on a stand): it can't sensibly block
+      // the light in every direction, so it casts nothing from this light.
+      if (pointInPolygon(s.apex, o.points) || pointInPolygon(s.pos, o.points)) continue;
       // Closer to a big source, the shadow is filled in more (and spread wider by the samples).
       const dark = shadowDarkness(s, Math.hypot(c.x - s.pos.x, c.y - s.pos.y));
       // Light diffusion keeps a hot spot: some of the lamp's hard shadow shows through.
@@ -503,6 +506,7 @@ export function sceneShadows(items: readonly Item[], extra: LightSource[] = []):
         // The middle of each equal slice of the source (its very edges count for less).
         const t = samples === 1 ? 0 : ((k + 0.5) / samples - 0.5) * s.sizeCm;
         const src = { x: s.pos.x + across.x * t, y: s.pos.y + across.y * t };
+        if (pointInPolygon(src, o.points)) continue;
         const poly = shadowPolygon(src, s.heightCm, o, reach);
         if (!poly) continue;
         // Fade from the object to the shadow's far end (sunlight keeps its patch, so no fade).

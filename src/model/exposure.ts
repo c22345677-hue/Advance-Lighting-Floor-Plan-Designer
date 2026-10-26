@@ -153,6 +153,7 @@ export function luxFrom(light: Item, at: Vec2, all: readonly Item[], exclude: Re
   const fromSrc = Math.hypot(at.x - src.pos.x, at.y - src.pos.y);
   for (const o of occluders(all)) {
     if (skip.has(o.id) || o.heightCm < FACE_CM * 0.9) continue; // lower than a face: doesn't block it
+    if (pointInPolygon(src.pos, o.points)) continue; // standing on the light's spot
     const nearest = Math.min(...o.points.map((q) => Math.hypot(q.x - src.pos.x, q.y - src.pos.y)));
     if (nearest >= fromSrc) continue; // behind the person
     const poly = shadowPolygon(src.pos, src.heightCm, o, fromSrc * 2);

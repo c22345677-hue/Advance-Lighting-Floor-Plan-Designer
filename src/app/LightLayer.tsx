@@ -136,6 +136,9 @@ function fillCoverage(off: CanvasRenderingContext2D, ls: LightShadows, withHot: 
   off.restore();
 }
 
+/** How much of the beam a shadow takes out (the rest stays as a trace of where the beam goes). */
+const BEAM_IN_SHADOW_CUT = 0.8;
+
 /** The light's beam, minus where its own light is blocked (its shadows). */
 function drawBeamCut(target: Native, beam: BeamSpec, ls: LightShadows | undefined) {
   const bb = beamBounds(beam);
@@ -156,6 +159,9 @@ function drawBeamCut(target: Native, beam: BeamSpec, ls: LightShadows | undefine
   off.save();
   off.setTransform(1, 0, 0, 1, 0, 0);
   off.globalCompositeOperation = 'destination-out';
+  // A trace of the beam stays inside its shadows, so its whole extent always reads (the shadow
+  // itself shows where the light is blocked).
+  off.globalAlpha = BEAM_IN_SHADOW_CUT;
   const spacing = ls.source.sizeCm / ls.samples;
   const blur = Math.min(8, Math.max(0.5, spacing * target.getTransform().a * RES * 0.55));
   if (canBlur) off.filter = `blur(${blur.toFixed(1)}px)`;
