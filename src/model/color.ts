@@ -36,6 +36,18 @@ const GENERIC_KIND: Record<string, ColorKind> = {
   'generic.light.balloon': 'bicolor',
   'generic.light.spacelight': 'tungsten',
   'generic.light.cob-softbox': 'daylight',
+  'generic.light.cob-stripbox': 'daylight',
+  'generic.light.cob-lantern': 'daylight',
+  'generic.light.led-panel-4x1': 'bicolor',
+  'generic.light.soft-panel-large': 'rgb',
+  'generic.light.mat-1x1': 'bicolor',
+  'generic.light.tube-60': 'rgb',
+  'generic.light.fresnel-2k': 'tungsten',
+  'generic.light.hmi-fresnel': 'daylight',
+  'generic.light.leko': 'tungsten',
+  'generic.light.ring-light': 'bicolor',
+  'generic.light.pocket': 'rgb',
+  'generic.light.air-panel': 'bicolor',
 };
 
 /**

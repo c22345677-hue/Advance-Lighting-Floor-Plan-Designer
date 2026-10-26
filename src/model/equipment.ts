@@ -204,7 +204,7 @@ export function sceneCounts(scene: SceneDoc, rules = true): Counts {
       }
       if (rules) {
         const id = lib.id;
-        if (id === 'generic.grip.frame-8x8' || id === 'generic.grip.frame-12x12') {
+        if (id === 'generic.grip.frame-8x8' || id === 'generic.grip.frame-12x12' || id === 'generic.grip.frame-20x20') {
           bump(c, stock('high-roller'), 2);
           bump(c, stock('sandbag'), 4);
         } else if (id === 'generic.grip.frame-6x6') {

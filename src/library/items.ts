@@ -50,6 +50,8 @@ export interface LibraryItem {
   beamDeg?: number;
   /** Known to the app (templates use it) but not offered in the Add list. */
   unlisted?: boolean;
+  /** Found by search but left out of the quick-add tiles. */
+  noQuick?: boolean;
   /** Doors, windows and props: which drawing to use (see PlanCanvas). */
   style?: string;
 }
@@ -90,24 +92,44 @@ const P = (id: string, name: string, style: string, w: number, d: number): Libra
 export const LIBRARY: LibraryItem[] = [
   L('cob', 'COB + reflector', 'cob', 30, 45, 55),
   L('cob-softbox', 'COB + softbox', 'cob', 90, 95, 100),
+  L('cob-stripbox', 'COB + strip box', 'cob', 35, 75, 90),
+  L('cob-lantern', 'COB + lantern', 'inflatable', 65, 65, 360),
   L('led-panel', 'LED panel 1×1', 'panel', 30, 30, 110),
   L('led-panel-2x1', 'LED panel 2×1', 'panel', 60, 30, 110),
-  L('fresnel', 'Fresnel', 'fresnel', 35, 45, 30),
-  L('hmi-par', 'HMI PAR', 'fresnel', 45, 55, 20),
-  L('tube', 'LED tube 120 cm', 'tube', 120, 5, 120),
+  L('led-panel-4x1', 'LED panel 4×1', 'panel', 120, 30, 110),
+  L('soft-panel-large', 'Large soft panel', 'panel', 75, 30, 105),
+  L('mat-1x1', 'LED mat 1×1', 'mat', 30, 30, 140),
   L('mat', 'LED mat 2×4', 'mat', 120, 60, 120),
+  L('tube-60', 'LED tube 60 cm', 'tube', 60, 5, 180),
+  L('tube', 'LED tube 120 cm', 'tube', 120, 5, 120),
+  L('fresnel', 'Fresnel', 'fresnel', 35, 45, 30),
+  L('fresnel-2k', 'Tungsten fresnel 2K', 'fresnel', 45, 55, 60),
+  L('hmi-fresnel', 'HMI fresnel 4K', 'fresnel', 60, 75, 60),
+  L('hmi-par', 'HMI PAR', 'fresnel', 45, 55, 20),
+  L('leko', 'Ellipsoidal (Leko)', 'fresnel', 30, 70, 26),
+  L('ring-light', 'Ring light', 'panel', 50, 30, 120),
+  L('pocket', 'Pocket LED', 'panel', 11, 3, 110),
   L('practical', 'Practical lamp', 'bulb', 30, 30, 360),
   L('balloon', 'Balloon light', 'inflatable', 100, 100, 360),
   L('spacelight', 'Lantern', 'spacelight', 60, 60, 360),
+  L('air-panel', 'Air panel 4×4', 'inflatable', 120, 120, 360),
+  I('grip', 'grip', 'grip.flag-18x24', 'Flag 18×24', 'flag', 60, 4),
   I('grip', 'grip', 'grip.flag', 'Flag 24×36', 'flag', 90, 4),
+  I('grip', 'grip', 'grip.floppy', 'Floppy 4×4', 'flag', 120, 4),
+  I('grip', 'grip', 'grip.cutter', 'Cutter 24×72', 'flag', 180, 4),
   I('grip', 'grip', 'grip.frame-4x4', 'Frame 4×4', 'frame', 120, 4),
   I('grip', 'grip', 'grip.frame-6x6', 'Frame 6×6', 'frame', 180, 4),
   I('grip', 'grip', 'grip.frame-8x8', 'Frame 8×8', 'frame', 240, 4),
   I('grip', 'grip', 'grip.frame-12x12', 'Frame 12×12', 'frame', 360, 4),
+  I('grip', 'grip', 'grip.frame-20x20', 'Frame 20×20', 'frame', 600, 4),
   I('grip', 'grip', 'grip.vflat', 'V-flat', 'frame', 120, 8),
+  I('grip', 'grip', 'grip.bounce-card', 'Bounce card', 'polyboard', 60, 3),
   I('grip', 'grip', 'grip.polyboard', 'Polyboard', 'polyboard', 120, 5),
+  I('grip', 'grip', 'grip.beadboard', 'Beadboard 4×8', 'polyboard', 122, 5),
   I('grip', 'grip', 'grip.c-stand', 'C-stand', 'stand', 70, 70),
-  I('grip', 'grip', 'grip.sandbag', 'Sandbag', 'sandbag', 40, 20),
+  I('grip', 'grip', 'grip.combo-stand', 'Combo stand', 'stand', 110, 110),
+  I('grip', 'grip', 'grip.roller-stand', 'Roller stand', 'stand', 130, 130),
+  { ...I('grip', 'grip', 'grip.sandbag', 'Sandbag', 'sandbag', 40, 20), noQuick: true },
   I('camera', 'camera', 'camera', 'Camera', 'camera', 26, 34),
   I('camera', 'set', 'camera.dolly', 'Dolly', 'dolly', 70, 120),
   // Jib / crane: base and arm (the arm reaches forward, where the camera hangs).

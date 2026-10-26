@@ -167,7 +167,7 @@ function DaylightSection({ sun, onSun, hasWindows }: { sun?: Sun; onSun: (s: Sun
 }
 
 function AddGrid({ category, onPlace, disabled }: { category: LibraryCategory; onPlace: Props['onPlace']; disabled?: boolean }) {
-  const entries = LIBRARY.filter((i) => i.category === category && !i.unlisted && i.kind !== 'person');
+  const entries = LIBRARY.filter((i) => i.category === category && !i.unlisted && !i.noQuick && i.kind !== 'person');
   const colors = useCanvasColors();
   return (
     <div className="tile-grid">

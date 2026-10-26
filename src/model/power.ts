@@ -15,6 +15,18 @@ const STAND_IN_W: Record<string, number> = {
   'generic.light.balloon': 400,
   'generic.light.spacelight': 1000,
   'generic.light.cob-softbox': 600,
+  'generic.light.cob-stripbox': 300,
+  'generic.light.cob-lantern': 300,
+  'generic.light.led-panel-4x1': 250,
+  'generic.light.soft-panel-large': 450,
+  'generic.light.mat-1x1': 50,
+  'generic.light.tube-60': 15,
+  'generic.light.fresnel-2k': 2000,
+  'generic.light.hmi-fresnel': 4000,
+  'generic.light.leko': 750,
+  'generic.light.ring-light': 60,
+  'generic.light.pocket': 10,
+  'generic.light.air-panel': 800,
 };
 
 /** A light's draw at its set intensity is not modelled: planning uses full power. */

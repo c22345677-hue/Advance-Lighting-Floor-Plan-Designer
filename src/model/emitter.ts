@@ -79,6 +79,30 @@ export function lightStyle(item: Item): LightStyle {
       return 'lantern';
     case 'generic.light.cob-softbox':
       return 'cob-softbox';
+    case 'generic.light.cob-stripbox':
+      return 'cob-softbox';
+    case 'generic.light.cob-lantern':
+      return 'lantern';
+    case 'generic.light.led-panel-4x1':
+      return 'panel';
+    case 'generic.light.soft-panel-large':
+      return 'panel';
+    case 'generic.light.mat-1x1':
+      return 'mat';
+    case 'generic.light.tube-60':
+      return 'tube';
+    case 'generic.light.fresnel-2k':
+      return 'fresnel';
+    case 'generic.light.hmi-fresnel':
+      return 'fresnel';
+    case 'generic.light.leko':
+      return 'spot';
+    case 'generic.light.ring-light':
+      return 'ring';
+    case 'generic.light.pocket':
+      return 'pocket';
+    case 'generic.light.air-panel':
+      return 'air-panel';
     default:
       return 'panel';
   }

@@ -41,6 +41,18 @@ const STAND_IN: Record<string, { w: number; tech: 'led' | 'tungsten' | 'hmi' }> 
   'generic.light.balloon': { w: 400, tech: 'led' },
   'generic.light.spacelight': { w: 1000, tech: 'tungsten' },
   'generic.light.cob-softbox': { w: 600, tech: 'led' },
+  'generic.light.cob-stripbox': { w: 300, tech: 'led' },
+  'generic.light.cob-lantern': { w: 300, tech: 'led' },
+  'generic.light.led-panel-4x1': { w: 250, tech: 'led' },
+  'generic.light.soft-panel-large': { w: 450, tech: 'led' },
+  'generic.light.mat-1x1': { w: 50, tech: 'led' },
+  'generic.light.tube-60': { w: 15, tech: 'led' },
+  'generic.light.fresnel-2k': { w: 2000, tech: 'tungsten' },
+  'generic.light.hmi-fresnel': { w: 4000, tech: 'hmi' },
+  'generic.light.leko': { w: 750, tech: 'tungsten' },
+  'generic.light.ring-light': { w: 60, tech: 'led' },
+  'generic.light.pocket': { w: 10, tech: 'led' },
+  'generic.light.air-panel': { w: 800, tech: 'led' },
 };
 /** Lumens per watt out of the fixture. */
 const EFFICACY = { led: 75, tungsten: 18, hmi: 85 };
