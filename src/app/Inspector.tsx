@@ -34,7 +34,7 @@ import { PersonEditor } from './PersonEditor';
 import { addMark, goToMark, marksOf, removeMark } from '../model/blocking';
 import { CameraView } from './CameraView';
 import { beamDegOf, displayLabel, itemName, meterName } from './PlanCanvas';
-import { zoomRange } from '../model/emitter';
+import { canSkirt, lightStyle, SKIRT_SIDES, zoomRange } from '../model/emitter';
 
 interface Props {
   item: Item;
@@ -595,6 +595,16 @@ function LightSection({
       </Section>
 
       <ColorSection item={item} setLight={setLight} />
+
+      {canSkirt(item) && (
+        <Section title="Skirt">
+          <SkirtControl down={item.light?.skirt} onChange={(skirt) => setLight({ skirt })} />
+          <p className="hint-text">
+            Each quarter of the skirt lowers on its own. Where it's down the light only reaches the floor straight below; all four down
+            gives a pool of light under the {lightStyle(item) === 'balloon' ? 'balloon' : 'lantern'}.
+          </p>
+        </Section>
+      )}
 
       <Section title="Beam">
         {zoom ? (
@@ -1266,5 +1276,27 @@ function StandSection({ item, gear, setLight }: { item: Item; gear: GearScope; s
         </p>
       )}
     </Section>
+  );
+}
+
+/** Four skirt quarters laid out round the light (front at the top), plus all down / all up. */
+function SkirtControl({ down, onChange }: { down: boolean[] | undefined; onChange: (skirt: boolean[]) => void }) {
+  const cur = [0, 1, 2, 3].map((k) => !!down?.[k]);
+  const all = cur.every(Boolean);
+  const toggle = (k: number) => onChange(cur.map((v, j) => (j === k ? !v : v)));
+  // Grid cells: front top middle, right middle right, back bottom middle, left middle left.
+  const cells: Record<number, string> = { 0: 'skirt-front', 1: 'skirt-right', 2: 'skirt-back', 3: 'skirt-left' };
+  return (
+    <div className="skirt-control" role="group" aria-label="Skirt">
+      {SKIRT_SIDES.map((side, k) => (
+        <button key={side} type="button" className={`skirt-side ${cells[k]}`} aria-pressed={cur[k]} onClick={() => toggle(k)}>
+          {side}
+          <span className="skirt-state">{cur[k] ? 'down' : 'up'}</span>
+        </button>
+      ))}
+      <button type="button" className="skirt-all" onClick={() => onChange(cur.map(() => !all))}>
+        {all ? 'All up' : 'All down'}
+      </button>
+    </div>
   );
 }

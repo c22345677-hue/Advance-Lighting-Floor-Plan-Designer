@@ -35,6 +35,7 @@ const GENERIC_KIND: Record<string, ColorKind> = {
   'generic.light.practical': 'tungsten',
   'generic.light.balloon': 'bicolor',
   'generic.light.spacelight': 'tungsten',
+  'generic.light.cob-softbox': 'daylight',
 };
 
 /**

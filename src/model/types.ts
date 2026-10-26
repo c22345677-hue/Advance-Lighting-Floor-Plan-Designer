@@ -32,6 +32,8 @@ export interface LightProps {
   beamDeg?: number;
   /** Lights that focus (fresnel, PAR, lens): 0 = full flood (default) … 100 = full spot. */
   spotPct?: number;
+  /** Lanterns and balloons: skirt quarters lowered, clockwise from the front (front, right, back, left). */
+  skirt?: boolean[];
   throwCm?: number;
   heightCm?: number;
   circuit?: string;

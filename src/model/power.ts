@@ -14,6 +14,7 @@ const STAND_IN_W: Record<string, number> = {
   'generic.light.practical': 10,
   'generic.light.balloon': 400,
   'generic.light.spacelight': 1000,
+  'generic.light.cob-softbox': 600,
 };
 
 /** A light's draw at its set intensity is not modelled: planning uses full power. */

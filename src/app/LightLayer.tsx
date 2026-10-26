@@ -207,6 +207,17 @@ function angleMask(n: Native, s: LightSource): CanvasGradient | null {
 /** The beam as a clip, for when there's no conic gradient to soften its sides. */
 function beamClip(n: Native, s: LightSource) {
   const reach = s.throwCm * SHADOW_REACH;
+  if (s.beamDeg >= 360 && s.skirt) {
+    // Behind a lowered skirt quarter the light (and so its shadows) only reaches the pool below.
+    for (let k = 0; k < 4; k++) {
+      const r = s.skirt.down[k] ? s.skirt.poolCm : reach;
+      const mid = ((s.rotationDeg - 90 + k * 90) * Math.PI) / 180;
+      n.moveTo(s.apex.x, s.apex.y);
+      n.arc(s.apex.x, s.apex.y, r, mid - Math.PI / 4 - 0.001, mid + Math.PI / 4 + 0.001);
+      n.closePath();
+    }
+    return;
+  }
   if (s.beamDeg >= 360) return n.arc(s.apex.x, s.apex.y, reach, 0, Math.PI * 2);
   const at = s.beamApex ?? s.apex;
   const mid = ((s.rotationDeg - 90) * Math.PI) / 180;

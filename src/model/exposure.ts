@@ -6,6 +6,7 @@ import { fabricById } from '../library/fabrics';
 import { libraryItem } from '../library/items';
 import { lightColor } from './color';
 import { itemFixture, itemModifiers } from './gear';
+import { lightStyle, skirtPass } from './emitter';
 import { aimAt } from './geometry';
 import { lightSource, occluders, pointInPolygon, shadowDarkness, shadowPolygon } from './shadows';
 import { daylightLux, windowLights, type Sun } from './sun';
@@ -39,6 +40,7 @@ const STAND_IN: Record<string, { w: number; tech: 'led' | 'tungsten' | 'hmi' }> 
   'generic.light.practical': { w: 10, tech: 'led' },
   'generic.light.balloon': { w: 400, tech: 'led' },
   'generic.light.spacelight': { w: 1000, tech: 'tungsten' },
+  'generic.light.cob-softbox': { w: 600, tech: 'led' },
 };
 /** Lumens per watt out of the fixture. */
 const EFFICACY = { led: 75, tungsten: 18, hmi: 85 };
@@ -109,6 +111,9 @@ export function luxFrom(light: Item, at: Vec2, all: readonly Item[], exclude: Re
   const { lumens } = lightLumens(light);
   let pass = Math.min(1, Math.max(0, (light.light?.intensityPct ?? 100) / 100));
   for (const m of itemModifiers(light)) pass *= MODIFIER_PASS[m.type] ?? 1;
+  if (lightStyle(light) === 'cob-softbox') pass *= MODIFIER_PASS.softbox!;
+  // Behind a lowered skirt only the pool straight below is lit.
+  pass *= skirtPass(light, at);
   pass *= lightColor(light).transmission;
   // Off the centre of the beam the light falls away (half at the edge), spill beyond it.
   const off = src.beamDeg >= 360 ? 0 : Math.abs(((aimAt(light.pos, at) - light.rotationDeg + 540) % 360) - 180);

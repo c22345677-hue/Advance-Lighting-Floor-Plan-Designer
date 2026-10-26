@@ -2,8 +2,8 @@
 // the real fixtures: a monolight's finned body, handle and yoke with its Bowens ring; a panel's
 // slab on its U yoke; a fresnel's lens and barn doors; tubes with end caps; mats in their frame…
 // The part that gives light is drawn in a pale tint of the light colour.
-import { Circle, Group, Line, Rect } from 'react-konva';
-import { lightStyle, isDome, modSize, modifierFront, modifierReach } from '../model/emitter';
+import { Arc, Circle, Group, Line, Rect } from 'react-konva';
+import { lightStyle, isDome, modSize, modifierFront, modifierReach, skirtDown } from '../model/emitter';
 import { itemLook, itemModifiers } from '../model/gear';
 
 export { lightStyle, modifierFront, modifierReach };
@@ -90,6 +90,19 @@ function UYoke({ hw, back, p, size }: { hw: number; back: number; p: ReturnType<
   );
 }
 
+/** Lowered skirt panels round a lantern or balloon: a dark band on each quarter that's down. */
+function SkirtArcs({ r, down, p }: { r: number; down: boolean[] | null; p: ReturnType<typeof palette> }) {
+  if (!down) return null;
+  const band = clamp(r * 0.16, 3, 10);
+  return (
+    <>
+      {down.map((on, k) =>
+        on ? <Arc key={k} innerRadius={r} outerRadius={r + band} angle={88} rotation={-90 + k * 90 - 44} fill={p.edge} opacity={0.85} /> : null,
+      )}
+    </>
+  );
+}
+
 // ---- Fixtures -------------------------------------------------------------------------
 
 /** The light's own drawing (no modifiers), filling `w` × `d` around the origin, front up. */
@@ -128,6 +141,25 @@ export function FixtureShape({ item, w, d, c }: { item: Item; w: number; d: numb
           <Rect x={-ringW / 2} y={top} width={ringW} height={ringD} cornerRadius={Math.min(1.5, ringD / 2)} fill={p.metal} stroke={p.edge} strokeWidth={line} />
           {refl === 0 && <Line points={[-ringW * 0.3, top - line * 0.6, ringW * 0.3, top - line * 0.6]} stroke={p.face} strokeWidth={line * 2.2} lineCap="round" />}
           <SideYoke hw={hw} y={pivot} len={bodyLen * 0.38} size={w} p={p} />
+        </>
+      );
+    }
+    case 'cob-softbox': {
+      // A COB head at the back, its softbox flaring out to the glowing front diffusion.
+      const headW = Math.min(26, w * 0.3);
+      const headLen = Math.min(32, d * 0.34);
+      const top = hd - headLen;
+      const ring = headW * 0.85;
+      return (
+        <>
+          <Line points={[-ring / 2, top, ring / 2, top, hw, -hd, -hw, -hd]} closed fill={p.body} opacity={0.25} />
+          <Line points={[-ring / 2, top, -hw, -hd]} stroke={p.metal} strokeWidth={line * 1.2} />
+          <Line points={[ring / 2, top, hw, -hd]} stroke={p.metal} strokeWidth={line * 1.2} />
+          <Line points={[-hw, -hd, hw, -hd]} stroke={p.face} strokeWidth={line * 3} lineCap="round" />
+          <Rect x={-ring / 2} y={top - 1.5} width={ring} height={3} cornerRadius={1} fill={p.edge} />
+          <Rect x={-headW / 2} y={top + 1.5} width={headW} height={headLen - 1.5} cornerRadius={headW * 0.12} fill={p.body} stroke={p.edge} strokeWidth={line} />
+          <Fins hw={headW / 2} from={top + headLen * 0.55} to={hd - 1} p={p} />
+          <SideYoke hw={headW / 2} y={top + headLen * 0.45} len={headLen * 0.4} size={headW} p={p} />
         </>
       );
     }
@@ -271,21 +303,21 @@ export function FixtureShape({ item, w, d, c }: { item: Item; w: number; d: numb
           <Circle radius={r * 0.72} fill={p.face} opacity={0.75} />
           <Circle x={-r * 0.22} y={-r * 0.25} radius={r * 0.3} fill="#ffffff" opacity={0.45} />
           <Circle radius={Math.max(1, r * 0.07)} fill={p.edge} />
+          <SkirtArcs r={r} down={skirtDown(item)} p={p} />
         </>
       );
     }
-    case 'spacelight': {
-      // Silk skirt seen from above with the ring of lamps inside it.
+    case 'lantern': {
+      // Paper lantern (china ball) from above: a glowing sphere with its wire ribs, hung in the middle.
       const r = hw;
       return (
         <>
-          <Circle radius={r} fill={p.body} opacity={0.22} stroke={p.metal} strokeWidth={line * 1.5} dash={[6, 4]} />
-          <Circle radius={r * 0.48} fill={p.metal} opacity={0.75} />
-          {Array.from({ length: 6 }, (_, k) => {
-            const a = (k / 6) * Math.PI * 2;
-            return <Circle key={k} x={Math.cos(a) * r * 0.32} y={Math.sin(a) * r * 0.32} radius={r * 0.09} fill={p.face} />;
-          })}
-          <Circle radius={r * 0.08} fill={p.edge} />
+          <Circle radius={r} fill={p.face} opacity={0.9} stroke={p.body} strokeWidth={line * 1.5} />
+          {[0.35, 0.62, 0.86].map((k) => (
+            <Circle key={k} radius={r * k} stroke={p.body} strokeWidth={line * 0.8} opacity={0.55} />
+          ))}
+          <Circle radius={Math.max(1, r * 0.08)} fill={p.edge} />
+          <SkirtArcs r={r} down={skirtDown(item)} p={p} />
         </>
       );
     }
@@ -404,6 +436,9 @@ export function ModifierShapes({ item, front, lightW, c }: { item: Item; front: 
             {[0.45, 0.8].map((k) => (
               <Circle key={k} y={cy} radius={r * k} stroke={p.body} strokeWidth={line * 0.8} opacity={0.6} />
             ))}
+            <Group y={cy}>
+              <SkirtArcs r={r} down={skirtDown(item)} p={p} />
+            </Group>
             <Rect x={-ring / 2} y={y - 1.5} width={ring} height={3} cornerRadius={1} fill={p.edge} />
           </Group>,
         );

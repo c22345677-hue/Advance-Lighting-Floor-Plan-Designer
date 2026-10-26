@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { beamApex, lightBeamDeg, lightFace, zoomRange } from './emitter';
+import { beamApex, canSkirt, lightBeamDeg, lightFace, skirtPass, zoomRange } from './emitter';
 import type { Item } from './types';
 
 const light = (catalogId: string, light: Item['light'] = {}): Item => ({ id: 'l', kind: 'light', catalogId, pos: { x: 0, y: 0 }, rotationDeg: 0, light });
@@ -30,5 +30,24 @@ describe('light beams', () => {
   it('a lantern sends light all round; a bare COB is a point', () => {
     expect(lightBeamDeg(light('aputure.ls-600d-pro', { modifierIds: ['aputure.lantern-65-cm'] }))).toBe(360);
     expect(lightFace(light('aputure.ls-600d-pro')).width).toBeLessThan(10);
+  });
+});
+
+describe('lantern and balloon skirts', () => {
+  const lantern = (skirt?: boolean[]): Item => ({ id: 'l', kind: 'light', catalogId: 'generic.light.spacelight', pos: { x: 0, y: 0 }, rotationDeg: 0, light: { skirt, heightCm: 400 } });
+  it('lights all round with the skirt up', () => {
+    expect(lightBeamDeg(lantern())).toBe(360);
+    expect(skirtPass(lantern(), { x: 0, y: -500 })).toBe(1);
+  });
+  it('a lowered quarter keeps only the pool below on its side', () => {
+    const l = lantern([true, false, false, false]);
+    expect(skirtPass(l, { x: 0, y: -500 })).toBeLessThan(0.1); // in front, far
+    expect(skirtPass(l, { x: 0, y: -50 })).toBeGreaterThan(0.9); // in front, under it
+    expect(skirtPass(l, { x: 500, y: 0 })).toBe(1); // right side still open
+  });
+  it('only lanterns and balloons take a skirt', () => {
+    expect(canSkirt(lantern())).toBe(true);
+    expect(canSkirt({ ...lantern(), catalogId: 'generic.light.balloon' })).toBe(true);
+    expect(canSkirt({ ...lantern(), catalogId: 'generic.light.cob' })).toBe(false);
   });
 });

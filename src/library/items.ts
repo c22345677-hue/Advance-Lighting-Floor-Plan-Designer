@@ -88,6 +88,7 @@ const P = (id: string, name: string, style: string, w: number, d: number): Libra
 
 export const LIBRARY: LibraryItem[] = [
   L('cob', 'COB + reflector', 'cob', 30, 45, 55),
+  L('cob-softbox', 'COB + softbox', 'cob', 90, 95, 100),
   L('led-panel', 'LED panel 1×1', 'panel', 30, 30, 110),
   L('led-panel-2x1', 'LED panel 2×1', 'panel', 60, 30, 110),
   L('fresnel', 'Fresnel', 'fresnel', 35, 45, 30),
@@ -96,7 +97,7 @@ export const LIBRARY: LibraryItem[] = [
   L('mat', 'LED mat 2×4', 'mat', 120, 60, 120),
   L('practical', 'Practical lamp', 'bulb', 30, 30, 360),
   L('balloon', 'Balloon light', 'inflatable', 100, 100, 360),
-  L('spacelight', 'Spacelight', 'spacelight', 60, 60, 160),
+  L('spacelight', 'Lantern', 'spacelight', 60, 60, 360),
   I('grip', 'grip', 'grip.flag', 'Flag 24×36', 'flag', 90, 4),
   I('grip', 'grip', 'grip.frame-4x4', 'Frame 4×4', 'frame', 120, 4),
   I('grip', 'grip', 'grip.frame-6x6', 'Frame 6×6', 'frame', 180, 4),

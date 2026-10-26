@@ -11,6 +11,7 @@ export type LightStyle =
   | 'monolight' // COB with Bowens / Aputure / G mount (LS 600d, Forza 500, Storm)
   | 'compact' // small COB with a small mount (Forza 60, FM mount)
   | 'cob-reflector' // generic COB with its standard reflector
+  | 'cob-softbox' // generic COB in a softbox
   | 'fresnel'
   | 'par'
   | 'spot'
@@ -22,7 +23,7 @@ export type LightStyle =
   | 'air-panel'
   | 'air-tube'
   | 'balloon'
-  | 'spacelight'
+  | 'lantern' // paper lantern / china ball (the stand-in once called spacelight)
   | 'bulb'
   | 'practical';
 
@@ -75,7 +76,9 @@ export function lightStyle(item: Item): LightStyle {
     case 'generic.light.balloon':
       return 'balloon';
     case 'generic.light.spacelight':
-      return 'spacelight';
+      return 'lantern';
+    case 'generic.light.cob-softbox':
+      return 'cob-softbox';
     default:
       return 'panel';
   }
@@ -203,6 +206,7 @@ const BARE_DEG: Record<LightStyle, number> = {
   monolight: 110,
   compact: 100,
   'cob-reflector': 55,
+  'cob-softbox': 100,
   fresnel: 60,
   par: 55,
   spot: 55,
@@ -214,7 +218,7 @@ const BARE_DEG: Record<LightStyle, number> = {
   'air-panel': 360,
   'air-tube': 220,
   balloon: 360,
-  spacelight: 360,
+  lantern: 360,
   bulb: 360,
   practical: 360,
 };
@@ -294,6 +298,9 @@ export function lightFace(item: Item): { width: number; forward: number } {
     case 'cob-reflector':
       width = w * 1.5;
       break;
+    case 'cob-softbox':
+      width = w * 0.95;
+      break;
     case 'monolight':
     case 'compact':
       width = w * 0.3;
@@ -349,4 +356,49 @@ export function beamApex(item: Item, deg = lightBeamDeg(item)): { x: number; y: 
   const dir = { x: Math.sin(r), y: -Math.cos(r) };
   const along = forward - back;
   return { x: item.pos.x + dir.x * along, y: item.pos.y + dir.y * along };
+}
+
+// ---- Skirts ---------------------------------------------------------------------------
+
+/** Skirt quarters, clockwise from the light's front: front, right, back, left. */
+export const SKIRT_SIDES = ['Front', 'Right', 'Back', 'Left'] as const;
+
+/** Lights that send light all round and can take a skirt: lanterns and balloons (and a lantern fitted). */
+export function canSkirt(item: Item): boolean {
+  if (item.kind !== 'light') return false;
+  const style = lightStyle(item);
+  if (style === 'lantern' || style === 'balloon') return true;
+  return itemModifiers(item).some((m) => m.type === 'lantern');
+}
+
+/** Which quarters of the skirt are down (none: no skirt, or all up). */
+export function skirtDown(item: Item): boolean[] | null {
+  if (!canSkirt(item)) return null;
+  const s = item.light?.skirt;
+  return s && s.some(Boolean) ? [0, 1, 2, 3].map((k) => !!s[k]) : null;
+}
+
+/** Height a light hangs at by default, cm. */
+const HANG_CM = 400;
+
+/**
+ * Behind a lowered skirt the light only reaches the floor straight below: a pool about as wide
+ * as the light hangs high (half of it each side), cm.
+ */
+export const skirtPoolCm = (item: Item) => Math.max(80, Math.min(260, (item.light?.heightCm ?? HANG_CM) * 0.5));
+
+/** Which skirt quarter a point is in, seen from the light (0 front, 1 right, 2 back, 3 left). */
+export function skirtQuarter(item: Item, at: { x: number; y: number }): number {
+  const bearing = (Math.atan2(at.x - item.pos.x, -(at.y - item.pos.y)) * 180) / Math.PI;
+  const rel = (((bearing - item.rotationDeg) % 360) + 360 + 45) % 360;
+  return Math.floor(rel / 90) % 4;
+}
+
+/** How much of the light reaches `at` past the skirt: all of it where it's up, only the pool below where it's down. */
+export function skirtPass(item: Item, at: { x: number; y: number }): number {
+  const down = skirtDown(item);
+  if (!down || !down[skirtQuarter(item, at)]) return 1;
+  const d = Math.hypot(at.x - item.pos.x, at.y - item.pos.y);
+  const pool = skirtPoolCm(item);
+  return d <= pool ? 1 - 0.5 * (d / pool) ** 2 : 0.04;
 }

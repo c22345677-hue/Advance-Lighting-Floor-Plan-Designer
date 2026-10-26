@@ -3,7 +3,7 @@
 // stronger for brighter lights, falling off with distance roughly as light does; through a
 // diffusion frame the lamp's cone stops at the frame and the fabric spreads the light wide.
 import { lightColor, type RGB } from '../model/color';
-import { beamApex, lightBeamDeg, lightFace, zoomRange } from '../model/emitter';
+import { beamApex, lightBeamDeg, lightFace, skirtDown, skirtPoolCm, zoomRange } from '../model/emitter';
 import { lightLumens } from '../model/exposure';
 import { beamReach, lightReach, lightSource } from '../model/shadows';
 import type { Item, Vec2 } from '../model/types';
@@ -21,6 +21,8 @@ export interface BeamSpec {
    * at the face, `forward` cm in front of the light.
    */
   face?: { apex: Vec2; forward: number; width: number };
+  /** Lantern or balloon skirt: quarters lowered (front, right, back, left) and the pool of light below them. */
+  skirt?: { down: boolean[]; poolCm: number };
   /** Through a diffusion frame: where it is, how far from the lamp, and how the fabric spreads it. */
   frame?: { pos: Vec2; toFrame: number; rest: number; spread: number };
   /** Where the light gets to past the walls (null: no walls nearby). */
@@ -54,9 +56,11 @@ export function beamSpec(item: Item, lit: readonly Item[]): BeamSpec | null {
   }
   const f = lightFace(item);
   const face = deg < 360 && f.width >= 2 ? { apex: beamApex(item, deg), forward: f.forward, width: f.width } : undefined;
+  const down = skirtDown(item);
   return {
     lightId: item.id,
     face,
+    skirt: down ? { down, poolCm: skirtPoolCm(item) } : undefined,
     pos: item.pos,
     rotationDeg: item.rotationDeg,
     deg,
@@ -113,10 +117,17 @@ export function drawBeam(n: CanvasRenderingContext2D, b: BeamSpec) {
     wedge(b.frame.pos, b.frame.rest, b.frame.spread);
     n.fill();
   } else if (b.deg >= 360) {
-    n.fillStyle = grad(b.pos, b.throwCm, falloff(1));
-    n.beginPath();
-    n.arc(b.pos.x, b.pos.y, b.throwCm, 0, Math.PI * 2);
-    n.fill();
+    // All round; behind a lowered skirt quarter only the pool straight below is lit.
+    for (let k = 0; k < 4; k++) {
+      const r = b.skirt?.down[k] ? b.skirt.poolCm : b.throwCm;
+      const mid = (b.rotationDeg - 90 + k * 90) * RAD;
+      n.fillStyle = grad(b.pos, r, falloff(1));
+      n.beginPath();
+      n.moveTo(b.pos.x, b.pos.y);
+      n.arc(b.pos.x, b.pos.y, r, mid - Math.PI / 4, mid + Math.PI / 4);
+      n.closePath();
+      n.fill();
+    }
   } else {
     // A broad face shines from all of it: each part of the beam spreads from behind the face so
     // its edges leave the face's two ends, kept to in front of the face, brightest at the face.

@@ -17,7 +17,7 @@
 //   (¼ grid, light grid) keep a hot spot and let some of the hard light straight through.
 import { fabricById } from '../library/fabrics';
 import { libraryItem } from '../library/items';
-import { beamApex, lightBeamDeg } from './emitter';
+import { beamApex, lightBeamDeg, lightStyle, skirtDown, skirtPoolCm } from './emitter';
 import { itemFixture, itemLook, itemModifiers } from './gear';
 import { aimAt, rotate } from './geometry';
 import type { Item, Vec2 } from './types';
@@ -64,6 +64,8 @@ export interface LightSource {
   apex: Vec2;
   /** Where its beam spreads from (behind a broad face such as a mat), when not the fixture itself. */
   beamApex?: Vec2;
+  /** Lantern or balloon skirt: quarters lowered (front, right, back, left), and the pool below them. */
+  skirt?: { down: boolean[]; poolCm: number };
   rotationDeg: number;
   beamDeg: number;
   throwCm: number;
@@ -110,6 +112,7 @@ function lightHeightCm(i: Item): number {
 function bareSource(i: Item): { size: number; what: string } {
   const look = itemLook(i);
   const fam = itemFixture(i)?.family;
+  if (lightStyle(i) === 'cob-softbox') return { size: look.w, what: 'COB in a softbox' };
   switch (look.shape) {
     case 'cob':
       return { size: 18, what: 'bare COB with reflector' };
@@ -122,7 +125,7 @@ function bareSource(i: Item): { size: number; what: string } {
     case 'inflatable':
       return { size: look.w, what: 'balloon' };
     case 'spacelight':
-      return { size: 70, what: 'spacelight' };
+      return { size: look.w, what: 'lantern' };
     case 'panel':
     case 'mat':
       return { size: look.w, what: look.shape === 'mat' ? 'LED mat' : 'LED panel' };
@@ -263,6 +266,7 @@ export function lightSource(light: Item, all: readonly Item[]): LightSource | nu
     pos,
     apex: light.pos,
     beamApex: beamApex(light, beamDeg),
+    skirt: skirtDown(light) ? { down: skirtDown(light)!, poolCm: skirtPoolCm(light) } : undefined,
     rotationDeg: light.rotationDeg,
     beamDeg,
     throwCm,
