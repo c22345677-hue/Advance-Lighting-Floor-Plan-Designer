@@ -2662,3 +2662,9 @@ kbd {
   width: 140px;
   min-height: 36px;
 }
+
+/* While something is being dragged or turned, the bar fades so it doesn't hide what's changing. */
+.selection-bar.faded {
+  opacity: 0.25;
+  pointer-events: none;
+}

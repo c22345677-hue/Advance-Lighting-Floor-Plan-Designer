@@ -485,7 +485,7 @@ export function sceneShadows(items: readonly Item[], extra: LightSource[] = []):
       if (o.points.some((p) => Math.hypot(p.x - s.pos.x, p.y - s.pos.y) < 1)) continue;
       // Standing on the light's own spot (say, under a lamp on a stand): it can't sensibly block
       // the light in every direction, so it casts nothing from this light.
-      if (pointInPolygon(s.apex, o.points) || pointInPolygon(s.pos, o.points)) continue;
+      if (pointInPolygon(s.apex, o.points) || pointInPolygon(s.pos, o.points) || overlapsLight(o, s.pos)) continue;
       // Closer to a big source, the shadow is filled in more (and spread wider by the samples).
       const dark = shadowDarkness(s, Math.hypot(c.x - s.pos.x, c.y - s.pos.y));
       // Light diffusion keeps a hot spot: some of the lamp's hard shadow shows through.
@@ -522,6 +522,13 @@ export function sceneShadows(items: readonly Item[], extra: LightSource[] = []):
   }
   return { sources, shadows };
 }
+
+/** Still on top of the light (stepping off it): its middle within this of the light's, cm. */
+const ON_LIGHT_CM = 40;
+export const overlapsLight = (o: Occluder, light: Vec2): boolean => {
+  const c = o.points.reduce((a, p) => ({ x: a.x + p.x / o.points.length, y: a.y + p.y / o.points.length }), { x: 0, y: 0 });
+  return Math.hypot(c.x - light.x, c.y - light.y) < ON_LIGHT_CM;
+};
 
 /** Is `p` inside polygon `poly` (even-odd rule)? */
 export function pointInPolygon(p: Vec2, poly: readonly Vec2[]): boolean {

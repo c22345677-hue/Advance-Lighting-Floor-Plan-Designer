@@ -1179,7 +1179,7 @@ export function App() {
 
           {selection.length > 0 && !wallTool && (
             // Touch screens: the keyboard and Alt/Shift shortcuts as buttons, for the selection.
-            <div ref={barRef} className={`selection-bar ${barDragging ? 'dragging' : ''}`} role="toolbar" aria-label="Selection" style={selectionBarAt ?? undefined}>
+            <div ref={barRef} className={`selection-bar ${barDragging ? 'dragging' : ''} ${live ? 'faded' : ''}`} role="toolbar" aria-label="Selection" style={selectionBarAt ?? undefined}>
               <span className="bar-grip" title="Drag to move this bar" aria-hidden="true" {...gripProps}>
                 <IconGrip />
               </span>

@@ -8,7 +8,7 @@ import { lightColor } from './color';
 import { itemFixture, itemModifiers } from './gear';
 import { lightStyle, skirtPass } from './emitter';
 import { aimAt } from './geometry';
-import { lightSource, occluders, pointInPolygon, shadowDarkness, shadowPolygon } from './shadows';
+import { lightSource, occluders, overlapsLight, pointInPolygon, shadowDarkness, shadowPolygon } from './shadows';
 import { daylightLux, windowLights, type Sun } from './sun';
 import { assemblyOf, isMeter } from './attach';
 import type { Item, MeterSettings, Vec2 } from './types';
@@ -153,7 +153,7 @@ export function luxFrom(light: Item, at: Vec2, all: readonly Item[], exclude: Re
   const fromSrc = Math.hypot(at.x - src.pos.x, at.y - src.pos.y);
   for (const o of occluders(all)) {
     if (skip.has(o.id) || o.heightCm < FACE_CM * 0.9) continue; // lower than a face: doesn't block it
-    if (pointInPolygon(src.pos, o.points)) continue; // standing on the light's spot
+    if (pointInPolygon(src.pos, o.points) || overlapsLight(o, src.pos)) continue; // standing on the light's spot
     const nearest = Math.min(...o.points.map((q) => Math.hypot(q.x - src.pos.x, q.y - src.pos.y)));
     if (nearest >= fromSrc) continue; // behind the person
     const poly = shadowPolygon(src.pos, src.heightCm, o, fromSrc * 2);
