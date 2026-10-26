@@ -35,7 +35,8 @@ export type Shape =
   | 'prop'
   | 'note-text'
   | 'note-arrow'
-  | 'note-area';
+  | 'note-area'
+  | 'note-draw';
 
 export interface LibraryItem {
   id: string;
@@ -167,7 +168,8 @@ export const LIBRARY: LibraryItem[] = [
   P('piano', 'Piano', 'piano', 150, 60),
   I('notes', 'note', 'note.text', 'Text', 'note-text', 200, 40),
   I('notes', 'note', 'note.arrow', 'Arrow', 'note-arrow', 20, 200),
-  I('notes', 'note', 'note.area', 'Area', 'note-area', 300, 200),
+  { ...I('notes', 'note', 'note.area', 'Area', 'note-area', 300, 200), unlisted: true },
+  { ...I('notes', 'note', 'note.draw', 'Drawing', 'note-draw', 100, 100), unlisted: true },
 ];
 
 const BY_ID = new Map(LIBRARY.map((i) => [i.id, i]));

@@ -7,6 +7,7 @@ import { beamReach, lightReach, lightSource } from '../model/shadows';
 import { assemblyOf, canAttach, isMeter, rootOf } from '../model/attach';
 import { LightLayer, type LivePatch, type ShadowLive } from './LightLayer';
 import { FixtureShape, ModifierShapes, modifierFront, turnedCorners } from './fixtureShapes';
+import { arrowPoints, NOTE_PAD_CM, noteColor } from '../model/notes';
 import { beamAlpha, beamDegOf } from './beams';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
@@ -166,6 +167,10 @@ interface Props {
   wallSnap: boolean;
   /** Alt + drag: leave the item where it was and add a copy where it was dropped. */
   onDuplicate: (item: Item, patch: Partial<Item>) => void;
+  /** Drawing on the plan (pen, finger, tablet or mouse): the pen's colour and width on screen. */
+  drawPen?: { color: string; px: number } | null;
+  /** A finished stroke, in plan cm, and its width in cm. */
+  onDrawStroke?: (points: Vec2[], strokeCm: number) => void;
 }
 
 export type LayerState = { hidden?: boolean; locked?: boolean };
@@ -193,6 +198,10 @@ export function PlanCanvas(p: Props) {
   const stageRef = useRef<Konva.Stage>(null);
   const trRef = useRef<Konva.Transformer>(null);
   const pinch = useRef<{ dist: number; center: Vec2 } | null>(null);
+  /** Drawing on the plan: the stroke being drawn, its live line, and the pointers down. */
+  const stroke = useRef<Vec2[] | null>(null);
+  const strokeLine = useRef<Konva.Line>(null);
+  const pens = useRef(new Set<number>());
   const rot = useRef<RotateSession | null>(null);
   const [dragging, setDragging] = useState<string | null>(null);
   /** Alt + drag: the originals, drawn in place while their copy is being dragged. */
@@ -553,6 +562,7 @@ export function PlanCanvas(p: Props) {
     for (const m of r.members) {
       const t = turned(m, r.delta);
       node(m.item.id)?.position(t.pos).rotation(t.rot);
+      if (m.item.kind === 'note') uprightArrowLabel(node(m.item.id), t.rot);
       node(`${m.item.id}-beam`)?.position(t.pos).rotation(t.rot);
       const lay = labelShift.current.get(m.item.id);
       const lt = labelTop(m.item, t.pos, lay?.w, lay?.h);
@@ -1354,6 +1364,69 @@ export function PlanCanvas(p: Props) {
             />
           ));
         })()}
+        {p.drawPen && (
+          <>
+            <Rect
+              name="ui-only"
+              x={-view.x / view.scale}
+              y={-view.y / view.scale}
+              width={width / view.scale}
+              height={height / view.scale}
+              fill="rgba(0,0,0,0)"
+              onMouseEnter={() => setCursor('crosshair')}
+              onPointerDown={(e) => {
+                const ev = e.evt;
+                pens.current.add(ev.pointerId);
+                // A second finger: it's a pinch, not a stroke.
+                if (pens.current.size > 1) {
+                  stroke.current = null;
+                  strokeLine.current?.points([]);
+                  return;
+                }
+                if (ev.pointerType === 'mouse' && ev.button !== 0) return;
+                e.cancelBubble = true;
+                const pt = worldPointer();
+                if (!pt) return;
+                stroke.current = [pt];
+                strokeLine.current?.points([pt.x, pt.y, pt.x + 0.01, pt.y]);
+                strokeLine.current?.getLayer()?.batchDraw();
+              }}
+              onPointerMove={(e) => {
+                const st = stroke.current;
+                if (!st) return;
+                e.evt.preventDefault();
+                const pt = worldPointer();
+                const last = st[st.length - 1]!;
+                // Skip points closer than about a pixel apart.
+                if (!pt || Math.hypot(pt.x - last.x, pt.y - last.y) < 1 / view.scale) return;
+                st.push(pt);
+                strokeLine.current?.points(st.flatMap((q) => [q.x, q.y]));
+                strokeLine.current?.getLayer()?.batchDraw();
+              }}
+              onPointerUp={(e) => {
+                pens.current.delete(e.evt.pointerId);
+                const st = stroke.current;
+                stroke.current = null;
+                strokeLine.current?.points([]);
+                if (st && st.length > 1) p.onDrawStroke?.(st, p.drawPen!.px / view.scale);
+              }}
+              onPointerCancel={(e) => {
+                pens.current.delete(e.evt.pointerId);
+                stroke.current = null;
+                strokeLine.current?.points([]);
+              }}
+            />
+            <Line
+              ref={strokeLine}
+              listening={false}
+              stroke={p.drawPen.color}
+              strokeWidth={p.drawPen.px / view.scale}
+              lineCap="round"
+              lineJoin="round"
+              tension={0.35}
+            />
+          </>
+        )}
         {p.wallTool && (
           <>
             <Rect
@@ -1489,16 +1562,96 @@ function OutlineRing({
 
 const NOTE_FONT = "'Barlow Semi Condensed', 'Arial Narrow', sans-serif";
 
-/** Notes: text, an arrow pointing the way the item faces, or a marked area with its text. */
-function NoteShape({ item, shape, w, d, c }: { item: Item; shape: string; w: number; d: number; c: CanvasColors }) {
-  const color = item.note?.color ?? c.select;
+/** Dark edge for light text, light edge for dark text. */
+function outlineFor(color: string): string {
+  const m = /^#?([0-9a-f]{6})$/i.exec(color);
+  if (!m) return '#111';
+  const n = parseInt(m[1]!, 16);
+  const lum = (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+  return lum > 0.55 ? '#16181b' : '#ffffff';
+}
+
+/** How a note's letters are drawn: its colour, with an edge round them unless turned off. */
+const letters = (item: Item, color: string, size: number) =>
+  item.note?.outline === false ? { fill: color } : { fill: color, stroke: outlineFor(color), strokeWidth: Math.max(1.5, size * 0.14), fillAfterStrokeEnabled: true, lineJoin: 'round' as const };
+
+/** Measures wrapped note text (Konva's own layout), cm. */
+function measureNote(text: string, size: number, width?: number): { w: number; h: number } {
+  const t = new Konva.Text({ text, fontSize: size, fontFamily: NOTE_FONT, fontStyle: '600', lineHeight: 1.15, ...(width ? { width, align: 'center' } : {}) });
+  const out = { w: width ?? t.width(), h: t.height() };
+  t.destroy();
+  return out;
+}
+
+/**
+ * Where an arrow's label sits: past its tail, upright on screen whichever way the arrow points
+ * (`rot`: the arrow's turn). Offsets of the label's centre from the tail, in screen-aligned axes.
+ */
+export function arrowLabelOffset(rot: number, tw: number, th: number): { x: number; y: number } {
+  const r = (rot * Math.PI) / 180;
+  const u = { x: -Math.sin(r), y: Math.cos(r) }; // away from the head, on screen
+  const reach = 6 + Math.abs(u.x) * (tw / 2) + Math.abs(u.y) * (th / 2);
+  return { x: u.x * reach, y: u.y * reach };
+}
+
+/** Keeps an arrow's label upright while the arrow is being turned (`rot`: its turn now). */
+export function uprightArrowLabel(arrow: Konva.Node | undefined, rot: number) {
+  const g = (arrow as Konva.Group | undefined)?.findOne?.('.upright') as Konva.Group | undefined;
+  if (!g) return;
+  g.rotation(-rot);
+  const tw = g.getAttr('textW') as number;
+  const th = g.getAttr('textH') as number;
+  const off = arrowLabelOffset(rot, tw, th);
+  g.findOne('.upright-text')?.position({ x: off.x - tw / 2, y: off.y - th / 2 });
+  g.findOne('.upright-bg')?.position({ x: off.x - tw / 2 - 6, y: off.y - th / 2 - 4 });
+}
+
+/** Notes: text that grows its box, an arrow (straight, bent or curved) with an upright label, a freehand drawing, or an old marked area. */
+function NoteShape({ item, shape, w, d }: { item: Item; shape: string; w: number; d: number }) {
+  const color = noteColor(item);
   const text = item.note?.text ?? '';
   const size = item.note?.fontSize ?? 24;
-  if (shape === 'note-arrow') {
+  /** Semi-transparent backing in the contrasting colour, so the text stands out on anything. */
+  const backing = item.note?.background ? outlineFor(color) : null;
+  if (shape === 'note-draw') {
+    const pts = item.note?.points ?? [];
+    const sw = item.note?.strokeCm ?? 4;
     return (
       <>
-        <Arrow points={[0, d / 2, 0, -d / 2]} stroke={color} fill={color} strokeWidth={5} pointerLength={22} pointerWidth={22} hitStrokeWidth={30} />
-        {text && <Text text={text} x={-150} y={d / 2 + 6} width={300} align="center" fontSize={size * 0.8} fontFamily={NOTE_FONT} fontStyle="600" fill={color} />}
+        {item.note?.outline !== false && <Line points={pts} stroke={outlineFor(color)} strokeWidth={sw * 1.9} lineCap="round" lineJoin="round" tension={0.35} opacity={0.6} listening={false} />}
+        <Line points={pts} stroke={color} strokeWidth={sw} lineCap="round" lineJoin="round" tension={0.35} hitStrokeWidth={Math.max(24, sw * 3)} />
+      </>
+    );
+  }
+  if (shape === 'note-arrow') {
+    const { points, curved } = arrowPoints(item.note?.arrow, d);
+    const flat = points.flatMap((q) => [q.x, q.y]);
+    const edge = item.note?.outline === false ? null : outlineFor(color);
+    const head = { pointerLength: 22, pointerWidth: 22, pointerAtBeginning: item.note?.arrow === 'double', tension: curved ? 0.5 : 0 };
+    const label = text ? measureNote(text, size * 0.8, measureNote(text, size * 0.8).w > 300 ? 300 : undefined) : null;
+    const off = label ? arrowLabelOffset(item.rotationDeg, label.w, label.h) : null;
+    return (
+      <>
+        {edge && <Arrow points={flat} stroke={edge} fill={edge} strokeWidth={9} {...head} pointerLength={27} pointerWidth={28} opacity={0.5} listening={false} />}
+        <Arrow points={flat} stroke={color} fill={color} strokeWidth={5} {...head} hitStrokeWidth={30} lineCap="round" lineJoin="round" />
+        {label && off && (
+          <Group name="upright" x={0} y={d / 2} rotation={-item.rotationDeg} textW={label.w} textH={label.h}>
+            {backing && <Rect name="upright-bg" x={off.x - label.w / 2 - 6} y={off.y - label.h / 2 - 4} width={label.w + 12} height={label.h + 8} fill={backing} opacity={0.55} cornerRadius={6} />}
+            <Text
+              name="upright-text"
+              text={text}
+              x={off.x - label.w / 2}
+              y={off.y - label.h / 2}
+              width={label.w}
+              align="center"
+              fontSize={size * 0.8}
+              lineHeight={1.15}
+              fontFamily={NOTE_FONT}
+              fontStyle="600"
+              {...letters(item, color, size * 0.8)}
+            />
+          </Group>
+        )}
       </>
     );
   }
@@ -1507,14 +1660,17 @@ function NoteShape({ item, shape, w, d, c }: { item: Item; shape: string; w: num
       <>
         <Rect x={-w / 2} y={-d / 2} width={w} height={d} stroke={color} strokeWidth={3} dash={[14, 8]} fill={color} opacity={1} fillEnabled={false} />
         <Rect x={-w / 2} y={-d / 2} width={w} height={d} fill={color} opacity={0.1} />
-        {text && <Text text={text} x={-w / 2 + 10} y={-d / 2 + 8} width={w - 20} fontSize={size} fontFamily={NOTE_FONT} fontStyle="600" fill={color} />}
+        {text && <Text text={text} x={-w / 2 + 10} y={-d / 2 + 8} width={w - 20} fontSize={size} fontFamily={NOTE_FONT} fontStyle="600" {...letters(item, color, size)} />}
       </>
     );
   }
+  // Text: the box grows to fit however many lines the text wraps to.
+  const inner = Math.max(10, w - NOTE_PAD_CM * 2);
+  const h = measureNote(text || 'Note', size, inner).h + NOTE_PAD_CM * 2;
   return (
     <>
-      <Rect x={-w / 2} y={-d / 2} width={w} height={d} fill={c.canvas} opacity={0.6} cornerRadius={6} />
-      <Text text={text || 'Note'} x={-w / 2} y={-size / 2} width={w} align="center" fontSize={size} fontFamily={NOTE_FONT} fontStyle="600" fill={color} />
+      <Rect x={-w / 2} y={-h / 2} width={w} height={h} fill={backing ?? 'rgba(0,0,0,0)'} opacity={backing ? 0.55 : 1} cornerRadius={6} />
+      <Text text={text || 'Note'} x={-w / 2 + NOTE_PAD_CM} y={-h / 2 + NOTE_PAD_CM} width={inner} align="center" fontSize={size} lineHeight={1.15} fontFamily={NOTE_FONT} fontStyle="600" {...letters(item, color, size)} />
     </>
   );
 }
@@ -2382,7 +2538,8 @@ export function ItemShape({
     case 'note-text':
     case 'note-arrow':
     case 'note-area':
-      return <NoteShape item={item} shape={shape} w={w} d={d} c={c} />;
+    case 'note-draw':
+      return <NoteShape item={item} shape={shape} w={w} d={d} />;
     case 'prop':
       return <PropShape style={libraryItem(item.catalogId)?.style ?? 'box'} w={w} d={d} c={c} />;
     case 'round':

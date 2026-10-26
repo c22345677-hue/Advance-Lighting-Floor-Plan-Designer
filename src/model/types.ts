@@ -74,7 +74,20 @@ export interface Item {
   /** People placed as cast: points at the project's actor list (name, colour, gender live there). */
   actorId?: string;
   /** Notes on the plan: text, an arrow or a marked area (size in sizeCm; arrow length is d). */
-  note?: { text: string; color?: string; fontSize?: number };
+  note?: {
+    text: string;
+    color?: string;
+    fontSize?: number;
+    /** Dark (or light) edge round the letters so they read on anything; on unless turned off. */
+    outline?: boolean;
+    /** A semi-transparent backing behind the text. */
+    background?: boolean;
+    /** Arrows: straight, bent 35° or 75°, curved, or with a head at both ends. */
+    arrow?: import('./notes').ArrowStyle;
+    /** Drawings: the stroke's points relative to the item's position (x, y, x, y…), and its width, cm. */
+    points?: number[];
+    strokeCm?: number;
+  };
   /** People: blocking marks in order; the person stands on marks[at] (kept equal to pos). */
   blocking?: { marks: Vec2[]; at: number };
   /** People: the cast member they look at in this scene (they turn to face them, like a camera's focus). */

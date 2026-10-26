@@ -29,6 +29,7 @@ import { LayersMenu } from './LayersMenu';
 import { MenuButton } from './MenuButton';
 import { clampInto, placeBar } from './barPlacement';
 import { turnedCorners } from './fixtureShapes';
+import { drawingNote, NOTE_DEFAULT_COLOR, PEN_WIDTHS } from '../model/notes';
 import { parseProjectFile, projectFileName, toProjectFile } from '../model/projectFile';
 import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain, wallPoints } from '../model/walls';
 import { HelpPanel } from './HelpPanel';
@@ -211,7 +212,7 @@ const MODE_HINT: Record<EditMode, string> = {
   grip: 'Only grip can be picked and moved',
   camera: 'Only camera gear can be picked and moved',
   scene: 'Only people, set and props can be picked and moved',
-  notes: 'Only notes, arrows and areas can be picked and moved',
+  notes: 'Only notes, arrows and drawings can be picked and moved',
 };
 
 type DialogKind = 'templates' | 'gear' | 'equipment' | 'help' | 'power' | 'schedule' | null;
@@ -479,6 +480,17 @@ export function App() {
 
   // ---- Draw walls tool (SCENE) ----
   const [wallTool, setWallToolState] = useState(false);
+  /** Drawing on the plan (Notes): on or off, and the pen. */
+  const [drawing, setDrawingState] = useState(false);
+  const [pen, setPen] = useState<{ color: string; width: (typeof PEN_WIDTHS)[number]['id'] }>({ color: NOTE_DEFAULT_COLOR, width: 'medium' });
+  const setDrawing = (on: boolean) => {
+    setDrawingState(on);
+    if (on) {
+      setWallToolState(false);
+      setSelected(null);
+      setPickMode(false);
+    }
+  };
   const [wallDraft, setWallDraft] = useState<Vec2[]>([]);
   const [wallExtend, setWallExtend] = useState<WallExtend | null>(null);
   const setDraft = (points: Vec2[], extend?: WallExtend) => {
@@ -565,7 +577,7 @@ export function App() {
             pos,
             rotationDeg: 0,
             ...(req.library.kind === 'light' ? { light: { unitId: nextUnitId(items) } } : {}),
-            ...(req.library.kind === 'note' ? { note: { text: req.library.shape === 'note-arrow' ? '' : req.library.shape === 'note-area' ? 'Area' : 'Note' } } : {}),
+            ...(req.library.kind === 'note' ? { note: { text: req.library.shape === 'note-arrow' ? '' : req.library.shape === 'note-area' ? 'Area' : 'Note', color: NOTE_DEFAULT_COLOR } } : {}),
           },
     );
   };
@@ -769,7 +781,8 @@ export function App() {
       } else if (k >= '0' && k <= '5') {
         switchMode(EDIT_MODES[Number(k)]!.id);
       } else if (k === 'escape') {
-        if (wallTool && wallDraft.length) setDraft([]);
+        if (drawing) setDrawing(false);
+        else if (wallTool && wallDraft.length) setDraft([]);
         else if (wallTool) setWallTool(false);
         else if (pickMode) setPickMode(false);
         else setSelected(null);
@@ -1019,10 +1032,23 @@ export function App() {
               onWallInsert={insertCorner}
               wallSnap={prefs.wallSnap}
               onDuplicate={duplicate}
+              drawPen={drawing ? { color: pen.color, px: PEN_WIDTHS.find((w) => w.id === pen.width)!.px } : null}
+              onDrawStroke={(points, strokeCm) => sd({ type: 'add', setItems: [], items: [{ id: uid(), kind: 'note', catalogId: 'generic.note.draw', rotationDeg: 0, ...drawingNote(points, pen.color, strokeCm) }] })}
             />
           )}
 
-          {wallTool ? (
+          {drawing ? (
+            <div className="canvas-topleft">
+              <div className="tool-badge walls" role="status" aria-live="polite">
+                Drawing · pen, finger or mouse
+              </div>
+              <div className="pick-bar on" role="toolbar" aria-label="Drawing">
+                <button className="pick-btn done" onClick={() => setDrawing(false)}>
+                  Done
+                </button>
+              </div>
+            </div>
+          ) : wallTool ? (
             <div className="tool-badge walls" role="status" aria-live="polite">
               Draw walls · {wallDraft.length ? `${wallDraft.length} corner${wallDraft.length > 1 ? 's' : ''}` : 'click to start'}
             </div>
@@ -1283,6 +1309,10 @@ export function App() {
                 sun={scene.sun}
                 onSun={(sun) => sd({ type: 'sun', sun })}
                 onMode={switchMode}
+                drawing={drawing}
+                onDrawing={setDrawing}
+                pen={pen}
+                onPen={(patch) => setPen((p) => ({ ...p, ...patch }))}
                 onMetersForAll={() => {
                   const added = withMeters(scene.items, uid).filter((i) => !scene.items.includes(i));
                   if (added.length) sd({ type: 'add', setItems: [], items: added });

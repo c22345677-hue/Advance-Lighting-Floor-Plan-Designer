@@ -4,6 +4,7 @@ import { isWeatherSealed, riggingPicks, sizeClass, type SizeClass } from '../cat
 import { rigWeightKg } from '../catalog/modifiers';
 import type { Fixture, Modifier, Stand } from '../catalog/schema';
 import { libraryItem, type Shape } from '../library/items';
+import { noteTextHeight } from './notes';
 import type { Item } from './types';
 
 const FIXTURE_BY_ID = new Map(FIXTURES.map((f) => [f.id, f]));
@@ -148,6 +149,8 @@ export function itemLook(item: Item): { shape: Shape; w: number; d: number } {
     const d = item.sizeCm?.d ?? lib.sizeCm.d;
     // A stand-in panel or mat is listed by its face (1×1, 2×4); from above it's a thin slab.
     const thin = item.kind === 'light' ? { panel: 8, mat: 4, tube: 5 }[lib.shape as 'panel' | 'mat' | 'tube'] : undefined;
+    // A text note's box grows with its text.
+    if (lib.shape === 'note-text') return { shape: lib.shape, w, d: noteTextHeight(item, w) };
     return { shape: lib.shape, w, d: thin ? Math.min(d, thin) : d };
   }
   const fallback: Shape = item.kind === 'person' ? 'person' : item.kind === 'camera' ? 'camera' : 'box';

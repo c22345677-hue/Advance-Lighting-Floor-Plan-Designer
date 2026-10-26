@@ -2,6 +2,7 @@
 // what of that category is in the scene, then how to add more.
 import type { Fixture } from '../catalog/schema';
 import { FABRIC_KIND_LABEL, fabricById } from '../library/fabrics';
+import { NOTE_COLORS, PEN_WIDTHS } from '../model/notes';
 import { LIBRARY, libraryItem, type LibraryCategory, type LibraryItem } from '../library/items';
 import { itemFixture, itemRigWeightKg, standCheck } from '../model/gear';
 import { CATEGORIES, KIND_ROLES, modeOf, ROLE_LABEL, roleOf, type Category, type EditMode, type ProjectKind } from '../model/project';
@@ -46,6 +47,11 @@ interface Props {
   onMode: (m: Category) => void;
   /** CAMERA: give everyone without one a light meter in front of their face. */
   onMetersForAll: () => void;
+  /** NOTES: drawing on the plan, and the pen it uses. */
+  drawing: boolean;
+  onDrawing: (on: boolean) => void;
+  pen: { color: string; width: (typeof PEN_WIDTHS)[number]['id'] };
+  onPen: (patch: Partial<{ color: string; width: (typeof PEN_WIDTHS)[number]['id'] }>) => void;
 }
 
 const kg = (v: number | null) => (v == null ? '? kg' : `${Math.round(v * 10) / 10} kg`);
@@ -53,7 +59,7 @@ const unitNo = (i: Item) => Number(/\d+/.exec(i.light?.unitId ?? '')?.[0] ?? 1e9
 
 /** One-line summary under an item's name in the scene list. */
 function summary(item: Item, actors: Actor[], all: Item[] = []): { sub: string; warn?: string } {
-  if (item.note) return { sub: item.note.text || '(no text)' };
+  if (item.note) return { sub: item.note.text || (item.note.points ? 'Drawing' : '(no text)') };
   if (item.wall) {
     const n = item.wall.closed ? item.wall.points.length : item.wall.points.length - 1;
     return { sub: `${n} wall${n > 1 ? 's' : ''} · ${(wallLength(item) / 100).toFixed(1)} m${item.wall.closed ? ' · closed room' : ''}` };
@@ -284,10 +290,34 @@ export function CategoryPanel(props: Props) {
       return (
         <>
           <Section title="Notes on this plan" count={mine.length}>
-            {list('No notes yet. Add text, an arrow or an area to point things out on the plan and in the schedule.')}
+            {list('No notes yet. Add text or an arrow, or draw on the plan, to point things out.')}
           </Section>
           <Section title="Add">
             <AddGrid category="notes" onPlace={onPlace} />
+          </Section>
+          <Section title="Draw">
+            <button id="draw-notes" className={`btn big ${props.drawing ? '' : 'primary'}`} onClick={() => props.onDrawing(!props.drawing)}>
+              {props.drawing ? 'Done drawing' : 'Draw on the plan'}
+            </button>
+            <div className="field">
+              <span className="field-label">Colour</span>
+              <div className="swatches">
+                {NOTE_COLORS.map((c) => (
+                  <button key={c} className={`swatch-btn ${props.pen.color === c ? 'on' : ''}`} style={{ background: c }} aria-label={`Pen colour ${c}`} aria-pressed={props.pen.color === c} onClick={() => props.onPen({ color: c })} />
+                ))}
+              </div>
+            </div>
+            <div className="field">
+              <span className="field-label">Width</span>
+              <div className="segmented" role="radiogroup" aria-label="Pen width">
+                {PEN_WIDTHS.map((w) => (
+                  <button key={w.id} role="radio" aria-checked={props.pen.width === w.id} onClick={() => props.onPen({ width: w.id })}>
+                    {w.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <p className="hint-text">Draw with a pen or finger on a tablet or phone, or a mouse or drawing tablet on a computer. Each stroke becomes a note you can move, recolour or delete. Two fingers still zoom and pan.</p>
           </Section>
         </>
       );

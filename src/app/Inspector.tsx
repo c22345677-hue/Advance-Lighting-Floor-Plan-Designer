@@ -35,6 +35,7 @@ import { addMark, goToMark, marksOf, removeMark } from '../model/blocking';
 import { CameraView } from './CameraView';
 import { beamDegOf, displayLabel, itemName, meterName } from './PlanCanvas';
 import { canSkirt, lightStyle, SKIRT_SIDES, zoomRange } from '../model/emitter';
+import { ARROW_STYLES, NOTE_COLORS, NOTE_DEFAULT_COLOR, type ArrowStyle } from '../model/notes';
 
 interface Props {
   item: Item;
@@ -1032,7 +1033,6 @@ function BlockingSection({ item, onUpdate }: { item: Item; onUpdate: Props['onUp
   );
 }
 
-const NOTE_COLORS = ['#f0a23b', '#ffffff', '#e5484d', '#3e8ef7', '#2fae55', '#f5d90a', '#a855f7'];
 
 /** A note's text, colour and size. */
 function NoteSection({ item, onUpdate }: { item: Item; onUpdate: Props['onUpdate'] }) {
@@ -1048,26 +1048,60 @@ function NoteSection({ item, onUpdate }: { item: Item; onUpdate: Props['onUpdate
       </span>
     </label>
   );
+  const isDraw = shape === 'note-draw';
+  const toggle = (label: string, on: boolean, set: (v: boolean) => void) => (
+    <label className="field toggle">
+      <span className="field-label">{label}</span>
+      <input type="checkbox" checked={on} onChange={(e) => set(e.target.checked)} />
+    </label>
+  );
   return (
-    <Section title="Note">
-      <label className="field stack">
-        <span className="field-label">Text</span>
-        <textarea className="text-input" rows={2} aria-label="Note text" value={note.text} onChange={(e) => setNote({ text: e.target.value })} />
-      </label>
+    <Section title={isDraw ? 'Drawing' : shape === 'note-arrow' ? 'Arrow' : 'Note'}>
+      {!isDraw && (
+        <label className="field stack">
+          <span className="field-label">{shape === 'note-arrow' ? 'Label' : 'Text'}</span>
+          <textarea className="text-input" rows={2} aria-label="Note text" value={note.text} onChange={(e) => setNote({ text: e.target.value })} />
+        </label>
+      )}
       <div className="field">
         <span className="field-label">Colour</span>
         <div className="swatches">
           {NOTE_COLORS.map((c) => (
-            <button key={c} className={`swatch-btn ${(note.color ?? NOTE_COLORS[0]) === c ? 'on' : ''}`} style={{ background: c }} aria-label={`Colour ${c}`} onClick={() => setNote({ color: c })} />
+            <button key={c} className={`swatch-btn ${(note.color ?? NOTE_DEFAULT_COLOR) === c ? 'on' : ''}`} style={{ background: c }} aria-label={`Colour ${c}`} aria-pressed={(note.color ?? NOTE_DEFAULT_COLOR) === c} onClick={() => setNote({ color: c })} />
           ))}
         </div>
       </div>
-      <label className="field">
-        <span className="field-label">Text size</span>
-        <span className="input-unit">
-          <input className="text-input num" type="number" min={8} max={200} aria-label="Text size" value={note.fontSize ?? 24} onChange={(e) => setNote({ fontSize: Math.min(200, Math.max(8, Number(e.target.value) || 24)) })} />
-        </span>
-      </label>
+      {shape === 'note-arrow' && (
+        <label className="field">
+          <span className="field-label">Shape</span>
+          <select className="text-input" aria-label="Arrow shape" value={note.arrow ?? 'straight'} onChange={(e) => setNote({ arrow: e.target.value as ArrowStyle })}>
+            {ARROW_STYLES.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      {!isDraw && (
+        <label className="field">
+          <span className="field-label">Text size</span>
+          <span className="input-unit">
+            <input className="text-input num" type="number" min={8} max={200} aria-label="Text size" value={note.fontSize ?? 24} onChange={(e) => setNote({ fontSize: Math.min(200, Math.max(8, Number(e.target.value) || 24)) })} />
+          </span>
+        </label>
+      )}
+      {toggle(isDraw ? 'Edge' : 'Text outline', note.outline !== false, (on) => setNote({ outline: on }))}
+      {!isDraw && toggle('Background', !!note.background, (on) => setNote({ background: on }))}
+      {isDraw && (
+        <label className="field">
+          <span className="field-label">Line width</span>
+          <span className="input-unit">
+            <input className="text-input num" type="number" min={0.5} step={0.5} aria-label="Line width" value={Math.round((note.strokeCm ?? 4) * 10) / 10} onChange={(e) => setNote({ strokeCm: Math.max(0.5, Number(e.target.value) || 4) })} />
+            <span className="unit">cm</span>
+          </span>
+        </label>
+      )}
       {shape === 'note-area' && (
         <>
           {size('Width', w, (v) => onUpdate({ sizeCm: { w: v, d } }))}
@@ -1075,8 +1109,9 @@ function NoteSection({ item, onUpdate }: { item: Item; onUpdate: Props['onUpdate
         </>
       )}
       {shape === 'note-arrow' && size('Length', d, (v) => onUpdate({ sizeCm: { w, d: v } }))}
-      {shape === 'note-text' && size('Box width', w, (v) => onUpdate({ sizeCm: { w: v, d } }))}
-      {shape === 'note-arrow' && <p className="hint-text">Use the Rotate tool (R) to point it.</p>}
+      {shape === 'note-text' && size('Box width', w, (v) => onUpdate({ sizeCm: { w: v, d: item.sizeCm?.d ?? 40 } }))}
+      {shape === 'note-text' && <p className="hint-text">The box grows with the text; set its width and the text wraps to fit.</p>}
+      {shape === 'note-arrow' && <p className="hint-text">Use the Rotate tool (R) to point it. Its label stays upright whichever way it points.</p>}
     </Section>
   );
 }
