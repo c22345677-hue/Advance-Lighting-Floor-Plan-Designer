@@ -17,6 +17,7 @@
 //   (¼ grid, light grid) keep a hot spot and let some of the hard light straight through.
 import { fabricById } from '../library/fabrics';
 import { libraryItem } from '../library/items';
+import { beamApex, lightBeamDeg } from './emitter';
 import { itemFixture, itemLook, itemModifiers } from './gear';
 import { aimAt, rotate } from './geometry';
 import type { Item, Vec2 } from './types';
@@ -61,6 +62,8 @@ export interface LightSource {
   pos: Vec2;
   /** The fixture itself (beam apex). */
   apex: Vec2;
+  /** Where its beam spreads from (behind a broad face such as a mat), when not the fixture itself. */
+  beamApex?: Vec2;
   rotationDeg: number;
   beamDeg: number;
   throwCm: number;
@@ -92,7 +95,6 @@ export interface LightSource {
   why: string;
 }
 
-const lightBeamDeg = (i: Item) => i.light?.beamDeg ?? libraryItem(i.catalogId)?.beamDeg ?? 60;
 
 /** Default rigging height of a light, cm. */
 function lightHeightCm(i: Item): number {
@@ -260,6 +262,7 @@ export function lightSource(light: Item, all: readonly Item[]): LightSource | nu
     lightId: light.id,
     pos,
     apex: light.pos,
+    beamApex: beamApex(light, beamDeg),
     rotationDeg: light.rotationDeg,
     beamDeg,
     throwCm,

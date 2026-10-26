@@ -2478,3 +2478,25 @@ kbd {
   background: var(--tool-rotate);
   color: #06202e;
 }
+
+/* Flood – spot slider for lights that focus (fresnel, PAR, lens). */
+.spot-flood {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+.spot-flood input[type='range'] {
+  flex: 1;
+  min-width: 60px;
+  accent-color: var(--accent);
+}
+.spot-end {
+  font-size: 11px;
+  color: var(--muted);
+}
+.spot-deg {
+  min-width: 34px;
+  text-align: right;
+}

@@ -34,6 +34,7 @@ import { PersonEditor } from './PersonEditor';
 import { addMark, goToMark, marksOf, removeMark } from '../model/blocking';
 import { CameraView } from './CameraView';
 import { beamDegOf, displayLabel, itemName, meterName } from './PlanCanvas';
+import { zoomRange } from '../model/emitter';
 
 interface Props {
   item: Item;
@@ -550,6 +551,8 @@ function LightSection({
   onUpdate: Props['onUpdate'];
 }) {
   const fixture = itemFixture(item);
+  /** Lights that focus: flood and spot angles. */
+  const zoom = zoomRange(item);
   const [picking, setPicking] = useState(!fixture);
   const pick = (f: Fixture) => {
     // A new fixture keeps only the modifiers that still fit it.
@@ -594,20 +597,40 @@ function LightSection({
       <ColorSection item={item} setLight={setLight} />
 
       <Section title="Beam">
-        <label className="field">
-          <span className="field-label">Angle</span>
-          <span className="input-unit">
-          <input
-            className="text-input num"
-            type="number"
-            min={5}
-            max={360}
-            value={beamDegOf(item)}
-            onChange={(e) => setLight({ beamDeg: Math.min(360, Math.max(5, Number(e.target.value) || 5)) })}
-          />
-          <span className="unit">°</span>
-          </span>
-        </label>
+        {zoom ? (
+          <label className="field">
+            <span className="field-label">Flood – spot</span>
+            <span className="spot-flood">
+              <span className="spot-end">{zoom[0]}°</span>
+              <input
+                type="range"
+                aria-label="Flood to spot"
+                min={0}
+                max={100}
+                step={1}
+                value={item.light?.spotPct ?? (item.light?.beamDeg ? Math.round(((zoom[0] - beamDegOf(item)) / (zoom[0] - zoom[1])) * 100) : 0)}
+                onChange={(e) => setLight({ spotPct: Number(e.target.value), beamDeg: undefined })}
+              />
+              <span className="spot-end">{zoom[1]}°</span>
+              <span className="num spot-deg">{Math.round(beamDegOf(item))}°</span>
+            </span>
+          </label>
+        ) : (
+          <label className="field">
+            <span className="field-label">Angle</span>
+            <span className="input-unit">
+            <input
+              className="text-input num"
+              type="number"
+              min={5}
+              max={360}
+              value={Math.round(beamDegOf(item))}
+              onChange={(e) => setLight({ beamDeg: Math.min(360, Math.max(5, Number(e.target.value) || 5)) })}
+            />
+            <span className="unit">°</span>
+            </span>
+          </label>
+        )}
         <label className="field">
           <span className="field-label">Throw</span>
           <span className="input-unit">

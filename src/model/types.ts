@@ -30,6 +30,8 @@ export interface LightProps {
   aimItemId?: string;
   intensityPct?: number;
   beamDeg?: number;
+  /** Lights that focus (fresnel, PAR, lens): 0 = full flood (default) … 100 = full spot. */
+  spotPct?: number;
   throwCm?: number;
   heightCm?: number;
   circuit?: string;

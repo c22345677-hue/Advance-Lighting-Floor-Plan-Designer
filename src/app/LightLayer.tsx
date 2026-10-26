@@ -189,7 +189,8 @@ function distanceMask(n: Native, s: LightSource): CanvasGradient {
 function angleMask(n: Native, s: LightSource): CanvasGradient | null {
   if (s.beamDeg >= 300 || typeof n.createConicGradient !== 'function') return null;
   const mid = ((s.rotationDeg - 90) * Math.PI) / 180;
-  const g = n.createConicGradient(mid - Math.PI, s.apex.x, s.apex.y);
+  const from = s.beamApex ?? s.apex;
+  const g = n.createConicGradient(mid - Math.PI, from.x, from.y);
   const half = s.beamDeg / 720; // half the beam, as a share of a full turn
   const at = (k: number) => Math.min(0.5, half * k);
   g.addColorStop(0, 'rgba(0,0,0,0)');
@@ -207,10 +208,11 @@ function angleMask(n: Native, s: LightSource): CanvasGradient | null {
 function beamClip(n: Native, s: LightSource) {
   const reach = s.throwCm * SHADOW_REACH;
   if (s.beamDeg >= 360) return n.arc(s.apex.x, s.apex.y, reach, 0, Math.PI * 2);
+  const at = s.beamApex ?? s.apex;
   const mid = ((s.rotationDeg - 90) * Math.PI) / 180;
   const half = (Math.min(359, s.beamDeg * 1.2) * Math.PI) / 360;
-  n.moveTo(s.apex.x, s.apex.y);
-  n.arc(s.apex.x, s.apex.y, reach, mid - half, mid + half);
+  n.moveTo(at.x, at.y);
+  n.arc(at.x, at.y, reach, mid - half, mid + half);
   n.closePath();
 }
 
