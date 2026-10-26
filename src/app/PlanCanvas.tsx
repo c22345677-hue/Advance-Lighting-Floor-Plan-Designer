@@ -6,7 +6,7 @@ import { meterReadings, stopParts, type CameraSettings, type Reading } from '../
 import { beamReach, lightReach, lightSource } from '../model/shadows';
 import { assemblyOf, canAttach, isMeter, rootOf } from '../model/attach';
 import { LightLayer, type LivePatch, type ShadowLive } from './LightLayer';
-import { FixtureShape, ModifierShapes } from './fixtureShapes';
+import { FixtureShape, ModifierShapes, modifierFront, turnedCorners } from './fixtureShapes';
 import { beamAlpha, beamDegOf } from './beams';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
@@ -2147,9 +2147,9 @@ function textWidth(text: string, font: string, size: number): number {
 }
 
 function labelOffset(item: Item): number {
-  const { d, shape } = itemLook(item);
-  if (shape === 'person') return 18 * ACTOR_SCALE;
-  return Math.max(18, d / 2 + 8);
+  if (itemLook(item).shape === 'person') return 18 * ACTOR_SCALE;
+  // Just below the lowest point of the item as turned (a light's softbox included).
+  return Math.max(18, Math.max(...turnedCorners(item).map((q) => q.y)) + 8);
 }
 
 /** Grid lines for the visible area: 50 cm squares, stronger every 1 m and 5 m. */
@@ -2219,7 +2219,7 @@ export function ItemShape({
     return (
       <>
         <FixtureShape item={item} w={w} d={d} c={c} />
-        <ModifierShapes item={item} front={shape === 'panel' || shape === 'mat' || shape === 'tube' ? -Math.max(hd, 0.8) : -hd} lightW={w} c={c} />
+        <ModifierShapes item={item} front={modifierFront(shape, d)} lightW={w} c={c} />
       </>
     );
   }

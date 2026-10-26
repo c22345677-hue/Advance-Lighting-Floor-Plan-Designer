@@ -4,7 +4,7 @@
 // The part that gives light is drawn in a pale tint of the light colour.
 import { Circle, Group, Line, Rect } from 'react-konva';
 import type { Modifier } from '../catalog/schema';
-import { itemFixture, itemModifiers } from '../model/gear';
+import { itemFixture, itemLook, itemModifiers } from '../model/gear';
 import type { Item } from '../model/types';
 import type { CanvasColors } from './theme';
 
@@ -575,4 +575,65 @@ export function ModifierShapes({ item, front, lightW, c }: { item: Item; front: 
     }
   }
   return <>{out}</>;
+}
+
+/** Where a light's modifiers start: its front face (a panel, mat or tube is drawn at least a little thick). */
+export const modifierFront = (shape: string, d: number) => (shape === 'panel' || shape === 'mat' || shape === 'tube' ? -Math.max(d / 2, 0.8) : -d / 2);
+
+/**
+ * How far a light's modifiers reach in front of it, and how wide they get, cm (as drawn by
+ * ModifierShapes). Zero when it has none.
+ */
+export function modifierReach(item: Item, lightW: number): { depth: number; w: number } {
+  let depth = 0;
+  let wide = 0;
+  let frontW = lightW;
+  for (const m of itemModifiers(item)) {
+    const size = modSize(m, frontW);
+    if (!size) continue;
+    const { w } = size;
+    switch (m.type) {
+      case 'lantern':
+        depth += w * 0.95;
+        wide = Math.max(wide, w);
+        frontW = w;
+        break;
+      case 'barndoors':
+        wide = Math.max(wide, w * 1.35);
+        depth += size.depth;
+        break;
+      case 'skirt':
+        wide = Math.max(wide, w * 1.1);
+        depth = Math.max(depth, depth + size.depth * 3);
+        break;
+      default:
+        wide = Math.max(wide, w);
+        depth += size.depth;
+        if (m.type !== 'grid' && m.type !== 'diffusion') frontW = w;
+    }
+  }
+  return { depth, w: wide };
+}
+
+/** An item's box in its own frame (front up), cm, reaching over a light's modifiers. */
+export function itemLocalBox(item: Item): { x0: number; y0: number; x1: number; y1: number } {
+  const { shape, w, d } = itemLook(item);
+  const box = { x0: -w / 2, y0: -d / 2, x1: w / 2, y1: d / 2 };
+  if (item.kind === 'light') {
+    const reach = modifierReach(item, w);
+    if (reach.depth > 0) {
+      box.y0 = Math.min(box.y0, modifierFront(shape, d) - reach.depth);
+      box.x0 = Math.min(box.x0, -reach.w / 2);
+      box.x1 = Math.max(box.x1, reach.w / 2);
+    }
+  }
+  return box;
+}
+
+/** The corners of `itemLocalBox`, turned with the item, relative to its position (cm). */
+export function turnedCorners(item: Item): { x: number; y: number }[] {
+  const { x0, y0, x1, y1 } = itemLocalBox(item);
+  const r = (item.rotationDeg * Math.PI) / 180;
+  const [c, s] = [Math.cos(r), Math.sin(r)];
+  return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]].map(([x, y]) => ({ x: x! * c - y! * s, y: x! * s + y! * c }));
 }

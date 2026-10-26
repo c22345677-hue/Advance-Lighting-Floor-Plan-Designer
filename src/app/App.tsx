@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, type CSSProperties } from 'react';
-import { itemLook, nextUnitId } from '../model/gear';
+import { nextUnitId } from '../model/gear';
 import { assemblyOf, attachmentFor, canAttach, isMeter, withMeters } from '../model/attach';
 import { gearUsage, type GearList } from '../model/gearList';
 import {
@@ -28,6 +28,7 @@ import { makeSetup, placeSetup } from '../model/setups';
 import { LayersMenu } from './LayersMenu';
 import { MenuButton } from './MenuButton';
 import { clampInto, placeBar } from './barPlacement';
+import { turnedCorners } from './fixtureShapes';
 import { parseProjectFile, projectFileName, toProjectFile } from '../model/projectFile';
 import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain, wallPoints } from '../model/walls';
 import { HelpPanel } from './HelpPanel';
@@ -141,11 +142,15 @@ function sampleProject(): Project {
 }
 
 /** Half the on-screen width and height of an item's footprint, turned as it is (at least 8 px). */
-function halfExtents(i: Item, scale: number): { x: number; y: number } {
-  const { w, d } = itemLook(i);
-  const r = (i.rotationDeg * Math.PI) / 180;
-  const [c, sn] = [Math.abs(Math.cos(r)), Math.abs(Math.sin(r))];
-  return { x: Math.max(8, ((w / 2) * c + (d / 2) * sn) * scale), y: Math.max(8, ((w / 2) * sn + (d / 2) * c) * scale) };
+/**
+ * An item's box on screen around its position (px): left, top, right, bottom offsets. A light's
+ * box reaches forward over its modifiers (a softbox, a lantern), turned with the light.
+ */
+function screenExtents(i: Item, scale: number): { l: number; t: number; r: number; b: number } {
+  const xs = turnedCorners(i).map((q) => q.x * scale);
+  const ys = turnedCorners(i).map((q) => q.y * scale);
+  // At least 8 px each way, so tiny things still get room.
+  return { l: Math.min(-8, ...xs), t: Math.min(-8, ...ys), r: Math.max(8, ...xs), b: Math.max(8, ...ys) };
 }
 
 function fitView(items: Item[], width: number, height: number): View {
@@ -314,8 +319,8 @@ export function App() {
     if (!view || !selectedItems.length) return null;
     let [l, t, r, b] = [Infinity, Infinity, -Infinity, -Infinity];
     for (const i of selectedItems) {
-      const e = i.wall ? { x: 0, y: 0 } : halfExtents(i, view.scale);
-      for (const q of (i.wall ? wallPoints(i) : [i.pos]).map(toScreen)) [l, t, r, b] = [Math.min(l, q.x - e.x), Math.min(t, q.y - e.y), Math.max(r, q.x + e.x), Math.max(b, q.y + e.y)];
+      const e = i.wall ? { l: 0, t: 0, r: 0, b: 0 } : screenExtents(i, view.scale);
+      for (const q of (i.wall ? wallPoints(i) : [i.pos]).map(toScreen)) [l, t, r, b] = [Math.min(l, q.x + e.l), Math.min(t, q.y + e.t), Math.max(r, q.x + e.r), Math.max(b, q.y + e.b)];
     }
     return { x: l, y: t, w: r - l, h: b - t };
   })();
@@ -333,8 +338,8 @@ export function App() {
       .filter((i) => !i.hidden && !i.wall && !selection.includes(i.id))
       .map((i) => {
         const q = toScreen(i.pos);
-        const e = halfExtents(i, view.scale);
-        return { x: q.x - e.x, y: q.y - e.y, w: e.x * 2, h: e.y * 2 };
+        const e = screenExtents(i, view.scale);
+        return { x: q.x + e.l, y: q.y + e.t, w: e.r - e.l, h: e.b - e.t };
       });
     // Name tags and light meter screens (the selection's own too), as last drawn.
     obstacles.push(...labelBoxes.current.map((b) => ({ ...b, weight: 3 })));
