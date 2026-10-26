@@ -31,3 +31,26 @@ describe('bounce boards', () => {
     expect(r.contributions.some((c) => c.lightId === 'B~bounce')).toBe(true);
   });
 });
+
+describe('mirror boards', () => {
+  // The lamp south of the mirror, the mirror's silver facing south-east at 45°: the beam goes east.
+  const mirror: Item = { id: 'Mi', kind: 'grip', catalogId: 'generic.grip.mirror', pos: { x: 0, y: 0 }, rotationDeg: 135, sizeCm: { w: 120, d: 4 } };
+  it('sends the beam back at the mirrored angle, still hard', () => {
+    const [m] = bounceLights([lamp, mirror]);
+    expect(m).toBeDefined();
+    expect(Math.round(m!.rotationDeg)).toBe(90); // east
+    expect(lightSource(m!, [lamp, mirror, m!])!.sizeCm).toBeLessThan(30);
+    expect(m!.light!.beamDeg!).toBeLessThan(lightSource(lamp, [lamp])!.beamDeg + 1);
+  });
+  it('reflects only off its silvered front', () => {
+    expect(bounceLights([lamp, { ...mirror, rotationDeg: 315 }])).toHaveLength(0);
+  });
+});
+
+describe('board width', () => {
+  it('scales a board across, within its limits', async () => {
+    const { scaleItem } = await import('./scale');
+    expect(scaleItem(board, 2).sizeCm!.w).toBe(240);
+    expect(scaleItem(board, 10).sizeCm!.w).toBe(300);
+  });
+});

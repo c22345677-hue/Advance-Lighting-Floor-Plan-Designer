@@ -31,6 +31,7 @@ export function SchedulePanel(p: Props) {
   const power = circuitLoads(p.items, p.volts, p.breakerA);
   const who = (id: string) => {
     if (id === DAYLIGHT_ID) return 'daylight';
+    if (id.includes('~mirror~')) return 'mirror';
     if (id.endsWith('~bounce')) {
       const board = p.items.find((x) => bounceId(x.id) === id);
       return `bounce off ${board ? displayLabel(board, p.actors) || itemName(board) : 'a board'}`;

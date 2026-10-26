@@ -34,6 +34,7 @@ import { PersonEditor } from './PersonEditor';
 import { addMark, goToMark, marksOf, removeMark } from '../model/blocking';
 import { CameraView } from './CameraView';
 import { beamDegOf, displayLabel, itemName, meterName } from './PlanCanvas';
+import { BOARD_WIDTH_CM, isResizableBoard } from '../model/scale';
 import { beamRange, canSkirt, lightStyle, SKIRT_SIDES, zoomRange } from '../model/emitter';
 import { ARROW_STYLES, NOTE_COLORS, NOTE_DEFAULT_COLOR, type ArrowStyle } from '../model/notes';
 
@@ -185,6 +186,39 @@ export function Inspector(props: Props) {
             Flip side
           </button>
           <p className="hint-text">Drag it onto a wall to snap in. On the plan, drag the side handles to resize.</p>
+        </Section>
+      )}
+      {isResizableBoard(item) && (
+        <Section title="Size">
+          <label className="field">
+            <span className="field-label">Width</span>
+            <span className="spot-flood">
+              <span className="spot-end">{BOARD_WIDTH_CM[0]}</span>
+              <input
+                type="range"
+                aria-label="Board width"
+                min={BOARD_WIDTH_CM[0]}
+                max={BOARD_WIDTH_CM[1]}
+                step={1}
+                value={Math.round(itemLook(item).w)}
+                onChange={(e) => onUpdate({ sizeCm: { w: Number(e.target.value), d: itemLook(item).d } })}
+              />
+              <span className="spot-end">{BOARD_WIDTH_CM[1]}</span>
+              <span className="num spot-deg">{Math.round(itemLook(item).w)} cm</span>
+            </span>
+          </label>
+          <div className="btn-row">
+            {[
+              ['2×2', 61],
+              ['4×4', 122],
+              ['4×8', 244],
+            ].map(([label, cm]) => (
+              <button key={label} className="btn small" onClick={() => onUpdate({ sizeCm: { w: cm as number, d: itemLook(item).d } })}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <p className="hint-text">Or pick it and drag the corner handle with Scale in the selection bar.</p>
         </Section>
       )}
       {takesFabric(item.catalogId) && (
@@ -982,7 +1016,7 @@ function MeterSection({
               <li key={x.lightId} className="row static">
                 <span className="row-main">
                   <span className="row-title">
-                    {l ? lightName(l) : x.lightId === DAYLIGHT_ID ? 'Daylight (windows)' : x.lightId.endsWith('~bounce') ? `Bounce off ${itemName(sceneItems.find((i) => bounceId(i.id) === x.lightId) ?? sceneItems[0]!)}` : '?'} {x.lightId === r.keyId && r.contributions.length > 1 ? <span className="chip">Key</span> : null}
+                    {l ? lightName(l) : x.lightId === DAYLIGHT_ID ? 'Daylight (windows)' : x.lightId.endsWith('~bounce') ? `Bounce off ${itemName(sceneItems.find((i) => bounceId(i.id) === x.lightId) ?? sceneItems[0]!)}` : x.lightId.includes('~mirror~') ? `Mirror (${lightName(sceneItems.find((i) => i.id === x.lightId.split('~mirror~')[1]) ?? sceneItems[0]!)})` : '?'} {x.lightId === r.keyId && r.contributions.length > 1 ? <span className="chip">Key</span> : null}
                   </span>
                   <span className="row-sub">
                     ≈ {c.unit === 'fc' ? `${Math.round(x.lux / 10.764)} fc` : `${Math.round(x.lux)} lux`}

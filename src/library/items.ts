@@ -17,6 +17,7 @@ export type Shape =
   | 'flag'
   | 'frame'
   | 'polyboard'
+  | 'mirror'
   | 'stand'
   | 'sandbag'
   | 'camera'
@@ -124,8 +125,9 @@ export const LIBRARY: LibraryItem[] = [
   I('grip', 'grip', 'grip.frame-20x20', 'Frame 20×20', 'frame', 600, 4),
   I('grip', 'grip', 'grip.vflat', 'V-flat', 'frame', 120, 8),
   I('grip', 'grip', 'grip.bounce-card', 'Bounce card', 'polyboard', 60, 3),
-  I('grip', 'grip', 'grip.polyboard', 'Polyboard', 'polyboard', 120, 5),
-  I('grip', 'grip', 'grip.beadboard', 'Beadboard 4×8', 'polyboard', 122, 5),
+  I('grip', 'grip', 'grip.polyboard', 'Poly / beadboard', 'polyboard', 120, 5),
+  I('grip', 'grip', 'grip.mirror', 'Mirror board', 'mirror', 60, 4),
+  { ...I('grip', 'grip', 'grip.beadboard', 'Beadboard 4×8', 'polyboard', 122, 5), unlisted: true },
   I('grip', 'grip', 'grip.c-stand', 'C-stand', 'stand', 70, 70),
   I('grip', 'grip', 'grip.combo-stand', 'Combo stand', 'stand', 110, 110),
   I('grip', 'grip', 'grip.roller-stand', 'Roller stand', 'stand', 130, 130),

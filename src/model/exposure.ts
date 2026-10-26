@@ -275,6 +275,60 @@ const BOUNCE_MIN_LM = 20;
 /** Is it a bounce board (polyboard, beadboard, bounce card)? */
 export const isBounceBoard = (i: Item) => i.kind === 'grip' && libraryItem(i.catalogId)?.shape === 'polyboard';
 
+/** Is it a mirror board? */
+export const isMirror = (i: Item) => i.kind === 'grip' && libraryItem(i.catalogId)?.shape === 'mirror';
+
+/** How much a mirror board sends back. */
+const MIRROR_REFLECT = 0.9;
+
+/**
+ * A mirror sends each light that hits its silvered front straight back out at the mirrored angle,
+ * still hard (as small a source as the lamp), narrowed to the patch of mirror the beam covers:
+ * as if the lamp stood behind the mirror. One reflected beam per light.
+ */
+function mirrorLights(mirror: Item, lights: readonly Item[], items: readonly Item[]): Item[] {
+  const { w, d } = itemLook(mirror);
+  const h = Math.min(244, w);
+  const r = (mirror.rotationDeg * Math.PI) / 180;
+  const n = { x: Math.sin(r), y: -Math.cos(r) }; // silvered side
+  const out: Item[] = [];
+  for (const light of lights) {
+    const v = { x: light.pos.x - mirror.pos.x, y: light.pos.y - mirror.pos.y };
+    const dist = Math.hypot(v.x, v.y) || 1;
+    const facing = (v.x * n.x + v.y * n.y) / dist;
+    if (facing < 0.05) continue; // only the silvered front reflects
+    const src = lightSource(light, items);
+    const deg = Math.min(360, src?.beamDeg ?? 360);
+    if (deg < 360 && Math.abs(((aimAt(light.pos, mirror.pos) - light.rotationDeg + 540) % 360) - 180) > deg / 2 + 5) continue;
+    const c = luxFrom(light, mirror.pos, items, mirror.id);
+    if (!c || c.lux < 1) continue;
+    const litCm = deg >= 300 ? Infinity : 2 * dist * Math.tan((Math.min(deg, 170) / 2) * (Math.PI / 180));
+    const litW = Math.min(w, litCm);
+    const lm = c.lux * facing * (litW / 100) * (Math.min(h, litCm) / 100) * MIRROR_REFLECT;
+    if (lm < BOUNCE_MIN_LM) continue;
+    // Incoming direction (lamp to mirror) reflected about the mirror's face.
+    const i = { x: -v.x / dist, y: -v.y / dist };
+    const dot = i.x * n.x + i.y * n.y;
+    const refl = { x: i.x - 2 * dot * n.x, y: i.y - 2 * dot * n.y };
+    // The beam leaves the lit patch as if from the lamp's mirror image: as wide as that patch seen from it.
+    const spread = Math.min(deg, (2 * Math.atan(litW / 2 / dist) * 180) / Math.PI);
+    out.push({
+      id: `${mirror.id}~mirror~${light.id}`,
+      kind: 'light',
+      catalogId: 'virtual.bounce',
+      pos: { x: mirror.pos.x + n.x * (d / 2 + 1), y: mirror.pos.y + n.y * (d / 2 + 1) },
+      rotationDeg: aimAt(mirror.pos, { x: mirror.pos.x + refl.x, y: mirror.pos.y + refl.y }),
+      sizeCm: { w: litW, d: 2 },
+      light: {
+        beamDeg: Math.max(2, spread),
+        heightCm: Math.max(100, h / 2 + 40),
+        bounce: { lumens: lm, sizeCm: src?.sizeCm ?? 15, boardId: mirror.id, from: light },
+      },
+    });
+  }
+  return out;
+}
+
 /** Id of the light a board gives off. */
 export const bounceId = (boardId: string) => `${boardId}~bounce`;
 
@@ -290,7 +344,12 @@ export function bounceLights(items: readonly Item[]): Item[] {
   if (!lights.length) return [];
   const out: Item[] = [];
   for (const board of items) {
-    if (board.hidden || !isBounceBoard(board)) continue;
+    if (board.hidden) continue;
+    if (isMirror(board)) {
+      out.push(...mirrorLights(board, lights, items));
+      continue;
+    }
+    if (!isBounceBoard(board)) continue;
     const { w, d } = itemLook(board);
     const h = Math.min(244, w); // boards stand about as tall as they're wide
     const r = (board.rotationDeg * Math.PI) / 180;

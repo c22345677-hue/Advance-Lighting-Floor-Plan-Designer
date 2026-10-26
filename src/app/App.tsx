@@ -31,7 +31,8 @@ import { LayersMenu } from './LayersMenu';
 import { MenuButton } from './MenuButton';
 import { clampInto, placeBar } from './barPlacement';
 import { turnedCorners } from './fixtureShapes';
-import { drawingFromStrokes, drawingNote, scaleDrawing, drawingStrokes, NOTE_DEFAULT_COLOR, noteColor, PEN_WIDTHS, strokesTouch } from '../model/notes';
+import { isScalable, scaleItem } from '../model/scale';
+import { drawingFromStrokes, drawingNote, drawingStrokes, NOTE_DEFAULT_COLOR, noteColor, PEN_WIDTHS, strokesTouch } from '../model/notes';
 import { parseProjectFile, projectFileName, toProjectFile } from '../model/projectFile';
 import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain, wallPoints } from '../model/walls';
 import { HelpPanel } from './HelpPanel';
@@ -1118,11 +1119,11 @@ export function App() {
               drawPen={drawing ? { color: pen.color, px: PEN_WIDTHS.find((w) => w.id === pen.width)!.px } : null}
               onDrawStroke={drawStroke}
               onLive={setLive}
-              scaleId={scaling && selectedItems.length === 1 && selectedItems[0]!.catalogId === 'generic.note.draw' ? selectedItems[0]!.id : null}
+              scaleId={scaling && selectedItems.length === 1 && isScalable(selectedItems[0]!) ? selectedItems[0]!.id : null}
               onScale={(id, k) => {
                 // Scale what's saved, not the live preview (which already shows the scale).
                 const it = sceneItems(savedScene).find((i) => i.id === id);
-                if (it && Math.abs(k - 1) > 0.01) sd({ type: 'update', id, patch: scaleDrawing(it, k) });
+                if (it && Math.abs(k - 1) > 0.01) sd({ type: 'update', id, patch: scaleItem(it, k) });
               }}
             />
           )}
@@ -1195,7 +1196,7 @@ export function App() {
                 <button id="bar-rotate" role="radio" aria-checked={tool === 'rotate' && !scaling} className={`icon-btn rotate ${tool === 'rotate' && !scaling ? 'on' : ''}`} onClick={() => chooseTool('rotate')} title="Rotate: drag an item to turn it (R)" aria-label="Rotate">
                   <IconRotate />
                 </button>
-                {selectedItems.length === 1 && selectedItems[0]!.catalogId === 'generic.note.draw' && (
+                {selectedItems.length === 1 && isScalable(selectedItems[0]!) && (
                   <button
                     id="bar-scale"
                     role="radio"
@@ -1205,7 +1206,7 @@ export function App() {
                       setTool('move');
                       setScaling((on) => !on);
                     }}
-                    title="Scale: drag the corner handle to make the drawing bigger or smaller"
+                    title="Scale: drag the corner handle to make it bigger or smaller"
                     aria-label="Scale"
                   >
                     <IconScale />

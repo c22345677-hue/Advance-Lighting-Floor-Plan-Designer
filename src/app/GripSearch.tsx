@@ -18,7 +18,7 @@ const KINDS: { id: Kind; label: string }[] = [
 
 const STAND_TYPE: Record<StandType, string> = { light: 'Light stand', 'c-stand': 'C-stand', combo: 'Combo stand', roller: 'Roller stand', boom: 'Boom stand' };
 
-const kindOfLib = (i: LibraryItem): Kind => (i.shape === 'stand' ? 'stands' : i.shape === 'sandbag' ? 'bags' : i.shape === 'polyboard' ? 'boards' : 'frames');
+const kindOfLib = (i: LibraryItem): Kind => (i.shape === 'stand' ? 'stands' : i.shape === 'sandbag' ? 'bags' : i.shape === 'polyboard' || i.shape === 'mirror' ? 'boards' : 'frames');
 
 const STAND_BRANDS = [...new Set(STANDS.map((s) => s.brand))].sort();
 

@@ -376,7 +376,7 @@ export function occluders(items: readonly Item[]): Occluder[] {
       out.push({ id: i.id, points: lib.style === 'round-table' || lib.style === 'plant' || lib.style === 'tree' || lib.style === 'stool' ? ellipse(i, w / 2, d / 2) : rect(i, w, d), heightCm: h });
     } else if (i.kind === 'grip') {
       if (shape === 'flag') out.push({ id: i.id, points: rect(i, w, Math.max(d, 4)), heightCm: BLOCKS });
-      else if (shape === 'frame' || shape === 'polyboard') {
+      else if (shape === 'frame' || shape === 'polyboard' || shape === 'mirror') {
         const fabric = fabricById(i.grip?.fabric);
         // Diffusion lets light through (it becomes a softer source instead).
         if (fabric?.kind === 'diffusion') continue;

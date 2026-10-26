@@ -6,8 +6,9 @@ import { meterReadings, stopParts, type CameraSettings, type Reading } from '../
 import { beamReach, lightReach, lightSource } from '../model/shadows';
 import { assemblyOf, canAttach, isMeter, rootOf } from '../model/attach';
 import { LightLayer, type LivePatch, type ShadowLive } from './LightLayer';
-import { FixtureShape, ModifierShapes, modifierFront, turnedCorners } from './fixtureShapes';
-import { arrowPoints, NOTE_PAD_CM, noteColor, scaleDrawing } from '../model/notes';
+import { FixtureShape, itemLocalBox, ModifierShapes, modifierFront, turnedCorners } from './fixtureShapes';
+import { arrowPoints, NOTE_PAD_CM, noteColor } from '../model/notes';
+import { scaleItem } from '../model/scale';
 import { beamAlpha, beamDegOf } from './beams';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
@@ -208,6 +209,32 @@ export function PlanCanvas(p: Props) {
   const stageRef = useRef<Konva.Stage>(null);
   const trRef = useRef<Konva.Transformer>(null);
   const pinch = useRef<{ dist: number; center: Vec2 } | null>(null);
+  /** What the mouse is over (outlined faintly). */
+  const [hoverId, setHoverId] = useState<string | null>(null);
+  /** The pressed item was already the only one picked (a second click goes to what's under it). */
+  const wasOnly = useRef<string | null>(null);
+  /**
+   * Clicking an item that's already picked picks the next one stacked under the pointer (a
+   * light on a stand over a person, a prop on a table…), round and round.
+   */
+  const cycleFrom = (item: Item) => {
+    const was = wasOnly.current;
+    wasOnly.current = null;
+    if (was !== item.id || p.pickMode) return;
+    const stage = stageRef.current;
+    const pt = stage?.getPointerPosition();
+    if (!stage || !pt) return;
+    const order = [...visible].sort((a, b) => drawLayer(b) - drawLayer(a)).filter((i) => inMode(i, mode) && !layer(i)?.locked);
+    const under = new Set<string>();
+    for (const sh of stage.getAllIntersections(pt)) {
+      const g = sh.findAncestor((n: Konva.Node) => order.some((i) => i.id === n.id()), true);
+      if (g) under.add(g.id());
+    }
+    const stack = order.filter((i) => under.has(i.id));
+    if (stack.length < 2) return;
+    const k = stack.findIndex((i) => i.id === item.id);
+    p.onSelect(stack[(k + 1) % stack.length]!.id);
+  };
   /** Drawing on the plan: the stroke being drawn, its live line, and the pointers down. */
   const stroke = useRef<Vec2[] | null>(null);
   const strokeLine = useRef<Konva.Line>(null);
@@ -765,6 +792,7 @@ export function PlanCanvas(p: Props) {
         p.onSelectMany(selection.includes(item.id) ? selection.filter((id) => id !== item.id) : [...selection, item.id]);
         return;
       }
+      wasOnly.current = selection.length === 1 && selection[0] === item.id ? item.id : null;
       // A member of a group (Ctrl + number) picks the whole group, to move or turn it as one;
       // double-click picks just the one item.
       const grp = p.groups?.find((g) => g.ids.length > 1 && g.ids.includes(item.id))?.ids;
@@ -816,15 +844,24 @@ export function PlanCanvas(p: Props) {
         onClick={() => {
           if (p.pickMode && pickRemove.current === item.id) p.onSelectMany(selection.filter((id) => id !== item.id));
           pickRemove.current = null;
+          cycleFrom(item);
         }}
         onTap={() => {
           if (p.pickMode && pickRemove.current === item.id) p.onSelectMany(selection.filter((id) => id !== item.id));
           pickRemove.current = null;
+          cycleFrom(item);
         }}
         onDblClick={() => active && p.onConfigure(item.id)}
         onDblTap={() => active && p.onConfigure(item.id)}
-        onMouseEnter={() => active && !item.locked && setCursor(tool === 'move' ? 'move' : ROTATE_CURSOR)}
-        onMouseLeave={() => setCursor('')}
+        onMouseEnter={() => {
+          if (!active || item.locked) return;
+          setCursor(tool === 'move' ? 'move' : ROTATE_CURSOR);
+          setHoverId(item.id);
+        }}
+        onMouseLeave={() => {
+          setCursor('');
+          setHoverId((h) => (h === item.id ? null : h));
+        }}
         onDragStart={() => {
           pickRemove.current = null;
           setDragging(item.id);
@@ -946,6 +983,18 @@ export function PlanCanvas(p: Props) {
           <SelectOutline item={item} actors={actors} colors={colors} scale={view.scale} color={tool === 'rotate' ? colors.rotate : colors.select} />
         )}
         {coarse && !item.wall && <Circle name="hit-pad" radius={TOUCH_PAD_PX / view.scale} fill="#000" opacity={0} />}
+        {/* Easier to pick: a press up to 15% past the item's outline (and its modifiers) still counts. */}
+        {!item.wall && item.catalogId !== 'generic.note.draw' && (() => {
+          const b = itemLocalBox(item);
+          const [w, h] = [(b.x1 - b.x0) * 1.15, (b.y1 - b.y0) * 1.15];
+          return <Rect name="hit-pad" x={(b.x0 + b.x1) / 2 - w / 2} y={(b.y0 + b.y1) / 2 - h / 2} width={w} height={h} fill="#000" opacity={0} />;
+        })()}
+        {/* Under the pointer: a faint outline shows what a click would pick. */}
+        {hoverId === item.id && !selection.includes(item.id) && active && !coarse && (
+          <Group opacity={0.45} listening={false}>
+            <OutlineRing item={item} actors={actors} colors={colors} scale={view.scale} color={colors.select} widthPx={3} />
+          </Group>
+        )}
         <ItemShape item={item} actors={actors} colors={colors} muted={!active} tone={stackTone.get(item.id)} />
       </Group>
     );
@@ -1427,12 +1476,13 @@ export function PlanCanvas(p: Props) {
           // Scale: a handle on the drawing's corner; drag it out to enlarge, in to shrink (about its centre).
           const sel = p.scaleId ? visible.find((i) => i.id === p.scaleId) : undefined;
           if (!sel) return null;
-          const hw = (sel.sizeCm?.w ?? 100) / 2;
-          const hd = (sel.sizeCm?.d ?? 100) / 2;
+          const look = itemLook(sel);
+          const hw = look.w / 2;
+          const hd = Math.max(look.d, 4) / 2;
           const r = (sel.rotationDeg * Math.PI) / 180;
           // The handle stays where it was grabbed from (the drawing as it was), while the drawing scales live.
           const base = scaleFrom.current?.item ?? sel;
-          const [bw, bd] = [(base.sizeCm?.w ?? 100) / 2, (base.sizeCm?.d ?? 100) / 2];
+          const [bw, bd] = [itemLook(base).w / 2, Math.max(itemLook(base).d, 4) / 2];
           const corner = { x: base.pos.x + bw * Math.cos(r) - bd * Math.sin(r), y: base.pos.y + bw * Math.sin(r) + bd * Math.cos(r) };
           const start = Math.hypot(corner.x - base.pos.x, corner.y - base.pos.y) || 1;
           return (
@@ -1473,7 +1523,7 @@ export function PlanCanvas(p: Props) {
                   if (!from) return;
                   const at = { x: e.target.x(), y: e.target.y() };
                   const k = Math.max(0.05, Math.hypot(at.x - from.item.pos.x, at.y - from.item.pos.y) / from.start);
-                  reportLive(sel.id, scaleDrawing(from.item, k));
+                  reportLive(sel.id, scaleItem(from.item, k));
                 }}
                 onDragEnd={(e) => {
                   const from = scaleFrom.current;
@@ -2508,6 +2558,17 @@ export function ItemShape({
   switch (shape) {
     case 'flag':
       return <Rect x={-hw} y={-Math.max(hd, 3)} width={w} height={Math.max(d, 6)} fill={c.grip} cornerRadius={1} />;
+    case 'mirror': {
+      // Mirror board seen edge on: the silvered face at the front (it reflects that way), dark back.
+      const t = Math.max(d, 4);
+      return (
+        <>
+          <Rect x={-hw} y={-t / 2} width={w} height={t} fill="#4a4f57" cornerRadius={1} />
+          <Rect x={-hw} y={-t / 2} width={w} height={t * 0.45} fill="#dfe8f1" />
+          <Line points={[-hw * 0.7, -t / 2 + t * 0.12, -hw * 0.3, -t / 2 + t * 0.12]} stroke="#ffffff" strokeWidth={t * 0.12} opacity={0.9} />
+        </>
+      );
+    }
     case 'polyboard':
       return <Rect x={-hw} y={-Math.max(hd, 3)} width={w} height={Math.max(d, 6)} fill="#ffffff" />;
     case 'frame': {
