@@ -43,16 +43,16 @@ export type ArrowStyle = 'straight' | `bend${30 | 35 | 60 | 75 | 90}-${'right' |
 
 export const ARROW_STYLES: { id: ArrowStyle; label: string }[] = [
   { id: 'straight', label: 'Straight' },
-  { id: 'bend30-right', label: 'Bend 30° right' },
-  { id: 'bend30-left', label: 'Bend 30° left' },
-  { id: 'bend35-right', label: 'Bend 35° right' },
-  { id: 'bend35-left', label: 'Bend 35° left' },
-  { id: 'bend60-right', label: 'Bend 60° right' },
-  { id: 'bend60-left', label: 'Bend 60° left' },
-  { id: 'bend75-right', label: 'Bend 75° right' },
-  { id: 'bend75-left', label: 'Bend 75° left' },
-  { id: 'bend90-right', label: 'Bend 90° right' },
-  { id: 'bend90-left', label: 'Bend 90° left' },
+  { id: 'bend30-right', label: '30° right' },
+  { id: 'bend30-left', label: '30° left' },
+  { id: 'bend35-right', label: '35° right' },
+  { id: 'bend35-left', label: '35° left' },
+  { id: 'bend60-right', label: '60° right' },
+  { id: 'bend60-left', label: '60° left' },
+  { id: 'bend75-right', label: '75° right' },
+  { id: 'bend75-left', label: '75° left' },
+  { id: 'bend90-right', label: '90° right' },
+  { id: 'bend90-left', label: '90° left' },
   { id: 'curve-right', label: 'Curve right' },
   { id: 'curve-left', label: 'Curve left' },
   { id: 'double', label: 'Double-headed' },
@@ -66,11 +66,29 @@ export function arrowPoints(style: ArrowStyle | undefined, d: number): { points:
   const tail = { x: 0, y: d / 2 };
   const bend = /^bend(\d+)-(left|right)$/.exec(style ?? '');
   if (bend) {
+    // Drawn like a pen stroke: a shaft with a slight bow sweeping into a rounded turn, then a
+    // straight run to the head so the head points exactly along the bent angle.
     const deg = (Number(bend[1]) * Math.PI) / 180;
     const side = bend[2] === 'right' ? 1 : -1;
     const elbow = { x: 0, y: d / 2 - d * 0.55 };
     const rest = d * 0.45;
-    return { points: [tail, elbow, { x: elbow.x + side * Math.sin(deg) * rest, y: elbow.y - Math.cos(deg) * rest }], curved: false };
+    const dir = { x: side * Math.sin(deg), y: -Math.cos(deg) };
+    const r = d * 0.2;
+    const a = { x: 0, y: elbow.y + r };
+    const b = { x: elbow.x + dir.x * r, y: elbow.y + dir.y * r };
+    const tip = { x: elbow.x + dir.x * rest, y: elbow.y + dir.y * rest };
+    const pts: Vec2[] = [];
+    for (let k = 0; k < 16; k++) {
+      const t = k / 16;
+      pts.push({ x: -side * Math.sin(Math.PI * t) ** 2 * d * 0.012, y: tail.y + (a.y - tail.y) * t });
+    }
+    for (let k = 0; k <= 10; k++) {
+      const t = k / 10;
+      const u = 1 - t;
+      pts.push({ x: u * u * a.x + 2 * u * t * elbow.x + t * t * b.x, y: u * u * a.y + 2 * u * t * elbow.y + t * t * b.y });
+    }
+    pts.push({ x: (b.x + tip.x) / 2, y: (b.y + tip.y) / 2 }, tip);
+    return { points: pts, curved: false };
   }
   const curve = /^curve-(left|right)$/.exec(style ?? '');
   if (curve) {

@@ -15,10 +15,10 @@ describe('notes', () => {
   });
   it('bent arrows turn by their angle partway along', () => {
     const { points } = arrowPoints('bend75-right', 200);
-    const [, elbow, head] = points;
+    const [elbow, head] = points.slice(-2);
     const turn = (Math.atan2(head!.x - elbow!.x, -(head!.y - elbow!.y)) * 180) / Math.PI;
     expect(turn).toBeCloseTo(75);
-    expect(arrowPoints('bend35-left', 200).points[2]!.x).toBeLessThan(0);
+    expect(arrowPoints('bend35-left', 200).points.at(-1)!.x).toBeLessThan(0);
   });
   it('a drawn stroke becomes a note centred on it', () => {
     const n = drawingNote([{ x: 0, y: 0 }, { x: 100, y: 50 }], '#fff', 4);

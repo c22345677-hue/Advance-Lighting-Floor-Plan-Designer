@@ -288,10 +288,19 @@ export function PlanCanvas(p: Props) {
     tr.getLayer()?.batchDraw();
   }, [selection, scene, tool]);
 
+  // On a tool or mode change, the item under the pointer shows the new tool's cursor straight away.
   useEffect(() => {
     const el = stageRef.current?.container();
-    if (el) el.style.cursor = '';
+    if (el) el.style.cursor = hoverId && hoverCursor(hoverId) ? hoverCursor(hoverId) : '';
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tool, mode]);
+
+  /** The cursor over an item for the current tool ('' when it can't be moved or turned). */
+  const hoverCursor = (id: string): string => {
+    const item = all.find((i) => i.id === id);
+    if (!item || item.locked || !inMode(item, mode) || layer(item)?.locked) return '';
+    return tool === 'move' ? 'move' : tool === 'rotate' ? ROTATE_CURSOR : '';
+  };
 
   const setCursor = (c: string) => {
     const el = stageRef.current?.container();
@@ -1373,6 +1382,19 @@ export function PlanCanvas(p: Props) {
       onContextMenu={(e) => e.evt.preventDefault()} /* no browser menu on the plan (right-click, long-press) */
       onMouseMove={(e) => {
         if (rot.current) moveRotate(e.evt.shiftKey);
+        else {
+          // Catch an item the pointer is already over (e.g. right after switching tools from the bar).
+          const el = stageRef.current?.container();
+          if (el && !el.style.cursor && !space.current) {
+            let n: Konva.Node | null = e.target;
+            while (n && !all.some((i) => i.id === n!.id())) n = n.getParent();
+            const c = n ? hoverCursor(n.id()) : '';
+            if (n && c) {
+              el.style.cursor = c;
+              setHoverId(n.id());
+            }
+          }
+        }
         const b = boxRef.current;
         const pt = stageRef.current?.getPointerPosition();
         if (b && pt) setBox({ ...b, x1: pt.x, y1: pt.y });
