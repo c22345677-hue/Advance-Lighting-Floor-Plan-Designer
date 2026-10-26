@@ -27,7 +27,11 @@ export type SceneAction =
   | { type: 'applyTemplate'; setItems: Item[]; items: Item[] }
   /** Back to the template layout, or empty when the scene never had one. */
   | { type: 'reset' }
-  | { type: 'sun'; sun: Sun | undefined };
+  | { type: 'sun'; sun: Sun | undefined }
+  /** Make (or remake) group `slot` from these items; an item belongs to one group at a time. */
+  | { type: 'setGroup'; slot: number; ids: string[] }
+  | { type: 'renameGroup'; slot: number; name: string }
+  | { type: 'deleteGroup'; slot: number };
 
 export type Action =
   | { type: 'scene'; sceneId: string; action: SceneAction }
@@ -112,6 +116,16 @@ function applyEdit(s: SceneDoc, a: SceneAction): SceneDoc {
     }
     case 'sun':
       return { ...s, sun: a.sun };
+    case 'setGroup': {
+      const ids = new Set(a.ids);
+      const old = s.groups?.find((g) => g.slot === a.slot);
+      const others = (s.groups ?? []).filter((g) => g.slot !== a.slot).map((g) => ({ ...g, ids: g.ids.filter((id) => !ids.has(id)) })).filter((g) => g.ids.length);
+      return { ...s, groups: [...others, { slot: a.slot, name: old?.name, ids: a.ids }].sort((x, y) => x.slot - y.slot) };
+    }
+    case 'renameGroup':
+      return { ...s, groups: (s.groups ?? []).map((g) => (g.slot === a.slot ? { ...g, name: a.name.trim() || undefined } : g)) };
+    case 'deleteGroup':
+      return { ...s, groups: (s.groups ?? []).filter((g) => g.slot !== a.slot) };
     case 'reset':
       return {
         ...s,

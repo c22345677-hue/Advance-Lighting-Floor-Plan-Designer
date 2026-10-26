@@ -5,6 +5,7 @@ import { gearUsage, type GearList } from '../model/gearList';
 import {
   EDIT_MODES,
   focusScene,
+  groupMembers,
   KIND_ROLES,
   linkInterview,
   modeOf,
@@ -37,6 +38,7 @@ import { isOpening, libraryItem } from '../library/items';
 import { fixtureById, standById } from '../model/gear';
 import { applyTemplate, getTemplate, type TemplateDefinition, type TemplateValues } from '../templates';
 import { CategoryPanel, DRAG_TYPE, type PlaceRequest } from './CategoryPanel';
+import { GroupDock } from './GroupDock';
 import { useConfirm } from './confirm';
 import { Dialog } from './Dialog';
 import { EquipmentPanel } from './EquipmentPanel';
@@ -487,6 +489,16 @@ export function App() {
   /** Drawing on the plan (Notes): on or off, and the pen. */
   const [drawing, setDrawingState] = useState(false);
   const [pen, setPen] = useState<{ color: string; width: (typeof PEN_WIDTHS)[number]['id'] }>({ color: NOTE_DEFAULT_COLOR, width: 'medium' });
+  /** Groups (Ctrl + number), with only the members still in the scene. */
+  const groups = (scene.groups ?? []).map((g) => ({ ...g, ids: groupMembers(g, items) })).filter((g) => g.ids.length);
+  const pickGroup = (slot: number) => {
+    const g = groups.find((x) => x.slot === slot);
+    if (g) {
+      if (mode !== 'all' && g.ids.some((id) => { const it = items.find((i) => i.id === id); return it && !inMode(it, mode); })) setMode('all');
+      setSelection(g.ids);
+    }
+  };
+  const activeGroup = groups.find((g) => g.ids.length === selection.length && g.ids.every((id) => selection.includes(id)))?.slot ?? null;
   /** Drawings made since Draw was pressed: a stroke touching one of them joins it into one shape. */
   const drawSession = useRef<string[]>([]);
   const setDrawing = (on: boolean) => {
@@ -791,6 +803,19 @@ export function App() {
       if (dialog || document.querySelector('.dialog') || (e.target as HTMLElement).closest('input, textarea, select')) return;
       const mod = e.ctrlKey || e.metaKey;
       const k = e.key.toLowerCase();
+      // Ctrl (or Ctrl+Shift, where the browser keeps Ctrl+number for tabs) + 1–9 groups the
+      // selection; Shift + 1–9 picks that group.
+      const digit = /^(?:Digit|Numpad)([1-9])$/.exec(e.code)?.[1];
+      if (digit && mod) {
+        e.preventDefault();
+        if (selection.length) sd({ type: 'setGroup', slot: Number(digit), ids: selection });
+        return;
+      }
+      if (digit && e.shiftKey) {
+        e.preventDefault();
+        pickGroup(Number(digit));
+        return;
+      }
       if (mod && k === 'z') {
         e.preventDefault();
         dispatch({ type: e.shiftKey ? 'redo' : 'undo' });
@@ -1049,6 +1074,7 @@ export function App() {
               selection={selection}
               onSelect={setSelected}
               onSelectMany={setSelection}
+              groups={groups.map((g) => g.ids)}
               onConfigure={configure}
               linkPreview={linkPreview}
               labelBoxesRef={labelBoxes}
@@ -1140,7 +1166,7 @@ export function App() {
               <span className="bar-grip" title="Drag to move this bar" aria-hidden="true" {...gripProps}>
                 <IconGrip />
               </span>
-              <span className="selection-count">{selection.length > 1 ? `${selection.length} selected` : (isMeter(selectedItems[0]) ? meterName(selectedItems[0]!, items, project.actors) : displayLabel(selectedItems[0]!, project.actors, { unit: true }) || itemName(selectedItems[0]!))}</span>
+              <span className="selection-count">{selection.length > 1 ? (activeGroup ? `${groups.find((g) => g.slot === activeGroup)!.name ?? `Group ${activeGroup}`} · ${selection.length}` : `${selection.length} selected`) : (isMeter(selectedItems[0]) ? meterName(selectedItems[0]!, items, project.actors) : displayLabel(selectedItems[0]!, project.actors, { unit: true }) || itemName(selectedItems[0]!))}</span>
               <button id="configure" className={`btn small ${configuring ? 'on' : ''}`} onClick={() => (configuring ? setConfiguring(false) : configure())} title="Settings for the selection (or right-click it)">
                 <IconSliders /> Configure
               </button>
@@ -1383,6 +1409,18 @@ export function App() {
               />
             )}
           </div>
+          <GroupDock
+            groups={groups}
+            active={activeGroup}
+            canCreate={selection.length > 1}
+            onPick={pickGroup}
+            onCreate={() => {
+              const free = [1, 2, 3, 4, 5, 6, 7, 8, 9].find((n) => !groups.some((g) => g.slot === n));
+              if (free && selection.length > 1) sd({ type: 'setGroup', slot: free, ids: selection });
+            }}
+            onRename={(slot, name) => sd({ type: 'renameGroup', slot, name })}
+            onDelete={(slot) => sd({ type: 'deleteGroup', slot })}
+          />
         </aside>
       </main>
 

@@ -35,6 +35,15 @@ const GROUPS: { title: string; rows: [ReactNode, string][] }[] = [
     ],
   },
   {
+    title: 'Groups',
+    rows: [
+      [<>{k(MOD, '1')} – {k(MOD, '9')}</>, 'Group the selection as group 1–9 (if the browser takes it for its tabs, add Shift)'],
+      [<>{k('Shift', '1')} – {k('Shift', '9')}</>, 'Pick that group'],
+      ['Groups (bottom of the side panel)', 'Tap to pick a group, + to group the selection, double-tap to name it, × to ungroup'],
+      ['Click any member', 'Picks the whole group, to move or turn it as one; double-click picks just that item'],
+    ],
+  },
+  {
     title: 'Selecting',
     rows: [
       ['Click', 'Select an item of the current category (the panel stays on adding)'],

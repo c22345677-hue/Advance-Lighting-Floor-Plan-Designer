@@ -173,6 +173,8 @@ interface Props {
   drawPen?: { color: string; px: number } | null;
   /** A finished stroke, in plan cm, and its width in cm. */
   onDrawStroke?: (points: Vec2[], strokeCm: number) => void;
+  /** Groups (Ctrl + number): each group's members in the scene. Pressing one picks them all. */
+  groups?: string[][];
   /** Mid-gesture changes (positions, turns, sizes) for the rest of the app to show live; null when done. */
   onLive?: (live: ReadonlyMap<string, Partial<Item>> | null) => void;
   /** Scale tool: the drawing showing a corner handle, and the factor it was scaled by. */
@@ -762,9 +764,15 @@ export function PlanCanvas(p: Props) {
         p.onSelectMany(selection.includes(item.id) ? selection.filter((id) => id !== item.id) : [...selection, item.id]);
         return;
       }
+      // A member of a group (Ctrl + number) picks the whole group, to move or turn it as one;
+      // double-click picks just the one item.
+      const grp = p.groups?.find((g) => g.length > 1 && g.includes(item.id));
+      const asGroup = !!grp && !(multi && selection.includes(item.id));
+      const sel = asGroup ? grp! : selection;
       // Pressing one of several selected items keeps them all (to move or turn them together).
-      if (!(multi && selection.includes(item.id))) onSelect(item.id);
-      const group = multi && selection.includes(item.id) ? all.filter((o) => o.id !== item.id && selection.includes(o.id) && !o.locked && !isFocusLocked(o, all)) : [];
+      if (asGroup) p.onSelectMany(grp!);
+      else if (!(multi && selection.includes(item.id))) onSelect(item.id);
+      const group = sel.length > 1 && sel.includes(item.id) ? all.filter((o) => o.id !== item.id && sel.includes(o.id) && !o.locked && !isFocusLocked(o, all)) : [];
       if (canRotate) startRotate(item, group);
       // A person appears once per scene, so Alt + drag only moves them.
       altCopy.current = e.evt.altKey && !item.actorId ? item.id : null;

@@ -19,7 +19,19 @@ export interface SceneDoc {
   sun?: Sun;
   /** Layout right after the last template was added; Reset returns to it (none = empty). */
   baseline?: { setItems: Item[]; items: Item[] };
+  /** Groups 1–9 (Ctrl + number): items picked and moved as one. */
+  groups?: ItemGroup[];
 }
+
+export interface ItemGroup {
+  /** 1–9. */
+  slot: number;
+  name?: string;
+  ids: string[];
+}
+
+/** A group's members still in the scene. */
+export const groupMembers = (g: ItemGroup, items: readonly Item[]): string[] => g.ids.filter((id) => items.some((i) => i.id === id));
 
 /** Production type, picked first in Templates. Decides what people are called. */
 export type ProjectKind = 'narrative' | 'doc';
