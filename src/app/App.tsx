@@ -234,6 +234,29 @@ export function App() {
   /** Mid-gesture changes from the plan (drag, turn, scale): everything shows them as they happen. */
   const [live, setLive] = useState<ReadonlyMap<string, Partial<Item>> | null>(null);
   const scene = useMemo(() => (live ? liveScene(savedScene, live) : savedScene), [savedScene, live]);
+  // Safety net: once every finger and button is up, no gesture is under way, so nothing should
+  // still be showing mid-gesture (the bar would stay faded).
+  useEffect(() => {
+    let down = 0;
+    let timer = 0;
+    const onDown = () => {
+      down++;
+      window.clearTimeout(timer);
+    };
+    const onUp = () => {
+      down = Math.max(0, down - 1);
+      if (down === 0) timer = window.setTimeout(() => setLive(null), 250);
+    };
+    window.addEventListener('pointerdown', onDown, true);
+    window.addEventListener('pointerup', onUp, true);
+    window.addEventListener('pointercancel', onUp, true);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('pointerdown', onDown, true);
+      window.removeEventListener('pointerup', onUp, true);
+      window.removeEventListener('pointercancel', onUp, true);
+    };
+  }, []);
   const items = sceneItems(scene);
 
   // Everything can be picked to start with; a category narrows it down once the plan is busy.

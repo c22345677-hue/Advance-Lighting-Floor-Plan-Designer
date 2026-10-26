@@ -389,8 +389,10 @@ export function PlanCanvas(p: Props) {
   /** Live changes, handed up once per frame so the whole app (and this plan) redraws from them. */
   const liveEdits = useRef(new Map<string, Partial<Item>>());
   const liveFrame = useRef(0);
+  /** A drag, turn or scale is under way (live changes are only reported then). */
+  const gestureOn = useRef(false);
   const reportLive = (id: string, patch: Partial<Item>) => {
-    if (!p.onLive) return;
+    if (!p.onLive || !gestureOn.current) return;
     liveEdits.current.set(id, { ...liveEdits.current.get(id), ...patch });
     if (!liveFrame.current)
       liveFrame.current = requestAnimationFrame(() => {
@@ -400,6 +402,7 @@ export function PlanCanvas(p: Props) {
   };
   /** The gesture is over: the saved scene takes over from the live one. */
   const endLive = () => {
+    gestureOn.current = false;
     cancelAnimationFrame(liveFrame.current);
     liveFrame.current = 0;
     if (liveEdits.current.size) p.onLive?.(null);
@@ -603,6 +606,7 @@ export function PlanCanvas(p: Props) {
   };
 
   const startRotate = (item: Item, group: Item[] = []) => {
+    gestureOn.current = true;
     const ptr = worldPointer();
     if (!ptr) return;
     const { center, members } = rotateMembers(item, group);
@@ -863,6 +867,7 @@ export function PlanCanvas(p: Props) {
           setHoverId((h) => (h === item.id ? null : h));
         }}
         onDragStart={() => {
+          gestureOn.current = true;
           pickRemove.current = null;
           setDragging(item.id);
           groupDrag.current = groupOf(item).map((o) => ({ id: o.id, item: o }));
@@ -1035,6 +1040,7 @@ export function PlanCanvas(p: Props) {
               y={m.y}
               draggable={editable}
               listening={editable}
+              onDragStart={() => (gestureOn.current = true)}
               onMouseDown={(e) => (e.cancelBubble = true)}
               onTouchStart={(e) => (e.cancelBubble = true)}
               onDragMove={(e) => reportLive(item.id, moveMark(item, k, { x: e.target.x(), y: e.target.y() }))}
@@ -1453,6 +1459,7 @@ export function PlanCanvas(p: Props) {
               draggable
               onMouseDown={(e) => (e.cancelBubble = true)}
               onTouchStart={(e) => (e.cancelBubble = true)}
+              onDragStart={() => (gestureOn.current = true)}
               onDragMove={(e) => {
                 const raw = { x: e.target.x(), y: e.target.y() };
                 const at = snapOff(e.evt) ? raw : snapWallPoint(raw, { corners: others, radius: snapRadius, angle: 'free' }).point;
@@ -1517,7 +1524,10 @@ export function PlanCanvas(p: Props) {
                 onMouseDown={(e) => (e.cancelBubble = true)}
                 onTouchStart={(e) => (e.cancelBubble = true)}
                 onMouseEnter={() => setCursor('nwse-resize')}
-                onDragStart={() => (scaleFrom.current = { item: sel, start })}
+                onDragStart={() => {
+                  gestureOn.current = true;
+                  scaleFrom.current = { item: sel, start };
+                }}
                 onDragMove={(e) => {
                   const from = scaleFrom.current;
                   if (!from) return;
