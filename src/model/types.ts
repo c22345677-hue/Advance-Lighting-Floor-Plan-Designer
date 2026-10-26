@@ -32,6 +32,8 @@ export interface LightProps {
   beamDeg?: number;
   /** Lights that focus (fresnel, PAR, lens): 0 = full flood (default) … 100 = full spot. */
   spotPct?: number;
+  /** Light bounced off a board (made by the app, never saved): what it gives off, how big it is, and the light that mostly lights it (for colour). */
+  bounce?: { lumens: number; sizeCm: number; boardId: string; from: Item };
   /** Lanterns and balloons: skirt quarters lowered, clockwise from the front (front, right, back, left). */
   skirt?: boolean[];
   throwCm?: number;

@@ -1,7 +1,7 @@
 // Lighting schedule: one sheet with the plan, every light and how it's set, the cameras, the
 // light on each person and the power plan. Prints (or saves as PDF) on its own.
 import { lightColor, rgbCss } from '../model/color';
-import { DAYLIGHT_ID, meterReadings, type CameraSettings } from '../model/exposure';
+import { bounceId, DAYLIGHT_ID, meterReadings, type CameraSettings } from '../model/exposure';
 import type { Sun } from '../model/sun';
 import { itemFixture, itemModifiers, standById } from '../model/gear';
 import { DEFAULT_LENS_MM } from '../model/lens';
@@ -31,6 +31,10 @@ export function SchedulePanel(p: Props) {
   const power = circuitLoads(p.items, p.volts, p.breakerA);
   const who = (id: string) => {
     if (id === DAYLIGHT_ID) return 'daylight';
+    if (id.endsWith('~bounce')) {
+      const board = p.items.find((x) => bounceId(x.id) === id);
+      return `bounce off ${board ? displayLabel(board, p.actors) || itemName(board) : 'a board'}`;
+    }
     const i = p.items.find((x) => x.id === id);
     return i ? displayLabel(i, p.actors) || itemName(i) : '?';
   };

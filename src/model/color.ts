@@ -120,6 +120,8 @@ export interface LightColor {
 
 /** The colour a light puts out, after its setting and its gels. */
 export function lightColor(item: Item): LightColor {
+  // Bounced light keeps the colour of what lights the board.
+  if (item.light?.bounce) return lightColor(item.light.bounce.from);
   const l = item.light ?? {};
   const { kind } = colorKindOf(item);
   const range = KIND_RANGE[kind];

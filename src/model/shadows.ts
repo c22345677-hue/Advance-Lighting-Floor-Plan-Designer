@@ -115,6 +115,7 @@ function lightHeightCm(i: Item): number {
 function bareSource(i: Item): { size: number; what: string } {
   const look = itemLook(i);
   const fam = itemFixture(i)?.family;
+  if (i.light?.bounce) return { size: i.light.bounce.sizeCm, what: 'bounce off a board' };
   if (lightStyle(i) === 'cob-softbox') return { size: look.w, what: 'COB in a softbox' };
   switch (look.shape) {
     case 'cob':

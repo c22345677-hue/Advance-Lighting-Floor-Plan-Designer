@@ -5,7 +5,7 @@
 import { fabricById } from '../library/fabrics';
 import { libraryItem } from '../library/items';
 import { lightColor } from './color';
-import { itemFixture, itemModifiers } from './gear';
+import { itemFixture, itemLook, itemModifiers } from './gear';
 import { lightStyle, skirtPass } from './emitter';
 import { aimAt } from './geometry';
 import { lightSource, occluders, overlapsLight, pointInPolygon, shadowDarkness, shadowPolygon } from './shadows';
@@ -73,6 +73,7 @@ const MODIFIER_PASS: Record<string, number> = { softbox: 0.55, lantern: 0.5, dom
 
 /** Estimated output of a light, lumens (before modifiers and gels). */
 export function lightLumens(light: Item): { lumens: number; estimated: boolean } {
+  if (light.light?.bounce) return { lumens: light.light.bounce.lumens, estimated: true };
   const f = itemFixture(light);
   if (f?.powerW) return { lumens: f.powerW * EFFICACY.led, estimated: false };
   const s = STAND_IN[light.catalogId ?? ''] ?? { w: 100, tech: 'led' as const };
@@ -216,7 +217,9 @@ export function meterConfig(meter: Item, cam: CameraSettings = DEFAULT_CAMERA): 
 }
 
 /** Readings on every light meter in the scene, at face height: where the meter stands, or on what it is attached to. */
-export function meterReadings(items: readonly Item[], cam: CameraSettings = DEFAULT_CAMERA, sun?: Sun): Reading[] {
+export function meterReadings(scene: readonly Item[], cam: CameraSettings = DEFAULT_CAMERA, sun?: Sun): Reading[] {
+  // Boards bounce the light that hits them: they light the meters too.
+  const items = withBounces(scene);
   const lights = items.filter((i) => i.kind === 'light' && !i.hidden);
   const windows = windowLights(items, sun);
   const occ = windows.length ? occluders(items) : [];
@@ -261,3 +264,76 @@ export function meterReadings(items: readonly Item[], cam: CameraSettings = DEFA
 
 /** Name for the lights behind a reading. */
 export const lightName = (i: Item) => i.light?.unitId ?? libraryItem(i.catalogId)?.name ?? 'Light';
+
+// ---- Bounce ---------------------------------------------------------------------------
+
+/** How much light a white bounce board (poly, beadboard, card) sends back. */
+const BOUNCE_REFLECT = 0.8;
+/** A board gives off nothing worth showing below this, lumens. */
+const BOUNCE_MIN_LM = 20;
+
+/** Is it a bounce board (polyboard, beadboard, bounce card)? */
+export const isBounceBoard = (i: Item) => i.kind === 'grip' && libraryItem(i.catalogId)?.shape === 'polyboard';
+
+/** Id of the light a board gives off. */
+export const bounceId = (boardId: string) => `${boardId}~bounce`;
+
+/**
+ * Light bounced off boards: every light that hits a white board (hard or soft) makes the board
+ * glow, and the board gives that light back as a soft source as big as the board, from the side
+ * that's lit. How much: the light falling on it, times the part of the board the beam covers,
+ * times how square on it's hit, times what white poly reflects. Coloured like the light that
+ * mostly lights it. These are made fresh from the scene and never saved.
+ */
+export function bounceLights(items: readonly Item[]): Item[] {
+  const lights = items.filter((i) => i.kind === 'light' && !i.hidden && !i.light?.bounce);
+  if (!lights.length) return [];
+  const out: Item[] = [];
+  for (const board of items) {
+    if (board.hidden || !isBounceBoard(board)) continue;
+    const { w, d } = itemLook(board);
+    const h = Math.min(244, w); // boards stand about as tall as they're wide
+    const r = (board.rotationDeg * Math.PI) / 180;
+    const n = { x: Math.sin(r), y: -Math.cos(r) }; // the board's face, front side
+    let total = 0;
+    let side = 0;
+    let best: { light: Item; lm: number } | null = null;
+    for (const light of lights) {
+      const c = luxFrom(light, board.pos, items, board.id);
+      if (!c || c.lux < 1) continue;
+      const v = { x: light.pos.x - board.pos.x, y: light.pos.y - board.pos.y };
+      const dist = Math.hypot(v.x, v.y) || 1;
+      const facing = (v.x * n.x + v.y * n.y) / dist;
+      if (Math.abs(facing) < 0.05) continue; // edge on: nothing lands on the face
+      const deg = Math.min(360, lightSource(light, items)?.beamDeg ?? 360);
+      // Only what the beam itself puts on the board (not the spill round its edge).
+      if (deg < 360 && Math.abs(((aimAt(light.pos, board.pos) - light.rotationDeg + 540) % 360) - 180) > deg / 2 + 5) continue;
+      const litCm = deg >= 300 ? Infinity : 2 * dist * Math.tan((Math.min(deg, 170) / 2) * (Math.PI / 180));
+      const areaM2 = (Math.min(w, litCm) / 100) * (Math.min(h, litCm) / 100);
+      const lm = c.lux * Math.abs(facing) * areaM2 * BOUNCE_REFLECT;
+      total += lm;
+      side += Math.sign(facing) * lm;
+      if (!best || lm > best.lm) best = { light, lm };
+    }
+    if (total < BOUNCE_MIN_LM || !best) continue;
+    // It shines back from the side the light lands on.
+    const out1 = side >= 0 ? n : { x: -n.x, y: -n.y };
+    const pos = { x: board.pos.x + out1.x * (d / 2 + 2), y: board.pos.y + out1.y * (d / 2 + 2) };
+    out.push({
+      id: bounceId(board.id),
+      kind: 'light',
+      catalogId: 'virtual.bounce',
+      pos,
+      rotationDeg: aimAt(board.pos, { x: board.pos.x + out1.x, y: board.pos.y + out1.y }),
+      sizeCm: { w, d: 2 },
+      light: { beamDeg: 150, throwCm: 600, heightCm: Math.max(100, h / 2 + 40), bounce: { lumens: total, sizeCm: Math.max(w, h), boardId: board.id, from: best.light } },
+    });
+  }
+  return out;
+}
+
+/** The scene with the light its boards bounce added. */
+export const withBounces = (items: readonly Item[]): Item[] => {
+  const b = bounceLights(items);
+  return b.length ? [...items, ...b] : (items as Item[]);
+};

@@ -9,7 +9,7 @@ import { DEFAULT_WALL_CM, wallLength } from '../model/walls';
 import { beamReach, DEFAULT_THROW_CM, lightSource } from '../model/shadows';
 import { isMeter } from '../model/attach';
 import { circuitName, lightWatts } from '../model/power';
-import { DAYLIGHT_ID, lightName, meterReadings, shutterSpeed, stopParts, type CameraSettings } from '../model/exposure';
+import { bounceId, DAYLIGHT_ID, lightName, meterReadings, shutterSpeed, stopParts, type CameraSettings } from '../model/exposure';
 import type { Sun } from '../model/sun';
 import { COLOR_KIND_LABEL, colorKindOf, displayKelvin, hsToRgb, KIND_RANGE, lightColor, rgbCss, type ColorKind } from '../model/color';
 import { GEL_GROUP_LABEL, gelById, GELS, type Gel, type GelGroup } from '../library/gels';
@@ -982,7 +982,7 @@ function MeterSection({
               <li key={x.lightId} className="row static">
                 <span className="row-main">
                   <span className="row-title">
-                    {l ? lightName(l) : x.lightId === DAYLIGHT_ID ? 'Daylight (windows)' : '?'} {x.lightId === r.keyId && r.contributions.length > 1 ? <span className="chip">Key</span> : null}
+                    {l ? lightName(l) : x.lightId === DAYLIGHT_ID ? 'Daylight (windows)' : x.lightId.endsWith('~bounce') ? `Bounce off ${itemName(sceneItems.find((i) => bounceId(i.id) === x.lightId) ?? sceneItems[0]!)}` : '?'} {x.lightId === r.keyId && r.contributions.length > 1 ? <span className="chip">Key</span> : null}
                   </span>
                   <span className="row-sub">
                     ≈ {c.unit === 'fc' ? `${Math.round(x.lux / 10.764)} fc` : `${Math.round(x.lux)} lux`}

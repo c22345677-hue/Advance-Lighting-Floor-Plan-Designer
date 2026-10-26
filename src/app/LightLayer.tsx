@@ -20,6 +20,7 @@ import { Shape } from 'react-konva';
 import type Konva from 'konva';
 import { darknessAt, lightReach, occluders, sceneShadows, SHADOW_REACH, type LightSource, type ShadowShape } from '../model/shadows';
 import { beamBounds, beamSpec, drawBeam, type BeamSpec } from './beams';
+import { withBounces } from '../model/exposure';
 import type { Item, Vec2 } from '../model/types';
 
 export type LivePatch = { pos?: Vec2; rot?: number };
@@ -363,15 +364,20 @@ export function LightLayer({
     const now = ids.length
       ? items.map((i) => (live[i.id] ? { ...i, pos: live[i.id]!.pos ?? i.pos, rotationDeg: live[i.id]!.rot ?? i.rotationDeg } : i))
       : items;
-    const { sources, shadows } = sceneShadows(now, extra);
-    const lights = sources.map((s) => groupShadows(s, shadows.filter((sh) => sh.lightId === s.lightId), now)).filter((l) => l.groups.length);
+    // Boards bounce what hits them: their soft light is drawn and casts shadows like any light's.
+    const lit = withBounces(now);
+    const { sources, shadows } = sceneShadows(lit, extra);
+    const lights = sources.map((s) => groupShadows(s, shadows.filter((sh) => sh.lightId === s.lightId), lit)).filter((l) => l.groups.length);
     const blobs = occluders(now)
       .filter((o) => Number.isFinite(o.heightCm))
       .map((o) => {
         const c = o.points.reduce((a, q) => ({ x: a.x + q.x / o.points.length, y: a.y + q.y / o.points.length }), { x: 0, y: 0 });
         return { c, r: Math.max(...o.points.map((q) => Math.hypot(q.x - c.x, q.y - c.y))) };
       });
-    const beams = now.filter((i) => i.kind === 'light' && beamIds.has(i.id)).map((i) => beamSpec(i, now)).filter((b): b is BeamSpec => !!b);
+    const beams = lit
+      .filter((i) => i.kind === 'light' && (beamIds.has(i.id) || !!i.light?.bounce))
+      .map((i) => beamSpec(i, lit))
+      .filter((b): b is BeamSpec => !!b);
     return { lights, blobs, beams };
   }, [items, live, extra, beamIds]);
 
