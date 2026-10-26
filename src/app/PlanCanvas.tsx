@@ -7,7 +7,7 @@ import { beamReach, lightReach, lightSource } from '../model/shadows';
 import { assemblyOf, canAttach, isMeter, rootOf } from '../model/attach';
 import { LightLayer, type LivePatch, type ShadowLive } from './LightLayer';
 import { FixtureShape, ModifierShapes, modifierFront, turnedCorners } from './fixtureShapes';
-import { arrowPoints, NOTE_PAD_CM, noteColor } from '../model/notes';
+import { arrowPoints, NOTE_PAD_CM, noteColor, scaleDrawing } from '../model/notes';
 import { beamAlpha, beamDegOf } from './beams';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
@@ -122,6 +122,8 @@ interface Props {
   view: View;
   onView: (v: View) => void;
   scene: SceneDoc;
+  /** The scene as saved (without mid-gesture changes): gestures measure from it. */
+  savedScene?: SceneDoc;
   actors: readonly Actor[];
   dispatch: (a: SceneAction) => void;
   /** Selected item ids (one, several, or none). */
@@ -171,6 +173,8 @@ interface Props {
   drawPen?: { color: string; px: number } | null;
   /** A finished stroke, in plan cm, and its width in cm. */
   onDrawStroke?: (points: Vec2[], strokeCm: number) => void;
+  /** Mid-gesture changes (positions, turns, sizes) for the rest of the app to show live; null when done. */
+  onLive?: (live: ReadonlyMap<string, Partial<Item>> | null) => void;
   /** Scale tool: the drawing showing a corner handle, and the factor it was scaled by. */
   scaleId?: string | null;
   onScale?: (id: string, k: number) => void;
@@ -205,12 +209,17 @@ export function PlanCanvas(p: Props) {
   const stroke = useRef<Vec2[] | null>(null);
   const strokeLine = useRef<Konva.Line>(null);
   const pens = useRef(new Set<number>());
+  /** Scaling a drawing: the drawing as it was when the handle was grabbed. */
+  const scaleFrom = useRef<{ item: Item; start: number } | null>(null);
   const rot = useRef<RotateSession | null>(null);
   const [dragging, setDragging] = useState<string | null>(null);
   /** Alt + drag: the originals, drawn in place while their copy is being dragged. */
   const [ghosts, setGhosts] = useState<Item[]>([]);
   const ghostOf = (i: Item): Item => ({ ...i, id: `${i.id}~original` });
   const all = sceneItems(scene);
+  /** An item as saved, before the gesture under way changed it live. */
+  const savedById = useMemo(() => new Map(sceneItems(p.savedScene ?? scene).map((i) => [i.id, i])), [p.savedScene, scene]);
+  const saved = (i: Item): Item => savedById.get(i.id) ?? i;
   /** Everything that's there (lights it, casts shadows), shown or not. */
   const lit = useMemo(() => all.filter((i) => !i.hidden), [scene]);
   const layer = (i: Item) => p.layers?.[modeOf(i)];
@@ -347,8 +356,28 @@ export function PlanCanvas(p: Props) {
   /** While an item is dragged, keep its beam and any cameras watching it in step. */
   /** Where things being dragged are right now (so followers aim at, and from, live positions). */
   const livePos = useRef(new Map<string, Vec2>());
+  /** Live changes, handed up once per frame so the whole app (and this plan) redraws from them. */
+  const liveEdits = useRef(new Map<string, Partial<Item>>());
+  const liveFrame = useRef(0);
+  const reportLive = (id: string, patch: Partial<Item>) => {
+    if (!p.onLive) return;
+    liveEdits.current.set(id, { ...liveEdits.current.get(id), ...patch });
+    if (!liveFrame.current)
+      liveFrame.current = requestAnimationFrame(() => {
+        liveFrame.current = 0;
+        p.onLive?.(new Map(liveEdits.current));
+      });
+  };
+  /** The gesture is over: the saved scene takes over from the live one. */
+  const endLive = () => {
+    cancelAnimationFrame(liveFrame.current);
+    liveFrame.current = 0;
+    if (liveEdits.current.size) p.onLive?.(null);
+    liveEdits.current.clear();
+  };
   const follow = (moved: Item, pos: Vec2) => {
     livePos.current.set(moved.id, pos);
+    if (!altCopy.current) reportLive(moved.id, { pos });
     const at = (i: Item) => livePos.current.get(i.id) ?? i.pos;
     node(`${moved.id}-beam`)?.position(pos);
     liveShadow(moved.id, { pos });
@@ -565,6 +594,7 @@ export function PlanCanvas(p: Props) {
     for (const m of r.members) {
       const t = turned(m, r.delta);
       node(m.item.id)?.position(t.pos).rotation(t.rot);
+      reportLive(m.item.id, { pos: t.pos, rotationDeg: normDeg(t.rot) });
       if (m.item.kind === 'note') uprightArrowLabel(node(m.item.id), t.rot);
       node(`${m.item.id}-beam`)?.position(t.pos).rotation(t.rot);
       const lay = labelShift.current.get(m.item.id);
@@ -584,6 +614,7 @@ export function PlanCanvas(p: Props) {
     if (!r) return;
     rot.current = null;
     livePos.current.clear();
+    endLive();
     setTimeout(() => liveShadow(null), 60);
     if (normDeg(r.delta) === 0) return;
     dispatch({
@@ -760,9 +791,10 @@ export function PlanCanvas(p: Props) {
       <Group
         key={item.id}
         id={item.id}
-        x={item.pos.x}
-        y={item.pos.y}
-        rotation={item.rotationDeg}
+        // What's under the pointer right now (the live scene can be a frame behind it).
+        x={liveEdits.current.get(item.id)?.pos?.x ?? item.pos.x}
+        y={liveEdits.current.get(item.id)?.pos?.y ?? item.pos.y}
+        rotation={liveEdits.current.get(item.id)?.rotationDeg ?? item.rotationDeg}
         listening={active}
         opacity={active ? 1 : 0.75}
         draggable={active && tool === 'move' && !item.locked}
@@ -805,19 +837,22 @@ export function PlanCanvas(p: Props) {
             if (hit) {
               e.target.position(hit.point);
               node(`${item.id}-label`)?.position({ x: hit.point.x - 200, y: hit.point.y + labelOffset(item) });
-              e.target.rotation(seatOpening(item, hit, itemLook(item).w).rotationDeg!);
+              const seat = seatOpening(item, hit, itemLook(item).w);
+              e.target.rotation(seat.rotationDeg!);
               guideFor(hit, hit.point, itemLook(item).w);
+              if (!altCopy.current) reportLive(item.id, seat);
             }
             return;
           }
           if (item.wall) liveOpenings({ ...item, pos });
           follow(item, pos);
-          if (groupDrag.current.length) moveGroup({ x: pos.x - item.pos.x, y: pos.y - item.pos.y });
+          if (groupDrag.current.length) moveGroup({ x: pos.x - saved(item).pos.x, y: pos.y - saved(item).pos.y });
         }}
         onDragEnd={(e) => {
           setDragging(null);
           setGhosts([]);
           livePos.current.clear();
+          endLive();
           // Saved positions take over from the live ones (also when nothing was saved).
           setTimeout(() => liveShadow(null), 60);
           setOpeningGuide(null);
@@ -831,13 +866,13 @@ export function PlanCanvas(p: Props) {
           const group = groupDrag.current;
           groupDrag.current = [];
           if (group.length) {
-            const delta = { x: pos.x - item.pos.x, y: pos.y - item.pos.y };
+            const delta = { x: pos.x - saved(item).pos.x, y: pos.y - saved(item).pos.y };
             if (altCopy.current === item.id) {
               // Put the originals back and drop copies of the whole selection here.
               altCopy.current = null;
-              e.target.position(item.pos);
-              follow(item, item.pos);
-              if (item.wall) liveOpenings(item);
+              e.target.position(saved(item).pos);
+              follow(item, saved(item).pos);
+              if (item.wall) liveOpenings(saved(item));
               groupDrag.current = group;
               moveGroup({ x: 0, y: 0 });
               groupDrag.current = [];
@@ -846,17 +881,17 @@ export function PlanCanvas(p: Props) {
             }
             dispatch({
               type: 'updateMany',
-              patches: [item, ...group.map((g) => g.item)].map((o) => ({ id: o.id, patch: { pos: { x: o.pos.x + delta.x, y: o.pos.y + delta.y } } })),
+              patches: [saved(item), ...group.map((g) => g.item)].map((o) => ({ id: o.id, patch: { pos: { x: o.pos.x + delta.x, y: o.pos.y + delta.y } } })),
             });
             return;
           }
           if (altCopy.current === item.id) {
             // Put the original back (with anything that followed it) and drop a copy here.
             altCopy.current = null;
-            e.target.position(item.pos);
-            e.target.rotation(item.rotationDeg);
-            follow(item, item.pos);
-            if (item.wall) liveOpenings(item);
+            e.target.position(saved(item).pos);
+            e.target.rotation(saved(item).rotationDeg);
+            follow(item, saved(item).pos);
+            if (item.wall) liveOpenings(saved(item));
             p.onDuplicate(item, patch);
             return;
           }
@@ -938,7 +973,11 @@ export function PlanCanvas(p: Props) {
               listening={editable}
               onMouseDown={(e) => (e.cancelBubble = true)}
               onTouchStart={(e) => (e.cancelBubble = true)}
-              onDragEnd={(e) => dispatch({ type: 'update', id: item.id, patch: moveMark(item, k, { x: e.target.x(), y: e.target.y() }) })}
+              onDragMove={(e) => reportLive(item.id, moveMark(item, k, { x: e.target.x(), y: e.target.y() }))}
+              onDragEnd={(e) => {
+                endLive();
+                dispatch({ type: 'update', id: item.id, patch: moveMark(item, k, { x: e.target.x(), y: e.target.y() }) });
+              }}
             >
               <Circle radius={18} stroke={color} strokeWidth={3} dash={[6, 4]} fill={colors.canvas} opacity={0.9} />
               <Text text={String(k + 1)} x={-18} y={-9} width={36} align="center" fontSize={18} fontStyle="700" fill={color} />
@@ -1358,8 +1397,10 @@ export function PlanCanvas(p: Props) {
                 local[idx] = toLocal(sel, at);
                 (node(sel.id) as Konva.Group | undefined)?.find<Konva.Line>('.wall-line').forEach((l) => l.points(local.flatMap((q) => [q.x, q.y])));
                 liveOpenings({ ...sel, wall: { ...sel.wall!, points: local } });
+                reportLive(sel.id, { wall: { ...sel.wall!, points: local } });
               }}
               onDragEnd={(e) => {
+                endLive();
                 const local = sel.wall!.points.slice();
                 local[idx] = toLocal(sel, { x: e.target.x(), y: e.target.y() });
                 dispatch({ type: 'update', id: sel.id, patch: { wall: { ...sel.wall!, points: local } } });
@@ -1374,9 +1415,11 @@ export function PlanCanvas(p: Props) {
           const hw = (sel.sizeCm?.w ?? 100) / 2;
           const hd = (sel.sizeCm?.d ?? 100) / 2;
           const r = (sel.rotationDeg * Math.PI) / 180;
-          const corner = { x: sel.pos.x + hw * Math.cos(r) - hd * Math.sin(r), y: sel.pos.y + hw * Math.sin(r) + hd * Math.cos(r) };
-          const start = Math.hypot(corner.x - sel.pos.x, corner.y - sel.pos.y) || 1;
-          const factor = (at: Vec2) => Math.max(0.05, Math.hypot(at.x - sel.pos.x, at.y - sel.pos.y) / start);
+          // The handle stays where it was grabbed from (the drawing as it was), while the drawing scales live.
+          const base = scaleFrom.current?.item ?? sel;
+          const [bw, bd] = [(base.sizeCm?.w ?? 100) / 2, (base.sizeCm?.d ?? 100) / 2];
+          const corner = { x: base.pos.x + bw * Math.cos(r) - bd * Math.sin(r), y: base.pos.y + bw * Math.sin(r) + bd * Math.cos(r) };
+          const start = Math.hypot(corner.x - base.pos.x, corner.y - base.pos.y) || 1;
           return (
             <Group key={`${sel.id}-scale`} name="ui-only">
               <Rect
@@ -1409,18 +1452,21 @@ export function PlanCanvas(p: Props) {
                 onMouseDown={(e) => (e.cancelBubble = true)}
                 onTouchStart={(e) => (e.cancelBubble = true)}
                 onMouseEnter={() => setCursor('nwse-resize')}
+                onDragStart={() => (scaleFrom.current = { item: sel, start })}
                 onDragMove={(e) => {
-                  const k = factor({ x: e.target.x(), y: e.target.y() });
-                  node(sel.id)?.scale({ x: k, y: k });
-                  const box = e.target.getParent()?.findOne('.scale-box');
-                  box?.scale({ x: k, y: k });
+                  const from = scaleFrom.current;
+                  if (!from) return;
+                  const at = { x: e.target.x(), y: e.target.y() };
+                  const k = Math.max(0.05, Math.hypot(at.x - from.item.pos.x, at.y - from.item.pos.y) / from.start);
+                  reportLive(sel.id, scaleDrawing(from.item, k));
                 }}
                 onDragEnd={(e) => {
-                  const k = factor({ x: e.target.x(), y: e.target.y() });
-                  node(sel.id)?.scale({ x: 1, y: 1 });
-                  e.target.getParent()?.findOne('.scale-box')?.scale({ x: 1, y: 1 });
-                  e.target.position(corner);
-                  p.onScale?.(sel.id, k);
+                  const from = scaleFrom.current;
+                  scaleFrom.current = null;
+                  endLive();
+                  if (!from) return;
+                  const at = { x: e.target.x(), y: e.target.y() };
+                  p.onScale?.(sel.id, Math.max(0.05, Math.hypot(at.x - from.item.pos.x, at.y - from.item.pos.y) / from.start));
                 }}
               />
             </Group>

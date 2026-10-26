@@ -40,7 +40,7 @@ import { CategoryPanel, DRAG_TYPE, type PlaceRequest } from './CategoryPanel';
 import { useConfirm } from './confirm';
 import { Dialog } from './Dialog';
 import { EquipmentPanel } from './EquipmentPanel';
-import { reducer, type SceneAction } from './doc';
+import { liveScene, reducer, type SceneAction } from './doc';
 import { GearListPanel } from './GearListPanel';
 import type { GearScope } from './gearScope';
 import {
@@ -226,7 +226,10 @@ export function App() {
   }));
   const project = history.present;
   const [sceneId, setSceneId] = useState(project.scenes[0]!.id);
-  const scene: SceneDoc = project.scenes.find((s) => s.id === sceneId) ?? project.scenes[0]!;
+  const savedScene: SceneDoc = project.scenes.find((s) => s.id === sceneId) ?? project.scenes[0]!;
+  /** Mid-gesture changes from the plan (drag, turn, scale): everything shows them as they happen. */
+  const [live, setLive] = useState<ReadonlyMap<string, Partial<Item>> | null>(null);
+  const scene = useMemo(() => (live ? liveScene(savedScene, live) : savedScene), [savedScene, live]);
   const items = sceneItems(scene);
 
   // Everything can be picked to start with; a category narrows it down once the plan is busy.
@@ -1040,6 +1043,7 @@ export function App() {
               view={view}
               onView={setView}
               scene={scene}
+              savedScene={savedScene}
               actors={project.actors}
               dispatch={sd}
               selection={selection}
@@ -1070,9 +1074,11 @@ export function App() {
               onDuplicate={duplicate}
               drawPen={drawing ? { color: pen.color, px: PEN_WIDTHS.find((w) => w.id === pen.width)!.px } : null}
               onDrawStroke={drawStroke}
+              onLive={setLive}
               scaleId={scaling && selectedItems.length === 1 && selectedItems[0]!.catalogId === 'generic.note.draw' ? selectedItems[0]!.id : null}
               onScale={(id, k) => {
-                const it = items.find((i) => i.id === id);
+                // Scale what's saved, not the live preview (which already shows the scale).
+                const it = sceneItems(savedScene).find((i) => i.id === id);
                 if (it && Math.abs(k - 1) > 0.01) sd({ type: 'update', id, patch: scaleDrawing(it, k) });
               }}
             />

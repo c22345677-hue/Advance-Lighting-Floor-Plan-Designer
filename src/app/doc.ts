@@ -194,3 +194,14 @@ export function reducer(h: History, action: Action): History {
   if (present === h.present) return h;
   return { past: [...h.past, h.present].slice(-HISTORY_LIMIT), present, future: [] };
 }
+
+/**
+ * The scene as it looks mid-gesture (dragging, turning, scaling): the live changes laid over it
+ * and worked through like a finished edit (attached things follow, lights and cameras keep
+ * facing their targets), so the plan shows now what letting go will give.
+ */
+export function liveScene(s: SceneDoc, live: ReadonlyMap<string, Partial<Item>>): SceneDoc {
+  if (!live.size) return s;
+  const patch = (list: Item[]) => list.map((i) => (live.has(i.id) ? { ...i, ...live.get(i.id) } : i));
+  return focusScene(settleAttachments({ ...s, setItems: patch(s.setItems), items: patch(s.items) }, new Set(live.keys())));
+}
