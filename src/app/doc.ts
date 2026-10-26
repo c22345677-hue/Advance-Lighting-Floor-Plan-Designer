@@ -28,8 +28,9 @@ export type SceneAction =
   /** Back to the template layout, or empty when the scene never had one. */
   | { type: 'reset' }
   | { type: 'sun'; sun: Sun | undefined }
-  /** Make (or remake) group `slot` from these items; an item belongs to one group at a time. */
+  /** Make (or remake) group `slot` from these items. Items can be in several groups (groups inside groups). */
   | { type: 'setGroup'; slot: number; ids: string[] }
+  | { type: 'colorGroup'; slot: number; color: string }
   | { type: 'renameGroup'; slot: number; name: string }
   | { type: 'deleteGroup'; slot: number };
 
@@ -117,11 +118,12 @@ function applyEdit(s: SceneDoc, a: SceneAction): SceneDoc {
     case 'sun':
       return { ...s, sun: a.sun };
     case 'setGroup': {
-      const ids = new Set(a.ids);
       const old = s.groups?.find((g) => g.slot === a.slot);
-      const others = (s.groups ?? []).filter((g) => g.slot !== a.slot).map((g) => ({ ...g, ids: g.ids.filter((id) => !ids.has(id)) })).filter((g) => g.ids.length);
-      return { ...s, groups: [...others, { slot: a.slot, name: old?.name, ids: a.ids }].sort((x, y) => x.slot - y.slot) };
+      const others = (s.groups ?? []).filter((g) => g.slot !== a.slot);
+      return { ...s, groups: [...others, { slot: a.slot, name: old?.name, color: old?.color, ids: a.ids }].sort((x, y) => x.slot - y.slot) };
     }
+    case 'colorGroup':
+      return { ...s, groups: (s.groups ?? []).map((g) => (g.slot === a.slot ? { ...g, color: a.color } : g)) };
     case 'renameGroup':
       return { ...s, groups: (s.groups ?? []).map((g) => (g.slot === a.slot ? { ...g, name: a.name.trim() || undefined } : g)) };
     case 'deleteGroup':

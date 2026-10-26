@@ -27,8 +27,14 @@ export interface ItemGroup {
   /** 1–9. */
   slot: number;
   name?: string;
+  /** Tints its chip and outlines its items on the plan (default: one per slot). */
+  color?: string;
   ids: string[];
 }
+
+/** Group colours, one per slot by default; easy to tell apart on the plan in both themes. */
+export const GROUP_COLORS = ['#e5484d', '#3e8ef7', '#2fae55', '#f5a524', '#a855f7', '#ec4899', '#14b8a6', '#f97316', '#84cc16'];
+export const groupColor = (g: Pick<ItemGroup, 'slot' | 'color'>) => g.color ?? GROUP_COLORS[(g.slot - 1) % GROUP_COLORS.length]!;
 
 /** A group's members still in the scene. */
 export const groupMembers = (g: ItemGroup, items: readonly Item[]): string[] => g.ids.filter((id) => items.some((i) => i.id === id));

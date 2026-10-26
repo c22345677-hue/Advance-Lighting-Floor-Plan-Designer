@@ -2579,9 +2579,32 @@ kbd {
   min-height: 36px;
   overflow: hidden;
 }
+.group-chip {
+  --grp: var(--accent);
+  border-left: 4px solid var(--grp);
+  background: color-mix(in srgb, var(--grp) 12%, var(--surface-2));
+}
 .group-chip.on {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
+  border-color: var(--grp);
+  box-shadow: 0 0 0 1px var(--grp);
+}
+.group-in {
+  font-size: 11px;
+  color: var(--muted);
+}
+.group-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--grp);
+  vertical-align: middle;
+}
+.group-colors {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
 }
 .group-pick {
   display: inline-flex;
@@ -2603,8 +2626,8 @@ kbd {
   width: 20px;
   height: 20px;
   border-radius: 5px;
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--grp);
+  color: #fff;
   font-size: 12px;
   font-weight: 700;
   flex-shrink: 0;

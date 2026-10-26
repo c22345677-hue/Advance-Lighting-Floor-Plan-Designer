@@ -1,7 +1,7 @@
 // Groups 1–9 along the bottom of the side panel: tap one to pick the whole group, double-tap
 // (or the pencil) to name it, × to break it up. "+" groups what's selected in the next free slot.
 import { useState } from 'react';
-import type { ItemGroup } from '../model/project';
+import { GROUP_COLORS, groupColor, type ItemGroup } from '../model/project';
 
 interface Props {
   groups: ItemGroup[];
@@ -11,11 +11,14 @@ interface Props {
   onPick: (slot: number) => void;
   onCreate: () => void;
   onRename: (slot: number, name: string) => void;
+  onColor: (slot: number, color: string) => void;
   onDelete: (slot: number) => void;
 }
 
-export function GroupDock({ groups, active, canCreate, onPick, onCreate, onRename, onDelete }: Props) {
+export function GroupDock({ groups, active, canCreate, onPick, onCreate, onRename, onColor, onDelete }: Props) {
   const [editing, setEditing] = useState<number | null>(null);
+  /** Group whose colour is being picked. */
+  const [coloring, setColoring] = useState<number | null>(null);
   const [draft, setDraft] = useState('');
   const startEdit = (g: ItemGroup) => {
     setEditing(g.slot);
@@ -46,7 +49,7 @@ export function GroupDock({ groups, active, canCreate, onPick, onCreate, onRenam
               }}
             />
           ) : (
-            <span key={g.slot} className={`group-chip ${active === g.slot ? 'on' : ''}`}>
+            <span key={g.slot} className={`group-chip ${active === g.slot ? 'on' : ''}`} style={{ '--grp': groupColor(g) } as React.CSSProperties}>
               <button
                 className="group-pick"
                 onClick={() => onPick(g.slot)}
@@ -55,11 +58,20 @@ export function GroupDock({ groups, active, canCreate, onPick, onCreate, onRenam
               >
                 <span className="group-slot">{g.slot}</span>
                 <span className="group-label">{g.name ?? `Group ${g.slot}`}</span>
+                {/* Inside other groups: their numbers. */}
+                {groups.some((o) => o.slot !== g.slot && o.ids.length > g.ids.length && g.ids.every((id) => o.ids.includes(id))) && (
+                  <span className="group-in" title="Inside these groups">
+                    ⊂{groups.filter((o) => o.slot !== g.slot && o.ids.length > g.ids.length && g.ids.every((id) => o.ids.includes(id))).map((o) => o.slot).join(',')}
+                  </span>
+                )}
               </button>
               {active === g.slot && (
                 <>
                   <button className="group-mini" onClick={() => startEdit(g)} aria-label={`Rename group ${g.slot}`} title="Name">
                     ✎
+                  </button>
+                  <button className="group-mini" onClick={() => setColoring(coloring === g.slot ? null : g.slot)} aria-label={`Colour of group ${g.slot}`} title="Colour">
+                    <span className="group-dot" />
                   </button>
                   <button className="group-mini" onClick={() => onDelete(g.slot)} aria-label={`Ungroup ${g.slot}`} title="Ungroup">
                     ×
@@ -68,6 +80,24 @@ export function GroupDock({ groups, active, canCreate, onPick, onCreate, onRenam
               )}
             </span>
           ),
+        )}
+        {coloring != null && groups.some((g) => g.slot === coloring) && (
+          <span className="group-colors" role="radiogroup" aria-label={`Colour of group ${coloring}`}>
+            {GROUP_COLORS.map((c) => (
+              <button
+                key={c}
+                role="radio"
+                aria-checked={groupColor(groups.find((g) => g.slot === coloring)!) === c}
+                className="swatch-btn"
+                style={{ background: c }}
+                aria-label={`Colour ${c}`}
+                onClick={() => {
+                  onColor(coloring, c);
+                  setColoring(null);
+                }}
+              />
+            ))}
+          </span>
         )}
         <button
           className="group-chip group-add"

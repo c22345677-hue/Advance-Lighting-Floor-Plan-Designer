@@ -173,8 +173,9 @@ interface Props {
   drawPen?: { color: string; px: number } | null;
   /** A finished stroke, in plan cm, and its width in cm. */
   onDrawStroke?: (points: Vec2[], strokeCm: number) => void;
-  /** Groups (Ctrl + number): each group's members in the scene. Pressing one picks them all. */
-  groups?: string[][];
+  /** Groups (Ctrl + number): each group's members in the scene and its colour, biggest first.
+   * Pressing a member picks the biggest group it's in; members are outlined in their groups' colours. */
+  groups?: { ids: string[]; color: string }[];
   /** Mid-gesture changes (positions, turns, sizes) for the rest of the app to show live; null when done. */
   onLive?: (live: ReadonlyMap<string, Partial<Item>> | null) => void;
   /** Scale tool: the drawing showing a corner handle, and the factor it was scaled by. */
@@ -766,7 +767,7 @@ export function PlanCanvas(p: Props) {
       }
       // A member of a group (Ctrl + number) picks the whole group, to move or turn it as one;
       // double-click picks just the one item.
-      const grp = p.groups?.find((g) => g.length > 1 && g.includes(item.id));
+      const grp = p.groups?.find((g) => g.ids.length > 1 && g.ids.includes(item.id))?.ids;
       const asGroup = !!grp && !(multi && selection.includes(item.id));
       const sel = asGroup ? grp! : selection;
       // Pressing one of several selected items keeps them all (to move or turn them together).
@@ -935,6 +936,12 @@ export function PlanCanvas(p: Props) {
           });
         }}
       >
+        {/* Its groups' colours round it: the biggest group outermost. */}
+        {(p.groups ?? [])
+          .filter((g) => g.ids.includes(item.id))
+          .map((g, k, mine) => (
+            <OutlineRing key={`grp${k}`} item={item} actors={actors} colors={colors} scale={view.scale} color={g.color} widthPx={(selection.includes(item.id) ? 9 : 3) + 3 * (mine.length - 1 - k)} />
+          ))}
         {selection.includes(item.id) && (
           <SelectOutline item={item} actors={actors} colors={colors} scale={view.scale} color={tool === 'rotate' ? colors.rotate : colors.select} />
         )}
@@ -1658,7 +1665,7 @@ function OutlineRing({
     const ratio = Math.min(scale * (window.devicePixelRatio || 1), 4096 / Math.max(1, box.width, box.height));
     g.cache({ pixelRatio: Math.max(0.5, ratio) });
     g.getLayer()?.batchDraw();
-  }, [item, scale, color, actors]);
+  }, [item, scale, color, actors, widthPx]);
   return (
     <Group ref={ref} name="ui-only" listening={false} filters={[Konva.Filters.RGBA]} red={n >> 16} green={(n >> 8) & 255} blue={n & 255} alpha={1}>
       {OUTLINE_DIRS.map(([dx, dy], i) => (

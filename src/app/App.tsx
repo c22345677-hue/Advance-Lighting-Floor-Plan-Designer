@@ -5,6 +5,7 @@ import { gearUsage, type GearList } from '../model/gearList';
 import {
   EDIT_MODES,
   focusScene,
+  groupColor,
   groupMembers,
   KIND_ROLES,
   linkInterview,
@@ -390,12 +391,28 @@ export function App() {
     if (!rect || !view) return null;
     return { x: (clientX - rect.left - view.x) / view.scale, y: (clientY - rect.top - view.y) / view.scale };
   };
+  /** What Link hangs: the selected item, or every item of a group / multi-selection (walls, doors and windows stay put). */
+  const linkable = selectedItems.filter((i) => !i.wall && !i.inWall);
+  const linkLead = linkable[0];
   const linkTargetAt = (clientX: number, clientY: number) => {
     const at = toWorld(clientX, clientY);
-    if (!at || !selectedItem || !view) return { at, target: null };
-    return { at, target: findAttachTarget(selectedItem, at, items, (coarse ? 30 : 16) / view.scale) };
+    if (!at || !linkLead || !view) return { at, target: null };
+    // Never onto one of the items being linked.
+    const others = items.filter((i) => !selection.includes(i.id));
+    return { at, target: findAttachTarget(linkLead, at, others, (coarse ? 30 : 16) / view.scale) };
   };
-  const canLink = !!selectedItem && !selectedItem.wall && !selectedItem.inWall;
+  /** Link the selection to `parentId`: one item as before; a group hangs each of its items that
+   * doesn't already hang on another of them, so the whole group follows as one. */
+  const linkSelection = (parentId: string) => {
+    if (linkable.length === 1) return attach(linkable[0]!.id, parentId);
+    const parent = items.find((i) => i.id === parentId);
+    if (!parent) return;
+    const patches = linkable
+      .filter((c) => !(c.attachedTo && selection.includes(c.attachedTo.to)) && canAttach(c, parent, items))
+      .map((c) => ({ id: c.id, patch: { attachedTo: attachmentFor(c, parent) } }));
+    if (patches.length) sd({ type: 'updateMany', patches });
+  };
+  const canLink = linkable.length > 0;
   useEffect(() => {
     if (!linkArmed || !canLink) {
       if (linkArmed) setLinkArmed(false);
@@ -406,13 +423,13 @@ export function App() {
     // Armed: the next press on the plan picks what to attach to (and does nothing else).
     const move = (e: PointerEvent) => {
       const { at, target } = linkTargetAt(e.clientX, e.clientY);
-      setLinkPreview({ from: selectedItem!.id, at, target: target?.id ?? null });
+      setLinkPreview({ from: linkLead!.id, at, target: target?.id ?? null });
     };
     const down = (e: PointerEvent) => {
       e.preventDefault();
       e.stopPropagation();
       const { target } = linkTargetAt(e.clientX, e.clientY);
-      if (target) attach(selectedItem!.id, target.id);
+      if (target) linkSelection(target.id);
       setLinkArmed(false);
       setLinkPreview(null);
     };
@@ -441,24 +458,24 @@ export function App() {
     },
     onPointerMove: (e: React.PointerEvent<HTMLElement>) => {
       const g = linkGesture.current;
-      if (!g || !selectedItem) return;
+      if (!g || !linkLead) return;
       if (!g.moved && Math.hypot(e.clientX - g.x, e.clientY - g.y) > 6) g.moved = true;
       if (!g.moved) return;
       const { at, target } = linkTargetAt(e.clientX, e.clientY);
-      setLinkPreview({ from: selectedItem.id, at, target: target?.id ?? null });
+      setLinkPreview({ from: linkLead.id, at, target: target?.id ?? null });
     },
     onPointerUp: (e: React.PointerEvent<HTMLElement>) => {
       const g = linkGesture.current;
       linkGesture.current = null;
-      if (!g || !selectedItem) return;
+      if (!g || !linkLead) return;
       if (g.moved) {
         const { target } = linkTargetAt(e.clientX, e.clientY);
-        if (target) attach(selectedItem.id, target.id);
+        if (target) linkSelection(target.id);
         setLinkPreview(null);
       } else {
         // A tap: pick the target with the next tap on the plan.
         setLinkArmed((on) => !on);
-        setLinkPreview(linkArmed ? null : { from: selectedItem.id, at: null, target: null });
+        setLinkPreview(linkArmed ? null : { from: linkLead.id, at: null, target: null });
       }
     },
     onPointerCancel: () => {
@@ -1074,7 +1091,7 @@ export function App() {
               selection={selection}
               onSelect={setSelected}
               onSelectMany={setSelection}
-              groups={groups.map((g) => g.ids)}
+              groups={[...groups].sort((a, b) => b.ids.length - a.ids.length).map((g) => ({ ids: g.ids, color: groupColor(g) }))}
               onConfigure={configure}
               linkPreview={linkPreview}
               labelBoxesRef={labelBoxes}
@@ -1419,6 +1436,7 @@ export function App() {
               if (free && selection.length > 1) sd({ type: 'setGroup', slot: free, ids: selection });
             }}
             onRename={(slot, name) => sd({ type: 'renameGroup', slot, name })}
+            onColor={(slot, color) => sd({ type: 'colorGroup', slot, color })}
             onDelete={(slot) => sd({ type: 'deleteGroup', slot })}
           />
         </aside>
