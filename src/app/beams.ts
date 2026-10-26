@@ -3,7 +3,7 @@
 // stronger for brighter lights, falling off with distance roughly as light does; through a
 // diffusion frame the lamp's cone stops at the frame and the fabric spreads the light wide.
 import { lightColor, type RGB } from '../model/color';
-import { beamApex, lightBeamDeg, lightFace, skirtDown, skirtPoolCm, zoomRange } from '../model/emitter';
+import { beamApex, lightBeamDeg, lightFace, naturalBeamDeg, skirtDown, skirtPoolCm } from '../model/emitter';
 import { lightLumens } from '../model/exposure';
 import { beamReach, lightReach, lightSource } from '../model/shadows';
 import type { Item, Vec2 } from '../model/types';
@@ -34,9 +34,10 @@ export function beamAlpha(item: Item): number {
   const c = lightColor(item);
   const strength = Math.min(1, Math.max(0.15, (item.light?.intensityPct ?? 100) / 100));
   const output = Math.min(1.3, Math.max(0.55, 0.85 + 0.25 * Math.log10(lightLumens(item).lumens / 15000)));
-  // A focusing light spotted in packs its light into less: brighter in the middle.
-  const zoom = zoomRange(item);
-  const spot = zoom ? Math.min(1.6, Math.max(1, (zoom[0] / lightBeamDeg(item)) ** 0.35)) : 1;
+  // A tighter beam packs the same light into less: the narrower it's set (or spotted in), the
+  // stronger it shows; widened, weaker.
+  const deg = Math.min(360, lightBeamDeg(item));
+  const spot = deg >= 360 ? 1 : Math.min(2, Math.max(0.7, (naturalBeamDeg(item) / deg) ** 0.5));
   return Math.max(0.05, 0.3 * strength * output * spot * Math.max(0.3, c.transmission));
 }
 

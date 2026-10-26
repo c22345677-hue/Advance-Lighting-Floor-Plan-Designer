@@ -293,6 +293,44 @@ export function lightBeamDeg(item: Item): number {
   return deg;
 }
 
+/** The beam the light and its modifiers give on their own (full flood for lights that focus). */
+export function naturalBeamDeg(item: Item): number {
+  return lightBeamDeg({ ...item, light: { ...item.light, beamDeg: undefined, spotPct: undefined } });
+}
+
+/** Narrowest and widest a light's beam is set to on its own, by kind (barn doors, grids, reflectors…). */
+const STYLE_RANGE: Partial<Record<LightStyle, [number, number]>> = {
+  monolight: [40, 120],
+  compact: [40, 110],
+  'cob-reflector': [25, 90],
+  'cob-softbox': [50, 120],
+  panel: [30, 120],
+  pocket: [30, 120],
+  ring: [60, 130],
+  tube: [60, 200],
+  mat: [40, 160],
+  'air-tube': [120, 240],
+};
+
+/**
+ * What the beam-angle slider covers, degrees (narrow, wide): a focusing light its spot–flood
+ * range; otherwise what the fixture and its modifiers allow (a grid or barn doors narrow it, a
+ * softbox can be gridded down, a dome is wide). Null for lights that send light all round.
+ */
+export function beamRange(item: Item): [number, number] | null {
+  const zoom = zoomRange(item);
+  if (zoom) return [zoom[1], zoom[0]];
+  const natural = naturalBeamDeg(item);
+  if (natural >= 360) return null;
+  const mods = itemModifiers(item);
+  const last = [...mods].reverse().find((m) => m.type !== 'grid' && m.type !== 'barndoors' && m.type !== 'diffusion' && m.type !== 'skirt');
+  let range: [number, number] = STYLE_RANGE[lightStyle(item)] ?? [Math.max(10, natural * 0.4), Math.min(180, natural * 1.3)];
+  if (last?.type === 'softbox') range = isDome(last) ? [40, 120] : [30, 110];
+  else if (last?.type === 'reflector') range = [Math.max(10, natural * 0.6), Math.min(120, natural * 1.4)];
+  // Whatever it is now always fits.
+  return [Math.round(Math.min(range[0], natural)), Math.round(Math.max(range[1], natural))];
+}
+
 /**
  * Where the light comes out: the width of the glowing face (0: a point, or all round) and how
  * far in front of the item's position it is, cm.

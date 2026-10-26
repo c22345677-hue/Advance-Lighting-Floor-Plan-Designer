@@ -34,7 +34,7 @@ import { PersonEditor } from './PersonEditor';
 import { addMark, goToMark, marksOf, removeMark } from '../model/blocking';
 import { CameraView } from './CameraView';
 import { beamDegOf, displayLabel, itemName, meterName } from './PlanCanvas';
-import { canSkirt, lightStyle, SKIRT_SIDES, zoomRange } from '../model/emitter';
+import { beamRange, canSkirt, lightStyle, SKIRT_SIDES, zoomRange } from '../model/emitter';
 import { ARROW_STYLES, NOTE_COLORS, NOTE_DEFAULT_COLOR, type ArrowStyle } from '../model/notes';
 
 interface Props {
@@ -552,8 +552,9 @@ function LightSection({
   onUpdate: Props['onUpdate'];
 }) {
   const fixture = itemFixture(item);
-  /** Lights that focus: flood and spot angles. */
+  /** Lights that focus: flood and spot angles. Others: how narrow or wide the beam can be set. */
   const zoom = zoomRange(item);
+  const range = beamRange(item);
   const [picking, setPicking] = useState(!fixture);
   const pick = (f: Fixture) => {
     // A new fixture keeps only the modifiers that still fit it.
@@ -626,21 +627,26 @@ function LightSection({
               <span className="num spot-deg">{Math.round(beamDegOf(item))}°</span>
             </span>
           </label>
-        ) : (
+        ) : range ? (
           <label className="field">
-            <span className="field-label">Angle</span>
-            <span className="input-unit">
-            <input
-              className="text-input num"
-              type="number"
-              min={5}
-              max={360}
-              value={Math.round(beamDegOf(item))}
-              onChange={(e) => setLight({ beamDeg: Math.min(360, Math.max(5, Number(e.target.value) || 5)) })}
-            />
-            <span className="unit">°</span>
+            <span className="field-label">Beam angle</span>
+            <span className="spot-flood">
+              <span className="spot-end">{range[0]}°</span>
+              <input
+                type="range"
+                aria-label="Beam angle"
+                min={range[0]}
+                max={range[1]}
+                step={1}
+                value={Math.round(Math.min(range[1], Math.max(range[0], beamDegOf(item))))}
+                onChange={(e) => setLight({ beamDeg: Number(e.target.value) })}
+              />
+              <span className="spot-end">{range[1]}°</span>
+              <span className="num spot-deg">{Math.round(beamDegOf(item))}°</span>
             </span>
           </label>
+        ) : (
+          <p className="hint-text">Lights all round (360°).</p>
         )}
         <label className="field">
           <span className="field-label">Throw</span>

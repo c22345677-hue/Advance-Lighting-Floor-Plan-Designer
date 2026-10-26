@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { beamApex, canSkirt, lightBeamDeg, lightFace, skirtPass, zoomRange } from './emitter';
+import { beamApex, beamRange, canSkirt, lightBeamDeg, lightFace, skirtPass, zoomRange } from './emitter';
 import type { Item } from './types';
 
 const light = (catalogId: string, light: Item['light'] = {}): Item => ({ id: 'l', kind: 'light', catalogId, pos: { x: 0, y: 0 }, rotationDeg: 0, light });
@@ -49,5 +49,18 @@ describe('lantern and balloon skirts', () => {
     expect(canSkirt(lantern())).toBe(true);
     expect(canSkirt({ ...lantern(), catalogId: 'generic.light.balloon' })).toBe(true);
     expect(canSkirt({ ...lantern(), catalogId: 'generic.light.cob' })).toBe(false);
+  });
+});
+
+describe('beam angle range', () => {
+  const l = (catalogId: string, light: Item['light'] = {}): Item => ({ id: 'l', kind: 'light', catalogId, pos: { x: 0, y: 0 }, rotationDeg: 0, light });
+  it('a focusing light slides between spot and flood; a panel between barn-doored and wide', () => {
+    expect(beamRange(l('generic.light.hmi-par'))).toEqual([12, 55]);
+    const [lo, hi] = beamRange(l('aputure.nova-p300c'))!;
+    expect(lo).toBeLessThan(110);
+    expect(hi).toBeGreaterThanOrEqual(110);
+  });
+  it('lights that send light all round have no slider', () => {
+    expect(beamRange(l('generic.light.balloon'))).toBeNull();
   });
 });
