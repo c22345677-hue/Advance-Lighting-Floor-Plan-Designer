@@ -220,7 +220,8 @@ export function PlanCanvas(p: Props) {
   const cycleFrom = (item: Item) => {
     const was = wasOnly.current;
     wasOnly.current = null;
-    if (was !== item.id || p.pickMode) return;
+    // Only with the Move tool: with Rotate, a press on the picked item is the start of a turn.
+    if (was !== item.id || p.pickMode || tool !== 'move') return;
     const stage = stageRef.current;
     const pt = stage?.getPointerPosition();
     if (!stage || !pt) return;
@@ -811,7 +812,8 @@ export function PlanCanvas(p: Props) {
       altCopy.current = e.evt.altKey && !item.actorId ? item.id : null;
       // Touch: holding a finger still on an item adds it to the selection, or takes it out
       // (the touch version of Shift + click).
-      if ('touches' in e.evt && e.evt.touches.length === 1) {
+      // (Not with the Rotate tool: there, holding still before turning is part of the turn.)
+      if ('touches' in e.evt && e.evt.touches.length === 1 && tool !== 'rotate') {
         const before = selection;
         const t = e.evt.touches[0]!;
         cancelLongPress();

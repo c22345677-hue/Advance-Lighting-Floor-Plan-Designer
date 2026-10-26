@@ -32,7 +32,7 @@ import { MenuButton } from './MenuButton';
 import { clampInto, placeBar } from './barPlacement';
 import { turnedCorners } from './fixtureShapes';
 import { isScalable, scaleItem } from '../model/scale';
-import { drawingFromStrokes, drawingNote, drawingStrokes, NOTE_DEFAULT_COLOR, noteColor, PEN_WIDTHS, strokesTouch } from '../model/notes';
+import { type ArrowStyle, drawingFromStrokes, drawingNote, drawingStrokes, NOTE_DEFAULT_COLOR, noteColor, PEN_WIDTHS, strokesTouch } from '../model/notes';
 import { parseProjectFile, projectFileName, toProjectFile } from '../model/projectFile';
 import { extendWall, insertWallCorner, nearestWall, seatOpening, wallFromChain, wallPoints } from '../model/walls';
 import { HelpPanel } from './HelpPanel';
@@ -667,7 +667,16 @@ export function App() {
             pos,
             rotationDeg: 0,
             ...(req.library.kind === 'light' ? { light: { unitId: nextUnitId(items) } } : {}),
-            ...(req.library.kind === 'note' ? { note: { text: req.library.shape === 'note-arrow' ? '' : req.library.shape === 'note-area' ? 'Area' : 'Note', color: NOTE_DEFAULT_COLOR } } : {}),
+            ...(req.library.kind === 'note'
+              ? {
+                  note: {
+                    text: req.library.shape === 'note-arrow' ? '' : req.library.shape === 'note-area' ? 'Area' : 'Note',
+                    color: NOTE_DEFAULT_COLOR,
+                    // Quick-pick bent arrows come bent.
+                    ...(req.library.shape === 'note-arrow' && req.library.style ? { arrow: req.library.style as ArrowStyle } : {}),
+                  },
+                }
+              : {}),
           },
     );
   };

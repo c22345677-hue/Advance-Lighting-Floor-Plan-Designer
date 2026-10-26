@@ -39,14 +39,20 @@ export const noteTextHeight = (item: Item, w: number): number => {
   return noteLines(item.note?.text ?? '', w, size) * size * 1.15 + NOTE_PAD_CM * 2;
 };
 
-export type ArrowStyle = 'straight' | 'bend35-right' | 'bend35-left' | 'bend75-right' | 'bend75-left' | 'curve-right' | 'curve-left' | 'double';
+export type ArrowStyle = 'straight' | `bend${30 | 35 | 60 | 75 | 90}-${'right' | 'left'}` | 'curve-right' | 'curve-left' | 'double';
 
 export const ARROW_STYLES: { id: ArrowStyle; label: string }[] = [
   { id: 'straight', label: 'Straight' },
+  { id: 'bend30-right', label: 'Bend 30° right' },
+  { id: 'bend30-left', label: 'Bend 30° left' },
   { id: 'bend35-right', label: 'Bend 35° right' },
   { id: 'bend35-left', label: 'Bend 35° left' },
+  { id: 'bend60-right', label: 'Bend 60° right' },
+  { id: 'bend60-left', label: 'Bend 60° left' },
   { id: 'bend75-right', label: 'Bend 75° right' },
   { id: 'bend75-left', label: 'Bend 75° left' },
+  { id: 'bend90-right', label: 'Bend 90° right' },
+  { id: 'bend90-left', label: 'Bend 90° left' },
   { id: 'curve-right', label: 'Curve right' },
   { id: 'curve-left', label: 'Curve left' },
   { id: 'double', label: 'Double-headed' },

@@ -53,7 +53,7 @@ export interface LibraryItem {
   unlisted?: boolean;
   /** Found by search but left out of the quick-add tiles. */
   noQuick?: boolean;
-  /** Doors, windows and props: which drawing to use (see PlanCanvas). */
+  /** Doors, windows and props: which drawing to use (see PlanCanvas); quick-pick arrows: their bend. */
   style?: string;
 }
 
@@ -192,6 +192,9 @@ export const LIBRARY: LibraryItem[] = [
   P('piano', 'Piano', 'piano', 150, 60),
   I('notes', 'note', 'note.text', 'Text', 'note-text', 200, 40),
   I('notes', 'note', 'note.arrow', 'Arrow', 'note-arrow', 20, 200),
+  { ...I('notes', 'note', 'note.arrow-bend30', 'Arrow · 30° bend', 'note-arrow', 20, 200), style: 'bend30-right' },
+  { ...I('notes', 'note', 'note.arrow-bend60', 'Arrow · 60° bend', 'note-arrow', 20, 200), style: 'bend60-right' },
+  { ...I('notes', 'note', 'note.arrow-bend90', 'Arrow · 90° bend', 'note-arrow', 20, 200), style: 'bend90-right' },
   { ...I('notes', 'note', 'note.area', 'Area', 'note-area', 300, 200), unlisted: true },
   { ...I('notes', 'note', 'note.draw', 'Drawing', 'note-draw', 100, 100), unlisted: true },
 ];

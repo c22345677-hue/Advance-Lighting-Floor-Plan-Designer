@@ -2,6 +2,7 @@
 import { memo } from 'react';
 import { Group, Layer, Stage } from 'react-konva';
 import type { LibraryItem } from '../library/items';
+import type { ArrowStyle } from '../model/notes';
 import type { Item } from '../model/types';
 import { ItemShape } from './PlanCanvas';
 import type { CanvasColors } from './theme';
@@ -9,7 +10,16 @@ import type { CanvasColors } from './theme';
 const SIZE = 44;
 
 export const ItemThumb = memo(function ItemThumb({ entry, colors }: { entry: LibraryItem; colors: CanvasColors }) {
-  const item: Item = { id: `thumb:${entry.id}`, kind: entry.kind, catalogId: entry.id, pos: { x: 0, y: 0 }, rotationDeg: 0, sizeCm: { ...entry.sizeCm } };
+  const item: Item = {
+    id: `thumb:${entry.id}`,
+    kind: entry.kind,
+    catalogId: entry.id,
+    pos: { x: 0, y: 0 },
+    rotationDeg: 0,
+    sizeCm: { ...entry.sizeCm },
+    // Bent arrows show their bend.
+    ...(entry.shape === 'note-arrow' && entry.style ? { note: { text: '', arrow: entry.style as ArrowStyle } } : {}),
+  };
   // Fit the larger side, with room for parts that reach past the footprint (door swings, light barn doors).
   const scale = (SIZE * 0.72) / Math.max(entry.sizeCm.w, entry.sizeCm.d, 1);
   return (
