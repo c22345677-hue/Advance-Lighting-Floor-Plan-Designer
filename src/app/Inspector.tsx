@@ -6,7 +6,7 @@ import type { Fixture } from '../catalog/schema';
 import { FABRIC_KIND_LABEL, FABRICS, takesFabric, type FabricKind } from '../library/fabrics';
 import { isOpening, libraryItem } from '../library/items';
 import { DEFAULT_WALL_CM, wallLength } from '../model/walls';
-import { beamReach, lightSource } from '../model/shadows';
+import { beamReach, DEFAULT_THROW_CM, lightSource } from '../model/shadows';
 import { isMeter } from '../model/attach';
 import { circuitName, lightWatts } from '../model/power';
 import { DAYLIGHT_ID, lightName, meterReadings, shutterSpeed, stopParts, type CameraSettings } from '../model/exposure';
@@ -650,13 +650,13 @@ function LightSection({
             type="number"
             min={50}
             step={50}
-            value={item.light?.throwCm ?? 300}
+            value={item.light?.throwCm ?? DEFAULT_THROW_CM}
             onChange={(e) => setLight({ throwCm: Math.max(50, Number(e.target.value) || 50) })}
           />
           <span className="unit">cm</span>
           </span>
         </label>
-        {beamReach(item, sceneItems) > (item.light?.throwCm ?? 300) && (
+        {beamReach(item, sceneItems) > (item.light?.throwCm ?? DEFAULT_THROW_CM) && (
           <p className="hint-text">Drawn to {Math.round(beamReach(item, sceneItems) / 10) * 10} cm so it reaches 15% past the nearest person in the beam.</p>
         )}
       </Section>

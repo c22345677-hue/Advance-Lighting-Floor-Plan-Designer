@@ -369,18 +369,59 @@ export function LightLayer({
     return { lights, blobs, beams };
   }, [items, live, extra, beamIds]);
 
+  // A beam's length changes smoothly (when someone steps into it and it stretches past them,
+  // or its throw is changed) instead of jumping: what's drawn eases towards the new length.
+  const shapeRef = useRef<Konva.Shape>(null);
+  const shown = useRef(new Map<string, number>());
+  const ease = useRef(0);
+  const targets = useMemo(() => {
+    const t = new Map<string, number>();
+    for (const b of beams) t.set(b.lightId, b.throwCm);
+    for (const l of lights) if (!t.has(l.source.lightId)) t.set(l.source.lightId, l.source.throwCm);
+    return t;
+  }, [beams, lights]);
+  useEffect(() => {
+    // New lights start at their length; gone ones are forgotten.
+    for (const [id, v] of targets) if (!shown.current.has(id)) shown.current.set(id, v);
+    for (const id of [...shown.current.keys()]) if (!targets.has(id)) shown.current.delete(id);
+    if ([...targets].every(([id, v]) => Math.abs((shown.current.get(id) ?? v) - v) < 0.5)) return;
+    cancelAnimationFrame(ease.current);
+    let last = performance.now();
+    const step = (now: number) => {
+      const k = 1 - Math.exp(-(now - last) / 110); // about a third of a second to settle
+      last = now;
+      let moving = false;
+      for (const [id, v] of targets) {
+        const cur = shown.current.get(id) ?? v;
+        const next = Math.abs(v - cur) < 0.5 ? v : cur + (v - cur) * k;
+        if (next !== v) moving = true;
+        shown.current.set(id, next);
+      }
+      shapeRef.current?.getLayer()?.batchDraw();
+      if (moving) ease.current = requestAnimationFrame(step);
+    };
+    ease.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(ease.current);
+  }, [targets]);
+  const throwOf = (id: string, fallback: number) => shown.current.get(id) ?? fallback;
+
   return (
     <Shape
+      ref={shapeRef}
       listening={false}
       perfectDrawEnabled={false}
       sceneFunc={(ctx) => {
         const n = nativeOf(ctx);
+        // Each light's beam and shadows drawn at its eased length.
+        const eased = lights.map((l) => ({ ...l, source: { ...l.source, throwCm: throwOf(l.source.lightId, l.source.throwCm) } }));
         if (showShadows) {
           drawContact(n, blobs);
-          for (const l of lights) drawShadows(n, l);
+          for (const l of eased) drawShadows(n, l);
         }
         // Beams over the shadows, each cut where its own light is blocked.
-        if (showBeams) for (const b of beams) drawBeamCut(n, b, showShadows ? lights.find((l) => l.source.lightId === b.lightId) : undefined);
+        if (showBeams)
+          for (const b of beams)
+            drawBeamCut(n, { ...b, throwCm: throwOf(b.lightId, b.throwCm) }, showShadows ? eased.find((l) => l.source.lightId === b.lightId) : undefined);
       }}
     />
   );

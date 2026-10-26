@@ -25,7 +25,10 @@ import { wallSegments, DEFAULT_WALL_CM } from './walls';
 
 /** Height (cm) treated as "taller than any light": its shadow runs to the end of the beam. */
 const BLOCKS = Infinity;
-const DEFAULT_THROW_CM = 300;
+/** How far a light's beam is drawn unless set: 9 m. */
+export const DEFAULT_THROW_CM = 900;
+/** Distance to the subject assumed when no one is in the beam (for how soft the light looks). */
+const DEFAULT_SUBJECT_CM = 300;
 
 /** How tall things are, cm: shadow length depends on it. */
 const PROP_HEIGHT_CM: Record<string, number> = {
@@ -259,7 +262,7 @@ export function lightSource(light: Item, all: readonly Item[]): LightSource | nu
   }
   const intensity = Math.min(1, Math.max(0, (light.light?.intensityPct ?? 100) / 100));
   const subject = subjectDistance(light, pos, beamDeg, all, minDistCm);
-  const dist = subject ?? DEFAULT_THROW_CM;
+  const dist = subject ?? DEFAULT_SUBJECT_CM;
   const deg = apparentDeg(size, dist);
   return {
     lightId: light.id,
