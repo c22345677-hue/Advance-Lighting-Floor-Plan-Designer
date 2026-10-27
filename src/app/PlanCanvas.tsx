@@ -1514,17 +1514,26 @@ export function PlanCanvas(p: Props) {
           // The handle stays where it was grabbed from (the drawing as it was), while the drawing scales live.
           const base = scaleFrom.current?.item ?? sel;
           const [bw, bd] = [itemLook(base).w / 2, Math.max(itemLook(base).d, 4) / 2];
-          const corner = { x: base.pos.x + bw * Math.cos(r) - bd * Math.sin(r), y: base.pos.y + bw * Math.sin(r) + bd * Math.cos(r) };
+          const turn = (q: Vec2) => ({ x: base.pos.x + q.x * Math.cos(r) - q.y * Math.sin(r), y: base.pos.y + q.x * Math.sin(r) + q.y * Math.cos(r) });
+          // Arrows: a frame round the line as drawn (bent or curved), and the handle on the tip.
+          const arrow = libraryItem(sel.catalogId)?.shape === 'note-arrow';
+          const pts = arrow ? arrowPoints(sel.note?.arrow, look.d).points : [];
+          const pad = 18;
+          const frame = arrow
+            ? { x0: Math.min(...pts.map((q) => q.x)) - pad, x1: Math.max(...pts.map((q) => q.x)) + pad, y0: Math.min(...pts.map((q) => q.y)) - pad, y1: Math.max(...pts.map((q) => q.y)) + pad }
+            : { x0: -hw, x1: hw, y0: -hd, y1: hd };
+          const corner = turn(arrow ? arrowPoints(base.note?.arrow, itemLook(base).d).points.at(-1)! : { x: bw, y: bd });
           const start = Math.hypot(corner.x - base.pos.x, corner.y - base.pos.y) || 1;
           return (
             <Group key={`${sel.id}-scale`} name="ui-only">
               <Rect
                 x={sel.pos.x}
                 y={sel.pos.y}
-                width={hw * 2}
-                height={hd * 2}
-                offsetX={hw}
-                offsetY={hd}
+                width={frame.x1 - frame.x0}
+                height={frame.y1 - frame.y0}
+                offsetX={-frame.x0}
+                offsetY={-frame.y0}
+                cornerRadius={arrow ? 12 : 0}
                 rotation={sel.rotationDeg}
                 stroke={colors.select}
                 strokeWidth={1.5 / view.scale}
@@ -1716,7 +1725,16 @@ function SelectOutline(p: { item: Item; actors: readonly Actor[]; colors: Canvas
   );
 }
 
-function OutlineRing({
+function OutlineRing(p: Parameters<typeof ShapeRing>[0]) {
+  const { item, scale, color, widthPx } = p;
+  if (libraryItem(item.catalogId)?.shape !== 'note-arrow') return <ShapeRing {...p} />;
+  // Arrows: the arrow itself stroked wider, a smooth ring along the line and round the head.
+  const grow = Math.max(widthPx / scale, 1.5 / scale) * 2;
+  const edge = item.note?.outline === false ? 5 : 10;
+  return <Arrow name="ui-only" listening={false} {...arrowGeom(item, itemLook(item).d)} stroke={color} fill={color} strokeWidth={edge + grow} lineCap="round" lineJoin="round" />;
+}
+
+function ShapeRing({
   item,
   actors,
   colors,
@@ -1814,6 +1832,18 @@ export function uprightArrowLabel(arrow: Konva.Node | undefined, rot: number) {
 }
 
 /** Notes: text that grows its box, an arrow (straight, bent or curved) with an upright label, a freehand drawing, or an old marked area. */
+/** An arrow note's line and head, in its own frame, `d` long. */
+function arrowGeom(item: Item, d: number) {
+  const { points, curved } = arrowPoints(item.note?.arrow, d);
+  return {
+    points: points.flatMap((q) => [q.x, q.y]),
+    pointerLength: 22,
+    pointerWidth: 22,
+    pointerAtBeginning: item.note?.arrow === 'double',
+    tension: curved ? 0.5 : 0,
+  };
+}
+
 function NoteShape({ item, shape, w, d }: { item: Item; shape: string; w: number; d: number }) {
   const color = noteColor(item);
   const text = item.note?.text ?? '';
@@ -1834,16 +1864,15 @@ function NoteShape({ item, shape, w, d }: { item: Item; shape: string; w: number
     );
   }
   if (shape === 'note-arrow') {
-    const { points, curved } = arrowPoints(item.note?.arrow, d);
-    const flat = points.flatMap((q) => [q.x, q.y]);
     const edge = item.note?.outline === false ? null : outlineFor(color);
-    const head = { pointerLength: 22, pointerWidth: 22, pointerAtBeginning: item.note?.arrow === 'double', tension: curved ? 0.5 : 0 };
+    const head = arrowGeom(item, d);
     const label = text ? measureNote(text, size * 0.8, measureNote(text, size * 0.8).w > 300 ? 300 : undefined) : null;
     const off = label ? arrowLabelOffset(item.rotationDeg, label.w, label.h) : null;
     return (
       <>
-        {edge && <Arrow points={flat} stroke={edge} fill={edge} strokeWidth={9} {...head} pointerLength={27} pointerWidth={28} opacity={0.5} listening={false} />}
-        <Arrow points={flat} stroke={color} fill={color} strokeWidth={5} {...head} hitStrokeWidth={30} lineCap="round" lineJoin="round" />
+        {/* The edge is the same arrow, stroked wider, so it follows the line and head evenly. */}
+        {edge && <Arrow {...head} stroke={edge} fill={edge} strokeWidth={10} lineCap="round" lineJoin="round" listening={false} />}
+        <Arrow {...head} stroke={color} fill={color} strokeWidth={5} hitStrokeWidth={30} lineCap="round" lineJoin="round" />
         {label && off && (
           <Group name="upright" x={0} y={d / 2} rotation={-item.rotationDeg} textW={label.w} textH={label.h}>
             {backing && <Rect name="upright-bg" x={off.x - label.w / 2 - 6} y={off.y - label.h / 2 - 4} width={label.w + 12} height={label.h + 8} fill={backing} opacity={0.55} cornerRadius={6} />}
