@@ -114,8 +114,11 @@ export const isFocusLocked = (item: Item, all: readonly Item[]): boolean =>
   (item.kind === 'light' && !!item.light?.aimItemId && all.some((a) => a.id === item.light!.aimItemId)) ||
   (item.kind === 'camera' && !!item.camera?.focusItemId && all.some((a) => a.id === item.camera!.focusItemId));
 
-/** Renders the plan to a PNG data URL, without selection handles. */
-export type ExportPng = () => string | null;
+/** Renders the plan, without selection handles: as a PNG data URL, or onto a canvas. */
+export interface ExportPng {
+  png: () => string | null;
+  canvas: (pixelRatio: number) => HTMLCanvasElement | null;
+}
 
 interface Props {
   width: number;
@@ -373,7 +376,7 @@ export function PlanCanvas(p: Props) {
   }, []);
 
   useEffect(() => {
-    p.exportRef.current = () => {
+    const bare = <T,>(draw: (stage: Konva.Stage) => T): T | null => {
       const stage = stageRef.current;
       const tr = trRef.current;
       if (!stage) return null;
@@ -381,10 +384,14 @@ export function PlanCanvas(p: Props) {
       tr?.nodes([]);
       const uiOnly = stage.find('.ui-only');
       uiOnly.forEach((n) => n.hide());
-      const url = stage.toDataURL({ pixelRatio: 2, mimeType: 'image/png' });
+      const out = draw(stage);
       uiOnly.forEach((n) => n.show());
       tr?.nodes(nodes);
-      return url;
+      return out;
+    };
+    p.exportRef.current = {
+      png: () => bare((stage) => stage.toDataURL({ pixelRatio: 2, mimeType: 'image/png' })),
+      canvas: (pixelRatio) => bare((stage) => stage.toCanvas({ pixelRatio })),
     };
   });
 

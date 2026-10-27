@@ -2667,3 +2667,52 @@ kbd {
 .selection-bar.faded {
   opacity: 0.35;
 }
+
+/* ---- JPEG export ---- */
+.export-panel {
+  display: grid;
+  gap: 12px;
+}
+.export-name {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+.export-folder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.export-folder span {
+  font-weight: 600;
+}
+/* Covers the plan while it zooms out to fit (or steps through scenes) for the picture. */
+.export-busy {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: var(--canvas);
+  color: var(--fg);
+  font-weight: 600;
+  font-size: 16px;
+}
+.export-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 56px;
+  transform: translateX(-50%);
+  z-index: 61;
+  max-width: calc(100vw - 32px);
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.18);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}

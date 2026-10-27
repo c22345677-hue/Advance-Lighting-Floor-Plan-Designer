@@ -82,6 +82,8 @@ import {
 import { Inspector } from './Inspector';
 import { clampScale, displayLabel, findAttachTarget, meterName, itemName, PlanCanvas, zoomAt, type ExportPng, type LayerState, type Tool, type View, type WallExtend } from './PlanCanvas';
 import { ProjectMenu } from './ProjectMenu';
+import { ExportPanel } from './ExportPanel';
+import { composeJpeg, DEFAULT_EXPORT, exportPixelRatio, fileBase, isoDate, saveJpeg, type ExportOptions } from './exportImage';
 import { deleteProject, listProjects, loadGearLists, loadProject, loadStartProject, saveGearLists, saveProject, loadSetups, saveSetups } from './storage';
 import { TemplatePanel } from './TemplatePanel';
 import { useCanvasColors } from './theme';
@@ -159,7 +161,7 @@ function screenExtents(i: Item, scale: number): { l: number; t: number; r: numbe
   return { l: Math.min(-8, ...xs), t: Math.min(-8, ...ys), r: Math.max(8, ...xs), b: Math.max(8, ...ys) };
 }
 
-function fitView(items: Item[], width: number, height: number): View {
+function fitView(items: Item[], width: number, height: number, margin = 0.7): View {
   if (items.length === 0 || width === 0) return { x: width / 2, y: height / 2, scale: 0.8 };
   let [minX, minY, maxX, maxY] = [Infinity, Infinity, -Infinity, -Infinity];
   for (const i of items) {
@@ -169,7 +171,7 @@ function fitView(items: Item[], width: number, height: number): View {
     minY = Math.min(minY, i.pos.y - r);
     maxY = Math.max(maxY, i.pos.y + r);
   }
-  const scale = clampScale(Math.min(width / (maxX - minX), height / (maxY - minY)) * 0.7);
+  const scale = clampScale(Math.min(width / (maxX - minX), height / (maxY - minY)) * margin);
   return {
     scale,
     x: width / 2 - ((minX + maxX) / 2) * scale,
@@ -200,6 +202,8 @@ interface Prefs {
   beams?: boolean;
   /** Light or dark, or follow the device. */
   theme?: 'auto' | 'light' | 'dark';
+  /** JPEG export settings. */
+  exportOpts?: ExportOptions;
 }
 const PREFS_KEY = 'lfpd.prefs.v1';
 function loadPrefs(): Prefs {
@@ -220,7 +224,7 @@ const MODE_HINT: Record<EditMode, string> = {
   notes: 'Only notes, arrows and drawings can be picked and moved',
 };
 
-type DialogKind = 'templates' | 'gear' | 'equipment' | 'help' | 'power' | 'schedule' | null;
+type DialogKind = 'templates' | 'gear' | 'equipment' | 'help' | 'power' | 'schedule' | 'export' | null;
 
 export function App() {
   const [history, dispatch] = useReducer(reducer, undefined, () => ({
@@ -818,9 +822,63 @@ export function App() {
     openProject(r.project);
   };
 
+  const exportOpts = prefs.exportOpts ?? DEFAULT_EXPORT;
+  /** While a JPEG export runs (the plan may zoom out to fit, or step through scenes). */
+  const [exporting, setExporting] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 3500);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  /** Save this scene (or every scene) as a JPEG, one click: named from the project and scene. */
+  const exportJpeg = async (all = false) => {
+    if (exporting || !size.width) return;
+    leaveWalls();
+    setExporting(true);
+    const keepView = view;
+    const keepScene = sceneId;
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    const saved: string[] = [];
+    let folder: string | null = null;
+    try {
+      for (const s of all ? project.scenes : [savedScene]) {
+        if (s.id !== sceneId) {
+          setSceneId(s.id);
+          await wait(400);
+        }
+        const v = exportOpts.area === 'plan' || s.id !== keepScene ? fitView(sceneItems(s), size.width, size.height, 0.85) : keepView;
+        if (!v) continue;
+        setView(v);
+        await wait(300);
+        const pr = exportPixelRatio(exportOpts);
+        const plan = exportRef.current?.canvas(pr);
+        if (!plan) continue;
+        const blob = await composeJpeg(plan, {
+          title: exportOpts.title ? [project.name || 'Untitled project', s.name, isoDate()] : null,
+          pxPerCm: v.scale * pr,
+          bg: colors.canvas,
+          ink: colors.label,
+          k: pr,
+        });
+        const r = await saveJpeg(blob, fileBase(project.name, s.name));
+        saved.push(r.name);
+        folder = r.folder;
+      }
+    } catch (e) {
+      setToast(`Couldn't save the image: ${(e as Error).message}`);
+    } finally {
+      setSceneId(keepScene);
+      setView(keepView);
+      setExporting(false);
+    }
+    if (saved.length) setToast(`Saved ${saved.length > 1 ? `${saved.length} images` : saved[0]} to ${folder ?? 'Downloads'}`);
+  };
+
   const exportPng = () => {
     leaveWalls();
-    const url = exportRef.current?.();
+    const url = exportRef.current?.png();
     if (!url) return;
     const a = document.createElement('a');
     a.href = url;
@@ -1050,6 +1108,15 @@ export function App() {
           >
             <IconReset /> <span className="lbl">Reset</span>
           </button>
+          <button
+            id="export-jpeg"
+            className="top-action"
+            disabled={items.length === 0 || exporting}
+            onClick={() => void exportJpeg()}
+            title="Save this scene as a JPEG (settings in Reports › Export settings)"
+          >
+            <IconExport /> <span className="lbl">Export JPEG</span>
+          </button>
           <MenuButton
             id="open-reports"
             icon={<IconSchedule />}
@@ -1065,10 +1132,13 @@ export function App() {
                 hint: 'Plan, lights, cameras, readings and power, printable',
                 onClick: () => {
                   leaveWalls();
-                  setPlanImage(exportRef.current?.() ?? null);
+                  setPlanImage(exportRef.current?.png() ?? null);
                   setDialog('schedule');
                 },
               },
+              { id: 'export-jpeg-menu', icon: <IconExport />, label: 'Export JPEG', hint: 'This scene, named and numbered', disabled: items.length === 0, onClick: () => void exportJpeg() },
+              { id: 'export-all-jpeg', icon: <IconExport />, label: 'Export all scenes', hint: 'One JPEG per scene', onClick: () => void exportJpeg(true) },
+              { id: 'export-settings', icon: <IconSliders />, label: 'Export settings', hint: 'Names, folder, area, quality, title', onClick: () => setDialog('export') },
               { id: 'export-png', icon: <IconExport />, label: 'Download PNG', hint: 'This scene as an image', disabled: items.length === 0, onClick: exportPng },
             ]}
           />
@@ -1498,6 +1568,42 @@ export function App() {
           </span>
         )}
       </footer>
+
+      {dialog === 'export' && (
+        <Dialog
+          title="Export settings"
+          onClose={() => setDialog(null)}
+          small
+          footer={
+            <button
+              id="export-now"
+              className="btn primary"
+              disabled={items.length === 0}
+              onClick={() => {
+                setDialog(null);
+                void exportJpeg();
+              }}
+            >
+              Export JPEG
+            </button>
+          }
+        >
+          <ExportPanel
+            projectName={project.name}
+            sceneName={scene.name}
+            options={exportOpts}
+            onProjectName={(name) => dispatch({ type: 'setProject', patch: { name } })}
+            onSceneName={(name) => dispatch({ type: 'renameScene', id: scene.id, name })}
+            onOptions={(o) => setPrefs((p) => ({ ...p, exportOpts: o }))}
+          />
+        </Dialog>
+      )}
+      {exporting && <div className="export-busy">Saving image…</div>}
+      {toast && (
+        <div className="export-toast" role="status">
+          {toast}
+        </div>
+      )}
 
       {dialog === 'schedule' && (
         <Dialog
