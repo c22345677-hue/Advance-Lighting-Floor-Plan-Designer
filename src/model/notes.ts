@@ -66,8 +66,8 @@ export function arrowPoints(style: ArrowStyle | undefined, d: number): { points:
   const tail = { x: 0, y: d / 2 };
   const bend = /^bend(\d+)-(left|right)$/.exec(style ?? '');
   if (bend) {
-    // Drawn like a pen stroke: a shaft with a slight bow sweeping into a rounded turn, then a
-    // straight run to the head so the head points exactly along the bent angle.
+    // A straight shaft into a rounded turn, then a straight run to the head so the head points
+    // exactly along the bent angle.
     const deg = (Number(bend[1]) * Math.PI) / 180;
     const side = bend[2] === 'right' ? 1 : -1;
     const elbow = { x: 0, y: d / 2 - d * 0.55 };
@@ -77,13 +77,9 @@ export function arrowPoints(style: ArrowStyle | undefined, d: number): { points:
     const a = { x: 0, y: elbow.y + r };
     const b = { x: elbow.x + dir.x * r, y: elbow.y + dir.y * r };
     const tip = { x: elbow.x + dir.x * rest, y: elbow.y + dir.y * rest };
-    const pts: Vec2[] = [];
-    for (let k = 0; k < 16; k++) {
+    const pts: Vec2[] = [tail];
+    for (let k = 0; k <= 16; k++) {
       const t = k / 16;
-      pts.push({ x: -side * Math.sin(Math.PI * t) ** 2 * d * 0.012, y: tail.y + (a.y - tail.y) * t });
-    }
-    for (let k = 0; k <= 10; k++) {
-      const t = k / 10;
       const u = 1 - t;
       pts.push({ x: u * u * a.x + 2 * u * t * elbow.x + t * t * b.x, y: u * u * a.y + 2 * u * t * elbow.y + t * t * b.y });
     }
