@@ -361,7 +361,8 @@ export function bounceLights(items: readonly Item[]): Item[] {
     const slice = w / N;
     let total = 0;
     let side = 0;
-    let at = 0; // where along the board the light lands, weighted by how much
+    let lo = Infinity; // the lit stretch of the board
+    let hi = -Infinity;
     let best: { light: Item; lm: number } | null = null;
     for (const light of lights) {
       const deg = Math.min(360, lightSource(light, items)?.beamDeg ?? 360);
@@ -381,7 +382,10 @@ export function bounceLights(items: readonly Item[]): Item[] {
         const part = c.lux * Math.abs(facing) * (slice / 100) * (Math.min(h, litCm) / 100) * BOUNCE_REFLECT;
         lm += part;
         side += Math.sign(facing) * part;
-        at += s * part;
+        if (part > 0) {
+          lo = Math.min(lo, s - slice / 2);
+          hi = Math.max(hi, s + slice / 2);
+        }
       }
       total += lm;
       if (lm > 0 && (!best || lm > best.lm)) best = { light, lm };
@@ -389,7 +393,9 @@ export function bounceLights(items: readonly Item[]): Item[] {
     if (total < BOUNCE_MIN_LM || !best) continue;
     // It shines back from the side the light lands on, centred on the lit part.
     const out1 = side >= 0 ? n : { x: -n.x, y: -n.y };
-    const mid = at / total;
+    // Only the lit stretch gives light back: from its middle, as wide as it is.
+    const mid = (lo + hi) / 2;
+    const litW = Math.max(slice, hi - lo);
     const pos = { x: board.pos.x + along.x * mid + out1.x * (d / 2 + 2), y: board.pos.y + along.y * mid + out1.y * (d / 2 + 2) };
     out.push({
       id: bounceId(board.id),
@@ -397,8 +403,8 @@ export function bounceLights(items: readonly Item[]): Item[] {
       catalogId: 'virtual.bounce',
       pos,
       rotationDeg: aimAt(board.pos, { x: board.pos.x + out1.x, y: board.pos.y + out1.y }),
-      sizeCm: { w, d: 2 },
-      light: { beamDeg: 150, throwCm: 600, heightCm: Math.max(100, h / 2 + 40), bounce: { lumens: total, sizeCm: Math.max(w, h), boardId: board.id, from: best.light } },
+      sizeCm: { w: litW, d: 2 },
+      light: { beamDeg: 150, throwCm: 600, heightCm: Math.max(100, h / 2 + 40), bounce: { lumens: total, sizeCm: Math.max(litW, Math.min(h, litW * 2)), boardId: board.id, from: best.light } },
     });
   }
   return out;

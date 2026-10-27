@@ -368,7 +368,8 @@ export function lightFace(item: Item): { width: number; forward: number } {
       width = w * 0.3;
       break;
     default:
-      width = 0;
+      // Light bounced off a board leaves the whole lit stretch of it.
+      width = item.light?.bounce ? w : 0;
   }
   let forward = d / 2;
   // Each modifier in turn becomes the face: a softbox's front, a lens, a reflector's mouth.

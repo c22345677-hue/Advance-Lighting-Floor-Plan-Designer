@@ -32,6 +32,9 @@ describe('bounce boards', () => {
     const [b] = bounceLights([leko, board]);
     expect(b).toBeDefined();
     expect(Math.abs(b!.pos.x)).toBeGreaterThan(30);
+    // Only that stretch gives light back: narrower than the board, and inside its ends.
+    expect(b!.sizeCm!.w).toBeLessThan(60);
+    expect(Math.abs(b!.pos.x) + b!.sizeCm!.w / 2).toBeLessThanOrEqual(60.5);
   });
 
   it('a meter in front of the board reads the bounce', () => {
