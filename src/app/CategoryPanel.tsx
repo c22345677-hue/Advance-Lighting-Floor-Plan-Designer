@@ -13,6 +13,7 @@ import { FixtureSearch } from './FixtureSearch';
 import { GripSearch } from './GripSearch';
 import { isMeter } from '../model/attach';
 import { ItemThumb } from './ItemThumb';
+import { IconTemplates } from './icons';
 import { useCanvasColors } from './theme';
 import { limitingList, type GearScope } from './gearScope';
 import { displayLabel, itemName, meterName } from './PlanCanvas';
@@ -46,6 +47,8 @@ interface Props {
   onWallSnap: (on: boolean) => void;
   /** ALL: switch to a category (to add its gear). */
   onMode: (m: Category) => void;
+  /** ALL: start the scene from a template layout. */
+  onTemplates: () => void;
   /** CAMERA: give everyone without one a light meter in front of their face. */
   onMetersForAll: () => void;
   /** NOTES: drawing on the plan, and the pen it uses. */
@@ -206,6 +209,11 @@ export function CategoryPanel(props: Props) {
     case 'all':
       return (
         <>
+          <Section title="Templates">
+            <button id="open-templates" className="btn templates-btn" onClick={props.onTemplates}>
+              <IconTemplates /> Start from a template…
+            </button>
+          </Section>
           <Section title="In this scene" count={items.filter((i) => !i.inWall).length}>
             {items.length === 0 && <p className="hint-text">Nothing on the plan yet. Start from a template, or pick a category below to add gear.</p>}
             {CATEGORIES.map((c) => {

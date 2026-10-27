@@ -2716,3 +2716,38 @@ kbd {
   font-size: 14px;
   overflow-wrap: anywhere;
 }
+
+.templates-btn {
+  width: 100%;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* One top row on tablets: tools lose their names first, then the menus. */
+#reset-scene .lbl {
+  display: none;
+}
+@media (max-width: 1600px) {
+  .topbar .tool-btn kbd {
+    display: none;
+  }
+}
+@media (max-width: 1320px) {
+  .topbar .tool-btn .lbl {
+    display: none;
+  }
+  .project-btn {
+    max-width: 190px;
+  }
+}
+@media (max-width: 1180px) {
+  #open-reports .lbl {
+    display: none;
+  }
+  .topbar .modes button {
+    padding: 0 8px;
+  }
+  .project-btn {
+    max-width: 150px;
+  }
+}

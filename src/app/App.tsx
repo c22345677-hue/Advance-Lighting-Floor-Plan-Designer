@@ -76,7 +76,6 @@ import {
   IconSliders,
   IconSchedule,
   IconMeter,
-  IconTemplates,
   IconUndo,
 } from './icons';
 import { Inspector } from './Inspector';
@@ -1079,11 +1078,8 @@ export function App() {
         </div>
 
         <div className="topbar-right">
-          <button id="open-help" className="top-action" onClick={() => setDialog('help')} title="Keyboard shortcuts and mouse controls (?)">
-            <IconHelp /> <span className="lbl">Help</span>
-          </button>
-          <button id="open-templates" className="top-action" onClick={() => setDialog('templates')} title="Start the scene from a layout">
-            <IconTemplates /> <span className="lbl">Templates</span>
+          <button id="open-help" className="top-action" onClick={() => setDialog('help')} title="Help: keyboard shortcuts and mouse controls (?)" aria-label="Help">
+            <IconHelp />
           </button>
           <button
             id="reset-scene"
@@ -1115,7 +1111,7 @@ export function App() {
             onClick={() => void exportJpeg()}
             title="Save this scene as a JPEG (settings in Reports › Export settings)"
           >
-            <IconExport /> <span className="lbl">Export JPEG</span>
+            <IconExport /> <span className="lbl">JPEG</span>
           </button>
           <MenuButton
             id="open-reports"
@@ -1500,6 +1496,7 @@ export function App() {
             ) : (
               <CategoryPanel
                 mode={mode}
+                onTemplates={() => setDialog('templates')}
                 items={items}
                 actors={project.actors}
                 kind={kind}
