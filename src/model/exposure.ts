@@ -354,30 +354,43 @@ export function bounceLights(items: readonly Item[]): Item[] {
     const h = Math.min(244, w); // boards stand about as tall as they're wide
     const r = (board.rotationDeg * Math.PI) / 180;
     const n = { x: Math.sin(r), y: -Math.cos(r) }; // the board's face, front side
+    const along = { x: Math.cos(r), y: Math.sin(r) }; // across the board's width
+    // The face is sampled across its width, so a beam that lands on part of it (a narrow
+    // leko hitting one end, say) still counts for the part it covers.
+    const N = 15;
+    const slice = w / N;
     let total = 0;
     let side = 0;
+    let at = 0; // where along the board the light lands, weighted by how much
     let best: { light: Item; lm: number } | null = null;
     for (const light of lights) {
-      const c = luxFrom(light, board.pos, items, board.id);
-      if (!c || c.lux < 1) continue;
-      const v = { x: light.pos.x - board.pos.x, y: light.pos.y - board.pos.y };
-      const dist = Math.hypot(v.x, v.y) || 1;
-      const facing = (v.x * n.x + v.y * n.y) / dist;
-      if (Math.abs(facing) < 0.05) continue; // edge on: nothing lands on the face
       const deg = Math.min(360, lightSource(light, items)?.beamDeg ?? 360);
-      // Only what the beam itself puts on the board (not the spill round its edge).
-      if (deg < 360 && Math.abs(((aimAt(light.pos, board.pos) - light.rotationDeg + 540) % 360) - 180) > deg / 2 + 5) continue;
-      const litCm = deg >= 300 ? Infinity : 2 * dist * Math.tan((Math.min(deg, 170) / 2) * (Math.PI / 180));
-      const areaM2 = (Math.min(w, litCm) / 100) * (Math.min(h, litCm) / 100);
-      const lm = c.lux * Math.abs(facing) * areaM2 * BOUNCE_REFLECT;
+      let lm = 0;
+      for (let k = 0; k < N; k++) {
+        const s = -w / 2 + slice * (k + 0.5);
+        const p = { x: board.pos.x + along.x * s, y: board.pos.y + along.y * s };
+        const v = { x: light.pos.x - p.x, y: light.pos.y - p.y };
+        const dist = Math.hypot(v.x, v.y) || 1;
+        const facing = (v.x * n.x + v.y * n.y) / dist;
+        if (Math.abs(facing) < 0.05) continue; // edge on: nothing lands on the face
+        // Only what the beam itself puts on the board (not the spill round its edge).
+        if (deg < 360 && Math.abs(((aimAt(light.pos, p) - light.rotationDeg + 540) % 360) - 180) > deg / 2) continue;
+        const c = luxFrom(light, p, items, board.id);
+        if (!c || c.lux < 1) continue;
+        const litCm = deg >= 300 ? Infinity : 2 * dist * Math.tan((Math.min(deg, 170) / 2) * (Math.PI / 180));
+        const part = c.lux * Math.abs(facing) * (slice / 100) * (Math.min(h, litCm) / 100) * BOUNCE_REFLECT;
+        lm += part;
+        side += Math.sign(facing) * part;
+        at += s * part;
+      }
       total += lm;
-      side += Math.sign(facing) * lm;
-      if (!best || lm > best.lm) best = { light, lm };
+      if (lm > 0 && (!best || lm > best.lm)) best = { light, lm };
     }
     if (total < BOUNCE_MIN_LM || !best) continue;
-    // It shines back from the side the light lands on.
+    // It shines back from the side the light lands on, centred on the lit part.
     const out1 = side >= 0 ? n : { x: -n.x, y: -n.y };
-    const pos = { x: board.pos.x + out1.x * (d / 2 + 2), y: board.pos.y + out1.y * (d / 2 + 2) };
+    const mid = at / total;
+    const pos = { x: board.pos.x + along.x * mid + out1.x * (d / 2 + 2), y: board.pos.y + along.y * mid + out1.y * (d / 2 + 2) };
     out.push({
       id: bounceId(board.id),
       kind: 'light',

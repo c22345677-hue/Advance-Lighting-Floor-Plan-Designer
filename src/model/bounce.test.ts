@@ -25,6 +25,15 @@ describe('bounce boards', () => {
     expect(bounceLights([lamp, { ...board, rotationDeg: 90 }])).toHaveLength(0);
   });
 
+  it('a narrow beam landing on part of the board still bounces, from the lit part', () => {
+    // A leko at full spot 3 m away, aimed past one end of a 120 cm board: its beam's edge
+    // covers that end only, and misses the board's centre.
+    const leko: Item = { id: 'K', kind: 'light', catalogId: 'generic.light.leko', pos: { x: 80, y: 300 }, rotationDeg: 0, light: { spotPct: 100 } };
+    const [b] = bounceLights([leko, board]);
+    expect(b).toBeDefined();
+    expect(Math.abs(b!.pos.x)).toBeGreaterThan(30);
+  });
+
   it('a meter in front of the board reads the bounce', () => {
     const meter: Item = { id: 'M', kind: 'prop', catalogId: 'generic.camera.light-meter', pos: { x: 150, y: 120 }, rotationDeg: 0 };
     const r = meterReadings([lamp, board, meter])[0]!;
