@@ -2620,8 +2620,8 @@ export function ItemShape({
   if (item.kind === 'light') {
     return (
       <>
-        <FixtureShape item={item} w={w} d={d} c={c} />
-        <ModifierShapes item={item} front={modifierFront(shape, d)} lightW={w} c={c} />
+        <FixtureShape item={item} w={w} d={d} c={c} muted={muted} glow={!bodyOnly} />
+        <ModifierShapes item={item} front={modifierFront(shape, d)} lightW={w} c={c} muted={muted} glow={!bodyOnly} />
       </>
     );
   }
